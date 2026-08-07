@@ -245,6 +245,7 @@ button {
   transition: background-color var(--t-fast) var(--ease-std);
 }
 .iconbtn > * { position: relative; }
+.iconbtn[hidden] { display: none; }
 .iconbtn:hover::before { background: var(--fill-4); }
 .iconbtn:active { transform: scale(.92); opacity: .7; }
 .iconbtn[disabled] { color: var(--icon-disabled); cursor: default; }

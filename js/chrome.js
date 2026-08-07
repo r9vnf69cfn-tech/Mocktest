@@ -11,6 +11,9 @@
   const pop = GN.popover;
   const T = GN.tools;
 
+  /* Reihenfolge, in der Werkzeuge bei Platzmangel ins Zubehör-Menü wandern. */
+  const OVERFLOW_ORDER = ['laser', 'ruler', 'image', 'elements', 'text', 'tape', 'shapes', 'highlighter', 'eraser'];
+
   class Chrome {
     constructor(app) {
       this.app = app;
@@ -68,6 +71,28 @@
         btn.setAttribute('aria-pressed', on ? 'true' : 'false');
         btn.style.setProperty('--tint', def.tinted ? this.ctrl.tintColor(id) : '');
       });
+      this.layoutTools();
+    }
+
+    /**
+     * Reicht der Platz in der Leistenmitte nicht, wandern Werkzeuge von rechts
+     * nach links ins Zubehör-Menü. Rückgängig/Wiederholen, Stift und Lasso
+     * bleiben immer stehen, das aktive Werkzeug ebenfalls.
+     */
+    layoutTools() {
+      const mid = document.getElementById('toolbar');
+      const buttons = [...this.toolList.querySelectorAll('.iconbtn')];
+      buttons.forEach((b) => { b.hidden = false; });
+      this.hiddenTools = [];
+
+      for (const id of OVERFLOW_ORDER) {
+        if (mid.scrollWidth <= mid.clientWidth + 1) break;
+        if (id === this.ctrl.active) continue;
+        const btn = this.toolList.querySelector(`[data-tool="${id}"]`);
+        if (!btn) continue;
+        btn.hidden = true;
+        this.hiddenTools.push(id);
+      }
     }
 
     updateHistoryButtons() {

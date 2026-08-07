@@ -160,6 +160,32 @@
     return out;
   };
 
+  /**
+   * Fügt Zwischenpunkte ein, bis kein Segment länger als `maxStep` ist.
+   * Nötig fürs Radieren: ein vereinfachter gerader Strich besteht nur aus
+   * seinen Endpunkten — ohne Zwischenpunkte gäbe es dort nichts zu trennen.
+   */
+  G.densify = function (pts, maxStep) {
+    if (pts.length < 2 || !(maxStep > 0)) return pts.slice();
+    const out = [pts[0]];
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1];
+      const b = pts[i];
+      const d = G.dist(a.x, a.y, b.x, b.y);
+      const n = Math.min(Math.ceil(d / maxStep), 400);
+      for (let k = 1; k < n; k++) {
+        const t = k / n;
+        out.push({
+          x: a.x + (b.x - a.x) * t,
+          y: a.y + (b.y - a.y) * t,
+          p: a.p === undefined ? undefined : a.p + ((b.p === undefined ? a.p : b.p) - a.p) * t,
+        });
+      }
+      out.push(b);
+    }
+    return out;
+  };
+
   /* ── Glättung ────────────────────────────────────────────────────────── */
 
   /**

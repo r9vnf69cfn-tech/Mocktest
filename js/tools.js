@@ -541,10 +541,20 @@
         next.push(it);
         continue;
       }
-      changed = true;
-      if (set.type === 'stroke') continue;                       // ganzen Strich entfernen
+      if (set.type === 'stroke') {                               // ganzen Strich entfernen
+        changed = true;
+        continue;
+      }
       const cut = set.type === 'precision' ? radius * 0.55 : radius;
-      for (const piece of splitStroke(it, x, y, cut)) next.push(piece);
+      const result = splitStroke(it, x, y, cut);
+      // Nur als Änderung werten, wenn wirklich etwas weggenommen wurde —
+      // sonst bliebe bei jedem Vorbeistreichen ein leerer Verlaufsschritt übrig.
+      if (!result.removed) {
+        next.push(it);
+        continue;
+      }
+      changed = true;
+      for (const piece of result.pieces) next.push(piece);
     }
 
     if (changed) {
@@ -571,13 +581,21 @@
     return false;
   }
 
-  /** Zerlegt einen Strich in die Teile außerhalb des Radierkreises. */
+  /**
+   * Zerlegt einen Strich in die Teile außerhalb des Radierkreises.
+   * Vorher wird nachverdichtet, damit auch lange gerade Segmente an der
+   * richtigen Stelle getrennt werden und nicht nur an ihren Stützpunkten.
+   */
   function splitStroke(stroke, x, y, r) {
     const rr = (r + stroke.width / 2) ** 2;
+    const points = geo.densify(stroke.points, Math.max(r / 3, 0.5));
     const runs = [];
     let run = [];
-    for (const pt of stroke.points) {
+    let removed = 0;
+
+    for (const pt of points) {
       if (geo.dist2(x, y, pt.x, pt.y) <= rr) {
+        removed++;
         if (run.length > 1) runs.push(run);
         run = [];
       } else {
@@ -585,9 +603,22 @@
       }
     }
     if (run.length > 1) runs.push(run);
-    return runs.map((points) =>
-      M.create.stroke({ tool: stroke.tool, pen: stroke.pen, color: stroke.color, width: stroke.width, behind: stroke.behind, points })
+    if (!removed) return { removed: 0, pieces: [stroke] };
+
+    // Die Verdichtung war nur Mittel zum Zweck — die Teilstücke werden wieder
+    // ausgedünnt, damit die Punktzahl nicht mit jedem Radierzug wächst.
+    const tol = Math.min(r / 6, 0.4);
+    const pieces = runs.map((pts) =>
+      M.create.stroke({
+        tool: stroke.tool,
+        pen: stroke.pen,
+        color: stroke.color,
+        width: stroke.width,
+        behind: stroke.behind,
+        points: pts.length > 4 ? geo.simplify(pts, tol) : pts,
+      })
     );
+    return { removed, pieces };
   }
 
   /* ── Auswahl-Hilfen ──────────────────────────────────────────────────── */

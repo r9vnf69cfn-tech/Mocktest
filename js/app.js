@@ -112,6 +112,7 @@
 
       global.addEventListener('resize', () => {
         this.renderer.resize();
+        this.chrome.layoutTools();
         this.chrome.updateSelectionBar();
         this.chrome.renderMinimap();
         this.positionEditor();
@@ -729,12 +730,28 @@
     }
 
     openAccessories(anchor) {
+      const stowed = (this.chrome.hiddenTools || [])
+        .map((id) => GN.tools.TOOLS.find((t) => t.id === id))
+        .filter(Boolean);
+
       pop.open({
         key: 'accessories',
         anchor,
         content: pop.menu([
+          stowed.length ? { title: 'Schnellzugriff' } : null,
+          ...stowed.map((t) => ({
+            label: t.label,
+            icon: t.icon,
+            on: t.toggle ? this.ctrl.settings.ruler.visible : this.ctrl.active === t.id,
+            onClick: () => {
+              if (t.toggle) this.toggleRuler();
+              else this.ctrl.setTool(t.id);
+            },
+          })),
+          stowed.length ? '=' : null,
           { title: 'Zubehör' },
-          {
+          // Steht das Lineal schon im Schnellzugriff, nicht doppelt zeigen.
+          stowed.some((t) => t.id === 'ruler') ? null : {
             label: 'Lineal',
             sub: 'Einblenden und Striche einrasten lassen',
             icon: 'ruler',
