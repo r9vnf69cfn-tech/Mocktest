@@ -6,17 +6,43 @@
 <title>Mockups — Übersicht</title>
 <link rel="stylesheet" href="shared/system.css">
 <style>
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 56px 30px 80px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 56px 30px 0; }
+
   .lead { max-width: 68ch; }
   .lead p { font: 400 17px/25px var(--sans); color: var(--ink-2); margin: 0 0 12px; }
   .lead strong { color: var(--ink-1); font-weight: 600; }
+  .lead .eyebrow { font: 600 13px/16px var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; }
 
   .sec { margin-top: 52px; }
-  .sec__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .sec__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
   .sec__head h2 { font: 600 20px/26px var(--sans); margin: 0; letter-spacing: -.015em; }
   .sec__head span { font: 400 15px/20px var(--sans); color: var(--ink-3); }
   .sec > p { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0 0 20px; max-width: 68ch; }
 
+  /* ── Kasten: So benutzt du diesen Ordner ──────────────────────────── */
+  .howto {
+    margin-top: 30px; padding: 22px 24px;
+    background: var(--paper); border-radius: var(--r-card); box-shadow: var(--sh-card);
+  }
+  .howto h2 { font: 600 20px/26px var(--sans); letter-spacing: -.015em; margin: 0 0 14px; }
+  /* Zwei Spalten, nicht auto-fit: bei drei Spalten bliebe die vierte
+     Zeile halb leer und der Kasten wirkt wie ein Fehler. */
+  .howto__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 30px; }
+  .howto__item { display: flex; align-items: flex-start; gap: 11px; }
+  .howto__item .ico { width: 20px; height: 20px; color: var(--ink-3); margin-top: 1px; }
+  .howto__item p { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0; }
+  .howto__item b { color: var(--ink-1); font-weight: 600; }
+
+  /* ── Die sechs Bereiche ───────────────────────────────────────────── */
+  .mods { display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 20px 28px; }
+  .mods__name { display: flex; align-items: center; gap: 9px; font: 600 17px/23px var(--sans); color: var(--ink-1); margin: 0 0 3px; }
+  .mods__desc { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0; }
+  /* Heute trägt keine Modul-Farbe — der Punkt bleibt hohl statt grau,
+     damit kein sechster Farbwert behauptet wird. */
+  .dot--home { background: none; box-shadow: inset 0 0 0 1.4px var(--ink-4); }
+  .mods__note { font: 400 15px/22px var(--sans); color: var(--ink-3); margin: 20px 0 0; max-width: 68ch; }
+
+  /* ── Vorschaukacheln ──────────────────────────────────────────────── */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 22px; }
   .item { display: block; text-decoration: none; color: inherit; }
   .item__shot {
@@ -31,6 +57,7 @@
   .item__sub { font: 400 15px/20px var(--sans); color: var(--ink-3); }
   .item__tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
 
+  /* ── Dokumente ────────────────────────────────────────────────────── */
   .doclist { display: flex; flex-direction: column; gap: 2px; }
   .doclist a {
     display: flex; align-items: center; gap: 12px; padding: 14px 16px;
@@ -39,13 +66,32 @@
   }
   .doclist a:hover { background: var(--fill); }
   .doclist .ico { color: var(--ink-3); }
-  .doclist b { font: 600 17px/23px var(--sans); }
-  .doclist span { font: 400 15px/20px var(--sans); color: var(--ink-3); }
+  .doclist__main { flex: 1 1 auto; min-width: 0; }
+  .doclist b { font: 600 17px/23px var(--sans); display: block; }
+  .doclist span.sub { font: 400 15px/20px var(--sans); color: var(--ink-3); }
+  .doclist .chip { flex: none; }
 
-  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 18px; }
-  .legend > div { display: flex; align-items: flex-start; gap: 9px; }
-  .legend p { font: 400 15px/21px var(--sans); color: var(--ink-2); margin: 0; }
-  .legend b { color: var(--ink-1); font-weight: 600; }
+  /* ── Fußzeile ─────────────────────────────────────────────────────── */
+  .foot { margin: 56px 0 0; padding: 22px 0 60px; border-top: 1px solid var(--line); }
+  .foot p { font: 400 15px/22px var(--sans); color: var(--ink-3); margin: 0 0 6px; max-width: 68ch; }
+  .foot p:last-child { margin-bottom: 0; }
+  .foot code { font: 400 13px/16px var(--mono); color: var(--ink-2); }
+
+  @media (max-width: 620px) {
+    /* Die Bedienleiste des Mockups liegt fixiert oben rechts — der Kopf
+       der Seite beginnt darunter, sonst überdeckt sie den Titel. */
+    .wrap { padding: 84px 18px 0; }
+    .sec { margin-top: 40px; }
+    .howto { padding: 18px 18px; margin-top: 26px; }
+    .howto__grid { grid-template-columns: 1fr; }
+    .mods { grid-template-columns: 1fr; gap: 18px; }
+    .grid { grid-template-columns: 1fr; gap: 20px; }
+    /* Die Dateiart bleibt rechts stehen, statt unter den Text zu rutschen. */
+    .doclist a { padding: 12px 14px; gap: 10px; align-items: flex-start; }
+    .doclist .ico { margin-top: 1px; }
+    .doclist .chip { margin-top: 1px; }
+    .foot { margin-top: 44px; padding-bottom: 48px; }
+  }
 </style>
 </head>
 <body>
@@ -53,18 +99,67 @@
 <div class="wrap">
 
   <div class="lead">
+    <p class="eyebrow">Entwurfspaket · August 2026</p>
     <h1 class="t-title" style="margin:0 0 14px">Eine All-in-One-App für Studium und Alltag</h1>
     <p><strong>Fünf Werkzeuge in einem Datenmodell.</strong> Der Kern ist nicht die Menge der Module, sondern dass Inhalte zwischen ihnen fließen: Ein markierter Satz in einer Vorlesungsnotiz wird zur Lernkarte, die morgen fällig ist — und behält den Weg dorthin sichtbar.</p>
-    <p>Die Oberfläche ist Papier und Grau. Der einzige Akzent ist Ink — fast-schwarz im hellen, fast-weiß im dunklen Modus — und er hat genau drei Aufgaben: aktiven Zustand, primäre Aktion, Auswahl zeigen. Alle Farbe, die man sonst sieht, gehört dem Nutzer: seine Tinte, seine Fotos, seine Cover.</p>
+    <p>Die Oberfläche ist Papier und Grau. Der einzige Akzent ist Ink — fast-schwarz im hellen, fast-weiß im dunklen Modus — und er hat genau drei Aufgaben: aktiven Zustand, primäre Aktion, Auswahl. Alle Farbe, die man sonst sieht, gehört dem Nutzer: seine Tinte, seine Fotos, seine Cover.</p>
   </div>
 
-  <div class="legend">
-    <div><span class="dot dot--canvas" style="margin-top:7px"></span><p><b>Canvas</b><br>Handschrift und Skizze</p></div>
-    <div><span class="dot dot--notes" style="margin-top:7px"></span><p><b>Notizen</b><br>Block-Editor mit Verlinkung</p></div>
-    <div><span class="dot dot--journal" style="margin-top:7px"></span><p><b>Journal</b><br>Einträge mit Kontext</p></div>
-    <div><span class="dot dot--tasks" style="margin-top:7px"></span><p><b>Aufgaben</b><br>Geplant und Deadline getrennt</p></div>
-    <div><span class="dot dot--cards" style="margin-top:7px"></span><p><b>Lernkarten</b><br>Wiederholung nach Termin</p></div>
+  <!-- ══ So benutzt du diesen Ordner ══ -->
+  <div class="howto">
+    <h2>So benutzt du diesen Ordner</h2>
+    <div class="howto__grid">
+      <div class="howto__item">
+        <span class="ico" data-ico="folder"></span>
+        <p>Jede Seite ist eine einzelne HTML-Datei: <b>Doppelklick genügt.</b> Es läuft ohne Internet, ohne Installation und ohne Server.</p>
+      </div>
+      <div class="howto__item">
+        <span class="ico" data-ico="sun"></span>
+        <p>Oben rechts schaltet auf jeder Seite eine Leiste zwischen <b>hell und dunkel</b> und zwischen zwei <b>Schriftgrößen</b> um; sie gehört zum Prüfwerkzeug, nicht zum Entwurf.</p>
+      </div>
+      <div class="howto__item">
+        <span class="ico" data-ico="hand"></span>
+        <p>Das <b>Canvas ist wirklich bedienbar</b> — darin lässt sich mit Maus, Trackpad oder Stift zeichnen.</p>
+      </div>
+      <div class="howto__item">
+        <span class="ico" data-ico="photo"></span>
+        <p>Alle übrigen Screens sind <b>Standbilder</b>; zurück zu dieser Seite kommt man mit dem Zurück-Knopf des Browsers.</p>
+      </div>
+    </div>
   </div>
+
+  <!-- ══ Die sechs Bereiche ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Die sechs Bereiche</h2><span>ein Einstieg und fünf Module</span></div>
+    <p>Alle sechs teilen dasselbe Datenmodell. Deshalb kann ein markierter Satz aus einer Notiz als Lernkarte weiterleben, ohne dass jemand etwas exportiert — und die Karte weiß noch, aus welchem Absatz sie kommt.</p>
+    <div class="mods">
+      <div>
+        <p class="mods__name"><span class="dot dot--home"></span>Heute</p>
+        <p class="mods__desc">Der Einstieg: Er fasst den Tag in Sätzen zusammen — fällige Karten, offene Aufgaben, der Faden von gestern — statt in einer Kachelwand.</p>
+      </div>
+      <div>
+        <p class="mods__name"><span class="dot dot--canvas"></span>Canvas</p>
+        <p class="mods__desc">Handschrift und Skizze auf unendlicher Fläche, mit elf Werkzeugen, Formerkennung und Lasso.</p>
+      </div>
+      <div>
+        <p class="mods__name"><span class="dot dot--notes"></span>Notizen</p>
+        <p class="mods__desc">Block-Editor mit Wiki-Links und Tags; markierter Text wird in einem Griff zur Lernkarte, Aufgabe oder Journal-Notiz.</p>
+      </div>
+      <div>
+        <p class="mods__name"><span class="dot dot--journal"></span>Journal</p>
+        <p class="mods__desc">Datierte Einträge mit Fotos, Ton, Stimmung und Ort — der Rückblick auf das, was war, nicht auf das, was zu tun ist.</p>
+      </div>
+      <div>
+        <p class="mods__name"><span class="dot dot--tasks"></span>Aufgaben</p>
+        <p class="mods__desc">Trennt geplant von fällig: Wann man etwas tun will und wann es abgegeben sein muss, sind zwei verschiedene Daten.</p>
+      </div>
+      <div>
+        <p class="mods__name"><span class="dot dot--cards"></span>Lernkarten</p>
+        <p class="mods__desc">Wiederholung nach Termin: Auf jedem Bewertungsknopf steht das Intervall, das er auslöst — man wählt den nächsten Tag, nicht ein Gefühl.</p>
+      </div>
+    </div>
+    <p class="mods__note">Dazu kommen drei Orte, die alles zusammenhalten: die <b>Bibliothek</b> als Ablage aller Dokumente, der <b>Graph</b> als Netz aller Verbindungen und die <b>Einstellungen</b>.</p>
+  </section>
 
   <!-- ══ Canvas ══ -->
   <section class="sec">
@@ -82,21 +177,48 @@
 
   <!-- ══ Best-of ══ -->
   <section class="sec">
-    <div class="sec__head"><h2>Best-of der Konkurrenz</h2><span>sechs Bereiche · je drei Vorbilder zusammengeführt</span></div>
+    <div class="sec__head"><h2>Best-of der Konkurrenz</h2><span>sechs Screens · je drei Vorbilder zusammengeführt</span></div>
     <p>Vorstufe des Entwurfs: Pro Bereich ist ein Screen gebaut, der die stärksten Strukturideen von drei bestehenden Apps kombiniert — noch ohne den modulübergreifenden Fluss, der die eigene App ausmacht. Diese Mockups zeigen, was der Stand der Technik hergibt.</p>
     <div class="grid" id="gridBest"></div>
   </section>
 
   <!-- ══ Dokumente ══ -->
   <section class="sec">
-    <div class="sec__head"><h2>Dokumente</h2></div>
+    <div class="sec__head"><h2>Dokumente</h2><span>drei Texte zum Lesen, zwei Bögen zum Ansehen</span></div>
     <div class="doclist">
-      <a href="_renders/kontaktbogen-app-next-hell.png"><span class="ico" data-ico="grid"></span><div><b>Kontaktbogen — Der Entwurf</b><br><span>Alle dreizehn Screens auf einem Blatt</span></div></a>
-      <a href="_renders/kontaktbogen-best-of-hell.png"><span class="ico" data-ico="grid"></span><div><b>Kontaktbogen — Best-of</b><br><span>Alle sechs Bereiche auf einem Blatt</span></div></a>
-      <a href="../docs/01_konkurrenz-anatomie.md"><span class="ico" data-ico="search"></span><div><b>Konkurrenz-Anatomie</b><br><span>18 Apps in sechs Bereichen strukturell zerlegt</span></div></a>
-      <a href="../docs/02_das-ist-die-app.md"><span class="ico" data-ico="info"></span><div><b>Das ist die App</b><br><span>Was sie ist, für wen, wie sie aussieht und warum — plus Award-Bilanz</span></div></a>
+      <a href="../docs/das-ist-die-app.html">
+        <span class="ico" data-ico="info"></span>
+        <span class="doclist__main"><b>Das ist die App</b><span class="sub">Was sie ist, für wen, wie sie aussieht und warum — mit Award-Bilanz</span></span>
+        <span class="chip chip--ghost">Seite</span>
+      </a>
+      <a href="../docs/konkurrenz-anatomie.html">
+        <span class="ico" data-ico="search"></span>
+        <span class="doclist__main"><b>Konkurrenz-Anatomie</b><span class="sub">18 Apps in sechs Bereichen strukturell zerlegt</span></span>
+        <span class="chip chip--ghost">Seite</span>
+      </a>
+      <a href="../docs/liesmich.html">
+        <span class="ico" data-ico="doc"></span>
+        <span class="doclist__main"><b>Technische Notiz — wie das Canvas gebaut ist</b><span class="sub">Aufbau der Zeichen-Engine, Dateien im Ordner, bekannte Grenzen</span></span>
+        <span class="chip chip--ghost">Seite</span>
+      </a>
+      <a href="_renders/kontaktbogen-app-next-hell.png" data-shot="_renders/kontaktbogen-app-next">
+        <span class="ico" data-ico="grid"></span>
+        <span class="doclist__main"><b>Kontaktbogen — Der Entwurf</b><span class="sub">Alle dreizehn Screens auf einem Blatt · Bilddatei, 2004 × 2615 px</span></span>
+        <span class="chip chip--ghost">PNG</span>
+      </a>
+      <a href="_renders/kontaktbogen-best-of-hell.png" data-shot="_renders/kontaktbogen-best-of">
+        <span class="ico" data-ico="grid"></span>
+        <span class="doclist__main"><b>Kontaktbogen — <span style="white-space:nowrap">Best-of</span></b><span class="sub">Alle sechs Screens auf einem Blatt · Bilddatei, 2004 × 1136 px</span></span>
+        <span class="chip chip--ghost">PNG</span>
+      </a>
     </div>
   </section>
+
+  <!-- ══ Fußzeile ══ -->
+  <footer class="foot">
+    <p>Stand August 2026 · zwanzig Screens: das lauffähige Canvas, dreizehn Screens des Entwurfs, sechs Screens der Best-of-Vorstufe.</p>
+    <p>Dazu 80 Screenshots in <code>_renders/</code> — jeder Screen hell und dunkel, als iPad und als iPhone.</p>
+  </footer>
 </div>
 
 <script src="shared/mock.js"></script>
@@ -157,6 +279,10 @@
     const dark = document.documentElement.dataset.theme === 'dark';
     document.querySelectorAll('.item__shot img').forEach((img) => {
       img.src = img.src.replace(/-(hell|dunkel)\.png$/, dark ? '-dunkel.png' : '-hell.png');
+    });
+    // Die Kontaktbögen liegen ebenfalls in beiden Fassungen vor
+    document.querySelectorAll('a[data-shot]').forEach((a) => {
+      a.setAttribute('href', a.dataset.shot + (dark ? '-dunkel.png' : '-hell.png'));
     });
   };
   new MutationObserver(swap).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });

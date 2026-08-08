@@ -1,0 +1,533 @@
+<!doctype html>
+<!--
+  Eigenstaendige Dokumentseite. Kein externes CSS, kein externes JS,
+  keine Web-Fonts, keine Netzwerkanfrage — laeuft ueber file://.
+
+  Erzeugt aus Markdown von scratchpad/md2html.js. Aenderungen gehoeren
+  in die Markdown-Quelle, nicht in diese Datei.
+
+  KONTRAST — gerechnet nach WCAG 2.1 (relative Luminanz, sRGB),
+  Alpha-Farben vorher auf ihren Untergrund gerechnet.
+
+  Hell:
+     Fliesstext  ink-1 auf --paper             17,77:1
+     Tabellenzelle ink-1 auf --paper           17,77:1
+     Tabellenzelle ink-1 auf Zebra (--fill)    16,08:1
+     Tabellenkopf ink-1 auf --paper-2          17,03:1
+     Code ink-1 auf --fill                     16,08:1
+     Sekundaertext ink-2 auf --paper           5,32:1
+     Inhaltsverzeichnis ink-2 auf --ground     5,10:1
+     Tertiaertext ink-3 auf --ground           4,77:1
+     Aktiver Schalter accent-on auf --accent   17,77:1
+     Schalter ink-2 auf --fill ueber --ground  4,90:1
+
+  Dunkel:
+     Fliesstext  ink-1 auf --paper             15,86:1
+     Tabellenzelle ink-1 auf --paper           15,86:1
+     Tabellenzelle ink-1 auf Zebra (--fill)    13,26:1
+     Tabellenkopf ink-1 auf --paper-2          14,86:1
+     Code ink-1 auf --fill                     13,26:1
+     Sekundaertext ink-2 auf --paper           7,10:1
+     Inhaltsverzeichnis ink-2 auf --ground     7,40:1
+     Tertiaertext ink-3 auf --ground           5,23:1
+     Aktiver Schalter accent-on auf --accent   17,27:1
+     Schalter ink-2 auf --fill ueber --ground  6,82:1
+
+  Fliesstext und Tabellenzellen liegen in beiden Modi weit ueber 4,5:1.
+  Die schwaechsten Werte sind Sekundaer- und Tertiaertext; auch die
+  halten 4,5:1 und tragen nie allein eine Aussage (Zwei-Merkmal-Regel).
+-->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Das ist die App — Dokumentation</title>
+<style>
+/* ── Tokens. Jede Farbe ist auf blankem :root definiert; die beiden
+      dunklen Bloecke schreiben nur um. ───────────────────────────── */
+:root{
+  color-scheme: light;
+  --ground:#F2F2F4;
+  --paper:#FFFFFF;
+  --paper-2:#FAFAFB;
+  --ink-1:#16181C;
+  --ink-2:rgba(22,24,28,.64);
+  --ink-3:rgba(22,24,28,.62);
+  --ink-4:rgba(22,24,28,.30);
+  --line:rgba(22,24,28,.10);
+  --line-2:rgba(22,24,28,.18);
+  --fill:rgba(22,24,28,.05);
+  --fill-2:rgba(22,24,28,.09);
+  --accent:#16181C;
+  --accent-on:#FFFFFF;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  --measure:68ch;
+  --bar:56px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0E0F11;
+    --paper:#17191C;
+    --paper-2:#1D1F23;
+    --ink-1:#F2F3F5;
+    --ink-2:rgba(242,243,245,.64);
+    --ink-3:rgba(242,243,245,.52);
+    --ink-4:rgba(242,243,245,.30);
+    --line:rgba(242,243,245,.12);
+    --line-2:rgba(242,243,245,.20);
+    --fill:rgba(242,243,245,.07);
+    --fill-2:rgba(242,243,245,.12);
+    --accent:#F2F3F5;
+    --accent-on:#0E0F11;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0E0F11;
+  --paper:#17191C;
+  --paper-2:#1D1F23;
+  --ink-1:#F2F3F5;
+  --ink-2:rgba(242,243,245,.64);
+  --ink-3:rgba(242,243,245,.52);
+  --ink-4:rgba(242,243,245,.30);
+  --line:rgba(242,243,245,.12);
+  --line-2:rgba(242,243,245,.20);
+  --fill:rgba(242,243,245,.07);
+  --fill-2:rgba(242,243,245,.12);
+  --accent:#F2F3F5;
+  --accent-on:#0E0F11;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink-1);
+  font:400 17px/27px var(--sans);
+  font-synthesis-weight:none;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+@media (prefers-reduced-motion: no-preference){ html{ scroll-behavior:smooth; } }
+::selection{ background:var(--fill-2); }
+a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--line-2); }
+a:hover{ text-decoration-color:currentColor; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+/* ── Kopfleiste: Zurueck + Umschalter ───────────────────────────── */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  height:var(--bar);
+  padding:0 24px;
+  background:var(--ground);
+  border-bottom:1px solid var(--line);
+}
+.back{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:15px; line-height:20px; color:var(--ink-2); text-decoration:none;
+  padding:6px 10px; margin-left:-10px; border-radius:8px;
+}
+.back:hover{ color:var(--ink-1); background:var(--fill); }
+.back svg{ flex:none; }
+.themes{ display:flex; gap:2px; padding:2px; background:var(--fill); border-radius:999px; }
+.themes button{
+  appearance:none; border:0; cursor:pointer;
+  font:600 13px/16px var(--sans);
+  color:var(--ink-2); background:transparent;
+  padding:7px 14px; border-radius:999px;
+}
+.themes button:hover{ color:var(--ink-1); }
+.themes button.is-on{ background:var(--accent); color:var(--accent-on); }
+
+/* ── Titelblock ─────────────────────────────────────────────────── */
+.masthead{ max-width:1264px; margin:0 auto; padding:56px 24px 32px; }
+.eyebrow{
+  margin:0 0 12px; font:600 13px/16px var(--sans);
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3);
+}
+.masthead h1{ margin:0; font:600 28px/34px var(--sans); letter-spacing:-.015em; max-width:22ch; }
+.masthead .sub{ margin:12px 0 0; font:400 17px/27px var(--sans); color:var(--ink-2); max-width:var(--measure); }
+
+/* ── Seitenraster ───────────────────────────────────────────────── */
+.page{ max-width:1264px; margin:0 auto; padding:0 24px 120px; }
+@media (min-width:1100px){
+  .page{ display:grid; grid-template-columns:248px minmax(0,1fr); gap:56px; align-items:start; }
+}
+
+/* ── Inhaltsverzeichnis, breit ──────────────────────────────────── */
+.toc{ display:none; }
+@media (min-width:1100px){
+  .toc{
+    display:block; position:sticky; top:calc(var(--bar) + 24px);
+    max-height:calc(100vh - var(--bar) - 48px); overflow-y:auto;
+    padding-bottom:24px;
+  }
+}
+.toc-title{ margin:0 0 12px; font:600 13px/16px var(--sans); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
+.toc ol,.toc ul{ list-style:none; margin:0; padding:0; }
+.toc-l2,.toc-l3{
+  display:block; text-decoration:none;
+  border-left:2px solid transparent;
+  color:var(--ink-2);
+}
+.toc-l2{ font:400 15px/20px var(--sans); padding:7px 10px 7px 12px; }
+.toc-l3{ font:400 13px/16px var(--sans); padding:5px 10px 5px 24px; color:var(--ink-3); }
+.toc-l2:hover,.toc-l3:hover{ color:var(--ink-1); background:var(--fill); }
+.toc-sub{ display:none; margin-bottom:4px; }
+.toc-group.is-open > .toc-sub{ display:block; }
+.toc-group.is-open > .toc-l2{ color:var(--ink-1); }
+.toc a.is-current{ color:var(--ink-1); font-weight:600; border-left-color:var(--accent); background:var(--fill); }
+
+/* ── Inhaltsverzeichnis, schmal ─────────────────────────────────── */
+.toc-narrow{
+  margin:0 0 32px; background:var(--paper); border:1px solid var(--line); border-radius:14px;
+}
+@media (min-width:1100px){ .toc-narrow{ display:none; } }
+.toc-narrow > summary{
+  cursor:pointer; list-style:none;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:16px 20px; font:600 15px/20px var(--sans); color:var(--ink-1);
+  border-radius:14px;
+}
+.toc-narrow > summary::-webkit-details-marker{ display:none; }
+.toc-narrow > summary .chev{ transition:transform .18s ease; color:var(--ink-3); flex:none; }
+.toc-narrow[open] > summary .chev{ transform:rotate(180deg); }
+.toc-narrow[open] > summary{ border-bottom:1px solid var(--line); border-radius:14px 14px 0 0; }
+.toc-narrow ol,.toc-narrow ul{ list-style:none; margin:0; padding:0; }
+.toc-narrow .toc-body{ padding:8px 12px 14px; }
+.toc-narrow .toc-sub{ display:block; }
+.toc-narrow .toc-l2{ font:600 15px/20px var(--sans); color:var(--ink-1); padding:8px 10px; }
+.toc-narrow .toc-l3{ padding:6px 10px 6px 24px; }
+
+/* ── Dokumentflaeche ────────────────────────────────────────────── */
+.doc{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:8px 40px 48px;
+  min-width:0;
+  overflow-wrap:break-word;
+}
+@media (max-width:640px){ .doc{ padding:4px 20px 36px; border-radius:14px; } }
+.doc > *{ max-width:var(--measure); }
+.doc > .tablebox,.doc > pre,.doc > hr{ max-width:none; }
+
+.doc p{ margin:0 0 20px; }
+.doc .lead{ font:400 20px/32px var(--sans); color:var(--ink-1); margin:32px 0 28px; }
+.doc h2{
+  counter-increment:sec;
+  position:relative;
+  margin:56px 0 20px; padding-top:28px;
+  border-top:1px solid var(--line);
+  font:600 20px/26px var(--sans); letter-spacing:-.01em;
+}
+.doc h2::before{
+  content:counter(sec,decimal-leading-zero);
+  display:block; margin-bottom:10px;
+  font:400 13px/16px var(--mono); letter-spacing:.08em; color:var(--ink-3);
+}
+.doc h3{
+  position:relative;
+  margin:40px 0 14px; padding-left:16px;
+  font:600 17px/23px var(--sans);
+}
+.doc h3::before{
+  content:""; position:absolute; left:0; top:5px; bottom:5px; width:2px;
+  background:var(--accent); border-radius:1px;
+}
+.doc h4{ margin:32px 0 12px; font:600 15px/20px var(--sans); color:var(--ink-2); }
+.doc h2:first-child,.doc h3:first-child{ margin-top:32px; }
+.doc h2,.doc h3,.doc h4{ scroll-margin-top:calc(var(--bar) + 20px); }
+
+.anchor{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; margin-left:6px; vertical-align:-5px;
+  color:var(--ink-3); opacity:0; text-decoration:none; border-radius:6px;
+  transition:opacity .12s ease;
+}
+h2:hover .anchor,h3:hover .anchor,h4:hover .anchor,.anchor:focus-visible{ opacity:1; }
+.anchor:hover{ color:var(--ink-1); background:var(--fill); }
+
+.doc ul,.doc ol{ margin:0 0 20px; padding-left:24px; }
+.doc li{ margin:0 0 10px; padding-left:4px; }
+.doc li::marker{ color:var(--ink-3); }
+.doc ol{ counter-reset:none; }
+.doc strong{ font-weight:600; }
+.doc em{ font-style:italic; }
+
+.doc hr{
+  border:0; height:1px; background:var(--line);
+  margin:44px 0;
+}
+
+blockquote{
+  margin:28px 0; padding:20px 24px;
+  background:var(--fill); border-left:2px solid var(--accent);
+  border-radius:0 12px 12px 0;
+}
+blockquote > *:last-child{ margin-bottom:0; }
+blockquote p{ margin:0 0 14px; }
+
+code{
+  font:400 15px/1.4 var(--mono);
+  background:var(--fill); color:var(--ink-1);
+  padding:2px 5px; border-radius:5px;
+  overflow-wrap:anywhere;
+}
+pre{
+  margin:24px 0; padding:20px 22px;
+  background:var(--paper-2); border:1px solid var(--line); border-radius:12px;
+  overflow-x:auto;
+}
+pre code{ background:none; padding:0; font-size:13px; line-height:20px; white-space:pre; }
+h2 code,h3 code,th code{ font-size:.9em; }
+
+/* ── Tabellen ───────────────────────────────────────────────────── */
+.tablebox{
+  margin:24px 0 28px;
+  max-width:100%;
+  overflow-x:auto;
+  max-height:76vh;
+  border:1px solid var(--line); border-radius:12px;
+  background:var(--paper);
+  -webkit-overflow-scrolling:touch;
+}
+.tablebox table{
+  border-collapse:collapse;
+  width:100%;
+  min-width:520px;
+  font-variant-numeric:tabular-nums;
+}
+.tablebox th,.tablebox td{
+  text-align:left; vertical-align:top;
+  padding:12px 16px;
+  font-size:15px; line-height:22px;
+  border-bottom:1px solid var(--line);
+}
+.tablebox th{
+  position:sticky; top:0; z-index:1;
+  font-weight:600; color:var(--ink-1);
+  background:var(--paper-2);
+  border-bottom:1px solid var(--line-2);
+  white-space:nowrap;
+}
+.tablebox tbody tr:nth-child(even) td{ background:var(--fill); }
+.tablebox tbody tr:last-child td{ border-bottom:0; }
+.tablebox td{ color:var(--ink-1); }
+.ta-right{ text-align:right; }
+.ta-center{ text-align:center; }
+
+/* ── Fuss ───────────────────────────────────────────────────────── */
+.colophon{
+  max-width:1264px; margin:0 auto; padding:0 24px 64px;
+  font:400 13px/20px var(--sans); color:var(--ink-3);
+}
+@media (min-width:1100px){ .colophon{ padding-left:328px; } }
+
+/* ── Druck ──────────────────────────────────────────────────────── */
+@media print{
+  :root{
+    --ground:#FFFFFF; --paper:#FFFFFF; --paper-2:#FFFFFF;
+    --ink-1:#000000; --ink-2:#333333; --ink-3:#444444;
+    --line:#BBBBBB; --line-2:#888888; --fill:#F2F2F2; --accent:#000000;
+  }
+  body{ background:#FFFFFF; color:#000000; font-size:11pt; line-height:16pt; }
+  .topbar,.toc,.toc-narrow,.themes,.back,.anchor{ display:none !important; }
+  .masthead{ padding:0 0 18pt; }
+  .page{ display:block; max-width:none; padding:0; }
+  .doc{ border:0; border-radius:0; padding:0; background:#FFFFFF; }
+  .doc > *{ max-width:none; }
+  .doc h2{ break-after:avoid; page-break-after:avoid; margin-top:24pt; }
+  .doc h3,.doc h4{ break-after:avoid; page-break-after:avoid; }
+  .tablebox{ overflow:visible; max-height:none; break-inside:avoid; page-break-inside:avoid; border:1px solid #BBBBBB; }
+  .tablebox table{ min-width:0; }
+  .tablebox th{ position:static; background:#F2F2F2; }
+  tr,thead,blockquote,pre,li{ break-inside:avoid; page-break-inside:avoid; }
+  a{ color:#000000; text-decoration:none; }
+  .colophon{ padding:0; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back" href="../mockups/index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
+  <div class="themes" role="group" aria-label="Erscheinungsbild">
+    <button type="button" data-val="light">Hell</button>
+    <button type="button" data-val="dark">Dunkel</button>
+  </div>
+</div>
+<header class="masthead">
+  <p class="eyebrow">Entwurf</p>
+  <h1>Das ist die App</h1>
+  <p class="sub">Was die App ist, wie sie aussieht und warum sie gerade so aussieht — von der Farbregel bis zur Selbstkritik.</p>
+</header>
+<div class="page">
+  <nav class="toc" aria-label="Inhalt">
+    <p class="toc-title">Inhalt</p>
+    <ol><li class="toc-group"><a class="toc-l2" data-t="in-drei-saetzen" href="#in-drei-saetzen">In drei Sätzen</a></li><li class="toc-group"><a class="toc-l2" data-t="fuer-wen" href="#fuer-wen">Für wen</a></li><li class="toc-group"><a class="toc-l2" data-t="der-eine-grund-zu-wechseln" href="#der-eine-grund-zu-wechseln">Der eine Grund zu wechseln</a></li><li class="toc-group"><a class="toc-l2" data-t="wie-sie-aussieht-und-warum" href="#wie-sie-aussieht-und-warum">Wie sie aussieht — und warum</a><ul class="toc-sub"><li><a class="toc-l3" data-t="das-prinzip-in-einem-satz" href="#das-prinzip-in-einem-satz">Das Prinzip in einem Satz</a></li><li><a class="toc-l3" data-t="farbe" href="#farbe">Farbe</a></li><li><a class="toc-l3" data-t="typografie" href="#typografie">Typografie</a></li><li><a class="toc-l3" data-t="raster-und-dichte" href="#raster-und-dichte">Raster und Dichte</a></li><li><a class="toc-l3" data-t="zustaende-ohne-farbe" href="#zustaende-ohne-farbe">Zustände ohne Farbe</a></li><li><a class="toc-l3" data-t="bewegung" href="#bewegung">Bewegung</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="wie-sie-sich-anfuehlt" href="#wie-sie-sich-anfuehlt">Wie sie sich anfühlt</a></li><li class="toc-group"><a class="toc-l2" data-t="was-sie-bewusst-nicht-ist" href="#was-sie-bewusst-nicht-ist">Was sie bewusst nicht ist</a></li><li class="toc-group"><a class="toc-l2" data-t="award-bilanz" href="#award-bilanz">Award-Bilanz</a><ul class="toc-sub"><li><a class="toc-l3" data-t="die-eine-sache-die-noch-fehlt" href="#die-eine-sache-die-noch-fehlt">Die eine Sache, die noch fehlt</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="verweise" href="#verweise">Verweise</a></li></ol>
+  </nav>
+  <main class="doc-wrap">
+    <details class="toc-narrow">
+      <summary>Inhalt<svg class="chev" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+      <div class="toc-body"><ol><li class="toc-group"><a class="toc-l2" data-t="in-drei-saetzen" href="#in-drei-saetzen">In drei Sätzen</a></li><li class="toc-group"><a class="toc-l2" data-t="fuer-wen" href="#fuer-wen">Für wen</a></li><li class="toc-group"><a class="toc-l2" data-t="der-eine-grund-zu-wechseln" href="#der-eine-grund-zu-wechseln">Der eine Grund zu wechseln</a></li><li class="toc-group"><a class="toc-l2" data-t="wie-sie-aussieht-und-warum" href="#wie-sie-aussieht-und-warum">Wie sie aussieht — und warum</a><ul class="toc-sub"><li><a class="toc-l3" data-t="das-prinzip-in-einem-satz" href="#das-prinzip-in-einem-satz">Das Prinzip in einem Satz</a></li><li><a class="toc-l3" data-t="farbe" href="#farbe">Farbe</a></li><li><a class="toc-l3" data-t="typografie" href="#typografie">Typografie</a></li><li><a class="toc-l3" data-t="raster-und-dichte" href="#raster-und-dichte">Raster und Dichte</a></li><li><a class="toc-l3" data-t="zustaende-ohne-farbe" href="#zustaende-ohne-farbe">Zustände ohne Farbe</a></li><li><a class="toc-l3" data-t="bewegung" href="#bewegung">Bewegung</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="wie-sie-sich-anfuehlt" href="#wie-sie-sich-anfuehlt">Wie sie sich anfühlt</a></li><li class="toc-group"><a class="toc-l2" data-t="was-sie-bewusst-nicht-ist" href="#was-sie-bewusst-nicht-ist">Was sie bewusst nicht ist</a></li><li class="toc-group"><a class="toc-l2" data-t="award-bilanz" href="#award-bilanz">Award-Bilanz</a><ul class="toc-sub"><li><a class="toc-l3" data-t="die-eine-sache-die-noch-fehlt" href="#die-eine-sache-die-noch-fehlt">Die eine Sache, die noch fehlt</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="verweise" href="#verweise">Verweise</a></li></ol></div>
+    </details>
+    <article class="doc">
+<h2 id="in-drei-saetzen"><span class="h-t">In drei Sätzen</span><a class="anchor" href="#in-drei-saetzen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p class="lead">Eine App für Studium und Alltag, in der Handschrift, Notizen, Tagebuch, Aufgaben und Lernkarten dasselbe Datenmodell teilen. Wer einen Satz in seiner Vorlesungsnotiz markiert, macht daraus in einem Griff eine Lernkarte, eine Aufgabe oder einen Tagebucheintrag — und das erzeugte Objekt behält sichtbar, woher es stammt. Die Oberfläche selbst tritt zurück: Sie ist Papier und Grau, damit alle Farbe dem gehört, was der Nutzer hineinschreibt.</p>
+<h2 id="fuer-wen"><span class="h-t">Für wen</span><a class="anchor" href="#fuer-wen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Für Studierende und alle, die über Monate an denselben Themen arbeiten. Nicht für den, der nur eine Einkaufsliste braucht — dafür ist sie zu viel. Sondern für den, der heute eine Vorlesung mitschreibt, daraus morgen lernt, nächste Woche ein Protokoll abgibt und am Ende des Semesters wissen will, wo das alles zusammenhing.</p>
+<p>Die Beispielwelt aller Mockups ist deshalb konkret: Emil, Biologie im dritten Semester, Notizbuch „Zellbiologie", Abgabe bei Prof. Wendt am Freitag.</p>
+<h2 id="der-eine-grund-zu-wechseln"><span class="h-t">Der eine Grund zu wechseln</span><a class="anchor" href="#der-eine-grund-zu-wechseln" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p><strong>Der Weg zwischen den Werkzeugen entfällt.</strong> Heute kostet dieselbe Arbeit fünf Apps und drei Exporte: In Bear steht die Notiz, in Anki liegen die Karten, in Things die Abgabe — und keine dieser Apps weiß von den anderen. Hier ist die Kette ein Objekt: Die Notiz weiß, dass aus ihr zwölf Karten wurden, die Karte weiß, aus welchem Absatz sie stammt, und der Tageseinstieg erzählt beides in einer Zeile.</p>
+<p>Kein Konkurrent kann das. RemNote kommt am nächsten, bezahlt es aber mit einer Lernkurve, die Rezensenten regelmäßig als Haupthürde nennen (siehe <code>01_konkurrenz-anatomie.md</code>, Kapitel Lernkarten).</p>
+<h2 id="wie-sie-aussieht-und-warum"><span class="h-t">Wie sie aussieht — und warum</span><a class="anchor" href="#wie-sie-aussieht-und-warum" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<h3 id="das-prinzip-in-einem-satz"><span class="h-t">Das Prinzip in einem Satz</span><a class="anchor" href="#das-prinzip-in-einem-satz" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<blockquote><p><strong>Die App ist Papier und Grau; die einzige Farbe, die zählt, hat der Nutzer hineingebracht — und jede Spur, die seine Arbeit zwischen den Modulen hinterlässt, bleibt sichtbar.</strong></p></blockquote>
+<p>Daraus folgt alles Weitere: das Farbsystem, die Zurückhaltung der Oberfläche, die Herkunfts-Chips, die Ketten-Karte.</p>
+<h3 id="farbe"><span class="h-t">Farbe</span><a class="anchor" href="#farbe" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Ein einziger Akzent, <strong>Ink</strong>: fast-schwarz (<code>#16181C</code>) im hellen, fast-weiß (<code>#F2F3F5</code>) im dunklen Modus. Er hat genau drei Aufgaben — aktiver Zustand, primäre Aktion, Auswahl. Nichts sonst ist eingefärbt.</p>
+<p>Die fünf Modul-Farben erscheinen ausschließlich als <strong>6-pt-Punkte</strong> neben einem Wort und als Akzent auf Notizbuch-Covern. Sie färben nie eine Fläche, keinen Text und keinen Knopf; die Einstellungen erklären das dem Nutzer sogar wörtlich (<code>app-next/settings.html</code>). Rot bleibt dem Löschen und der Deadline vorbehalten, Grün dem Erfolg.</p>
+<p>Warum so streng: Sechs Module mit sechs Hausfarben ergeben ein Sammelsurium, in dem der Nutzer die Farbe der App liest statt seiner eigenen Inhalte. Bear (ein Akzent) und Things (ein Akzent) sind die beiden ADA-Gewinner im Feld — Todoist mit vier Prioritätsfarben ist die App, bei der man am längsten sucht, was gemeint ist.</p>
+<p><strong>Jeder Wert ist gerechnet, nicht geschätzt</strong> (<code>shared/system.css</code>, §1): Fließtext 17,8:1 auf Papier, Sekundärtext 5,3:1, Tertiärtext 4,8:1, Text auf Akzentfläche 17,8:1. Zwei Modul-Punkte erreichen im hellen Modus nur 2,95:1 bzw. 2,83:1 — deshalb stehen Punkte <strong>nie allein</strong>, sondern immer neben ihrem Wort, und für den Fall, dass die Farbe doch einmal ein Icon trägt, gibt es abgedunkelte Varianten über 3:1.</p>
+<h3 id="typografie"><span class="h-t">Typografie</span><a class="anchor" href="#typografie" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Fünf Größen, zwei Gewichte, feste Rollen:</p>
+<div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table><thead><tr><th scope="col">Rolle</th><th scope="col">Größe</th><th scope="col">Gewicht</th><th scope="col">Wofür</th></tr></thead><tbody><tr><td>Titel</td><td>28/34</td><td>600</td><td>Screen-Titel, Begrüßung</td></tr><tr><td>Sektion</td><td>20/26</td><td>600</td><td>Sektionsköpfe, Karten- und Eintragstitel</td></tr><tr><td>Text</td><td>17/23</td><td>400</td><td>Fließtext, Listenzeile — die Arbeitsgröße</td></tr><tr><td>Sekundär</td><td>15/20</td><td>400</td><td>Untertitel, Metadaten, Vorschauzeilen</td></tr><tr><td>Marke</td><td>13/16</td><td>600</td><td>Chips, Zähler, Eyebrows</td></tr></tbody></table></div>
+<p>Genau <strong>eine</strong> begründete Ausnahme: Die Tab-Beschriftung auf dem iPhone läuft mit 11 pt (iOS-Standard). Bei 13 pt kollidieren „Bibliothek" und „Aufgaben" auf 393 pt Breite — überlappender Text wiegt schwerer als eine sechste Stufe an einer Stelle.</p>
+<p><strong>Serif ist keine sechste Größe, sondern eine Regel:</strong> Die Oberfläche spricht Sans, was der Nutzer geschrieben hat, darf Serif. Sichtbar im Notiz-Editor (<code>app-next/note-editor.html</code>), im Journal-Eintrag (<code>journal-entry.html</code>) und auf der Antwortseite der Lernkarte (<code>review-session.html</code>). Der Bruch markiert eine echte Grenze: hier Werkzeug, dort Inhalt.</p>
+<h3 id="raster-und-dichte"><span class="h-t">Raster und Dichte</span><a class="anchor" href="#raster-und-dichte" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>iPad</strong> (1194 × 834): Sidebar 320 pt, Inhalt mit 24 pt Rand, wo sinnvoll zweispaltig — links die Arbeit, rechts der Kontext. Diese Teilung trägt <code>today.html</code>, <code>tasks.html</code>, <code>journal-home.html</code> und <code>flashcards-home.html</code>.</p>
+<p><strong>iPhone</strong> (393 × 852): 20 pt Rand, Tab-Bar statt Sidebar, dieselben Abschnitte gestapelt. Wichtigste Regel: Was man häufig tut, liegt im unteren Drittel — Schnellerfassung, primäre Knöpfe, die Bewertungsknöpfe der Lernsitzung als 2×2-Raster.</p>
+<p>Die Dichte ist <strong>arbeitsteilig</strong>, nicht gleichmäßig — die Lehre aus Bear: Ruhe beim Schreiben, Dichte beim Verwalten. Der Editor trägt nur Text; die Aufgabenliste trägt Zeilen; die Bibliothek trägt Cover.</p>
+<h3 id="zustaende-ohne-farbe"><span class="h-t">Zustände ohne Farbe</span><a class="anchor" href="#zustaende-ohne-farbe" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Jeder Zustand hat zwei Merkmale, keiner hängt an Farbe allein:</p>
+<div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table><thead><tr><th scope="col">Zustand</th><th scope="col">Merkmale</th></tr></thead><tbody><tr><td>aktiv</td><td>getönte Fläche + Schriftgewicht + Ink-Balken links</td></tr><tr><td>ausgewählt</td><td>getönte Fläche + 1,5-pt-Ring</td></tr><tr><td>deaktiviert</td><td>Deckkraft 38 % + fehlende Fläche</td></tr><tr><td>Deadline</td><td>rotes Wort + Flaggen-Symbol + Restzeit</td></tr><tr><td>Fehler</td><td>Randlinie + Symbol + Klartext, was zu tun ist</td></tr><tr><td>Laden</td><td>Skelettfläche an der Stelle des Inhalts, nie ein Spinner ohne Kontext</td></tr></tbody></table></div>
+<h3 id="bewegung"><span class="h-t">Bewegung</span><a class="anchor" href="#bewegung" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Vier Übergänge, jeder mit einer Aufgabe:</p>
+<ul><li><strong>Öffnen</strong> (260 ms): Karte wächst aus ihrer Position. Das Detail einer Aufgabe klappt <em>in</em> der Liste auf, statt einen Screen zu schieben (<code>task-detail.html</code>) — von Things 3.</li><li><strong>Modulwechsel</strong> (180 ms): nur Überblendung. Ein Wechsel ist kein Ereignis.</li><li><strong>Bestätigen</strong> (120 ms): Die Checkbox zieht ihren Ring zusammen, während der Haken wächst. Auf <code>today.html</code> und <code>tasks.html</code> ist dieser Moment <strong>eingefroren sichtbar</strong>.</li><li><strong>Übergabe</strong> (420 ms) — die Signature: Die Auswahl faltet sich zu einer kleinen Karte, fliegt zum Ziel und landet dort als Chip. In <code>note-editor.html</code> steht sie mitten im Flug, mit Spur und dem Umriss am Ausgangsort.</li></ul>
+<h2 id="wie-sie-sich-anfuehlt"><span class="h-t">Wie sie sich anfühlt</span><a class="anchor" href="#wie-sie-sich-anfuehlt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p><strong>Die Übergabe.</strong> Ein Satz in der Notiz ist markiert, darüber steht eine Leiste — dieselbe, egal ob die Auswahl Handschrift, Text oder Objekte sind. Ein Tipp auf „Lückentext-Karte", und die Karte faltet sich aus dem Satz heraus, fliegt in die rechte Spalte und der Zähler dort springt von 11 auf 12.</p>
+<p><strong>Die Kette am Morgen.</strong> Der Tageseinstieg begrüßt nicht mit einer Kachelwand, sondern erzählt: „Zellbiologie" → 12 Karten → 8 heute fällig, ca. 4 Minuten. Jede Station ist anspringbar, und am Ende steht der Knopf, der die vier Minuten sofort einlöst.</p>
+<p><strong>Der Termin im Knopf.</strong> Beim Lernen steht auf jedem der vier Bewertungsknöpfe das ausgerechnete nächste Intervall — „Gut · 5 Tage". Man bewertet nicht sein Gefühl, sondern wählt sichtbar den nächsten Termin; „Gut" bekommt mehr Fläche als die anderen drei, weil es in neun von zehn Fällen die Antwort ist.</p>
+<p><strong>Der Rückweg.</strong> Auf der Antwortseite der Karte steht in einem eingelassenen Feld, wie der Satz in der eigenen Notiz lautete. Wer stutzt, springt mit einem Tipp zurück in die Vorlesung von damals, ohne die Sitzung zu verlassen.</p>
+<p><strong>Der Blick aufs Ganze.</strong> Der Graph zeigt 27 Objekte und 41 Verbindungen, unterschieden nach Wiki-Link, Tag und Herkunft. Man sieht zum ersten Mal, dass das Laborprotokoll, die Skizze und acht Karten alle an derselben Vorlesung hängen.</p>
+<h2 id="was-sie-bewusst-nicht-ist"><span class="h-t">Was sie bewusst nicht ist</span><a class="anchor" href="#was-sie-bewusst-nicht-ist" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<ul><li><strong>Kein Team-Werkzeug.</strong> Es gibt Teilen, aber keine Kommentarfäden, keine Zuweisungen, keine Rollen. Wer zu fünft an einem Dokument arbeitet, ist hier falsch.</li><li><strong>Keine zweite Notion.</strong> Keine Datenbanken, keine Formeln, keine frei konfigurierbaren Ansichten. Die App hat eine Meinung, wie die fünf Module zusammenhängen — genau das ist ihr Wert.</li><li><strong>Kein Belohnungssystem.</strong> Es gibt eine Serie, aber keine Punkte, keine Ränge, keine Vergleiche mit anderen. Und die Serie ist abschaltbar: Eine App darf niemanden dafür bestrafen, dass er sie diese Woche nur für Aufgaben braucht — der Fehler, den Apple Journal bis heute nicht behebt.</li><li><strong>Kein Theme-Baukasten.</strong> Zwei Modi, beide fertig gestaltet. Bear hat 28 Themes; das ist Personalisierung als Ersatz für Entscheidung.</li><li><strong>Kein Marktplatz.</strong> Die Bibliothek ist der Ort für die eigenen Dokumente, nicht für Vorlagenwerbung.</li></ul>
+<h2 id="award-bilanz"><span class="h-t">Award-Bilanz</span><a class="anchor" href="#award-bilanz" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Bewertung des vorliegenden Entwurfs gegen die fünf ADA-Kategorien. Skala: <strong>1 = preiswürdig … 5 = disqualifizierend</strong>.</p>
+<div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table><thead><tr><th scope="col">Kategorie</th><th scope="col">Note</th><th scope="col">Begründung</th></tr></thead><tbody><tr><td><strong>Inklusion</strong></td><td><strong>2</strong></td><td>Alle Kontraste sind gerechnet und dokumentiert, jeder Zustand trägt zwei Merkmale, Dynamic Type ist in zwei Stufen durchgezeichnet, 44-pt-Ziele durchgehend. Ein eigener Schirm zeigt sechs leere Zustände, die alle den nächsten Schritt benennen statt ihn zu verstecken. Zur 1 fehlt die geprüfte VoiceOver-Reihenfolge: Ein Mockup kann Vorlesereihenfolge und Rotor-Struktur behaupten, aber nicht beweisen.</td></tr><tr><td><strong>Delight &amp; Fun</strong></td><td><strong>2</strong></td><td>Vier Momente sind als eingefrorene Zwischenzustände wirklich sichtbar — die fliegende Karte, die Checkbox im Umlegen, die Karte im Flip, der Schalter zwischen den Positionen. Zur 1 fehlt die Bewegung selbst: In statischen Screens bleibt die Signature-Animation eine Behauptung.</td></tr><tr><td><strong>Interaktion</strong></td><td><strong>2</strong></td><td>Der nächste Schritt ist überall benannt und beziffert („Lernen · ca. 4 Minuten"), das Detail klappt in der Liste auf statt zu navigieren, dieselbe Aufgabe kostet auf dem iPhone nicht mehr Taps. Abzug für das Lineal- und Zoom-Verhalten im Canvas, das nur beschrieben, nicht durchgespielt ist.</td></tr><tr><td><strong>Visuals &amp; Grafik</strong></td><td><strong>1–2</strong></td><td>Ein Raster, eine Typo-Skala, eine Materialsprache über 18 Screens hinweg, ein einziger Akzent, alle Werte in einer gemeinsamen Datei. Das ist die stärkste Kategorie des Entwurfs. Der halbe Punkt Abzug geht an die Notizbuch-Cover: Sie sind aus Mustern gebaut, weil kein Bildmaterial vorlag.</td></tr><tr><td><strong>Innovation</strong></td><td><strong>1</strong></td><td>Die Kette ist keine Fußnote, sondern trägt den Einstiegsscreen, den Editor, die Lernsitzung und den Graphen. Sie ist überall dieselbe Leiste, hinterlässt überall denselben Herkunfts-Chip, und keiner der 18 untersuchten Konkurrenten hat sie.</td></tr></tbody></table></div>
+<h3 id="die-eine-sache-die-noch-fehlt"><span class="h-t">Die eine Sache, die noch fehlt</span><a class="anchor" href="#die-eine-sache-die-noch-fehlt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Bewegung, die man sehen kann.</strong> Alles andere ist da — aber die Jury sitzt vor einem laufenden Gerät, nicht vor einem PNG. Die Übergabe ist der Moment, an dem sich diese App von jeder anderen unterscheidet, und in einem statischen Screen bleibt sie ein Standbild mit Spur.</p>
+<p>Was fehlt, ist ein <strong>lauffähiger Prototyp genau dieser 420 ms</strong>: der markierte Satz, der sich zur Karte faltet, an der Übergabe-Leiste abhebt, in die Seitenspalte fliegt und den Zähler dort umspringen lässt. Das Canvas-Mockup in diesem Repo zeigt, dass so etwas als echte Engine baubar ist. Solange dieser eine Übergang nur behauptet ist, hält die Jury nicht inne — mit ihm wird er die Stelle, die man einem Freund zeigt.</p>
+<h2 id="verweise"><span class="h-t">Verweise</span><a class="anchor" href="#verweise" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<ul><li>Alle Mockups: <code>mockups/index.html</code></li><li>Der Entwurf: <code>mockups/app-next/</code> — dreizehn Screens, je hell/dunkel und iPad/iPhone</li><li>Kontaktbögen: <code>mockups/_renders/kontaktbogen-*.png</code> — alle Screens auf je einem Blatt</li><li>Vorstufe: <code>mockups/best-of/</code> — sechs Bereiche, je drei Vorbilder zusammengeführt</li><li>Gestaltungssystem: <code>mockups/shared/system.css</code> — Tokens, Skala, Kontrastwerte</li><li>Konkurrenz-Anatomie: <code>docs/01_konkurrenz-anatomie.md</code> — 18 Apps zerlegt</li><li>Canvas: <code>index.html</code> im Repo-Stamm — lauffähig, mit echter Zeichen-Engine</li></ul>
+    </article>
+  </main>
+</div>
+<p class="colophon">Aus 02_das-ist-die-app.md erzeugt. Zurück zur Übersicht über die Verknüpfung oben links.</p>
+<script>
+(function(){
+  var root = document.documentElement;
+
+  /* Hell/Dunkel — setzt data-theme auf <html>. Ohne Auswahl gilt das
+     System (dritter Zustand). */
+  var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  var bar = document.querySelector('.themes');
+  function paint(){
+    var t = root.getAttribute('data-theme') || (mq && mq.matches ? 'dark' : 'light');
+    var bs = bar.querySelectorAll('button');
+    for (var i=0;i<bs.length;i++){
+      var on = bs[i].getAttribute('data-val') === t;
+      bs[i].classList.toggle('is-on', on);
+      bs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+  bar.addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if (!b) return;
+    root.setAttribute('data-theme', b.getAttribute('data-val'));
+    try { localStorage.setItem('docs-theme', b.getAttribute('data-val')); } catch(err){}
+    paint();
+  });
+  try {
+    var saved = localStorage.getItem('docs-theme');
+    if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+  } catch(err){}
+  if (mq && mq.addEventListener) mq.addEventListener('change', paint);
+  paint();
+
+  /* Inhaltsverzeichnis: sichtbarer Abschnitt wird hervorgehoben. */
+  var heads = [].slice.call(document.querySelectorAll('.doc h2[id], .doc h3[id]'));
+  var links = [].slice.call(document.querySelectorAll('[data-t]'));
+  if (!heads.length || !links.length) return;
+
+  var current = '';
+  function setActive(id){
+    if (id === current) return;
+    current = id;
+    var groups = [].slice.call(document.querySelectorAll('.toc-group'));
+    for (var g=0; g<groups.length; g++) groups[g].classList.remove('is-open');
+    for (var i=0;i<links.length;i++){
+      var on = links[i].getAttribute('data-t') === id;
+      links[i].classList.toggle('is-current', on);
+      if (on){
+        var grp = links[i].closest('.toc-group');
+        if (grp) grp.classList.add('is-open');
+        var box = links[i].closest('.toc');
+        if (box && box.scrollHeight > box.clientHeight){
+          var lt = links[i].offsetTop, lb = lt + links[i].offsetHeight;
+          if (lt < box.scrollTop + 8) box.scrollTop = lt - 8;
+          else if (lb > box.scrollTop + box.clientHeight - 8) box.scrollTop = lb - box.clientHeight + 8;
+        }
+      }
+    }
+    var wrap = links.filter(function(l){ return l.getAttribute('data-t') === id; })[0];
+    if (wrap){
+      var p = wrap.closest('.toc-group');
+      if (p) p.classList.add('is-open');
+    }
+  }
+
+  var LINE = 140;
+  function update(){
+    var pick = null;
+    for (var i=0;i<heads.length;i++){
+      if (heads[i].getBoundingClientRect().top <= LINE) pick = heads[i]; else break;
+    }
+    if (!pick){
+      pick = heads[0];
+      if (window.scrollY <= 4) { setActive(heads[0].id); return; }
+    }
+    /* am Dokumentende: letzte Ueberschrift gewinnt */
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) pick = heads[heads.length-1];
+    setActive(pick.id);
+  }
+
+  var ticking = false;
+  function schedule(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ ticking = false; update(); });
+  }
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(schedule, { rootMargin: '-' + LINE + 'px 0px -55% 0px', threshold: [0, 1] });
+    for (var i=0;i<heads.length;i++) io.observe(heads[i]);
+  }
+  window.addEventListener('scroll', schedule, { passive:true });
+  window.addEventListener('resize', schedule);
+  update();
+
+  /* Auf schmalen Fenstern schliesst ein Klick das Verzeichnis wieder. */
+  var det = document.querySelector('.toc-narrow');
+  if (det) det.addEventListener('click', function(e){
+    if (e.target.closest('a')) det.removeAttribute('open');
+  });
+})();
+</script>
+</body>
+</html>
