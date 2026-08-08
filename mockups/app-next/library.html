@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bibliothek — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Bibliothek
+
+ÜBERNOMMEN
+· GoodNotes 6 (Cover-Raster mit echtem Buchgefühl): Übernommen ist die Idee,
+  dass ein Notizbuch ein Gegenstand ist — Buchrücken links, Schnittkante rechts,
+  Papierart sichtbar. Bewertung: stark, weil man seine Bücher an der Silhouette
+  wiedererkennt, bevor man den Titel liest. Anders als GoodNotes verzichten wir
+  auf bunte Fertig-Cover: die Cover sind Papier und Grau, die Modulzugehörigkeit
+  steckt in einem 6-pt-Dot neben dem Modulwort auf dem Etikett.
+· Craft (Smart-Ordner mit Zähler): Übernommen als Zeile „Smart-Ordner" mit
+  Regel-Untertitel und tabellarischer Zahl rechts. Bewertung: sehr gut, weil die
+  Zahl den Ordner sofort einschätzbar macht — „Markiert 4" ist eine Aussage,
+  „Markiert" allein nur ein Etikett. Craft zeigt zusätzlich Filter-Chips über
+  dem Raster; das haben wir weggelassen, siehe unten.
+· Apple Notes (Ordner-Hierarchie in der Sidebar): Übernommen als linke Spalte
+  mit Module- und Semester-Gruppe — dieselbe Sidebar wie auf „Today", nur
+  „Bibliothek" ist aktiv. Bewertung: richtig, weil die Hierarchie stehen bleibt,
+  während der Inhaltsbereich wechselt. Nicht übernommen ist Apples Zwang, jedes
+  Dokument in genau einem Ordner zu halten — Smart-Ordner sind Sichten, keine
+  Schubladen.
+
+BEWUSST NICHT ÜBERNOMMEN
+· GoodNotes' bunte Cover-Galerie und Sticker: Farbe gehört dem Nutzer, nicht der
+  Oberfläche. Ein farbiges Cover würde die Modul-Dots entwerten.
+· Notions Datenbank-Ansicht mit Spaltenwahl: zu viel Werkzeug für einen
+  Einstiegsschirm. Sortierung ja, Schema-Bearbeitung nein.
+· Craft/Bear-Filterleiste über dem Raster: doppelt zu den Smart-Ordnern.
+· Deckel-Umblätter-Animation beim Öffnen (GoodNotes): hübsch, aber sie kostet
+  bei jedem Öffnen Zeit. Wir heben das Cover nur an — sichtbar am Sockel.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Die Bibliothek zeigt alle Module in einem Regal. Ein Notizbuch, ein Canvas und
+ein Journal stehen nebeneinander, unterschieden nur durch Papierart und einen
+6-pt-Dot — keine getrennten Apps, keine getrennten Listen. Der Smart-Ordner
+„Mit Audio" findet die Aufnahme im Laborjournal, ohne dass der Nutzer weiß, in
+welchem Modul sie liegt.
+
+ADA-KATEGORIE: Visuals (Cover aus Papier, Grau und Muster — kein einziges Foto,
+trotzdem unterscheidbar) und Interaktion (Auswahl, schwebendes Kontextmenü und
+Ladefortschritt sind drei Zustände im selben Bild, ohne dass sie sich stören).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Titel/Fließtext  ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Sekundärtext     ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
+  Metadaten        ink-3 auf Grund     4,8:1   (hell) ·  4,9:1 (dunkel)
+  CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Löschen rot      danger auf Papier   5,2:1   (hell) ·  6,3:1 (dunkel)
+  Modul-Dots sind 6 pt und stehen nie allein — auf dem Cover-Etikett immer
+  Dot + Modulwort („Notizen", „Canvas", „Journal").
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Bibliothek</h1>
+  <p>Der Einstieg in alle Dokumente. Oben die zuletzt geöffneten Notizbücher als Regal, darunter die Smart-Ordner mit Zähler, unten das vollständige Raster — ein Cover ist angehoben und hat sein Menü offen, eines lädt gerade aus iCloud.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Sidebar + Regal</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar — identisch zu Today, nur „Bibliothek" ist aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem is-active"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar">
+            <div class="t-title">Bibliothek</div>
+            <div class="navbar__spacer"></div>
+
+            <!-- Umschalter Raster/Liste: aktiv = Fläche + Ink + Schattenkante -->
+            <div class="segmented">
+              <button class="is-on">Raster</button>
+              <button>Liste</button>
+            </div>
+
+            <!-- Sortierung -->
+            <button class="btn btn--sm" style="background:none; box-shadow:inset 0 0 0 1px var(--line-2); white-space:nowrap">
+              <span class="ico" data-ico="sort" style="width:16px;height:16px"></span>Zuletzt geändert<span class="ico" data-ico="chevD" style="width:14px;height:14px"></span>
+            </button>
+
+            <div class="field" style="width:196px">
+              <span class="ico" data-ico="search"></span><span class="field__ph t-body">Suchen</span>
+            </div>
+
+            <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neu</button>
+          </div>
+
+          <div class="scroll" style="display:flex; flex-direction:column; gap:12px">
+
+            <!-- ══ Abschnitt 1: Zuletzt geöffnet ══ -->
+            <section style="position:relative">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+                <span class="t-label c-3">ZULETZT GEÖFFNET</span>
+                <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
+                <span class="t-label c-3">Synchron auf iPhone und iPad</span>
+              </div>
+
+              <div style="display:flex; align-items:flex-start; gap:18px">
+
+                <!-- 1 · AUSGEWÄHLT + ANGEHOBEN: Fläche + Ring + Gewicht -->
+                <div style="width:168px; flex:none; position:relative">
+                  <!-- Fläche der Auswahl -->
+                  <div style="position:absolute; left:-8px; right:-8px; top:-8px; bottom:-8px; border-radius:16px; background:var(--accent-soft)"></div>
+                  <!-- Sockel: die Stelle, aus der das Cover gerade angehoben wird -->
+                  <div class="flight__ghost" style="left:0; top:0; width:168px; height:224px; border-radius:11px; background:var(--fill-2); box-shadow:inset 0 0 0 1.5px var(--accent-ring)"></div>
+                  <!-- Cover, angehoben -->
+                  <div style="position:relative; width:168px; height:224px; border-radius:11px; overflow:hidden; background:var(--paper); transform:translateY(-14px); box-shadow:var(--sh-float), 0 0 0 3px var(--accent-ring)">
+                    <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 14px, var(--line) 14px 15px)"></div>
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:13px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                    <div style="position:absolute; right:5px; top:8px; bottom:8px; width:4px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
+                    <div style="position:absolute; right:9px; top:9px; width:24px; height:24px; border-radius:50%; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.10); display:flex; align-items:center; justify-content:center">
+                      <span class="ico" data-ico="star" style="width:13px;height:13px"></span>
+                    </div>
+                    <div style="position:absolute; left:22px; bottom:12px; display:inline-flex; align-items:center; gap:6px; height:23px; padding:0 9px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.08)">
+                      <span class="dot dot--notes"></span><span class="t-label c-2">Notizen</span>
+                    </div>
+                  </div>
+                  <div style="position:relative; margin-top:10px">
+                    <div class="t-body is-strong clamp-1">Zellbiologie</div>
+                    <div class="t-label c-3 clamp-1" style="margin-top:2px">34 Seiten · vor 18 Min.</div>
+                  </div>
+                </div>
+
+                <!-- 2 · LADEZUSTAND -->
+                <div style="width:168px; flex:none">
+                  <div class="skeleton" style="position:relative; width:168px; height:224px; border-radius:11px; box-shadow:inset 0 0 0 1px var(--line); display:flex; align-items:center; justify-content:center">
+                    <span class="chip" style="background:var(--paper); color:var(--ink-2)"><span class="ico" data-ico="cloud" style="width:14px;height:14px"></span>wird geladen</span>
+                    <div class="bar" style="position:absolute; left:14px; right:14px; bottom:14px; background:var(--fill-3)"><div class="bar__fill" style="width:62%"></div></div>
+                  </div>
+                  <div style="margin-top:10px">
+                    <div class="t-body clamp-1">Semesterplanung</div>
+                    <div class="t-label c-3 num clamp-1" style="margin-top:2px">62 % · aus iCloud</div>
+                  </div>
+                </div>
+
+                <!-- 3 · Analysis II (Canvas, Karopapier) -->
+                <div style="width:168px; flex:none">
+                  <div style="position:relative; width:168px; height:224px; border-radius:11px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                    <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 15px, var(--line) 15px 16px), repeating-linear-gradient(to right, transparent 0 15px, var(--line) 15px 16px)"></div>
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:13px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                    <div style="position:absolute; right:5px; top:8px; bottom:8px; width:4px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
+                    <div style="position:absolute; right:9px; top:9px; width:24px; height:24px; border-radius:50%; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.10); display:flex; align-items:center; justify-content:center">
+                      <span class="ico" data-ico="star" style="width:13px;height:13px"></span>
+                    </div>
+                    <div style="position:absolute; left:22px; bottom:12px; display:inline-flex; align-items:center; gap:6px; height:23px; padding:0 9px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.08)">
+                      <span class="dot dot--canvas"></span><span class="t-label c-2">Canvas</span>
+                    </div>
+                  </div>
+                  <div style="margin-top:10px">
+                    <div class="t-body clamp-1">Analysis II</div>
+                    <div class="t-label c-3 clamp-1" style="margin-top:2px">52 Seiten · gestern</div>
+                  </div>
+                </div>
+
+                <!-- 4 · Laborjournal (Journal, Punktpapier, mit Aufnahme) -->
+                <div style="width:168px; flex:none">
+                  <div style="position:relative; width:168px; height:224px; border-radius:11px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                    <div style="position:absolute; inset:0; background:radial-gradient(var(--line-2) 1px, transparent 1.3px); background-size:14px 14px"></div>
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:13px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                    <div style="position:absolute; right:5px; top:8px; bottom:8px; width:4px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
+                    <div style="position:absolute; right:9px; top:9px; width:24px; height:24px; border-radius:50%; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.10); display:flex; align-items:center; justify-content:center">
+                      <span class="ico" data-ico="mic" style="width:13px;height:13px"></span>
+                    </div>
+                    <div style="position:absolute; left:22px; bottom:12px; display:inline-flex; align-items:center; gap:6px; height:23px; padding:0 9px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.08)">
+                      <span class="dot dot--journal"></span><span class="t-label c-2">Journal</span>
+                    </div>
+                  </div>
+                  <div style="margin-top:10px">
+                    <div class="t-body clamp-1">Laborjournal</div>
+                    <div class="t-label c-3 clamp-1" style="margin-top:2px">18 Seiten · Dienstag</div>
+                  </div>
+                </div>
+
+                <!-- 5 · angeschnitten: das Regal geht weiter -->
+                <div style="width:82px; flex:none; position:relative; overflow:hidden">
+                  <div style="position:relative; width:168px; height:224px; border-radius:11px; overflow:hidden; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line)">
+                    <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 18px, var(--line) 18px 19px)"></div>
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:13px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                    <div style="position:absolute; left:22px; bottom:12px; display:inline-flex; align-items:center; gap:6px; height:23px; padding:0 9px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line)">
+                      <span class="dot dot--notes"></span><span class="t-label c-2">Notizen</span>
+                    </div>
+                  </div>
+                  <div style="position:absolute; inset:0; background:linear-gradient(90deg, transparent 20%, var(--ground) 96%)"></div>
+                </div>
+              </div>
+
+              <!-- Schwebendes Kontextmenü, aufgefahren aus dem angehobenen Cover -->
+              <div style="position:absolute; left:200px; top:307px; width:214px; z-index:70; padding:6px; border-radius:14px; background:var(--chrome); backdrop-filter:blur(28px) saturate(180%); box-shadow:var(--sh-float), inset 0 0 0 1px var(--line)">
+                <div style="padding:4px 10px 7px; display:flex; align-items:center; gap:7px">
+                  <span class="dot dot--notes"></span><span class="t-label c-3">Zellbiologie</span>
+                </div>
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left">
+                  <span class="ico c-2" data-ico="edit" style="width:18px;height:18px"></span><span class="t-body">Umbenennen</span>
+                </button>
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left">
+                  <span class="ico c-2" data-ico="layers" style="width:18px;height:18px"></span><span class="t-body">Duplizieren</span>
+                </button>
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left">
+                  <span class="ico c-2" data-ico="folder" style="width:18px;height:18px"></span><span class="t-body">Verschieben</span>
+                </button>
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left">
+                  <span class="ico c-2" data-ico="star" style="width:18px;height:18px"></span><span class="t-body">Zu Favoriten</span>
+                </button>
+                <div style="height:1px; background:var(--line); margin:5px 10px"></div>
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left; color:var(--danger)">
+                  <span class="ico" data-ico="trash" style="width:18px;height:18px"></span><span class="t-body">Löschen</span>
+                </button>
+              </div>
+            </section>
+
+            <!-- ══ Abschnitt 2: Smart-Ordner ══ -->
+            <section>
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+                <span class="t-label c-3">SMART-ORDNER</span>
+                <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
+                <span class="t-label c-3">Sichten, keine Schubladen</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:14px">
+                <button class="card card--flat" style="height:64px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                  <span class="ico c-2" data-ico="calendar" style="width:20px;height:20px"></span>
+                  <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                    <span class="t-body is-strong clamp-1">Diese Woche</span>
+                    <span class="t-label c-3 clamp-1">seit Montag</span>
+                  </span>
+                  <span class="count__n num">7</span>
+                </button>
+                <button class="card card--flat" style="height:64px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                  <span class="ico c-2" data-ico="star" style="width:20px;height:20px"></span>
+                  <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                    <span class="t-body is-strong clamp-1">Markiert</span>
+                    <span class="t-label c-3 clamp-1">mit Stern</span>
+                  </span>
+                  <span class="count__n num">4</span>
+                </button>
+                <button class="card card--flat" style="height:64px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                  <span class="ico c-2" data-ico="mic" style="width:20px;height:20px"></span>
+                  <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                    <span class="t-body is-strong clamp-1">Mit Audio</span>
+                    <span class="t-label c-3 clamp-1">mit Aufnahme</span>
+                  </span>
+                  <span class="count__n num">3</span>
+                </button>
+                <button class="card card--flat" style="height:64px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                  <span class="ico c-2" data-ico="share" style="width:20px;height:20px"></span>
+                  <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                    <span class="t-body is-strong clamp-1">Geteilt</span>
+                    <span class="t-label c-3 clamp-1">Jana, Milan</span>
+                  </span>
+                  <span class="count__n num">2</span>
+                </button>
+              </div>
+            </section>
+
+            <!-- ══ Abschnitt 3: Alle Notizbücher ══ -->
+            <section>
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+                <span class="t-label c-3">ALLE NOTIZBÜCHER</span>
+                <span class="t-label c-3 num">5</span>
+                <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
+                <span class="t-label c-3">Nach Änderung sortiert</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:19px">
+
+                <div>
+                  <div style="position:relative; height:192px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                    <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 13px, var(--line) 13px 14px)"></div>
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:11px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                    <div style="position:absolute; right:4px; top:7px; bottom:7px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
+                    <div style="position:absolute; left:19px; bottom:11px; display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.08)">
+                      <span class="dot dot--notes"></span><span class="t-label c-2">Notizen</span>
+                    </div>
+                  </div>
+                  <div style="margin-top:8px">
+                    <div class="t-body clamp-2" style="min-height:46px">Zellbiologie</div>
+                    <div class="t-label c-3 clamp-1" style="margin-top:2px">34 Seiten · heute</div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="skeleton" style="position:relative; height:192px; border-radius:10px; box-shadow:inset 0 0 0 1px var(--line); display:flex; align-items:center; justify-content:center">
+                    <span class="chip" style="background:var(--paper); color:var(--ink-2)">wird geladen</span>
+                  </div>
+                  <div style="margin-top:8px">
+                    <div class="t-body clamp-2" style="min-height:46px">Semesterplanung</div>
+                    <div class="t-label c-3 num clamp-1" style="margin-top:2px">62 % · aus iCloud</div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="position:relative; height:192px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                    <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 14px, var(--line) 14px 15px), repeating-linear-gradient(to right, transparent 0 14px, var(--line) 14px 15px)"></div>
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:11px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                    <div style="position:absolute; right:4px; top:7px; bottom:7px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
+                    <div style="position:absolute; left:19px; bottom:11px; display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.08)">
+                      <span class="dot dot--canvas"></span><span class="t-label c-2">Canvas</span>
+                    </div>
+                  </div>
+                  <div style="margin-top:8px">
+                    <div class="t-body clamp-2" style="min-height:46px">Analysis II</div>
+                    <div class="t-label c-3 clamp-1" style="margin-top:2px">52 Seiten · gestern</div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="position:relative; height:192px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                    <div style="position:absolute; inset:0; background:radial-gradient(var(--line-2) 1px, transparent 1.3px); background-size:13px 13px"></div>
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:11px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                    <div style="position:absolute; right:4px; top:7px; bottom:7px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
+                    <div style="position:absolute; left:19px; bottom:11px; display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.08)">
+                      <span class="dot dot--journal"></span><span class="t-label c-2">Journal</span>
+                    </div>
+                  </div>
+                  <div style="margin-top:8px">
+                    <div class="t-body clamp-2" style="min-height:46px">Laborjournal</div>
+                    <div class="t-label c-3 clamp-1" style="margin-top:2px">18 Seiten · Di.</div>
+                  </div>
+                </div>
+
+                <div>
+                  <div style="position:relative; height:192px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                    <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 17px, var(--line) 17px 18px)"></div>
+                    <div style="position:absolute; left:0; top:0; bottom:0; width:11px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                    <div style="position:absolute; right:4px; top:7px; bottom:7px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
+                    <div style="position:absolute; left:19px; bottom:11px; display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.08)">
+                      <span class="dot dot--notes"></span><span class="t-label c-2">Notizen</span>
+                    </div>
+                  </div>
+                  <div style="margin-top:8px">
+                    <div class="t-body clamp-2" style="min-height:46px">Lesenotizen Soziologie</div>
+                    <div class="t-label c-3 clamp-1" style="margin-top:2px">26 Seiten · 30.10.</div>
+                  </div>
+                </div>
+
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · „+" in Ein-Hand-Reichweite</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding:4px 20px">
+          <div class="t-title">Bibliothek</div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column; gap:12px; padding:10px 20px 14px">
+
+          <p class="t-sub c-2" style="margin:0"><strong class="c-1 num">5 Notizbücher</strong> · zuletzt geändert vor 18 Minuten</p>
+
+          <!-- Suchfeld oben + Umschalter -->
+          <div style="display:flex; align-items:center; gap:8px">
+            <div class="field" style="flex:1 1 auto; min-width:0"><span class="ico" data-ico="search"></span><span class="field__ph t-body">Suchen</span></div>
+            <div class="segmented" style="flex:none"><button class="is-on">Raster</button><button>Liste</button></div>
+          </div>
+
+          <!-- Zuletzt geöffnet -->
+          <section>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+              <span class="t-label c-3">ZULETZT GEÖFFNET</span>
+              <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
+            </div>
+            <div style="display:flex; align-items:flex-start; gap:14px">
+
+              <!-- ausgewählt + angehoben -->
+              <div style="width:152px; flex:none; position:relative">
+                <div style="position:absolute; left:-7px; right:-7px; top:-7px; bottom:-7px; border-radius:15px; background:var(--accent-soft)"></div>
+                <div class="flight__ghost" style="left:0; top:0; width:152px; height:203px; border-radius:11px; background:var(--fill-2); box-shadow:inset 0 0 0 1.5px var(--accent-ring)"></div>
+                <div style="position:relative; width:152px; height:203px; border-radius:11px; overflow:hidden; background:var(--paper); transform:translateY(-13px); box-shadow:var(--sh-float), 0 0 0 3px var(--accent-ring)">
+                  <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 13px, var(--line) 13px 14px)"></div>
+                  <div style="position:absolute; left:0; top:0; bottom:0; width:12px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                  <div style="position:absolute; right:4px; top:8px; bottom:8px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
+                  <div style="position:absolute; right:9px; top:9px; width:23px; height:23px; border-radius:50%; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.10); display:flex; align-items:center; justify-content:center">
+                    <span class="ico" data-ico="star" style="width:13px;height:13px"></span>
+                  </div>
+                  <div style="position:absolute; left:20px; bottom:11px; display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.08)">
+                    <span class="dot dot--notes"></span><span class="t-label c-2">Notizen</span>
+                  </div>
+                </div>
+                <div style="position:relative; margin-top:10px">
+                  <div class="t-body is-strong clamp-1">Zellbiologie</div>
+                  <div class="t-label c-3 clamp-1" style="margin-top:2px">34 Seiten · vor 18 Min.</div>
+                </div>
+              </div>
+
+              <!-- Ladezustand -->
+              <div style="width:152px; flex:none">
+                <div class="skeleton" style="position:relative; width:152px; height:203px; border-radius:11px; box-shadow:inset 0 0 0 1px var(--line); display:flex; align-items:center; justify-content:center">
+                  <span class="chip" style="background:var(--paper); color:var(--ink-2)">wird geladen</span>
+                  <div class="bar" style="position:absolute; left:13px; right:13px; bottom:13px; background:var(--fill-3)"><div class="bar__fill" style="width:62%"></div></div>
+                </div>
+                <div style="margin-top:10px">
+                  <div class="t-body clamp-1">Semesterplanung</div>
+                  <div class="t-label c-3 num clamp-1" style="margin-top:2px">62 % · aus iCloud</div>
+                </div>
+              </div>
+
+              <!-- angeschnitten -->
+              <div style="width:60px; flex:none; position:relative; overflow:hidden">
+                <div style="position:relative; width:152px; height:203px; border-radius:11px; overflow:hidden; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line)">
+                  <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 14px, var(--line) 14px 15px), repeating-linear-gradient(to right, transparent 0 14px, var(--line) 14px 15px)"></div>
+                  <div style="position:absolute; left:0; top:0; bottom:0; width:12px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                  <div style="position:absolute; left:20px; bottom:11px; display:inline-flex; align-items:center; gap:6px; height:22px; padding:0 8px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line)">
+                    <span class="dot dot--canvas"></span><span class="t-label c-2">Canvas</span>
+                  </div>
+                </div>
+                <div style="position:absolute; inset:0; background:linear-gradient(90deg, transparent 10%, var(--ground) 94%)"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Smart-Ordner -->
+          <section>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+              <span class="t-label c-3">SMART-ORDNER</span>
+              <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
+            </div>
+            <div style="display:flex; gap:12px">
+              <button class="card card--flat" style="width:164px; flex:none; height:56px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                <span class="ico c-2" data-ico="calendar" style="width:19px;height:19px"></span>
+                <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                  <span class="t-body is-strong clamp-1">Diese Woche</span>
+                  <span class="t-label c-3 clamp-1">seit Montag</span>
+                </span>
+                <span class="count__n num">7</span>
+              </button>
+              <button class="card card--flat" style="width:164px; flex:none; height:56px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                <span class="ico c-2" data-ico="star" style="width:19px;height:19px"></span>
+                <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                  <span class="t-body is-strong clamp-1">Markiert</span>
+                  <span class="t-label c-3 clamp-1">mit Stern</span>
+                </span>
+                <span class="count__n num">4</span>
+              </button>
+              <button class="card card--flat" style="width:164px; flex:none; height:56px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                <span class="ico c-2" data-ico="mic" style="width:19px;height:19px"></span>
+                <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                  <span class="t-body is-strong clamp-1">Mit Audio</span>
+                  <span class="t-label c-3 clamp-1">Aufnahmen</span>
+                </span>
+                <span class="count__n num">3</span>
+              </button>
+              <button class="card card--flat" style="width:164px; flex:none; height:56px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                <span class="ico c-2" data-ico="share" style="width:19px;height:19px"></span>
+                <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                  <span class="t-body is-strong clamp-1">Geteilt</span>
+                  <span class="t-label c-3 clamp-1">Jana, Milan</span>
+                </span>
+                <span class="count__n num">2</span>
+              </button>
+            </div>
+          </section>
+
+          <!-- Alle Notizbücher -->
+          <section>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+              <span class="t-label c-3">ALLE NOTIZBÜCHER</span>
+              <span class="t-label c-3 num">5</span>
+              <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
+              <button class="t-label c-3" style="display:inline-flex; align-items:center; gap:4px">Zuletzt geändert<span class="ico" data-ico="chevD" style="width:13px;height:13px"></span></button>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:14px">
+              <div>
+                <div style="position:relative; height:225px; border-radius:11px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                  <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 14px, var(--line) 14px 15px)"></div>
+                  <div style="position:absolute; left:0; top:0; bottom:0; width:13px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
+                  <div style="position:absolute; left:22px; bottom:12px; display:inline-flex; align-items:center; gap:6px; height:23px; padding:0 9px; border-radius:999px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line), 0 1px 2px rgba(22,24,28,.08)">
+                    <span class="dot dot--notes"></span><span class="t-label c-2">Notizen</span>
+                  </div>
+                </div>
+                <div style="margin-top:8px">
+                  <div class="t-body clamp-1">Zellbiologie</div>
+                  <div class="t-label c-3 clamp-1" style="margin-top:2px">34 Seiten</div>
+                </div>
+              </div>
+              <div>
+                <div class="skeleton" style="position:relative; height:225px; border-radius:11px; box-shadow:inset 0 0 0 1px var(--line); display:flex; align-items:center; justify-content:center">
+                  <span class="chip" style="background:var(--paper); color:var(--ink-2)">wird geladen</span>
+                </div>
+                <div style="margin-top:8px">
+                  <div class="t-body clamp-1">Semesterplanung</div>
+                  <div class="t-label c-3 num clamp-1" style="margin-top:2px">62 %</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+
+      <!-- Weiche Kante: das Raster laeuft unter der Tab-Bar weiter -->
+      <div style="position:absolute; left:0; right:0; bottom:83px; height:46px; z-index:30; pointer-events:none; background:linear-gradient(to bottom, transparent, var(--ground) 88%)"></div>
+
+      <!-- „+" schwebend, in Ein-Hand-Reichweite über der Tab-Bar -->
+      <button class="btn btn--primary" style="position:absolute; right:20px; bottom:99px; z-index:50; width:56px; height:56px; padding:0; border-radius:50%; box-shadow:var(--sh-float)">
+        <span class="ico" data-ico="plus" style="width:26px;height:26px"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Bibliothek — Steckbrief</h2>
+  <p>Ein Regal statt einer Dateiliste. Die zuletzt geöffneten Notizbücher stehen groß oben, die Smart-Ordner sagen mit einer Zahl, was sie wert sind, darunter liegt das vollständige Raster. Alle Module — Notizen, Canvas, Journal — stehen im selben Regal.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>GoodNotes 6</td><td>Cover-Raster mit echtem Buchgefühl. Übernommen: Buchrücken links, Schnittkante rechts, sichtbare Papierart. <strong>Bewertung:</strong> stark — man erkennt sein Buch an der Silhouette. Abgewandelt: keine bunten Fertig-Cover, sondern Papier und Grau; die Modulzugehörigkeit steckt im 6-pt-Dot auf dem Etikett.</td></tr>
+    <tr><td>Craft</td><td>Smart-Ordner mit Zähler. Übernommen als Zeile aus vier schmalen Karten mit Regel-Untertitel und tabellarischer Zahl. <strong>Bewertung:</strong> sehr gut — „Markiert 4" ist eine Aussage, „Markiert" allein nur ein Etikett. Nicht übernommen: Crafts zusätzliche Filterleiste über dem Raster.</td></tr>
+    <tr><td>Apple Notes</td><td>Ordner-Hierarchie in der Sidebar. Übernommen als linke Spalte mit Module- und Semester-Gruppe, identisch zu „Today". <strong>Bewertung:</strong> richtig — die Hierarchie bleibt stehen, während der Inhalt wechselt. Nicht übernommen: der Zwang, jedes Dokument in genau einen Ordner zu legen.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li>Bunte Cover-Galerie und Sticker (GoodNotes) — Farbe gehört dem Nutzer. Ein buntes Cover würde die Modul-Dots entwerten.</li>
+    <li>Datenbank-Ansicht mit Spaltenwahl (Notion) — zu viel Werkzeug für einen Einstiegsschirm. Sortieren ja, Schema bearbeiten nein.</li>
+    <li>Filter-Chips über dem Raster (Craft, Bear) — doppelt zu den Smart-Ordnern.</li>
+    <li>Die Umblätter-Animation beim Öffnen (GoodNotes) — hübsch, kostet aber bei jedem Öffnen Zeit. Wir heben das Cover nur an.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Fünf Notizbücher, vier Smart-Ordner, das Regal ist angeschnitten und geht rechts weiter.</td></tr>
+    <tr><td>aktiv</td><td>„Bibliothek" in der Sidebar (Fläche + Gewicht + Ink-Balken), „Raster" im Umschalter (Fläche + Ink + Kante), „Bibliothek" in der Tab-Bar (Ink + Gewicht).</td></tr>
+    <tr><td>ausgewählt</td><td>„Zellbiologie": getönte Fläche unter der ganzen Kachel <em>und</em> 3-pt-Ring um das Cover, dazu der Titel in 600 — drei Merkmale, keines davon Farbe.</td></tr>
+    <tr><td>Zwischenzustand</td><td>Das ausgewählte Cover ist gerade <strong>angehoben</strong>: der Sockel (Ring + Fläche, <span class="num">10</span> pt tiefer) liegt noch an der alten Stelle, das Cover schwebt darüber, und das Kontextmenü ist darunter aufgefahren. Zweiter laufender Vorgang: der Fortschrittsbalken auf „Semesterplanung" bei <span class="num">62 %</span>.</td></tr>
+    <tr><td>Laden</td><td>„Semesterplanung" lädt aus iCloud — Skelettfläche + das Wort „wird geladen" + Balken. Es erscheint an beiden Stellen als Skelett (Regal und Raster), weil es dasselbe Dokument ist; nur das große Cover trägt den Fortschritt.</td></tr>
+    <tr><td>leer</td><td>Ohne Notizbücher zeigt die Bibliothek <code>.empty</code>: „Noch kein Notizbuch. Leg eins an — Papier wählst du beim Öffnen." mit dem Knopf „Neues Notizbuch".</td></tr>
+  </table>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Visuals:</strong> Neun Cover, kein einziges Foto — und trotzdem ist jedes Buch unterscheidbar, weil Papierart (Linien, Karo, Punkte), Buchrücken und ein 6-pt-Dot zusammen eine Identität ergeben. Das ist die schwierige Variante von Cover-Design und die einzige, die im Dunkelmodus genauso funktioniert. <strong>Interaktion:</strong> Auswahl, schwebendes Menü und Ladefortschritt liegen gleichzeitig im Bild, ohne sich zu stören — das Menü verdeckt genau eine Smart-Ordner-Karte, weil es dort aufgeht, wo der Finger war, und nicht in einer Bildschirmecke.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Ausgewählt = Fläche + Ring (+ Gewicht im Titel). Aktiv = Fläche + Gewicht + Balken (Sidebar) bzw. Fläche + Ink + Kante (Umschalter). Laden = Skelettfläche + das Wort „wird geladen" (+ Balken). Löschen = rotes Wort + Papierkorb-Symbol + eigene Gruppe unter dem Trenner. Modul-Dots sind 6 pt und stehen nie allein — auf jedem Etikett steht Dot + Modulwort.</p>
+
+  <h3>iPhone gegenüber iPad</h3>
+  <p>Dieselben drei Abschnitte, gestapelt: Suchfeld und Umschalter in einer Zeile, das Regal waagerecht scrollbar, die Smart-Ordner als schmale Karten, darunter das zweispaltige Cover-Raster, das über die Bildkante weiterläuft. Der „+"-Knopf schwebt unten rechts über der Tab-Bar, in Daumenreichweite — auf dem iPad sitzt er als „Neu" in der Kopfzeile, weil dort zwei Hände am Gerät sind. Das Kontextmenü ist auf beiden Geräten dasselbe und über langes Drücken erreichbar; gezeigt wird es auf dem iPad, damit auf dem iPhone die Smart-Ordner sichtbar bleiben. Kein Weg kostet auf dem iPhone mehr Taps.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

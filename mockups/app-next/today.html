@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Today — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Today
+
+ÜBERNOMMEN
+· Things 3 „Today": Die Liste ist nach Herkunft gruppiert, nicht nach Uhrzeit —
+  und der Tag hat ein Ende. Übernommen als Abschnitt „Heute fällig" mit
+  Bereichs-Herkunft je Zeile statt Zeitraster.
+· Apple Journal: Der Tagesimpuls als Frage, nicht als leeres Feld. Übernommen
+  als Karte „Impuls", die mit einem Satz vorbelegt ist und direkt schreibt.
+· Notion Home: Die „Weitermachen"-Zeile mit Zeitstempel. Übernommen, aber auf
+  zwei Karten begrenzt — Notion zeigt sieben und wird dadurch beliebig.
+· Day One: Der Rückblick-Moment („Vor einem Jahr"). Übernommen als kleine
+  Karte in der Seitenspalte, nicht als Vollbild-Unterbrechung.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Notions Emoji-Begrüßung und die Wetter-Kachel — Dekoration ohne Aussage.
+· Things' vollständig leerer Today-Screen am Morgen: In einer All-in-One-App
+  wäre das eine verschenkte Fläche, weil immer eine Kette offen ist.
+· Todoists Karma-Punkte und Ranglisten — Fremdmotivation statt Arbeit.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Die Ketten-Karte. Kein Konkurrent kann sie, weil keiner die Module in einem
+Datenmodell hat: „Zellbiologie" → 12 Karten → 8 heute fällig, in einer Zeile
+erzählt und an jeder Station anspringbar. Sie ersetzt fünf getrennte
+Modul-Kacheln durch eine Geschichte.
+
+ADA-KATEGORIE: Innovation (die Kette ist sichtbar, nicht erklärt) und
+Interaktion (jede Station der Kette ist ein Sprungziel).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Titel/Fließtext  ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Sekundärtext     ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
+  Metadaten        ink-3 auf Grund     4,8:1   (hell) ·  4,9:1 (dunkel)
+  CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Deadline rot     danger auf Papier   5,2:1   (hell) ·  6,3:1 (dunkel)
+  Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Today</h1>
+  <p>Der Tageseinstieg. Oben steht, was heute zählt — in der Mitte die Kette, die zeigt, wie aus einer Vorlesungsnotiz Lernkarten wurden, die heute fällig sind.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Split View mit Sidebar</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem is-active"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar">
+            <div>
+              <div class="t-title">Guten Morgen, Emil</div>
+            </div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+            <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neu</button>
+          </div>
+
+          <div class="scroll" style="display:flex; flex-direction:column; gap:18px">
+
+            <!-- Briefing: ein Satz mit echten Zahlen -->
+            <p class="t-body c-2" style="margin:0; max-width:64ch">
+              Donnerstag, 13. November. <strong class="c-1">Sechs Aufgaben</strong> sind heute fällig, davon eine mit Deadline.
+              <strong class="c-1">23 Lernkarten</strong> warten — 8 davon aus der Vorlesung von gestern.
+            </p>
+
+            <!-- ══ Die Ketten-Karte: die Alleinstellung ══ -->
+            <section class="card" style="padding:0; overflow:hidden">
+              <div style="padding:14px 16px 0; display:flex; align-items:center; gap:8px">
+                <span class="t-label c-3">Aus deiner Vorlesung von gestern</span>
+                <div style="flex:1"></div>
+                <span class="chip"><span class="ico" data-ico="link" style="width:14px;height:14px"></span>Kette</span>
+              </div>
+              <div class="chain" style="margin-top:6px">
+                <button class="chain__link" style="text-align:left">
+                  <span class="chain__eyebrow t-label"><span class="dot dot--notes"></span>Notiz</span>
+                  <span class="t-section">Zellbiologie</span>
+                  <span class="t-sub c-3">14 Absätze · gestern 16:20</span>
+                </button>
+                <button class="chain__link" style="text-align:left">
+                  <span class="chain__eyebrow t-label"><span class="dot dot--cards"></span>Wurde zu</span>
+                  <span class="t-section num">12 Karten</span>
+                  <span class="t-sub c-3">Deck „Zellbiologie"</span>
+                </button>
+                <button class="chain__link" style="text-align:left; background:var(--accent-soft)">
+                  <span class="chain__eyebrow t-label"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Heute fällig</span>
+                  <span class="t-section num">8 Karten</span>
+                  <span class="t-sub c-3">ca. 4 Minuten</span>
+                </button>
+                <div class="chain__link" style="flex:0 0 auto; justify-content:center; padding-right:16px">
+                  <button class="btn btn--primary btn--sm"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>Lernen</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Zweispaltig: links Arbeit, rechts Kontext -->
+            <div style="display:grid; grid-template-columns: 1fr 296px; gap:18px; align-items:start">
+
+              <div style="display:flex; flex-direction:column; gap:18px">
+
+                <!-- Weitermachen -->
+                <section>
+                  <div class="divider"><span class="t-label c-3">WEITERMACHEN</span></div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+                    <button class="card" style="text-align:left; padding:14px">
+                      <div class="card__head" style="margin-bottom:8px">
+                        <span class="dot dot--canvas"></span>
+                        <span class="t-label c-3">Canvas · vor 18 Minuten</span>
+                      </div>
+                      <div class="t-body is-strong">Analysis II — Übungsblatt 5</div>
+                      <div class="t-sub c-3 clamp-1">Grenzwertsätze, Aufgabe 3 halb gelöst</div>
+                      <div style="margin-top:10px" class="bar"><div class="bar__fill" style="width:62%"></div></div>
+                    </button>
+                    <button class="card" style="text-align:left; padding:14px">
+                      <div class="card__head" style="margin-bottom:8px">
+                        <span class="dot dot--journal"></span>
+                        <span class="t-label c-3">Journal · gestern 22:10</span>
+                      </div>
+                      <div class="t-body is-strong">Entwurf ohne Titel</div>
+                      <div class="t-sub c-3 clamp-1">„Die Woche war voll, aber die Laborgruppe…"</div>
+                      <div style="margin-top:10px"><span class="chip">Weiterschreiben</span></div>
+                    </button>
+                  </div>
+                </section>
+
+                <!-- Heute fällig -->
+                <section>
+                  <div class="divider"><span class="t-label c-3">HEUTE FÄLLIG</span><span class="t-label c-3 num">6</span></div>
+                  <div class="card" style="padding:6px">
+                    <div class="row">
+                      <span class="check"></span>
+                      <div class="row__main">
+                        <span class="t-body row__title">Statistik-Blatt 4 abgeben</span>
+                        <span class="t-sub c-3">Analysis II</span>
+                      </div>
+                      <div class="row__meta">
+                        <span class="chip chip--danger"><span class="ico" data-ico="flag" style="width:13px;height:13px"></span>Heute 18:00</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <span class="check is-checking"></span>
+                      <div class="row__main">
+                        <span class="t-body row__title">Laborprotokoll Zellkultur schreiben</span>
+                        <span class="t-sub c-3">Biologie</span>
+                      </div>
+                      <div class="row__meta"><span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie"</span></div>
+                    </div>
+                    <div class="row">
+                      <span class="check"></span>
+                      <div class="row__main">
+                        <span class="t-body row__title">Rückmeldung an Prof. Wendt</span>
+                        <span class="t-sub c-3">Uni · 2 Teilschritte</span>
+                      </div>
+                      <div class="row__meta"><span class="t-label c-3 num">0/2</span></div>
+                    </div>
+                    <div class="row">
+                      <span class="check"></span>
+                      <div class="row__main">
+                        <span class="t-body row__title">Bücher in der Bibliothek verlängern</span>
+                        <span class="t-sub c-3">Persönlich</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="location" style="width:16px;height:16px"></span></div>
+                    </div>
+                    <div class="row">
+                      <span class="check"></span>
+                      <div class="row__main">
+                        <span class="t-body row__title">Karteikarten Anatomie nacharbeiten</span>
+                        <span class="t-sub c-3">Biologie · wiederholt sich wöchentlich</span>
+                      </div>
+                      <div class="row__meta"><span class="t-label c-3">Abend</span></div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <!-- Seitenspalte -->
+              <div style="display:flex; flex-direction:column; gap:12px">
+
+                <!-- Zahlen -->
+                <section class="card">
+                  <div class="card__head"><span class="t-label c-3">HEUTE IN ZAHLEN</span></div>
+                  <div style="display:flex; flex-direction:column; gap:12px">
+                    <div style="display:flex; align-items:center; gap:10px">
+                      <span class="dot dot--tasks"></span>
+                      <span class="count"><span class="count__n num">6</span><span class="count__w t-sub">Aufgaben fällig</span></span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px">
+                      <span class="dot dot--cards"></span>
+                      <span class="count"><span class="count__n num">23</span><span class="count__w t-sub">Karten zu lernen</span></span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px">
+                      <span class="dot dot--journal"></span>
+                      <span class="count"><span class="count__n">—</span><span class="count__w t-sub">Journal offen</span></span>
+                    </div>
+                    <div style="height:1px; background:var(--line)"></div>
+                    <div style="display:flex; align-items:center; gap:10px">
+                      <span class="ico" data-ico="flame" style="width:18px;height:18px; color:var(--ink-2)"></span>
+                      <span class="count"><span class="count__n num">12</span><span class="count__w t-sub">Tage in Folge</span></span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Tagesimpuls -->
+                <section class="card">
+                  <div class="card__head">
+                    <span class="dot dot--journal"></span>
+                    <span class="t-label c-3">IMPULS</span>
+                  </div>
+                  <p class="t-body serif" style="margin:0 0 12px">Was hat dich heute länger beschäftigt, als du erwartet hättest?</p>
+                  <button class="btn btn--sm" style="width:100%"><span class="ico" data-ico="edit" style="width:16px;height:16px"></span>Eintrag beginnen</button>
+                </section>
+
+                <!-- Rückblick -->
+                <section class="card" style="padding:0; overflow:hidden">
+                  <!-- Platzhalter für ein echtes Foto des Nutzers — bewusst
+                       neutral, weil Modul-Farben nie als Fläche auftreten. -->
+                  <div style="height:96px; background:
+                      linear-gradient(160deg, var(--fill-3), var(--fill)),
+                      repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px);
+                      display:flex; align-items:flex-end; padding:10px 12px">
+                    <span class="chip" style="background:var(--paper)">Vor einem Jahr</span>
+                  </div>
+                  <div style="padding:12px 14px">
+                    <div class="t-body is-strong clamp-1">Erster Tag im Labor</div>
+                    <div class="t-sub c-3 clamp-2">„Ich habe drei Stunden gebraucht, um die Pipette richtig zu halten."</div>
+                  </div>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Tab-Bar, Aktionen im unteren Drittel</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <div class="t-title">Heute</div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column; gap:16px">
+          <p class="t-sub c-2" style="margin:0">
+            Do, 13. November · <strong class="c-1">6 Aufgaben</strong>, <strong class="c-1">23 Karten</strong>
+          </p>
+
+          <!-- Ketten-Karte, gestapelt -->
+          <section class="card" style="padding:0; overflow:hidden">
+            <div style="padding:12px 14px 8px; display:flex; align-items:center; gap:8px">
+              <span class="t-label c-3">Aus der Vorlesung von gestern</span>
+            </div>
+            <div style="display:flex; flex-direction:column">
+              <div style="display:flex; align-items:center; gap:10px; padding:0 14px 10px">
+                <span class="dot dot--notes"></span>
+                <span class="t-body is-strong" style="flex:1">Zellbiologie</span>
+                <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; border-top:1px solid var(--line)">
+                <span class="dot dot--cards"></span>
+                <span class="t-body" style="flex:1">wurde zu <strong class="num">12 Karten</strong></span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; padding:12px 14px; background:var(--accent-soft); border-top:1px solid var(--line)">
+                <div style="flex:1">
+                  <div class="t-body is-strong num">8 heute fällig</div>
+                  <div class="t-sub c-3">ca. 4 Minuten</div>
+                </div>
+                <button class="btn btn--primary btn--sm"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>Lernen</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Weitermachen -->
+          <section>
+            <div class="divider" style="margin:2px 0 8px"><span class="t-label c-3">WEITERMACHEN</span></div>
+            <button class="card card--flat" style="text-align:left; padding:12px; width:100%">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px">
+                <span class="dot dot--canvas"></span><span class="t-label c-3">Canvas · vor 18 Min.</span>
+              </div>
+              <div class="t-body is-strong">Analysis II — Übungsblatt 5</div>
+              <div style="margin-top:8px" class="bar"><div class="bar__fill" style="width:62%"></div></div>
+            </button>
+          </section>
+
+          <!-- Heute fällig -->
+          <section>
+            <div class="divider" style="margin:2px 0 8px"><span class="t-label c-3">HEUTE FÄLLIG</span><span class="t-label c-3 num">6</span></div>
+            <div class="card" style="padding:4px">
+              <div class="row" style="min-height:56px">
+                <span class="check"></span>
+                <div class="row__main">
+                  <span class="t-body">Statistik-Blatt 4 abgeben</span>
+                  <span class="t-sub"><span class="chip chip--danger" style="height:22px">Heute 18:00</span></span>
+                </div>
+              </div>
+              <div class="row" style="min-height:56px">
+                <span class="check is-checking"></span>
+                <div class="row__main">
+                  <span class="t-body">Laborprotokoll schreiben</span>
+                  <span class="t-sub"><span class="origin" style="height:22px"><span class="dot dot--notes"></span>aus „Zellbiologie"</span></span>
+                </div>
+              </div>
+              <div class="row" style="min-height:56px">
+                <span class="check"></span>
+                <div class="row__main">
+                  <span class="t-body">Rückmeldung an Prof. Wendt</span>
+                  <span class="t-sub c-3 num">0/2 Teilschritte</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Impuls -->
+          <section class="card">
+            <div class="card__head"><span class="dot dot--journal"></span><span class="t-label c-3">IMPULS</span></div>
+            <p class="t-body serif" style="margin:0 0 10px">Was hat dich heute länger beschäftigt, als du erwartet hättest?</p>
+            <button class="btn btn--sm" style="width:100%">Eintrag beginnen</button>
+          </section>
+        </div>
+
+        <!-- Tab-Bar: Aktionen im unteren Drittel -->
+        <nav class="tabbar">
+          <button class="tab is-active"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Today — Steckbrief</h2>
+  <p>Der Tag beginnt mit einem Satz, nicht mit einem Raster aus Kacheln. Darunter steht die Kette, dann die Arbeit, rechts der Kontext.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Things 3 „Today"</td><td>Gruppierung nach Herkunft statt nach Uhrzeit; der Tag hat ein sichtbares Ende. Hier: „Heute fällig" mit Bereich je Zeile.</td></tr>
+    <tr><td>Apple Journal</td><td>Der Impuls als konkrete Frage. Hier: eine Frage in Serif, ein Knopf darunter — kein leeres Feld.</td></tr>
+    <tr><td>Notion Home</td><td>„Weitermachen" mit Zeitstempel — aber auf zwei Karten begrenzt statt auf sieben.</td></tr>
+    <tr><td>Day One</td><td>Der Rückblick. Hier als kleine Karte in der Seitenspalte, nie als Vollbild-Unterbrechung.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li>Wetter-Kachel und Emoji-Begrüßung (Notion) — Dekoration ohne Aussage.</li>
+    <li>Karma-Punkte und Ranglisten (Todoist) — Fremdmotivation statt Arbeit.</li>
+    <li>Der komplett leere Morgen-Screen (Things) — in einer All-in-One-App ist immer eine Kette offen.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: sechs Aufgaben, 23 Karten, eine offene Kette.</td></tr>
+    <tr><td>aktiv/ausgewählt</td><td>„Today" in der Sidebar: Fläche + Gewicht + Ink-Balken links. Die fällige Station der Kette liegt auf getönter Fläche.</td></tr>
+    <tr><td>Zwischenzustand</td><td>Die zweite Checkbox steht mitten in der Erledigen-Animation (Ring zieht sich zusammen, Haken wächst) — der Delight-Moment ist eingefroren sichtbar.</td></tr>
+    <tr><td>leer</td><td>Ohne Daten zeigt Today nur Begrüßung, Impuls und einen Satz: „Noch nichts geplant. Fang mit einer Notiz an." (siehe Bibliothek-Mockup für die Leerform)</td></tr>
+  </table>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Innovation:</strong> Die Ketten-Karte zeigt in einer Zeile, was sonst fünf Apps und drei Exporte kostet — und sie ist an jeder Station anspringbar. <strong>Interaktion:</strong> Der nächste Schritt („Lernen", 4 Minuten) steht als primärer CTA am Ende der Kette, nicht in einem Menü.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe. Aktiv = Fläche + Gewicht + Balken. Fällig = Wort + Ink-Fläche. Deadline = rotes Wort + Flaggen-Symbol + Uhrzeit. Modul-Dots sind 6 pt und stehen nie ohne das zugehörige Wort.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

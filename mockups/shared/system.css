@@ -1,0 +1,618 @@
+/* ============================================================================
+ * system.css — Das gemeinsame Gestaltungssystem aller Mockups
+ *
+ * Leitsatz: Die App ist Papier und Grau — alle Farbe gehört dem Nutzer.
+ *
+ * Der Akzent ist KEINE Marken-Buntfarbe, sondern Ink: fast-schwarz im hellen,
+ * fast-weiß im dunklen Modus. Er hat genau drei Rollen — aktiver Zustand,
+ * primärer CTA, Auswahl. Modul-Farben erscheinen ausschließlich als 6-pt-Dots
+ * und als Cover-Akzent.
+ *
+ * Alle Kontraste sind gerechnet, nicht geschätzt (Werte in §1.3).
+ *
+ *   1. Tokens
+ *   2. Typo-Skala (5 Größen, 2 Gewichte)
+ *   3. Geräterahmen (iPad, iPhone) und Bühne
+ *   4. Chrome: Sidebar, Tab-Bar, Navigationsleiste
+ *   5. Bausteine: Zeile, Karte, Chip, Dot, Zähler, Feld, Segment
+ *   6. Signatur: Übergabe-Leiste, Herkunfts-Chip, Ketten-Karte
+ *   7. Zustände: leer, ausgewählt, deaktiviert, Fehler, Laden
+ *   8. Steckbrief (Kommentarblock unter der Bühne)
+ * ========================================================================== */
+
+/* ── 1. Tokens ────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: light;
+
+  /* 1.1 Flächen — Papier und Grau */
+  --ground:    #F2F2F4;   /* App-Hintergrund */
+  --paper:     #FFFFFF;   /* Karten, Editor, Listen */
+  --paper-2:   #FAFAFB;   /* eingelassene Flächen */
+  --chrome:    rgba(246,246,247,0.86);
+
+  /* 1.2 Ink — Text, Icons, Linien. Zugleich der Akzent. */
+  --ink:       #16181C;
+  --ink-1:     #16181C;                    /* 17,8:1 auf Papier */
+  --ink-2:     rgba(22,24,28,0.64);        /*  5,3:1 auf Papier — Sekundärtext */
+  --ink-3:     rgba(22,24,28,0.62);        /*  4,8:1 auf Grund  — Tertiärtext  */
+  --ink-4:     rgba(22,24,28,0.30);        /* nur Icons/Deko, nie Text        */
+  --line:      rgba(22,24,28,0.10);
+  --line-2:    rgba(22,24,28,0.18);
+  --fill:      rgba(22,24,28,0.05);
+  --fill-2:    rgba(22,24,28,0.09);
+  --fill-3:    rgba(22,24,28,0.14);
+
+  /* Der Akzent — drei Rollen: aktiv · primärer CTA · Auswahl */
+  --accent:    #16181C;
+  --accent-on: #FFFFFF;                    /* 17,8:1 */
+  --accent-soft: rgba(22,24,28,0.07);
+  --accent-ring: rgba(22,24,28,0.30);
+
+  /* 1.3 Modul-Farben — ausschließlich 6-pt-Dots und Cover-Akzent.
+     Die -ink-Varianten gelten, wenn die Farbe ausnahmsweise ein Icon
+     trägt: sie halten 3:1 auf Papier, die reinen Dot-Werte nicht überall
+     (Notizen 2,95:1 · Journal 2,83:1). Dots stehen deshalb NIE allein —
+     immer Dot + Wort (Zwei-Merkmal-Regel). */
+  --mod-canvas:      #4A6FA5;  --mod-canvas-ink:  #4A6FA5;  /* 5,11:1 */
+  --mod-notes:       #2DA891;  --mod-notes-ink:   #2CA58E;  /* 3,05:1 */
+  --mod-journal:     #D4884A;  --mod-journal-ink: #C78046;  /* 3,18:1 */
+  --mod-tasks:       #6B9E79;  --mod-tasks-ink:   #6B9E79;  /* 3,09:1 */
+  --mod-cards:       #C4628E;  --mod-cards-ink:   #C4628E;  /* 3,83:1 */
+
+  /* 1.4 Semantik — nur diese beiden, sonst nichts Buntes */
+  --danger:  #D02B20;   /* 5,19:1 — Löschen, Deadline */
+  --success: #1D7F4E;   /* 5,00:1 — Erfolg */
+
+  /* 1.5 Maße (1 px im Mockup = 1 pt auf dem Gerät) */
+  --tap: 44px;              /* Mindestziel */
+  --pad-ipad: 24px;
+  --pad-iphone: 20px;
+  --sidebar-w: 320px;
+  --tabbar-h: 49px;
+  --home-indicator: 34px;
+  --navbar-h: 52px;
+
+  --r-chip: 8px;
+  --r-card: 14px;
+  --r-sheet: 20px;
+  --r-pill: 999px;
+
+  --sh-card:  0 1px 2px rgba(22,24,28,.05), 0 6px 18px rgba(22,24,28,.06);
+  --sh-float: 0 2px 6px rgba(22,24,28,.08), 0 14px 36px rgba(22,24,28,.14);
+  --sh-cover: 0 1px 2px rgba(22,24,28,.08), 0 10px 24px rgba(22,24,28,.13);
+
+  /* 1.6 Bewegung */
+  --t-press: 120ms;
+  --t-fast:  180ms;
+  --t-std:   260ms;
+  --t-hand:  420ms;                              /* Übergabe zwischen Modulen */
+  --ease:        cubic-bezier(.25,.1,.25,1);
+  --ease-spring: cubic-bezier(.32,.72,0,1);
+
+  /* 1.7 Schrift */
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, "Segoe UI", sans-serif;
+  --serif: "New York", ui-serif, Charter, Georgia, "Times New Roman", serif;
+  --mono: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ground:    #0E0F11;
+  --paper:     #17191C;
+  --paper-2:   #1D1F23;
+  --chrome:    rgba(23,25,28,0.84);
+
+  --ink:       #F2F3F5;
+  --ink-1:     #F2F3F5;                    /* 15,9:1 auf Papier */
+  --ink-2:     rgba(242,243,245,0.64);     /*  7,1:1 */
+  --ink-3:     rgba(242,243,245,0.52);     /*  4,9:1 */
+  --ink-4:     rgba(242,243,245,0.30);
+  --line:      rgba(242,243,245,0.12);
+  --line-2:    rgba(242,243,245,0.20);
+  --fill:      rgba(242,243,245,0.07);
+  --fill-2:    rgba(242,243,245,0.12);
+  --fill-3:    rgba(242,243,245,0.18);
+
+  --accent:    #F2F3F5;
+  --accent-on: #0E0F11;                    /* 17,3:1 */
+  --accent-soft: rgba(242,243,245,0.10);
+  --accent-ring: rgba(242,243,245,0.36);
+
+  /* Im Dunkeln halten alle Dot-Werte über 3:1 — keine Sondervariante nötig */
+  --mod-canvas-ink:  #4A6FA5;   /* 3,45:1 */
+  --mod-notes-ink:   #2DA891;   /* 5,97:1 */
+  --mod-journal-ink: #D4884A;   /* 6,22:1 */
+  --mod-tasks-ink:   #6B9E79;   /* 5,70:1 */
+  --mod-cards-ink:   #C4628E;   /* 4,60:1 */
+
+  --danger:  #FF6B5E;   /* 6,30:1 */
+  --success: #4ED18B;   /* 9,07:1 */
+
+  --sh-card:  0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.45);
+  --sh-float: 0 2px 8px rgba(0,0,0,.5), 0 16px 40px rgba(0,0,0,.6);
+  --sh-cover: 0 1px 3px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.55);
+}
+
+/* ── 2. Typo-Skala — 5 Größen, 2 Gewichte, feste Rollen ───────────────── */
+
+/*  t-title    28/34  600   Screen-Titel, Begrüßung
+ *  t-section  20/26  600   Sektionsköpfe, Karten-Titel, Eintrags-Titel
+ *  t-body     17/23  400   Fließtext, Listenzeile — die Arbeitsgröße
+ *  t-sub      15/20  400   Untertitel, Metadaten, Vorschauzeilen
+ *  t-label    13/16  600   Chips, Zähler, Eyebrows, Tab-Beschriftung
+ *
+ *  Serif ist keine sechste Größe, sondern eine Regel:
+ *  Die Oberfläche spricht Sans — was der Nutzer geschrieben hat, darf Serif. */
+
+.t-title   { font: 600 28px/34px var(--sans); letter-spacing: -.02em; }
+.t-section { font: 600 20px/26px var(--sans); letter-spacing: -.015em; }
+.t-body    { font: 400 17px/23px var(--sans); letter-spacing: -.01em; }
+.t-sub     { font: 400 15px/20px var(--sans); letter-spacing: -.006em; }
+.t-label   { font: 600 13px/16px var(--sans); letter-spacing: .005em; }
+
+.is-strong { font-weight: 600; }
+.num       { font-variant-numeric: tabular-nums; }
+.serif     { font-family: var(--serif); letter-spacing: 0; }
+
+.c-1 { color: var(--ink-1); }
+.c-2 { color: var(--ink-2); }
+.c-3 { color: var(--ink-3); }
+
+/* Dynamic Type: eine große Stufe zum Umschalten (≈ XXL) */
+:root[data-type="gross"] .t-title   { font-size: 34px; line-height: 41px; }
+:root[data-type="gross"] .t-section { font-size: 24px; line-height: 30px; }
+:root[data-type="gross"] .t-body    { font-size: 21px; line-height: 28px; }
+:root[data-type="gross"] .t-sub     { font-size: 19px; line-height: 25px; }
+:root[data-type="gross"] .t-label   { font-size: 16px; line-height: 20px; }
+:root[data-type="gross"] .row       { min-height: 60px; }
+:root[data-type="gross"] .clamp-1,
+:root[data-type="gross"] .clamp-2   { -webkit-line-clamp: 3; }
+
+/* ── 3. Bühne und Geräterahmen ────────────────────────────────────────── */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  color: var(--ink-1);
+  background: var(--ground);
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+.stage {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 40px;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(22,24,28,.04), transparent 60%),
+    var(--ground);
+}
+:root[data-theme="dark"] .stage {
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(255,255,255,.04), transparent 60%), var(--ground);
+}
+
+.device { flex: none; position: relative; }
+.device__label {
+  font: 600 13px/16px var(--sans);
+  color: var(--ink-3);
+  margin-bottom: 10px;
+  display: flex; gap: 8px; align-items: baseline;
+}
+.device__label span { font-weight: 400; color: var(--ink-4); }
+
+.screen {
+  position: relative;
+  overflow: hidden;
+  background: var(--ground);
+  border-radius: 22px;
+  box-shadow: var(--sh-float), 0 0 0 1px var(--line);
+  display: flex;
+  flex-direction: column;
+}
+.screen--ipad   { width: 1194px; height: 834px; }
+.screen--iphone { width: 393px;  height: 852px; border-radius: 44px; }
+
+/* Statusleiste — nur Kulisse, damit die Safe Area stimmt */
+.statusbar {
+  flex: none; height: 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 22px;
+  font: 600 12px/1 var(--sans);
+  color: var(--ink-2);
+}
+.screen--iphone .statusbar { height: 54px; padding: 14px 32px 0; align-items: flex-start; }
+.statusbar__right { display: flex; gap: 6px; align-items: center; }
+.statusbar__bat { width: 22px; height: 11px; border: 1.2px solid currentColor; border-radius: 3px; position: relative; opacity: .8; }
+.statusbar__bat::after { content: ""; position: absolute; inset: 1.5px; right: 6px; background: currentColor; border-radius: 1px; }
+
+.home-indicator {
+  flex: none; height: var(--home-indicator);
+  display: flex; align-items: center; justify-content: center;
+}
+.home-indicator::after {
+  content: ""; width: 140px; height: 5px; border-radius: 3px; background: var(--ink-1); opacity: .85;
+}
+
+/* ── 4. Chrome ────────────────────────────────────────────────────────── */
+
+.body { flex: 1 1 auto; display: flex; min-height: 0; }
+
+/* Sidebar (iPad) */
+.sidebar {
+  width: var(--sidebar-w); flex: none;
+  background: var(--chrome);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-right: 1px solid var(--line);
+  display: flex; flex-direction: column;
+  padding: 8px 12px 12px;
+  overflow: hidden;
+}
+.sidebar__head { padding: 6px 10px 14px; display: flex; align-items: center; justify-content: space-between; }
+.sidebar__group { margin-top: 18px; }
+.sidebar__grouptitle { padding: 0 10px 8px; color: var(--ink-3); }
+
+.navitem {
+  display: flex; align-items: center; gap: 12px;
+  height: 40px; padding: 0 10px; border-radius: 9px;
+  color: var(--ink-1); width: 100%; text-align: left;
+}
+.navitem .ico { color: var(--ink-2); flex: none; }
+.navitem__count { margin-left: auto; color: var(--ink-3); }
+.navitem:hover { background: var(--fill); }
+/* aktiv = Fläche + Gewicht + Ink-Balken (drei Merkmale, keine Farbe nötig) */
+.navitem.is-active { background: var(--accent-soft); font-weight: 600; position: relative; }
+.navitem.is-active::before {
+  content: ""; position: absolute; left: -12px; top: 8px; bottom: 8px;
+  width: 3px; border-radius: 0 2px 2px 0; background: var(--accent);
+}
+.navitem.is-active .ico { color: var(--ink-1); }
+
+/* Tab-Bar (iPhone) */
+.tabbar {
+  flex: none; height: var(--tabbar-h);
+  display: flex; align-items: stretch;
+  background: var(--chrome);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-top: 1px solid var(--line);
+}
+.tab {
+  flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  color: var(--ink-3); padding-top: 4px;
+}
+.tab .ico { width: 24px; height: 24px; }
+/* aktiv = Ink + Gewicht + gefülltes Icon */
+.tab.is-active { color: var(--ink-1); font-weight: 600; }
+/* Einzige Abweichung von der 5-Größen-Regel: Die Tab-Beschriftung läuft auf
+   11 pt, wie in iOS (SF Caption 2). Bei 13 pt kollidieren "Bibliothek" und
+   "Aufgaben" auf 393 pt Breite — überlappender Text wiegt schwerer als eine
+   begründete sechste Stufe an genau einer Stelle. */
+.tab .t-label { font-size: 11px; line-height: 13px; letter-spacing: 0; }
+:root[data-type="gross"] .tab .t-label { font-size: 13px; line-height: 15px; }
+
+/* Navigationsleiste im Inhaltsbereich */
+.navbar {
+  flex: none; min-height: var(--navbar-h);
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px var(--pad-ipad);
+  border-bottom: 1px solid var(--line);
+  background: var(--chrome);
+  backdrop-filter: blur(24px) saturate(180%);
+}
+.screen--iphone .navbar { padding: 8px var(--pad-iphone); }
+.navbar__spacer { flex: 1 1 auto; }
+
+.iconbtn {
+  width: var(--tap); height: var(--tap);
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px; color: var(--ink-2); flex: none;
+}
+.iconbtn:hover { background: var(--fill); color: var(--ink-1); }
+.iconbtn.is-active { background: var(--accent-soft); color: var(--ink-1); }
+
+.content { flex: 1 1 auto; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.scroll { flex: 1 1 auto; overflow: hidden; padding: 20px var(--pad-ipad) 24px; }
+.screen--iphone .scroll { padding: 12px var(--pad-iphone) 20px; }
+/* Ohne das stauchen Flex-Kinder ihren Inhalt, statt unten aus dem Bild zu
+   laufen — Karten würden dann leer wirken, obwohl sie Inhalt haben. */
+.scroll > * { flex-shrink: 0; }
+
+/* ── 5. Bausteine ─────────────────────────────────────────────────────── */
+
+.ico { width: 22px; height: 22px; flex: none; display: inline-block; }
+.ico svg { width: 100%; height: 100%; display: block; }
+
+/* Modul-Dot: 6 pt, immer neben einem Wort — nie allein */
+.dot {
+  width: 6px; height: 6px; border-radius: 50%; flex: none; display: inline-block;
+  box-shadow: 0 0 0 .5px rgba(0,0,0,.18);
+}
+.dot--canvas  { background: var(--mod-canvas); }
+.dot--notes   { background: var(--mod-notes); }
+.dot--journal { background: var(--mod-journal); }
+.dot--tasks   { background: var(--mod-tasks); }
+.dot--cards   { background: var(--mod-cards); }
+
+/* Listenzeile */
+.row {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 52px; padding: 8px 12px;
+  border-radius: 10px;
+  position: relative;
+}
+.row + .row::before {
+  content: ""; position: absolute; left: 12px; right: 12px; top: 0; height: 1px; background: var(--line);
+}
+.row:hover { background: var(--fill); }
+.row__main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.row__meta { display: flex; align-items: center; gap: 8px; flex: none; color: var(--ink-3); }
+/* ausgewählt = Fläche + Ring + Gewicht */
+.row.is-selected { background: var(--accent-soft); box-shadow: inset 0 0 0 1.5px var(--accent-ring); }
+.row.is-selected .row__title { font-weight: 600; }
+
+.clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Karte */
+.card {
+  background: var(--paper);
+  border-radius: var(--r-card);
+  box-shadow: var(--sh-card);
+  padding: 16px;
+  position: relative;
+}
+.card--flat { box-shadow: none; border: 1px solid var(--line); }
+.card__head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.card__title { flex: 1 1 auto; min-width: 0; }
+
+/* Chip / Pille */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 10px;
+  border-radius: var(--r-chip);
+  background: var(--fill);
+  color: var(--ink-2);
+  font: 600 13px/16px var(--sans);
+  white-space: nowrap;
+}
+.chip--ghost { background: none; box-shadow: inset 0 0 0 1px var(--line-2); }
+.chip--solid { background: var(--accent); color: var(--accent-on); }
+.chip--danger { color: var(--danger); background: none; box-shadow: inset 0 0 0 1px currentColor; }
+
+/* Zähler: Zahl trägt Gewicht, Wort trägt Bedeutung */
+.count { display: inline-flex; align-items: baseline; gap: 6px; }
+.count__n { font: 600 20px/24px var(--sans); font-variant-numeric: tabular-nums; }
+.count__w { color: var(--ink-3); }
+
+/* Knopf */
+.btn {
+  height: var(--tap); padding: 0 18px;
+  border-radius: 11px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: 600 17px/1 var(--sans);
+  background: var(--fill); color: var(--ink-1);
+}
+.btn--primary { background: var(--accent); color: var(--accent-on); }
+.btn--quiet   { background: none; color: var(--ink-2); }
+.btn--danger  { background: none; color: var(--danger); }
+.btn[disabled], .btn.is-disabled { opacity: .38; }
+.btn--sm { height: 34px; padding: 0 12px; font-size: 15px; border-radius: 9px; }
+
+/* Suchfeld */
+.field {
+  height: 38px; border-radius: 10px;
+  background: var(--fill); color: var(--ink-1);
+  display: flex; align-items: center; gap: 8px; padding: 0 12px;
+}
+.field .ico { width: 18px; height: 18px; color: var(--ink-3); }
+.field__ph { color: var(--ink-3); }
+
+/* Segmented */
+.segmented {
+  display: inline-flex; gap: 2px; padding: 2px;
+  background: var(--fill); border-radius: 10px;
+}
+.segmented button {
+  height: 32px; padding: 0 14px; border-radius: 8px;
+  font: 600 13px/16px var(--sans); color: var(--ink-2);
+}
+.segmented button.is-on { background: var(--paper); color: var(--ink-1); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+:root[data-theme="dark"] .segmented button.is-on { background: var(--fill-3); }
+
+/* Checkbox — Things-Prinzip: großes Ziel, ruhiger Ring */
+.check {
+  width: 22px; height: 22px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px var(--line-2);
+  flex: none; position: relative;
+}
+.check.is-done { background: var(--accent); box-shadow: none; }
+.check.is-done::after {
+  content: ""; position: absolute; left: 6px; top: 5.5px;
+  width: 6px; height: 10px; border: 2px solid var(--accent-on);
+  border-top: 0; border-left: 0; transform: rotate(42deg);
+}
+/* Zwischenzustand der Animation: Ring zieht sich zusammen, Haken wächst */
+.check.is-checking { background: var(--accent); box-shadow: 0 0 0 6px var(--accent-soft); }
+.check.is-checking::after {
+  content: ""; position: absolute; left: 6px; top: 5.5px;
+  width: 6px; height: 10px; border: 2px solid var(--accent-on);
+  border-top: 0; border-left: 0; transform: rotate(42deg) scale(.6); opacity: .7;
+}
+
+/* Fortschrittsbalken */
+.bar { height: 6px; border-radius: 3px; background: var(--fill-2); overflow: hidden; }
+.bar__fill { height: 100%; border-radius: 3px; background: var(--accent); }
+
+/* Trenner mit Beschriftung */
+.divider { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; }
+.divider::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--line); }
+
+/* ── 6. Signatur: der Fluss zwischen den Modulen ──────────────────────── */
+
+/* Übergabe-Leiste — überall dieselbe. Erscheint an jeder Auswahl. */
+.handoff {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px;
+  border-radius: var(--r-pill);
+  background: var(--chrome);
+  backdrop-filter: blur(28px) saturate(180%);
+  box-shadow: var(--sh-float), inset 0 0 0 1px var(--line);
+}
+.handoff__from {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 10px 0 8px; height: 34px;
+  color: var(--ink-3);
+  border-right: 1px solid var(--line);
+  margin-right: 4px;
+  white-space: nowrap;
+}
+.handoff__btn {
+  height: 34px; padding: 0 12px; border-radius: var(--r-pill);
+  display: inline-flex; align-items: center; gap: 7px;
+  font: 600 13px/16px var(--sans); color: var(--ink-1);
+  white-space: nowrap;
+}
+.handoff__btn:hover { background: var(--fill); }
+.handoff__btn.is-primary { background: var(--accent); color: var(--accent-on); }
+.handoff__btn.is-primary .dot { box-shadow: 0 0 0 1px rgba(255,255,255,.5); }
+
+/* Herkunfts-Chip — sitzt auf jedem erzeugten Objekt */
+.origin {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 24px; padding: 0 9px 0 7px;
+  border-radius: var(--r-pill);
+  background: var(--fill);
+  color: var(--ink-2);
+  font: 600 13px/16px var(--sans);
+  white-space: nowrap;
+}
+.origin .ico { width: 13px; height: 13px; color: var(--ink-3); }
+
+/* Ketten-Karte auf Today: Notiz → Karten → fällig */
+.chain { display: flex; align-items: stretch; gap: 0; }
+.chain__link {
+  flex: 1 1 0; min-width: 0;
+  padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 4px;
+  position: relative;
+}
+.chain__link + .chain__link { border-left: 1px solid var(--line); }
+.chain__link + .chain__link::before {
+  content: ""; position: absolute; left: -5px; top: 50%; transform: translateY(-50%) rotate(45deg);
+  width: 9px; height: 9px; background: var(--paper);
+  border-top: 1px solid var(--line); border-right: 1px solid var(--line);
+}
+.chain__eyebrow { display: flex; align-items: center; gap: 6px; color: var(--ink-3); }
+
+/* Der Signature-Moment: die Übergabe fliegt.
+   Im Mockup als eingefrorener Zwischenzustand sichtbar. */
+.flight {
+  position: absolute; z-index: 60;
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: var(--paper);
+  box-shadow: var(--sh-float);
+  transform: rotate(-4deg) scale(.92);
+  opacity: .96;
+}
+.flight__trail {
+  position: absolute; z-index: 59;
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, transparent, var(--accent-soft) 30%, var(--accent-soft));
+  filter: blur(.5px);
+}
+.flight__ghost {
+  position: absolute; z-index: 58;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1.5px var(--accent-ring);
+  background: var(--accent-soft);
+}
+
+/* ── 7. Zustände ──────────────────────────────────────────────────────── */
+
+/* leer — nie nur eine Illustration, immer ein erster Schritt */
+.empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; text-align: center;
+  padding: 40px 32px;
+  color: var(--ink-3);
+}
+.empty__art {
+  width: 76px; height: 76px; border-radius: 20px;
+  background: var(--fill); color: var(--ink-4);
+  display: flex; align-items: center; justify-content: center;
+}
+.empty__art .ico { width: 34px; height: 34px; }
+.empty__title { color: var(--ink-1); }
+.empty__text { max-width: 300px; }
+
+/* deaktiviert = Deckkraft + fehlende Fläche (zwei Merkmale) */
+.is-off { opacity: .38; }
+
+/* Fehler = Farbe + Symbol + Randlinie */
+.notice {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 14px; border-radius: 11px;
+  background: var(--fill);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+.notice--error { color: var(--danger); box-shadow: inset 0 0 0 1px currentColor; background: none; }
+.notice--error .notice__text { color: var(--ink-1); }
+
+/* Laden = Skelett, nie ein Spinner ohne Kontext */
+.skeleton {
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--fill) 25%, var(--fill-2) 37%, var(--fill) 63%);
+  background-size: 400% 100%;
+}
+
+/* ── 8. Steckbrief unter der Bühne ────────────────────────────────────── */
+
+.sheetnote {
+  max-width: 1100px;
+  margin: 0 auto 56px;
+  padding: 26px 30px;
+  background: var(--paper);
+  border-radius: var(--r-card);
+  box-shadow: var(--sh-card);
+}
+.sheetnote h2 { font: 600 20px/26px var(--sans); margin: 0 0 4px; letter-spacing: -.015em; }
+.sheetnote h3 { font: 600 13px/16px var(--sans); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); margin: 20px 0 8px; }
+.sheetnote p, .sheetnote li { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0 0 6px; }
+.sheetnote strong { color: var(--ink-1); font-weight: 600; }
+.sheetnote ul { margin: 0; padding-left: 20px; }
+.sheetnote table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+.sheetnote td { font: 400 14px/20px var(--sans); color: var(--ink-2); padding: 5px 10px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.sheetnote td:first-child { color: var(--ink-1); font-weight: 600; width: 190px; }
+.sheetnote .num { font-variant-numeric: tabular-nums; }
+
+/* Bedienleiste des Mockups selbst (nicht Teil des Entwurfs) */
+.controls {
+  position: fixed; right: 20px; top: 20px; z-index: 200;
+  display: flex; gap: 6px; padding: 6px;
+  background: var(--chrome); backdrop-filter: blur(24px);
+  border-radius: var(--r-pill); box-shadow: var(--sh-float);
+}
+.controls button {
+  height: 34px; padding: 0 14px; border-radius: var(--r-pill);
+  font: 600 13px/16px var(--sans); color: var(--ink-2);
+}
+.controls button.is-on { background: var(--accent); color: var(--accent-on); }
+.controls button:hover:not(.is-on) { background: var(--fill); }
+
+.mocktitle {
+  max-width: 1100px; margin: 46px auto 22px; padding: 0 30px;
+}
+.mocktitle h1 { font: 600 28px/34px var(--sans); letter-spacing: -.02em; margin: 0 0 6px; }
+.mocktitle p { font: 400 17px/23px var(--sans); color: var(--ink-2); margin: 0; max-width: 70ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}

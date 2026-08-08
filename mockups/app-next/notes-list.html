@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notizen-Liste — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Notizen-Liste
+
+ÜBERNOMMEN
+· Bear (verschachtelte Tags als Baum): Das Beste an Bear ist, dass ein Tag
+  „#uni/bio" beim Schreiben entsteht und in der Spalte von selbst zum Ast wird —
+  keine Ordner-Verwaltung, keine Dialoge. Übernommen als eigene Tag-Spalte mit
+  aufgeklapptem #uni und den Kindern /bio und /mathe samt Anzahl.
+  BEWERTUNG: stark, weil die Struktur beim Schreiben entsteht. Schwach an Bear
+  ist, dass Zähler und Baumlinie dort fast unsichtbar sind — hier trägt jeder
+  Ast eine Zahl und eine sichtbare Führungslinie.
+· Bear (ruhige Listenzeile): Titel, Vorschau, Datum — kein Bild, kein Farbstreifen.
+  BEWERTUNG: richtig für Text, aber Bear verschweigt, was aus einer Notiz
+  geworden ist. Hier steht das als Chip in der Zeile: „12 Karten", „1 Aufgabe".
+· Apple Notes (Vorschauzeilen): Zwei Zeilen Anfang des Textes sagen mehr als
+  jedes Symbol. Übernommen, aber auf zwei Zeilen begrenzt und mit Tag-Chips
+  darunter statt mit einem Ordnernamen.
+  BEWERTUNG: gut. Apple Notes kippt allerdings bei Bildern in eine Galerie um
+  und verliert dann den Text — hier bleibt die Zeile immer eine Textzeile.
+· Craft (Filterleiste über der Liste): Die Sicht wird über der Liste umgestellt,
+  nicht in einem Menü. Übernommen als `.segmented` mit vier Sichten.
+  BEWERTUNG: gut, aber Craft stapelt drei Leisten übereinander. Hier ist es
+  genau eine Leiste; das Suchfeld sitzt oben in der Navigationsleiste.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Bears Tag-Farben und Emoji-Icons je Tag — Farbe gehört dem Nutzer, nicht der
+  Verwaltung. Die Tags tragen hier Ink und eine Zahl.
+· Apple Notes' Galerieansicht mit Vorschaubildern — sieht auf dem iPad nach
+  Fotos aus und beantwortet die Frage „Was steht drin?" gerade nicht.
+· Notions Datenbank-Kopfzeile mit Spalten, Filtern und Gruppierungen — eine
+  Notizliste ist keine Tabelle.
+· Evernotes Stapel/Notizbuch/Tag-Dreifachhierarchie — hier gibt es Notizbücher
+  UND Tags, aber sie stehen in einer Spalte untereinander, nicht ineinander.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Die Auswahlkreise sind immer da — es gibt keinen Auswahlmodus. Wer zwei Notizen
+antippt, hat zwei Notizen ausgewählt, und in derselben Sekunde erscheint die
+Übergabe-Leiste: „aus 2 Notizen → Lernkarten · Aufgabe · Journal". Es ist
+dieselbe Leiste wie in der Notiz, im Canvas und im Journal — gleiche Reihenfolge,
+gleiche Wörter, gleiche Höhe. Deshalb kostet die Mehrfachauswahl null Extra-Taps
+und das iPhone braucht keinen Schritt mehr als das iPad.
+
+ADA-KATEGORIE: Interaktion (Auswahl und Übergabe sind ein Handgriff, kein Modus)
+und Innovation (aus zwei Notizen wird ein Kartenstapel, ohne Export und ohne
+zweite App).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Notiztitel       ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Vorschauzeilen   ink-3 auf Papier    4,8:1   (hell) ·  4,9:1 (dunkel)
+  Tag-Zähler       ink-3 auf paper-2   4,8:1   (hell) ·  4,9:1 (dunkel)
+  Chip-Text        ink-2 auf fill      5,3:1   (hell) ·  7,1:1 (dunkel)
+  Übergabe-Ziel    accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Auswahl-Ring     accent-ring 1,5 pt auf accent-soft — Fläche UND Ring, nie nur Farbe.
+  Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort („12 Karten").
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Notizen-Liste</h1>
+  <p>Alle Notizen, nach Tags geordnet. Links wächst der Tag-Baum mit dem Schreiben, rechts steht jede Notiz mit zwei Zeilen Vorschau. Zwei Notizen sind ausgewählt — die Übergabe-Leiste bietet an, daraus Lernkarten, eine Aufgabe oder einen Journaleintrag zu machen.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · dreispaltig: Sidebar · Tags · Notizen</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar — identisch zu today.html, nur „Notizen" ist aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem is-active"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span><span class="navitem__count t-label num">42</span></button>
+            <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar">
+            <div class="t-title" style="display:flex; align-items:center; gap:10px">Notizen<span class="dot dot--notes"></span></div>
+            <div class="navbar__spacer"></div>
+            <div class="field" style="width:290px">
+              <span class="ico" data-ico="search"></span>
+              <span class="field__ph t-body">In 42 Notizen suchen</span>
+            </div>
+            <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+            <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neue Notiz</button>
+          </div>
+
+          <!-- Zwei Spalten: Tags · Notizen -->
+          <div style="flex:1 1 auto; display:flex; min-height:0">
+
+            <!-- ══ Tag-Spalte (240 pt) ══ -->
+            <aside style="width:240px; flex:none; display:flex; flex-direction:column;
+                          padding:10px 12px 12px; overflow:hidden;
+                          background:var(--paper-2); border-right:1px solid var(--line)">
+
+              <button class="navitem is-active"><span class="ico" data-ico="notes"></span><span class="t-body">Alle Notizen</span><span class="navitem__count t-label num">42</span></button>
+              <button class="navitem"><span class="ico" data-ico="pin"></span><span class="t-body">Angeheftet</span><span class="navitem__count t-label num">2</span></button>
+              <button class="navitem"><span class="ico" data-ico="trash"></span><span class="t-body">Papierkorb</span><span class="navitem__count t-label num">3</span></button>
+
+              <div class="sidebar__group">
+                <div class="sidebar__grouptitle t-label">Tags</div>
+
+                <!-- #uni ist aufgeklappt: Pfeil zeigt nach unten, Kinder hängen an der Linie -->
+                <button class="navitem">
+                  <span class="ico c-3" data-ico="chevD" style="width:15px;height:15px"></span>
+                  <span class="ico" data-ico="tag" style="width:18px;height:18px"></span>
+                  <span class="t-body">#uni</span>
+                  <span class="navitem__count t-label num">22</span>
+                </button>
+                <div style="margin-left:45px; padding-left:12px; border-left:1px solid var(--line-2)">
+                  <button class="navitem"><span class="t-body">/bio</span><span class="navitem__count t-label num">14</span></button>
+                  <button class="navitem"><span class="t-body">/mathe</span><span class="navitem__count t-label num">8</span></button>
+                </div>
+
+                <button class="navitem">
+                  <span style="width:15px; flex:none"></span>
+                  <span class="ico" data-ico="tag" style="width:18px;height:18px"></span>
+                  <span class="t-body">#labor</span>
+                  <span class="navitem__count t-label num">11</span>
+                </button>
+                <button class="navitem">
+                  <span style="width:15px; flex:none"></span>
+                  <span class="ico" data-ico="tag" style="width:18px;height:18px"></span>
+                  <span class="t-body">#prüfung</span>
+                  <span class="navitem__count t-label num">6</span>
+                </button>
+              </div>
+
+              <div class="sidebar__group">
+                <div class="sidebar__grouptitle t-label">Notizbücher</div>
+                <button class="navitem" style="gap:10px"><span class="ico" data-ico="doc" style="width:19px;height:19px"></span><span class="t-body clamp-1" style="flex:1 1 auto; min-width:0">Zellbiologie</span><span class="navitem__count t-label num">14</span></button>
+                <button class="navitem" style="gap:10px"><span class="ico" data-ico="doc" style="width:19px;height:19px"></span><span class="t-body clamp-1" style="flex:1 1 auto; min-width:0">Analysis II</span><span class="navitem__count t-label num">9</span></button>
+                <button class="navitem" style="gap:10px"><span class="ico" data-ico="doc" style="width:19px;height:19px"></span><span class="t-body clamp-1" style="flex:1 1 auto; min-width:0">Laborjournal</span><span class="navitem__count t-label num">11</span></button>
+                <button class="navitem" style="gap:10px"><span class="ico" data-ico="doc" style="width:19px;height:19px"></span><span class="t-body clamp-1" style="flex:1 1 auto; min-width:0">Semesterplanung</span><span class="navitem__count t-label num">4</span></button>
+                <button class="navitem" style="gap:10px"><span class="ico" data-ico="doc" style="width:19px;height:19px"></span><span class="t-body clamp-1" style="flex:1 1 auto; min-width:0">Lesenotizen Soziologie</span><span class="navitem__count t-label num">4</span></button>
+              </div>
+
+              <div style="margin-top:auto; padding-top:10px">
+                <button class="card card--flat" style="width:100%; display:flex; align-items:center; gap:9px; padding:9px 12px; text-align:left; margin-bottom:8px">
+                  <span class="ico c-3" data-ico="info" style="width:16px;height:16px"></span>
+                  <span class="t-sub c-2 clamp-1" style="flex:1 1 auto; min-width:0">4 Notizen ohne Tag</span>
+                </button>
+                <button class="navitem"><span class="ico" data-ico="plus"></span><span class="t-body">Tag hinzufügen</span></button>
+              </div>
+            </aside>
+
+            <!-- ══ Notizliste ══ -->
+            <div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column; background:var(--paper)">
+
+              <!-- Filterleiste -->
+              <div style="flex:none; display:flex; align-items:center; gap:12px; padding:9px 24px; border-bottom:1px solid var(--line)">
+                <div class="segmented">
+                  <button class="is-on">Alle</button>
+                  <button>Angeheftet</button>
+                  <button>Mit Aufgaben</button>
+                  <button>Mit Karten</button>
+                </div>
+                <div style="flex:1"></div>
+                <button class="chip chip--ghost"><span class="ico" data-ico="sort" style="width:14px;height:14px"></span>Geändert</button>
+              </div>
+
+              <div class="scroll" style="display:flex; flex-direction:column; padding:10px 24px 20px">
+
+                <div class="divider" style="margin:2px 0 4px">
+                  <span class="t-label c-3">ANGEHEFTET</span><span class="t-label c-3 num">2</span>
+                </div>
+
+                <!-- 1 -->
+                <div class="row" style="align-items:flex-start; padding:12px">
+                  <span class="check" style="margin-top:2px"></span>
+                  <div class="row__main">
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Zellbiologie — Vorlesung 9</span>
+                      <span class="ico c-2" data-ico="pin" style="width:15px;height:15px"></span>
+                      <span class="t-label c-3 num" style="flex:none">gestern 16:20</span>
+                    </div>
+                    <div class="t-sub c-3 clamp-2">Mitochondrium: Doppelmembran, eigene Ribosomen, teilt sich selbst. Der Golgi-Apparat verpackt, was das Endoplasmatische Retikulum vorbereitet hat.</div>
+                    <div style="display:flex; gap:6px; margin-top:8px">
+                      <span class="chip">#uni/bio</span>
+                      <span class="chip"><span class="dot dot--cards"></span>12 Karten</span>
+                      <span class="chip"><span class="dot dot--tasks"></span>1 Aufgabe</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2 -->
+                <div class="row" style="align-items:flex-start; padding:12px">
+                  <span class="check" style="margin-top:2px"></span>
+                  <div class="row__main">
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Semesterplanung Wintersemester</span>
+                      <span class="ico c-2" data-ico="pin" style="width:15px;height:15px"></span>
+                      <span class="t-label c-3 num" style="flex:none">2. Nov</span>
+                    </div>
+                    <div class="t-sub c-3 clamp-2">Analysis II liegt Dienstag und Donnerstag, das Labor blockt den Mittwochnachmittag. Die Prüfungswoche beginnt am 9. Februar — davor drei freie Wochen.</div>
+                    <div style="display:flex; gap:6px; margin-top:8px">
+                      <span class="chip">#uni</span>
+                      <span class="chip">#prüfung</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="divider" style="margin:14px 0 4px">
+                  <span class="t-label c-3">DIESE WOCHE</span>
+                </div>
+
+                <!-- 3 — ausgewählt: Fläche + Ring + Gewicht, und angehakt -->
+                <div class="row is-selected" style="align-items:flex-start; padding:12px">
+                  <span class="check is-done" style="margin-top:2px"></span>
+                  <div class="row__main">
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Osmose und Zellmembran</span>
+                      <span class="t-label c-3 num" style="flex:none">Di 11. Nov</span>
+                    </div>
+                    <div class="t-sub c-2 clamp-2">Wasser wandert dorthin, wo mehr gelöst ist. Versuch mit Kartoffelstäbchen: nach 40 Minuten 3 mm kürzer, in der Salzlösung deutlich weicher.</div>
+                    <div style="display:flex; gap:6px; margin-top:8px">
+                      <span class="chip">#uni/bio</span>
+                      <span class="chip">#prüfung</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4 — gerade angetippt: Häkchen mitten in der Animation -->
+                <div class="row" style="align-items:flex-start; padding:12px; background:var(--accent-soft)">
+                  <span class="check is-checking" style="margin-top:2px"></span>
+                  <div class="row__main">
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Laborjournal — Zellkultur, Tag 3</span>
+                      <span class="t-label c-3 num" style="flex:none">Mo 10. Nov</span>
+                    </div>
+                    <div class="t-sub c-2 clamp-2">Passage 4, Konfluenz bei 80 %. Jana hat das Medium um 9:15 gewechselt, Milan zählt morgen früh aus. Das Foto vom Inkubator liegt dabei.</div>
+                    <div style="display:flex; gap:6px; margin-top:8px">
+                      <span class="chip">#labor</span>
+                      <span class="chip"><span class="ico" data-ico="photo" style="width:13px;height:13px"></span>2 Fotos</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ══ Übergabe-Leiste: hängt an der Auswahl, nicht am Bildschirmrand ══ -->
+                <div style="display:flex; justify-content:center; padding:12px 0 14px">
+                  <span class="handoff">
+                    <span class="handoff__from t-label"><span class="dot dot--notes"></span>aus <span class="num">2</span> Notizen</span>
+                    <button class="handoff__btn is-primary"><span class="dot dot--cards"></span>Lernkarten</button>
+                    <button class="handoff__btn"><span class="dot dot--tasks"></span>Aufgabe</button>
+                    <button class="handoff__btn"><span class="dot dot--journal"></span>Journal</button>
+                    <button class="handoff__btn" style="padding:0 9px"><span class="ico" data-ico="close" style="width:15px;height:15px"></span></button>
+                  </span>
+                </div>
+
+                <!-- 5 -->
+                <div class="row" style="align-items:flex-start; padding:12px">
+                  <span class="check" style="margin-top:2px"></span>
+                  <div class="row__main">
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Analysis II — Grenzwertsätze</span>
+                      <span class="t-label c-3 num" style="flex:none">Mo 10. Nov</span>
+                    </div>
+                    <div class="t-sub c-3 clamp-2">Satz von Bolzano-Weierstraß mit den drei Beispielen von Prof. Wendt. Aufgabe 3 auf Blatt 5 hängt direkt daran, Abgabe ist heute um 18:00.</div>
+                    <div style="display:flex; gap:6px; margin-top:8px">
+                      <span class="chip">#uni/mathe</span>
+                      <span class="chip"><span class="dot dot--tasks"></span>1 Aufgabe</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 6 -->
+                <div class="row" style="align-items:flex-start; padding:12px">
+                  <span class="check" style="margin-top:2px"></span>
+                  <div class="row__main">
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Lesenotizen Soziologie — Kapitel 2</span>
+                      <span class="t-label c-3 num" style="flex:none">Fr 7. Nov</span>
+                    </div>
+                    <div class="t-sub c-3 clamp-2">Bourdieu, Formen des Kapitals. Die Stelle auf Seite 187 will ich im Seminar zitieren — soziales Kapital ist vor allem Netzwerkarbeit.</div>
+                    <div style="display:flex; gap:6px; margin-top:8px">
+                      <span class="chip">#uni</span>
+                      <span class="chip"><span class="ico" data-ico="quote" style="width:13px;height:13px"></span>4 Zitate</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Tags als Chip-Band, „+" im Daumenbereich</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content" style="position:relative">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <div class="t-title" style="display:flex; align-items:center; gap:9px">Notizen<span class="dot dot--notes"></span></div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="sort"></span></button>
+          <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column; padding:6px 20px 20px">
+
+          <div class="field" style="margin-bottom:12px">
+            <span class="ico" data-ico="search"></span>
+            <span class="field__ph t-body">In 42 Notizen suchen</span>
+          </div>
+
+          <!-- Filter-Chip-Band: waagerecht, läuft rechts aus dem Bild -->
+          <div style="display:flex; gap:8px; align-items:center; overflow:hidden; margin:0 -20px 4px; padding:0 20px">
+            <span class="chip chip--solid" style="flex:none">Alle</span>
+            <span style="width:1px; height:18px; background:var(--line-2); flex:none"></span>
+            <span class="chip" style="flex:none"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#uni/bio</span>
+            <span class="chip" style="flex:none"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#uni/mathe</span>
+            <span class="chip" style="flex:none"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#labor</span>
+            <span class="chip" style="flex:none"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#prüfung</span>
+            <span class="chip" style="flex:none">Angeheftet</span>
+            <span class="chip" style="flex:none">Mit Aufgaben</span>
+          </div>
+
+          <div class="divider" style="margin:10px 0 2px">
+            <span class="t-label c-3">ANGEHEFTET</span><span class="t-label c-3 num">2</span>
+          </div>
+
+          <!-- 1 -->
+          <div class="row" style="align-items:flex-start; padding:10px">
+            <span class="check" style="margin-top:2px"></span>
+            <div class="row__main">
+              <div style="display:flex; align-items:center; gap:6px">
+                <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Zellbiologie — Vorlesung 9</span>
+                <span class="ico c-2" data-ico="pin" style="width:15px;height:15px"></span>
+              </div>
+              <div class="t-sub c-3 clamp-2">Mitochondrium: Doppelmembran, eigene Ribosomen. Der Golgi-Apparat verpackt, was das Endoplasmatische Retikulum vorbereitet hat.</div>
+              <div style="display:flex; align-items:center; gap:6px; margin-top:7px">
+                <span class="chip" style="height:24px">#uni/bio</span>
+                <span class="chip" style="height:24px"><span class="dot dot--cards"></span>12 Karten</span>
+                <span style="flex:1 1 auto"></span>
+                <span class="t-label c-3 num" style="flex:none">gestern</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider" style="margin:12px 0 2px">
+            <span class="t-label c-3">DIESE WOCHE</span>
+          </div>
+
+          <!-- 2 — ausgewählt -->
+          <div class="row is-selected" style="align-items:flex-start; padding:10px">
+            <span class="check is-done" style="margin-top:2px"></span>
+            <div class="row__main">
+              <div style="display:flex; align-items:center; gap:6px">
+                <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Osmose und Zellmembran</span>
+              </div>
+              <div class="t-sub c-2 clamp-2">Wasser wandert dorthin, wo mehr gelöst ist. Versuch mit Kartoffelstäbchen: nach 40 Minuten 3 mm kürzer.</div>
+              <div style="display:flex; align-items:center; gap:6px; margin-top:7px">
+                <span class="chip" style="height:24px">#uni/bio</span>
+                <span class="chip" style="height:24px">#prüfung</span>
+                <span style="flex:1 1 auto"></span>
+                <span class="t-label c-3 num" style="flex:none">Di 11. Nov</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 — Häkchen mitten in der Animation -->
+          <div class="row" style="align-items:flex-start; padding:10px; background:var(--accent-soft)">
+            <span class="check is-checking" style="margin-top:2px"></span>
+            <div class="row__main">
+              <div style="display:flex; align-items:center; gap:6px">
+                <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Laborjournal — Zellkultur, Tag 3</span>
+              </div>
+              <div class="t-sub c-2 clamp-2">Passage 4, Konfluenz bei 80 %. Jana hat das Medium um 9:15 gewechselt, Milan zählt morgen früh aus.</div>
+              <div style="display:flex; align-items:center; gap:6px; margin-top:7px">
+                <span class="chip" style="height:24px">#labor</span>
+                <span class="chip" style="height:24px"><span class="ico" data-ico="photo" style="width:13px;height:13px"></span>2 Fotos</span>
+                <span style="flex:1 1 auto"></span>
+                <span class="t-label c-3 num" style="flex:none">Mo 10. Nov</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dieselbe Leiste wie auf dem iPad, nur gekürzt -->
+          <div style="display:flex; justify-content:center; padding:13px 0 20px">
+            <span class="handoff">
+              <span class="handoff__from t-label" style="padding:0 8px 0 6px"><span class="dot dot--notes"></span>aus <span class="num">2</span></span>
+              <button class="handoff__btn is-primary" style="padding:0 10px"><span class="dot dot--cards"></span>Lernkarten</button>
+              <button class="handoff__btn" style="padding:0 10px"><span class="dot dot--tasks"></span>Aufgabe</button>
+              <button class="handoff__btn" style="padding:0 8px"><span class="ico" data-ico="more" style="width:16px;height:16px"></span></button>
+            </span>
+          </div>
+
+          <!-- 4 -->
+          <div class="row" style="align-items:flex-start; padding:10px">
+            <span class="check" style="margin-top:2px"></span>
+            <div class="row__main">
+              <div style="display:flex; align-items:center; gap:6px">
+                <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Analysis II — Grenzwertsätze</span>
+              </div>
+              <div class="t-sub c-3 clamp-2">Satz von Bolzano-Weierstraß mit den drei Beispielen von Prof. Wendt. Aufgabe 3 auf Blatt 5 hängt daran.</div>
+              <div style="display:flex; align-items:center; gap:6px; margin-top:7px">
+                <span class="chip" style="height:24px">#uni/mathe</span>
+                <span class="chip" style="height:24px"><span class="dot dot--tasks"></span>1 Aufgabe</span>
+                <span style="flex:1 1 auto"></span>
+                <span class="t-label c-3 num" style="flex:none">Mo 10. Nov</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5 -->
+          <div class="row" style="align-items:flex-start; padding:10px">
+            <span class="check" style="margin-top:2px"></span>
+            <div class="row__main">
+              <div style="display:flex; align-items:center; gap:6px">
+                <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Lesenotizen Soziologie — Kapitel 2</span>
+              </div>
+              <div class="t-sub c-3 clamp-2">Bourdieu, Formen des Kapitals. Die Stelle auf Seite 187 will ich im Seminar zitieren.</div>
+              <div style="display:flex; align-items:center; gap:6px; margin-top:7px">
+                <span class="chip" style="height:24px">#uni</span>
+                <span style="flex:1 1 auto"></span>
+                <span class="t-label c-3 num" style="flex:none">Fr 7. Nov</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- „+" schwebend im Daumenbereich -->
+        <button class="btn btn--primary"
+                style="position:absolute; right:20px; bottom:99px; width:56px; height:56px;
+                       padding:0; border-radius:50%; box-shadow:var(--sh-float)">
+          <span class="ico" data-ico="plus" style="width:24px;height:24px"></span>
+        </button>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Notizen-Liste — Steckbrief</h2>
+  <p>Drei Spalten auf dem iPad: die App-Sidebar bleibt, daneben wächst der Tag-Baum, rechts steht die Liste. Auf dem iPhone wird aus der Tag-Spalte ein waagerechtes Chip-Band — dieselben Tags, dieselbe Reihenfolge, dieselbe Anzahl Taps.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Bear — Tag-Baum</td><td>Verschachtelte Tags, die beim Schreiben entstehen: <strong>#uni</strong> aufgeklappt mit <strong>/bio</strong> und <strong>/mathe</strong>. Besser gemacht: jeder Ast trägt eine Anzahl und eine sichtbare Führungslinie — bei Bear muss man raten, wie voll ein Tag ist.</td></tr>
+    <tr><td>Bear — ruhige Zeile</td><td>Titel, Vorschau, Datum, kein Bild, kein Farbstreifen. Besser gemacht: die Zeile sagt zusätzlich, was aus der Notiz geworden ist („12 Karten", „1 Aufgabe") — genau das verschweigt Bear.</td></tr>
+    <tr><td>Apple Notes — Vorschau</td><td>Zwei Zeilen Textanfang statt Symbolen. Übernommen, hart auf zwei Zeilen begrenzt; darunter Tag-Chips statt Ordnername. Nicht übernommen: das Umkippen in eine Bildergalerie.</td></tr>
+    <tr><td>Craft — Filterleiste</td><td>Die Sicht wird über der Liste umgestellt, nicht in einem Menü versteckt: <strong>Alle · Angeheftet · Mit Aufgaben · Mit Karten</strong>. Besser gemacht: genau eine Leiste statt Crafts drei gestapelter Zeilen; das Suchfeld sitzt oben in der Navigationsleiste.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Tag-Farben und Emoji je Tag</strong> (Bear) — Farbe gehört dem Inhalt des Nutzers, nicht der Verwaltung. Die Tags tragen Ink und eine Zahl.</li>
+    <li><strong>Galerieansicht mit Vorschaubildern</strong> (Apple Notes) — beantwortet die einzige wichtige Frage „Was steht drin?" gerade nicht.</li>
+    <li><strong>Datenbank-Kopfzeile mit Spalten und Gruppierungen</strong> (Notion) — eine Notizliste ist keine Tabelle.</li>
+    <li><strong>Stapel/Notizbuch/Tag-Dreifachhierarchie</strong> (Evernote) — Notizbücher und Tags stehen hier untereinander in einer Spalte, nicht ineinander.</li>
+    <li><strong>Ein eigener „Auswählen"-Modus</strong> (iOS-Standard) — die Auswahlkreise sind immer da. Das spart auf dem iPhone genau den Tap, der es sonst teurer macht als das iPad.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: 42 Notizen, zwei angeheftet, vier Tags mit Anzahl, sechs Zeilen sichtbar.</td></tr>
+    <tr><td>aktiv</td><td>Zweimal, in zwei Spalten: „Notizen" in der Sidebar und „Alle Notizen" in der Tag-Spalte — beide Fläche + Gewicht + Ink-Balken links. In der Filterleiste ist „Alle" an: Papierfläche + Ink-Text + Schatten.</td></tr>
+    <tr><td>ausgewählt</td><td>„Osmose und Zellmembran": getönte Fläche + 1,5-pt-Ring + fetter Titel. Die zweite Zeile der Auswahl trägt Fläche + Häkchen, aber keinen Ring — der Ring markiert den Anker, an dem die Übergabe-Leiste hängt.</td></tr>
+    <tr><td>abgeschnitten</td><td>Lange Titel und Notizbuchnamen enden mit Auslassungspunkten statt umzubrechen („Lesenotizen…"), damit jede Zeile gleich hoch bleibt und die Liste ruhig scannt.</td></tr>
+    <tr><td>Zwischenzustand</td><td><strong>„Laborjournal — Zellkultur, Tag 3" wurde gerade angetippt:</strong> das Häkchen steht mitten in der Animation (Ring zieht sich zusammen, weicher Hof außen, Haken noch auf 60 % und halbdurchsichtig). Die Übergabe-Leiste zählt trotzdem schon „aus 2 Notizen" — sie wartet nicht das Ende der Animation ab. Das ist der Delight-Moment: die App ist schneller als ihre eigene Animation.</td></tr>
+    <tr><td>deaktiviert</td><td>Ohne Auswahl verschwindet die Übergabe-Leiste ganz, statt grau dazustehen. Wo etwas doch abgeblendet wird (z. B. „Mit Karten" ohne einen einzigen Kartenstapel), gilt Deckkraft .38 <em>und</em> fehlende Fläche.</td></tr>
+    <tr><td>leer</td><td>Ohne Notizen zeigt die Liste keine Illustration, sondern den ersten Schritt: „Noch keine Notiz in #labor. Schreib die erste — oder zieh eine bestehende Notiz auf den Tag." Der Tag-Baum bleibt stehen, damit sichtbar ist, wo man gerade ist.</td></tr>
+  </table>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Interaktion:</strong> Auswahl und Übergabe sind ein einziger Handgriff. Zwei Notizen antippen — und dieselbe Leiste, die auch in der Notiz, im Canvas und im Journal erscheint, bietet Lernkarten, Aufgabe und Journal an, in immer derselben Reihenfolge. Kein Menü, kein Export, kein Moduswechsel.</p>
+  <p><strong>Innovation:</strong> „aus 2 Notizen" ist ein Satz, den keine der Vorbild-Apps sagen kann. Bear kennt keine Lernkarten, Apple Notes keine Aufgaben mit Herkunft, Craft keinen Wiederholungsplan. Hier ist die Liste kein Archiv, sondern ein Vorrat: Was hier liegt, kann in einem Schritt zu dem werden, wofür man es aufgeschrieben hat.</p>
+  <p><strong>Inklusion:</strong> Jedes Ziel ist mindestens 34 pt hoch, Zeilen mindestens 44 pt. Alle Zustände lesen sich ohne Farbe. Bei Dynamic Type XXL wachsen alle fünf Größen mit, die Vorschau geht auf drei Zeilen und die Zeilenhöhe auf 60 pt — die Leiste bricht nicht, weil sie eine Pille mit einer Zeile ist.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe allein. <strong>Aktiv</strong> = Fläche + Gewicht + Ink-Balken (Sidebar, Tag-Spalte). <strong>Ausgewählt</strong> = Fläche + Ring + fetter Titel. <strong>Mit ausgewählt</strong> = Fläche + Häkchen. <strong>Angeheftet</strong> = Nadel-Symbol + eigener Abschnitt „ANGEHEFTET". <strong>Aufgeklappt</strong> = gedrehter Pfeil + eingerückte Kinder an einer Führungslinie. <strong>Deaktiviert</strong> = Deckkraft + fehlende Fläche. Modul-Dots sind 6 pt und stehen nie ohne ihr Wort: „12 Karten", „1 Aufgabe", „aus 2 Notizen".</p>
+
+  <h3>Was auf dem iPhone anders ist — und warum</h3>
+  <ul>
+    <li>Aus der Tag-Spalte wird ein <strong>waagerechtes Chip-Band</strong> mit denselben Einträgen in derselben Reihenfolge: „Alle", dann die vier Tags, dann die Sichten. Es läuft rechts sichtbar aus dem Bild — das ist die Einladung zu wischen.</li>
+    <li>Das <strong>Datum rutscht in die Chip-Zeile</strong>, rechtsbündig. So bekommt der Titel die volle Breite und muss nicht nach vier Wörtern abbrechen. Dieselbe Information, andere Zeile.</li>
+    <li>Die <strong>Übergabe-Leiste zeigt zwei Ziele plus „⋯"</strong> statt drei. Reihenfolge, Wörter, Höhe und der Herkunfts-Text „aus 2" bleiben gleich — man erkennt dieselbe Leiste wieder.</li>
+    <li>Der <strong>„+"-Knopf schwebt unten rechts</strong> im Daumenbereich, nicht oben in der Leiste. Er verdeckt bewusst nur Listeninhalt, nie die Übergabe-Leiste.</li>
+    <li><strong>Gleiche Anzahl Taps:</strong> Notiz antippen → Notiz antippen → Ziel antippen. Drei Taps auf beiden Geräten.</li>
+  </ul>
+
+  <h3>Inline gesetzt (nicht in system.css)</h3>
+  <p>Die Tag-Spalte (240 pt, <span class="num">paper-2</span> mit rechter Linie), die Führungslinie der Tag-Kinder, die Papierfläche hinter der Notizliste, die Filterleiste, die zweizeilige Zeilenform (<span class="num">align-items:flex-start</span>), die Karte „4 Notizen ohne Tag", das waagerechte Chip-Band und der schwebende „+"-Knopf auf dem iPhone stehen ausschließlich im <span class="num">style</span>-Attribut. An system.css wurde nichts geändert.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>
