@@ -18,6 +18,7 @@
      Sekundaertext ink-2 auf --paper           5,32:1
      Inhaltsverzeichnis ink-2 auf --ground     5,10:1
      Tertiaertext ink-3 auf --ground           4,77:1
+     Tertiaertext ink-3 auf --paper            4,97:1
      Aktiver Schalter accent-on auf --accent   17,77:1
      Schalter ink-2 auf --fill ueber --ground  4,90:1
 
@@ -30,6 +31,7 @@
      Sekundaertext ink-2 auf --paper           7,10:1
      Inhaltsverzeichnis ink-2 auf --ground     7,40:1
      Tertiaertext ink-3 auf --ground           5,23:1
+     Tertiaertext ink-3 auf --paper            5,11:1
      Aktiver Schalter accent-on auf --accent   17,27:1
      Schalter ink-2 auf --fill ueber --ground  6,82:1
 
@@ -63,7 +65,10 @@
   --accent-on:#FFFFFF;
   --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,"Segoe UI",Roboto,sans-serif;
   --mono:"SF Mono",ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace;
-  --measure:68ch;
+  /* Nachgemessen, nicht geschaetzt: 52ch ergibt Zeilen von hoechstens
+     ~69 Zeichen. Die Einheit ch skaliert mit der Systemschrift, die
+     Zeichenzahl bleibt damit auch bei anderer Schrift stabil. */
+  --measure:52ch;
   --bar:56px;
 }
 @media (prefers-color-scheme: dark){
@@ -112,7 +117,8 @@ body{
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
-@media (prefers-reduced-motion: no-preference){ html{ scroll-behavior:smooth; } }
+/* Kein scroll-behavior:smooth: das 01-Dokument ist ueber 80 000 px hoch,
+   ein Sprung ans Ende wuerde sekundenlang durch leere Flaechen animieren. */
 ::selection{ background:var(--fill-2); }
 a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--line-2); }
 a:hover{ text-decoration-color:currentColor; }
@@ -145,7 +151,7 @@ a:hover{ text-decoration-color:currentColor; }
 .themes button.is-on{ background:var(--accent); color:var(--accent-on); }
 
 /* ── Titelblock ─────────────────────────────────────────────────── */
-.masthead{ max-width:1264px; margin:0 auto; padding:56px 24px 32px; }
+.masthead{ max-width:1040px; margin:0 auto; padding:56px 24px 32px; }
 .eyebrow{
   margin:0 0 12px; font:600 13px/16px var(--sans);
   letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3);
@@ -154,9 +160,9 @@ a:hover{ text-decoration-color:currentColor; }
 .masthead .sub{ margin:12px 0 0; font:400 17px/27px var(--sans); color:var(--ink-2); max-width:var(--measure); }
 
 /* ── Seitenraster ───────────────────────────────────────────────── */
-.page{ max-width:1264px; margin:0 auto; padding:0 24px 120px; }
+.page{ max-width:1040px; margin:0 auto; padding:0 24px 120px; }
 @media (min-width:1100px){
-  .page{ display:grid; grid-template-columns:248px minmax(0,1fr); gap:56px; align-items:start; }
+  .page{ display:grid; grid-template-columns:240px minmax(0,1fr); gap:48px; align-items:start; }
 }
 
 /* ── Inhaltsverzeichnis, breit ──────────────────────────────────── */
@@ -199,7 +205,7 @@ a:hover{ text-decoration-color:currentColor; }
 .toc-narrow[open] > summary .chev{ transform:rotate(180deg); }
 .toc-narrow[open] > summary{ border-bottom:1px solid var(--line); border-radius:14px 14px 0 0; }
 .toc-narrow ol,.toc-narrow ul{ list-style:none; margin:0; padding:0; }
-.toc-narrow .toc-body{ padding:8px 12px 14px; }
+.toc-narrow .toc-body{ padding:8px 12px 14px; max-height:min(60vh,520px); overflow-y:auto; }
 .toc-narrow .toc-sub{ display:block; }
 .toc-narrow .toc-l2{ font:600 15px/20px var(--sans); color:var(--ink-1); padding:8px 10px; }
 .toc-narrow .toc-l3{ padding:6px 10px 6px 24px; }
@@ -209,37 +215,40 @@ a:hover{ text-decoration-color:currentColor; }
   background:var(--paper);
   border:1px solid var(--line);
   border-radius:18px;
-  padding:8px 40px 48px;
+  padding:8px 44px 48px;
   min-width:0;
   overflow-wrap:break-word;
 }
 @media (max-width:640px){ .doc{ padding:4px 20px 36px; border-radius:14px; } }
+/* Fliesstext bleibt auf Lesebreite; Tabellen, Code und die
+   Abschnittslinien duerfen die volle Blattbreite nutzen. */
 .doc > *{ max-width:var(--measure); }
-.doc > .tablebox,.doc > pre,.doc > hr{ max-width:none; }
+.doc > .tablewrap,.doc > pre,.doc > hr,.doc > h2{ max-width:none; }
+.doc > h2 .h-t{ display:inline-block; max-width:var(--measure); }
 
 .doc p{ margin:0 0 20px; }
 .doc .lead{ font:400 20px/32px var(--sans); color:var(--ink-1); margin:32px 0 28px; }
+.doc{ counter-reset:sec; }
 .doc h2{
-  counter-increment:sec;
-  position:relative;
-  margin:56px 0 20px; padding-top:28px;
+  counter-increment:sec; counter-reset:sub;
+  margin:60px 0 20px; padding-top:28px;
   border-top:1px solid var(--line);
   font:600 20px/26px var(--sans); letter-spacing:-.01em;
 }
-.doc h2::before{
-  content:counter(sec,decimal-leading-zero);
-  display:block; margin-bottom:10px;
-  font:400 13px/16px var(--mono); letter-spacing:.08em; color:var(--ink-3);
-}
 .doc h3{
-  position:relative;
-  margin:40px 0 14px; padding-left:16px;
+  counter-increment:sub;
+  margin:44px 0 14px;
   font:600 17px/23px var(--sans);
 }
-.doc h3::before{
-  content:""; position:absolute; left:0; top:5px; bottom:5px; width:2px;
-  background:var(--accent); border-radius:1px;
+/* Abschnittsnummer als eigene Zeile: gibt Ueberschriften eine zweite,
+   von der Schriftgroesse unabhaengige Kennzeichnung — sonst waere eine
+   H3 von einem fett angefuehrten Absatz kaum zu unterscheiden. */
+.doc h2::before,.doc h3::before{
+  display:block; margin-bottom:9px;
+  font:400 13px/16px var(--mono); letter-spacing:.08em; color:var(--ink-3);
 }
+.doc h2::before{ content:counter(sec,decimal-leading-zero); }
+.doc h3::before{ content:counter(sec,decimal-leading-zero) "." counter(sub); }
 .doc h4{ margin:32px 0 12px; font:600 15px/20px var(--sans); color:var(--ink-2); }
 .doc h2:first-child,.doc h3:first-child{ margin-top:32px; }
 .doc h2,.doc h3,.doc h4{ scroll-margin-top:calc(var(--bar) + 20px); }
@@ -288,19 +297,54 @@ pre code{ background:none; padding:0; font-size:13px; line-height:20px; white-sp
 h2 code,h3 code,th code{ font-size:.9em; }
 
 /* ── Tabellen ───────────────────────────────────────────────────── */
+/* Eigene Scrollbox: die Seite selbst scrollt nie seitwaerts.
+   Passt eine Tabelle in der Breite, hebt das Skript die Box mit
+   .is-frei auf — dann klebt die Kopfzeile am Fensterrand statt in einem
+   Kasten, der gar nicht senkrecht scrollt. Muss die Tabelle seitwaerts
+   scrollen, hat das Vorrang. Abgeschnitten wird nie. */
+.tablewrap{ margin:24px 0 28px; }
+.tableframe{ position:relative; }
+/* Der Verlauf am rechten Rand plus die Zeile darunter sagen, dass rechts
+   noch etwas steht — der Rollbalken allein ist auf macOS unsichtbar.
+   Beides verschwindet, sobald man am Ende angekommen ist. */
+.tableframe::after{
+  content:""; position:absolute; top:1px; right:1px; bottom:1px; width:44px;
+  border-radius:0 11px 11px 0; pointer-events:none;
+  background:linear-gradient(to left,var(--paper) 30%,rgba(127,127,127,0));
+  opacity:0; transition:opacity .15s ease;
+}
+.tablewrap.is-mehr .tableframe::after{ opacity:1; }
+.tablehint{
+  display:none;
+  margin:8px 0 0; text-align:right;
+  font:400 13px/16px var(--sans); color:var(--ink-3);
+}
+.tablewrap.is-mehr .tablehint{ display:block; }
+.tablehint::after{ content:" →"; }
 .tablebox{
-  margin:24px 0 28px;
   max-width:100%;
   overflow-x:auto;
-  max-height:76vh;
   border:1px solid var(--line); border-radius:12px;
   background:var(--paper);
   -webkit-overflow-scrolling:touch;
+  /* Der Balken bleibt sichtbar: er ist der einzige Hinweis darauf, dass
+     rechts noch eine Spalte steht. */
+  scrollbar-width:thin; scrollbar-color:var(--line-2) transparent;
+}
+.tablebox::-webkit-scrollbar{ height:11px; }
+.tablebox::-webkit-scrollbar-track{ background:transparent; }
+.tablebox::-webkit-scrollbar-thumb{
+  background:var(--line-2); border-radius:999px;
+  border:3px solid transparent; background-clip:padding-box;
+}
+/* Tabellen duerfen breiter sein als der Fliesstext und greifen dafuer
+   in den Blattrand. */
+@media (min-width:1100px){
+  .doc > .tablewrap{ margin-left:-28px; margin-right:-28px; width:calc(100% + 56px); }
 }
 .tablebox table{
   border-collapse:collapse;
   width:100%;
-  min-width:520px;
   font-variant-numeric:tabular-nums;
 }
 .tablebox th,.tablebox td{
@@ -309,6 +353,16 @@ h2 code,h3 code,th code{ font-size:.9em; }
   font-size:15px; line-height:22px;
   border-bottom:1px solid var(--line);
 }
+.tablebox.is-frei{ overflow:visible; }
+.tablebox.is-frei th{ top:var(--bar); }
+.tablebox.is-frei thead th:first-child{ border-top-left-radius:11px; }
+.tablebox.is-frei thead th:last-child{ border-top-right-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:first-child{ border-bottom-left-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:last-child{ border-bottom-right-radius:11px; }
+/* top:0 solange die Box selbst der Scrollbereich ist — sonst schoebe
+   ein Versatz die Kopfzeile ins Leere. Erst wenn die Box aufgehoben ist
+   (.is-frei), ist das Fenster der Bezug und die Kopfzeile parkt unter
+   der Kopfleiste. */
 .tablebox th{
   position:sticky; top:0; z-index:1;
   font-weight:600; color:var(--ink-1);
@@ -324,10 +378,10 @@ h2 code,h3 code,th code{ font-size:.9em; }
 
 /* ── Fuss ───────────────────────────────────────────────────────── */
 .colophon{
-  max-width:1264px; margin:0 auto; padding:0 24px 64px;
+  max-width:1040px; margin:0 auto; padding:0 24px 64px;
   font:400 13px/20px var(--sans); color:var(--ink-3);
 }
-@media (min-width:1100px){ .colophon{ padding-left:328px; } }
+@media (min-width:1100px){ .colophon{ padding-left:312px; } }
 
 /* ── Druck ──────────────────────────────────────────────────────── */
 @media print{
@@ -341,11 +395,28 @@ h2 code,h3 code,th code{ font-size:.9em; }
   .masthead{ padding:0 0 18pt; }
   .page{ display:block; max-width:none; padding:0; }
   .doc{ border:0; border-radius:0; padding:0; background:#FFFFFF; }
-  .doc > *{ max-width:none; }
+  /* Die Lesebreite gilt auch auf Papier; Tabellen, Code und die
+     Abschnittslinien nutzen wie am Bildschirm die volle Satzbreite. */
+  /* Dieselbe Skala, in Punkt statt Pixel — sonst waeren Titel und
+     Vorspann auf Papier doppelt so gross wie der Fliesstext. */
+  .masthead h1{ font:600 20pt/24pt var(--sans); }
+  .masthead .sub{ font-size:10pt; line-height:14pt; }
+  .eyebrow{ font-size:8pt; line-height:11pt; }
+  .doc .lead{ font:400 13pt/19pt var(--sans); margin:14pt 0 12pt; }
+  .doc h2{ font:600 14pt/18pt var(--sans); }
+  .doc h3{ font:600 12pt/16pt var(--sans); margin-top:18pt; }
+  .doc h2::before,.doc h3::before{ font-size:8.5pt; line-height:11pt; margin-bottom:4pt; }
+  .tablebox th,.tablebox td{ font-size:9.5pt; line-height:13pt; padding:6pt 8pt; }
+  code{ font-size:9.5pt; }
+  pre code{ font-size:8.5pt; line-height:12pt; }
+  blockquote{ padding:8pt 12pt; margin:12pt 0; }
+  .doc p,.doc ul,.doc ol{ margin-bottom:10pt; }
   .doc h2{ break-after:avoid; page-break-after:avoid; margin-top:24pt; }
   .doc h3,.doc h4{ break-after:avoid; page-break-after:avoid; }
+  .tablewrap{ margin-left:0 !important; margin-right:0 !important; width:auto !important; }
+  .tableframe::after,.tablehint{ display:none !important; }
   .tablebox{ overflow:visible; max-height:none; break-inside:avoid; page-break-inside:avoid; border:1px solid #BBBBBB; }
-  .tablebox table{ min-width:0; }
+  .tablebox table{ min-width:0 !important; }
   .tablebox th{ position:static; background:#F2F2F2; }
   tr,thead,blockquote,pre,li{ break-inside:avoid; page-break-inside:avoid; }
   a{ color:#000000; text-decoration:none; }
@@ -355,7 +426,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
 </head>
 <body>
 <div class="topbar">
-  <a class="back" href="../mockups/index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
+  <a class="back" href="../index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
   <div class="themes" role="group" aria-label="Erscheinungsbild">
     <button type="button" data-val="light">Hell</button>
     <button type="button" data-val="dark">Dunkel</button>
@@ -385,16 +456,16 @@ js/  icons.js  geometry.js  shapes.js  model.js  renderer.js
      popovers.js  tools.js  toolmenu.js  chrome.js  app.js</code></pre>
 <h2 id="aufbau-der-oberflaeche"><span class="h-t">Aufbau der Oberfläche</span><a class="anchor" href="#aufbau-der-oberflaeche" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p>Die obere Chrome besteht aus drei Ebenen — so wie im Whiteboard-Modus von GoodNotes:</p>
-<div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table><thead><tr><th scope="col">Ebene</th><th scope="col">Höhe</th><th scope="col">Inhalt</th></tr></thead><tbody><tr><td>Statusleiste</td><td>20 px</td><td>Uhrzeit, WLAN, Batterie (rein optisch, Uhr läuft mit)</td></tr><tr><td><strong>Dokument-Tabs</strong></td><td>44 px</td><td>Bibliothek · Tabs mit Boardtitel und Schließen-× · „+" für neuen Tab</td></tr><tr><td><strong>Navigationsleiste</strong></td><td>52 px</td><td><strong>links:</strong> Seitenleiste, Suche, AI, Ansichtsmodus — <strong>Mitte:</strong> Rückgängig/Wiederholen ‖ die elf Werkzeuge ‖ Zubehör — <strong>rechts:</strong> Board hinzufügen, Teilen, Mehr</td></tr><tr><td><strong>Werkzeugmenü</strong></td><td>48 px</td><td>Schwebende Glaskapsel unter der Leiste, Inhalt je nach aktivem Werkzeug. Am Griff links an alle vier Bildschirmränder ziehbar; seitlich angedockt klappt sie auf vertikal um.</td></tr></tbody></table></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col">Ebene</th><th scope="col">Höhe</th><th scope="col">Inhalt</th></tr></thead><tbody><tr><td>Statusleiste</td><td>20 px</td><td>Uhrzeit, WLAN, Batterie (rein optisch, Uhr läuft mit)</td></tr><tr><td><strong>Dokument-Tabs</strong></td><td>44 px</td><td>Bibliothek · Tabs mit Boardtitel und Schließen-× · „+" für neuen Tab</td></tr><tr><td><strong>Navigationsleiste</strong></td><td>52 px</td><td><strong>links:</strong> Seitenleiste, Suche, AI, Ansichtsmodus — <strong>Mitte:</strong> Rückgängig/Wiederholen ‖ die elf Werkzeuge ‖ Zubehör — <strong>rechts:</strong> Board hinzufügen, Teilen, Mehr</td></tr><tr><td><strong>Werkzeugmenü</strong></td><td>48 px</td><td>Schwebende Glaskapsel unter der Leiste, Inhalt je nach aktivem Werkzeug. Am Griff links an alle vier Bildschirmränder ziehbar; seitlich angedockt klappt sie auf vertikal um.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Unten links liegt die <strong>Minimap</strong> (ziehen verschiebt die Ansicht, Doppelklick passt alles ein), unten rechts die <strong>Zoomsteuerung</strong>.</p>
 <h2 id="die-elf-werkzeuge"><span class="h-t">Die elf Werkzeuge</span><a class="anchor" href="#die-elf-werkzeuge" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p>Reihenfolge und Verhalten folgen der GoodNotes-Vorlage. „Klebt" bedeutet: das Werkzeug bleibt aktiv. Die übrigen springen nach ihrer Aktion zurück aufs Lasso — das ist das Rückfallwerkzeug.</p>
-<div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table><thead><tr><th scope="col">#</th><th scope="col">Werkzeug</th><th scope="col">Taste</th><th scope="col">Klebt</th><th scope="col">Optionen im Werkzeugmenü</th></tr></thead><tbody><tr><td>1</td><td><strong>Stift</strong></td><td><code>1</code> <code>P</code></td><td>✔</td><td>Stiftart (Füller, Kugelschreiber, Pinsel, Bleistift) · 3 Stärken · 3 Farben + Farbwähler · Druckempfindlichkeit, Glättung, gerade Linien</td></tr><tr><td>2</td><td><strong>Radierer</strong></td><td><code>2</code> <code>E</code></td><td>✔</td><td>Typ (Präzision, Standard, Strich) · 3 Größen · nur Textmarker · Bilder löschbar · Board leeren</td></tr><tr><td>3</td><td><strong>Textmarker</strong></td><td><code>3</code> <code>H</code></td><td>✔</td><td>3 Stärken · 3 Farben · gerade Linien · unter der Tinte zeichnen</td></tr><tr><td>4</td><td><strong>Klebeband</strong></td><td><code>4</code></td><td>✔</td><td>5 Muster (einfarbig, Streifen, Punkte, Karo, gerissen) · Farben · Breite · Deckkraft</td></tr><tr><td>5</td><td><strong>Formen</strong></td><td><code>5</code> <code>S</code></td><td>—</td><td>Füllung + Füllfarbe · Linienstil (durchgezogen, gestrichelt, gepunktet) · 3 Stärken · Farben · Ecken abrunden</td></tr><tr><td>6</td><td><strong>Lasso</strong></td><td><code>6</code> <code>L</code></td><td>✔</td><td>Freihand/Rechteck · fünf Filter (Handschrift, Bilder, Text, Formen, Elemente)</td></tr><tr><td>7</td><td><strong>Text</strong></td><td><code>7</code> <code>T</code></td><td>—</td><td>Schriftart · Größen-Stepper · <strong>B</strong> <em>I</em> U S̶ · Farbe · Ausrichtung · Zeilenabstand · Feldstil · Anheften</td></tr><tr><td>8</td><td><strong>Elemente</strong></td><td><code>8</code></td><td>—</td><td>36 Sticker, Schnellauswahl und Größe</td></tr><tr><td>9</td><td><strong>Bild &amp; Kamera</strong></td><td><code>9</code></td><td>—</td><td>öffnet direkt die Auswahl (Foto/Datei)</td></tr><tr><td>10</td><td><strong>Lineal</strong></td><td><code>0</code></td><td>Umschalter</td><td>Lineal/Winkelmesser · Winkel · Einrasten — ändert das aktive Werkzeug nicht</td></tr><tr><td>11</td><td><strong>Laserpointer</strong></td><td><code>\</code></td><td>✔</td><td>Farben · Spur: verblassend, bleibend, nur Punkt</td></tr></tbody></table></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:820px"><thead><tr><th scope="col">#</th><th scope="col">Werkzeug</th><th scope="col">Taste</th><th scope="col">Klebt</th><th scope="col">Optionen im Werkzeugmenü</th></tr></thead><tbody><tr><td>1</td><td><strong>Stift</strong></td><td><code>1</code> <code>P</code></td><td>✔</td><td>Stiftart (Füller, Kugelschreiber, Pinsel, Bleistift) · 3 Stärken · 3 Farben + Farbwähler · Druckempfindlichkeit, Glättung, gerade Linien</td></tr><tr><td>2</td><td><strong>Radierer</strong></td><td><code>2</code> <code>E</code></td><td>✔</td><td>Typ (Präzision, Standard, Strich) · 3 Größen · nur Textmarker · Bilder löschbar · Board leeren</td></tr><tr><td>3</td><td><strong>Textmarker</strong></td><td><code>3</code> <code>H</code></td><td>✔</td><td>3 Stärken · 3 Farben · gerade Linien · unter der Tinte zeichnen</td></tr><tr><td>4</td><td><strong>Klebeband</strong></td><td><code>4</code></td><td>✔</td><td>5 Muster (einfarbig, Streifen, Punkte, Karo, gerissen) · Farben · Breite · Deckkraft</td></tr><tr><td>5</td><td><strong>Formen</strong></td><td><code>5</code> <code>S</code></td><td>—</td><td>Füllung + Füllfarbe · Linienstil (durchgezogen, gestrichelt, gepunktet) · 3 Stärken · Farben · Ecken abrunden</td></tr><tr><td>6</td><td><strong>Lasso</strong></td><td><code>6</code> <code>L</code></td><td>✔</td><td>Freihand/Rechteck · fünf Filter (Handschrift, Bilder, Text, Formen, Elemente)</td></tr><tr><td>7</td><td><strong>Text</strong></td><td><code>7</code> <code>T</code></td><td>—</td><td>Schriftart · Größen-Stepper · <strong>B</strong> <em>I</em> U S̶ · Farbe · Ausrichtung · Zeilenabstand · Feldstil · Anheften</td></tr><tr><td>8</td><td><strong>Elemente</strong></td><td><code>8</code></td><td>—</td><td>36 Sticker, Schnellauswahl und Größe</td></tr><tr><td>9</td><td><strong>Bild &amp; Kamera</strong></td><td><code>9</code></td><td>—</td><td>öffnet direkt die Auswahl (Foto/Datei)</td></tr><tr><td>10</td><td><strong>Lineal</strong></td><td><code>0</code></td><td>Umschalter</td><td>Lineal/Winkelmesser · Winkel · Einrasten — ändert das aktive Werkzeug nicht</td></tr><tr><td>11</td><td><strong>Laserpointer</strong></td><td><code>\</code></td><td>✔</td><td>Farben · Spur: verblassend, bleibend, nur Punkt</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Ein zweiter Tipp auf das aktive Werkzeug klappt sein Menü ein und wieder aus.</p>
 <h2 id="zeichen-engine"><span class="h-t">Zeichen-Engine</span><a class="anchor" href="#zeichen-engine" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <ul><li><strong>Unendliche Fläche</strong> mit Kamera (<code>screen = welt · zoom + versatz</code>), Zoom von 10 % bis 1600 %, Zoomen um den Cursor.</li><li><strong>Variable Strichbreite</strong>: Stiftdruck (<code>PointerEvent.pressure</code>) bei echten Stiften, sonst aus der Zeichengeschwindigkeit abgeleitet — schnell wird dünn. Die Kontur wird als gefülltes Polygon mit runden Kappen tesselliert; der Bleistift bekommt zusätzlich ein deterministisches Korn.</li><li><strong>Stift schlägt Finger</strong>: Sobald ein echter Stift benutzt wurde, verschiebt der Finger nur noch die Fläche (Handballenerkennung mit 700-ms-Nachlauf). Das Radiererende des Stifts schaltet vorübergehend auf den Radierer.</li><li><code>getCoalescedEvents()</code> holt alle Zwischenpunkte, damit schnelle Striche nicht eckig werden.</li><li><strong>Formerkennung</strong> (<code>js/shapes.js</code>): resampeln → Kreisfit, Ellipsenfit über die Kovarianz-Hauptachsen, Eckenerkennung über die Krümmung. Erkennt Linie, Pfeil, Rechteck, Quadrat, Kreis, Ellipse, Dreieck, Raute, Fünf-/Sechseck und Bogen; bei zu geringer Sicherheit bleibt der Freihandzug stehen.</li><li><strong>Radierer</strong>: Punkt-gegen-Polylinie mit Breite; der Standardtyp zerlegt den Strich in die Teile außerhalb des Kreises, der Strichtyp entfernt ihn ganz.</li><li><strong>Lasso</strong>: Ray-Casting, Auswahlkriterium wie in GoodNotes — ein Strich gilt als ausgewählt, wenn mindestens 60 % seiner Punkte im Polygon liegen.</li><li><strong>Rendering</strong> in drei Ebenen: Papier, ein zwischengespeichertes Offscreen-Bild aller festgeschriebenen Objekte, darüber der laufende Strich. Während des Zeichnens wird der Cache nur geblittet.</li><li><strong>Textmarker</strong> zeichnet mit <code>multiply</code> und 40 % Deckkraft in einem Pfad — Selbstüberschneidungen dunkeln dadurch nicht nach.</li></ul>
 <h2 id="bedienung"><span class="h-t">Bedienung</span><a class="anchor" href="#bedienung" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
-<div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table><thead><tr><th scope="col">Kürzel</th><th scope="col">Wirkung</th></tr></thead><tbody><tr><td><code>1</code>–<code>0</code>, <code>\</code></td><td>Werkzeug wählen</td></tr><tr><td><code>⌘Z</code> / <code>⇧⌘Z</code></td><td>Rückgängig / Wiederholen</td></tr><tr><td>Leertaste + Ziehen</td><td>Fläche verschieben</td></tr><tr><td>Scrollen / <code>⌘</code>+Scrollen</td><td>Verschieben / Zoomen</td></tr><tr><td>Zwei Finger</td><td>Verschieben und Zoomen</td></tr><tr><td><code>F</code></td><td>Alles einpassen</td></tr><tr><td><code>⌘0</code> <code>⌘+</code> <code>⌘−</code></td><td>Zoom 100 % / hinein / heraus</td></tr><tr><td><code>⌘A</code> <code>⌘C</code> <code>⌘X</code> <code>⌘V</code> <code>⌘D</code></td><td>Auswählen, Kopieren, Ausschneiden, Einfügen, Duplizieren</td></tr><tr><td><code>⌫</code></td><td>Auswahl löschen</td></tr><tr><td><code>⌘F</code> <code>⌘\</code> <code>⇧⌘R</code> <code>⌘E</code></td><td>Suchen · Seitenleiste · Lesemodus · PNG-Export</td></tr><tr><td>Umschalt beim Ziehen</td><td>Winkel rasten (Formen, Klebeband)</td></tr><tr><td>Am Strichende kurz halten</td><td>Strich begradigen</td></tr></tbody></table></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col">Kürzel</th><th scope="col">Wirkung</th></tr></thead><tbody><tr><td><code>1</code>–<code>0</code>, <code>\</code></td><td>Werkzeug wählen</td></tr><tr><td><code>⌘Z</code> / <code>⇧⌘Z</code></td><td>Rückgängig / Wiederholen</td></tr><tr><td>Leertaste + Ziehen</td><td>Fläche verschieben</td></tr><tr><td>Scrollen / <code>⌘</code>+Scrollen</td><td>Verschieben / Zoomen</td></tr><tr><td>Zwei Finger</td><td>Verschieben und Zoomen</td></tr><tr><td><code>F</code></td><td>Alles einpassen</td></tr><tr><td><code>⌘0</code> <code>⌘+</code> <code>⌘−</code></td><td>Zoom 100 % / hinein / heraus</td></tr><tr><td><code>⌘A</code> <code>⌘C</code> <code>⌘X</code> <code>⌘V</code> <code>⌘D</code></td><td>Auswählen, Kopieren, Ausschneiden, Einfügen, Duplizieren</td></tr><tr><td><code>⌫</code></td><td>Auswahl löschen</td></tr><tr><td><code>⌘F</code> <code>⌘\</code> <code>⇧⌘R</code> <code>⌘E</code></td><td>Suchen · Seitenleiste · Lesemodus · PNG-Export</td></tr><tr><td>Umschalt beim Ziehen</td><td>Winkel rasten (Formen, Klebeband)</td></tr><tr><td>Am Strichende kurz halten</td><td>Strich begradigen</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Bilder lassen sich auf die Fläche ziehen oder mit <code>⌘V</code> einfügen. Der Stand wird laufend im <code>localStorage</code> gesichert und beim nächsten Öffnen wiederhergestellt — mit allen Boards, Inhalten, Kameraposition und Design.</p>
 <h2 id="wie-originalgetreu-ist-das"><span class="h-t">Wie originalgetreu ist das?</span><a class="anchor" href="#wie-originalgetreu-ist-das" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p>Die Oberfläche folgt einer recherchierten Spezifikation der GoodNotes-Whiteboard- Ansicht: Aufbau der drei Leisten, Reihenfolge und Optionen der Werkzeuge, Design-Tokens (Akzentfarbe <code>#00A99D</code> bzw. <code>#1FC7BA</code> im dunklen Design, iOS- Grautöne, Maße, Radien, Schatten, Typografie) und die Popover-Struktur.</p>
@@ -498,6 +569,28 @@ js/  icons.js  geometry.js  shapes.js  model.js  renderer.js
   window.addEventListener('scroll', schedule, { passive:true });
   window.addEventListener('resize', schedule);
   update();
+
+  /* Tabellen: passt eine in der Breite, wird die Scrollbox aufgehoben.
+     Dann klebt ihre Kopfzeile beim Weiterscrollen am oberen Fensterrand.
+     Muss sie seitwaerts scrollen, bleibt sie eine Box. */
+  var boxes = [].slice.call(document.querySelectorAll('.tablebox'));
+  function markBox(b){
+    var wrap = b.closest('.tablewrap');
+    var mehr = b.scrollWidth > b.clientWidth + 2;
+    b.classList.toggle('is-frei', !mehr);
+    wrap.classList.toggle('is-mehr', mehr && b.scrollLeft + b.clientWidth < b.scrollWidth - 2);
+  }
+  function fitTables(){ for (var i=0;i<boxes.length;i++) markBox(boxes[i]); }
+  if (boxes.length){
+    for (var bi=0; bi<boxes.length; bi++){
+      (function(b){
+        b.addEventListener('scroll', function(){ markBox(b); }, { passive:true });
+      })(boxes[bi]);
+    }
+    fitTables();
+    var rt;
+    window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(fitTables, 150); });
+  }
 
   /* Auf schmalen Fenstern schliesst ein Klick das Verzeichnis wieder. */
   var det = document.querySelector('.toc-narrow');

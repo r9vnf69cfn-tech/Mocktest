@@ -18,6 +18,7 @@
      Sekundaertext ink-2 auf --paper           5,32:1
      Inhaltsverzeichnis ink-2 auf --ground     5,10:1
      Tertiaertext ink-3 auf --ground           4,77:1
+     Tertiaertext ink-3 auf --paper            4,97:1
      Aktiver Schalter accent-on auf --accent   17,77:1
      Schalter ink-2 auf --fill ueber --ground  4,90:1
 
@@ -30,6 +31,7 @@
      Sekundaertext ink-2 auf --paper           7,10:1
      Inhaltsverzeichnis ink-2 auf --ground     7,40:1
      Tertiaertext ink-3 auf --ground           5,23:1
+     Tertiaertext ink-3 auf --paper            5,11:1
      Aktiver Schalter accent-on auf --accent   17,27:1
      Schalter ink-2 auf --fill ueber --ground  6,82:1
 
@@ -63,7 +65,10 @@
   --accent-on:#FFFFFF;
   --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,"Segoe UI",Roboto,sans-serif;
   --mono:"SF Mono",ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace;
-  --measure:68ch;
+  /* Nachgemessen, nicht geschaetzt: 52ch ergibt Zeilen von hoechstens
+     ~69 Zeichen. Die Einheit ch skaliert mit der Systemschrift, die
+     Zeichenzahl bleibt damit auch bei anderer Schrift stabil. */
+  --measure:52ch;
   --bar:56px;
 }
 @media (prefers-color-scheme: dark){
@@ -112,7 +117,8 @@ body{
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
-@media (prefers-reduced-motion: no-preference){ html{ scroll-behavior:smooth; } }
+/* Kein scroll-behavior:smooth: das 01-Dokument ist ueber 80 000 px hoch,
+   ein Sprung ans Ende wuerde sekundenlang durch leere Flaechen animieren. */
 ::selection{ background:var(--fill-2); }
 a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--line-2); }
 a:hover{ text-decoration-color:currentColor; }
@@ -145,7 +151,7 @@ a:hover{ text-decoration-color:currentColor; }
 .themes button.is-on{ background:var(--accent); color:var(--accent-on); }
 
 /* ── Titelblock ─────────────────────────────────────────────────── */
-.masthead{ max-width:1264px; margin:0 auto; padding:56px 24px 32px; }
+.masthead{ max-width:1040px; margin:0 auto; padding:56px 24px 32px; }
 .eyebrow{
   margin:0 0 12px; font:600 13px/16px var(--sans);
   letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3);
@@ -154,9 +160,9 @@ a:hover{ text-decoration-color:currentColor; }
 .masthead .sub{ margin:12px 0 0; font:400 17px/27px var(--sans); color:var(--ink-2); max-width:var(--measure); }
 
 /* ── Seitenraster ───────────────────────────────────────────────── */
-.page{ max-width:1264px; margin:0 auto; padding:0 24px 120px; }
+.page{ max-width:1040px; margin:0 auto; padding:0 24px 120px; }
 @media (min-width:1100px){
-  .page{ display:grid; grid-template-columns:248px minmax(0,1fr); gap:56px; align-items:start; }
+  .page{ display:grid; grid-template-columns:240px minmax(0,1fr); gap:48px; align-items:start; }
 }
 
 /* ── Inhaltsverzeichnis, breit ──────────────────────────────────── */
@@ -199,7 +205,7 @@ a:hover{ text-decoration-color:currentColor; }
 .toc-narrow[open] > summary .chev{ transform:rotate(180deg); }
 .toc-narrow[open] > summary{ border-bottom:1px solid var(--line); border-radius:14px 14px 0 0; }
 .toc-narrow ol,.toc-narrow ul{ list-style:none; margin:0; padding:0; }
-.toc-narrow .toc-body{ padding:8px 12px 14px; }
+.toc-narrow .toc-body{ padding:8px 12px 14px; max-height:min(60vh,520px); overflow-y:auto; }
 .toc-narrow .toc-sub{ display:block; }
 .toc-narrow .toc-l2{ font:600 15px/20px var(--sans); color:var(--ink-1); padding:8px 10px; }
 .toc-narrow .toc-l3{ padding:6px 10px 6px 24px; }
@@ -209,37 +215,40 @@ a:hover{ text-decoration-color:currentColor; }
   background:var(--paper);
   border:1px solid var(--line);
   border-radius:18px;
-  padding:8px 40px 48px;
+  padding:8px 44px 48px;
   min-width:0;
   overflow-wrap:break-word;
 }
 @media (max-width:640px){ .doc{ padding:4px 20px 36px; border-radius:14px; } }
+/* Fliesstext bleibt auf Lesebreite; Tabellen, Code und die
+   Abschnittslinien duerfen die volle Blattbreite nutzen. */
 .doc > *{ max-width:var(--measure); }
-.doc > .tablebox,.doc > pre,.doc > hr{ max-width:none; }
+.doc > .tablewrap,.doc > pre,.doc > hr,.doc > h2{ max-width:none; }
+.doc > h2 .h-t{ display:inline-block; max-width:var(--measure); }
 
 .doc p{ margin:0 0 20px; }
 .doc .lead{ font:400 20px/32px var(--sans); color:var(--ink-1); margin:32px 0 28px; }
+.doc{ counter-reset:sec; }
 .doc h2{
-  counter-increment:sec;
-  position:relative;
-  margin:56px 0 20px; padding-top:28px;
+  counter-increment:sec; counter-reset:sub;
+  margin:60px 0 20px; padding-top:28px;
   border-top:1px solid var(--line);
   font:600 20px/26px var(--sans); letter-spacing:-.01em;
 }
-.doc h2::before{
-  content:counter(sec,decimal-leading-zero);
-  display:block; margin-bottom:10px;
-  font:400 13px/16px var(--mono); letter-spacing:.08em; color:var(--ink-3);
-}
 .doc h3{
-  position:relative;
-  margin:40px 0 14px; padding-left:16px;
+  counter-increment:sub;
+  margin:44px 0 14px;
   font:600 17px/23px var(--sans);
 }
-.doc h3::before{
-  content:""; position:absolute; left:0; top:5px; bottom:5px; width:2px;
-  background:var(--accent); border-radius:1px;
+/* Abschnittsnummer als eigene Zeile: gibt Ueberschriften eine zweite,
+   von der Schriftgroesse unabhaengige Kennzeichnung — sonst waere eine
+   H3 von einem fett angefuehrten Absatz kaum zu unterscheiden. */
+.doc h2::before,.doc h3::before{
+  display:block; margin-bottom:9px;
+  font:400 13px/16px var(--mono); letter-spacing:.08em; color:var(--ink-3);
 }
+.doc h2::before{ content:counter(sec,decimal-leading-zero); }
+.doc h3::before{ content:counter(sec,decimal-leading-zero) "." counter(sub); }
 .doc h4{ margin:32px 0 12px; font:600 15px/20px var(--sans); color:var(--ink-2); }
 .doc h2:first-child,.doc h3:first-child{ margin-top:32px; }
 .doc h2,.doc h3,.doc h4{ scroll-margin-top:calc(var(--bar) + 20px); }
@@ -288,19 +297,54 @@ pre code{ background:none; padding:0; font-size:13px; line-height:20px; white-sp
 h2 code,h3 code,th code{ font-size:.9em; }
 
 /* ── Tabellen ───────────────────────────────────────────────────── */
+/* Eigene Scrollbox: die Seite selbst scrollt nie seitwaerts.
+   Passt eine Tabelle in der Breite, hebt das Skript die Box mit
+   .is-frei auf — dann klebt die Kopfzeile am Fensterrand statt in einem
+   Kasten, der gar nicht senkrecht scrollt. Muss die Tabelle seitwaerts
+   scrollen, hat das Vorrang. Abgeschnitten wird nie. */
+.tablewrap{ margin:24px 0 28px; }
+.tableframe{ position:relative; }
+/* Der Verlauf am rechten Rand plus die Zeile darunter sagen, dass rechts
+   noch etwas steht — der Rollbalken allein ist auf macOS unsichtbar.
+   Beides verschwindet, sobald man am Ende angekommen ist. */
+.tableframe::after{
+  content:""; position:absolute; top:1px; right:1px; bottom:1px; width:44px;
+  border-radius:0 11px 11px 0; pointer-events:none;
+  background:linear-gradient(to left,var(--paper) 30%,rgba(127,127,127,0));
+  opacity:0; transition:opacity .15s ease;
+}
+.tablewrap.is-mehr .tableframe::after{ opacity:1; }
+.tablehint{
+  display:none;
+  margin:8px 0 0; text-align:right;
+  font:400 13px/16px var(--sans); color:var(--ink-3);
+}
+.tablewrap.is-mehr .tablehint{ display:block; }
+.tablehint::after{ content:" →"; }
 .tablebox{
-  margin:24px 0 28px;
   max-width:100%;
   overflow-x:auto;
-  max-height:76vh;
   border:1px solid var(--line); border-radius:12px;
   background:var(--paper);
   -webkit-overflow-scrolling:touch;
+  /* Der Balken bleibt sichtbar: er ist der einzige Hinweis darauf, dass
+     rechts noch eine Spalte steht. */
+  scrollbar-width:thin; scrollbar-color:var(--line-2) transparent;
+}
+.tablebox::-webkit-scrollbar{ height:11px; }
+.tablebox::-webkit-scrollbar-track{ background:transparent; }
+.tablebox::-webkit-scrollbar-thumb{
+  background:var(--line-2); border-radius:999px;
+  border:3px solid transparent; background-clip:padding-box;
+}
+/* Tabellen duerfen breiter sein als der Fliesstext und greifen dafuer
+   in den Blattrand. */
+@media (min-width:1100px){
+  .doc > .tablewrap{ margin-left:-28px; margin-right:-28px; width:calc(100% + 56px); }
 }
 .tablebox table{
   border-collapse:collapse;
   width:100%;
-  min-width:520px;
   font-variant-numeric:tabular-nums;
 }
 .tablebox th,.tablebox td{
@@ -309,6 +353,16 @@ h2 code,h3 code,th code{ font-size:.9em; }
   font-size:15px; line-height:22px;
   border-bottom:1px solid var(--line);
 }
+.tablebox.is-frei{ overflow:visible; }
+.tablebox.is-frei th{ top:var(--bar); }
+.tablebox.is-frei thead th:first-child{ border-top-left-radius:11px; }
+.tablebox.is-frei thead th:last-child{ border-top-right-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:first-child{ border-bottom-left-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:last-child{ border-bottom-right-radius:11px; }
+/* top:0 solange die Box selbst der Scrollbereich ist — sonst schoebe
+   ein Versatz die Kopfzeile ins Leere. Erst wenn die Box aufgehoben ist
+   (.is-frei), ist das Fenster der Bezug und die Kopfzeile parkt unter
+   der Kopfleiste. */
 .tablebox th{
   position:sticky; top:0; z-index:1;
   font-weight:600; color:var(--ink-1);
@@ -324,10 +378,10 @@ h2 code,h3 code,th code{ font-size:.9em; }
 
 /* ── Fuss ───────────────────────────────────────────────────────── */
 .colophon{
-  max-width:1264px; margin:0 auto; padding:0 24px 64px;
+  max-width:1040px; margin:0 auto; padding:0 24px 64px;
   font:400 13px/20px var(--sans); color:var(--ink-3);
 }
-@media (min-width:1100px){ .colophon{ padding-left:328px; } }
+@media (min-width:1100px){ .colophon{ padding-left:312px; } }
 
 /* ── Druck ──────────────────────────────────────────────────────── */
 @media print{
@@ -341,11 +395,28 @@ h2 code,h3 code,th code{ font-size:.9em; }
   .masthead{ padding:0 0 18pt; }
   .page{ display:block; max-width:none; padding:0; }
   .doc{ border:0; border-radius:0; padding:0; background:#FFFFFF; }
-  .doc > *{ max-width:none; }
+  /* Die Lesebreite gilt auch auf Papier; Tabellen, Code und die
+     Abschnittslinien nutzen wie am Bildschirm die volle Satzbreite. */
+  /* Dieselbe Skala, in Punkt statt Pixel — sonst waeren Titel und
+     Vorspann auf Papier doppelt so gross wie der Fliesstext. */
+  .masthead h1{ font:600 20pt/24pt var(--sans); }
+  .masthead .sub{ font-size:10pt; line-height:14pt; }
+  .eyebrow{ font-size:8pt; line-height:11pt; }
+  .doc .lead{ font:400 13pt/19pt var(--sans); margin:14pt 0 12pt; }
+  .doc h2{ font:600 14pt/18pt var(--sans); }
+  .doc h3{ font:600 12pt/16pt var(--sans); margin-top:18pt; }
+  .doc h2::before,.doc h3::before{ font-size:8.5pt; line-height:11pt; margin-bottom:4pt; }
+  .tablebox th,.tablebox td{ font-size:9.5pt; line-height:13pt; padding:6pt 8pt; }
+  code{ font-size:9.5pt; }
+  pre code{ font-size:8.5pt; line-height:12pt; }
+  blockquote{ padding:8pt 12pt; margin:12pt 0; }
+  .doc p,.doc ul,.doc ol{ margin-bottom:10pt; }
   .doc h2{ break-after:avoid; page-break-after:avoid; margin-top:24pt; }
   .doc h3,.doc h4{ break-after:avoid; page-break-after:avoid; }
+  .tablewrap{ margin-left:0 !important; margin-right:0 !important; width:auto !important; }
+  .tableframe::after,.tablehint{ display:none !important; }
   .tablebox{ overflow:visible; max-height:none; break-inside:avoid; page-break-inside:avoid; border:1px solid #BBBBBB; }
-  .tablebox table{ min-width:0; }
+  .tablebox table{ min-width:0 !important; }
   .tablebox th{ position:static; background:#F2F2F2; }
   tr,thead,blockquote,pre,li{ break-inside:avoid; page-break-inside:avoid; }
   a{ color:#000000; text-decoration:none; }
@@ -355,7 +426,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
 </head>
 <body>
 <div class="topbar">
-  <a class="back" href="../mockups/index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
+  <a class="back" href="../index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
   <div class="themes" role="group" aria-label="Erscheinungsbild">
     <button type="button" data-val="light">Hell</button>
     <button type="button" data-val="dark">Dunkel</button>
@@ -396,7 +467,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
 <p><strong>Jeder Wert ist gerechnet, nicht geschätzt</strong> (<code>shared/system.css</code>, §1): Fließtext 17,8:1 auf Papier, Sekundärtext 5,3:1, Tertiärtext 4,8:1, Text auf Akzentfläche 17,8:1. Zwei Modul-Punkte erreichen im hellen Modus nur 2,95:1 bzw. 2,83:1 — deshalb stehen Punkte <strong>nie allein</strong>, sondern immer neben ihrem Wort, und für den Fall, dass die Farbe doch einmal ein Icon trägt, gibt es abgedunkelte Varianten über 3:1.</p>
 <h3 id="typografie"><span class="h-t">Typografie</span><a class="anchor" href="#typografie" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <p>Fünf Größen, zwei Gewichte, feste Rollen:</p>
-<div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table><thead><tr><th scope="col">Rolle</th><th scope="col">Größe</th><th scope="col">Gewicht</th><th scope="col">Wofür</th></tr></thead><tbody><tr><td>Titel</td><td>28/34</td><td>600</td><td>Screen-Titel, Begrüßung</td></tr><tr><td>Sektion</td><td>20/26</td><td>600</td><td>Sektionsköpfe, Karten- und Eintragstitel</td></tr><tr><td>Text</td><td>17/23</td><td>400</td><td>Fließtext, Listenzeile — die Arbeitsgröße</td></tr><tr><td>Sekundär</td><td>15/20</td><td>400</td><td>Untertitel, Metadaten, Vorschauzeilen</td></tr><tr><td>Marke</td><td>13/16</td><td>600</td><td>Chips, Zähler, Eyebrows</td></tr></tbody></table></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col">Rolle</th><th scope="col">Größe</th><th scope="col">Gewicht</th><th scope="col">Wofür</th></tr></thead><tbody><tr><td>Titel</td><td>28/34</td><td>600</td><td>Screen-Titel, Begrüßung</td></tr><tr><td>Sektion</td><td>20/26</td><td>600</td><td>Sektionsköpfe, Karten- und Eintragstitel</td></tr><tr><td>Text</td><td>17/23</td><td>400</td><td>Fließtext, Listenzeile — die Arbeitsgröße</td></tr><tr><td>Sekundär</td><td>15/20</td><td>400</td><td>Untertitel, Metadaten, Vorschauzeilen</td></tr><tr><td>Marke</td><td>13/16</td><td>600</td><td>Chips, Zähler, Eyebrows</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Genau <strong>eine</strong> begründete Ausnahme: Die Tab-Beschriftung auf dem iPhone läuft mit 11 pt (iOS-Standard). Bei 13 pt kollidieren „Bibliothek" und „Aufgaben" auf 393 pt Breite — überlappender Text wiegt schwerer als eine sechste Stufe an einer Stelle.</p>
 <p><strong>Serif ist keine sechste Größe, sondern eine Regel:</strong> Die Oberfläche spricht Sans, was der Nutzer geschrieben hat, darf Serif. Sichtbar im Notiz-Editor (<code>app-next/note-editor.html</code>), im Journal-Eintrag (<code>journal-entry.html</code>) und auf der Antwortseite der Lernkarte (<code>review-session.html</code>). Der Bruch markiert eine echte Grenze: hier Werkzeug, dort Inhalt.</p>
 <h3 id="raster-und-dichte"><span class="h-t">Raster und Dichte</span><a class="anchor" href="#raster-und-dichte" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
@@ -405,7 +476,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
 <p>Die Dichte ist <strong>arbeitsteilig</strong>, nicht gleichmäßig — die Lehre aus Bear: Ruhe beim Schreiben, Dichte beim Verwalten. Der Editor trägt nur Text; die Aufgabenliste trägt Zeilen; die Bibliothek trägt Cover.</p>
 <h3 id="zustaende-ohne-farbe"><span class="h-t">Zustände ohne Farbe</span><a class="anchor" href="#zustaende-ohne-farbe" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <p>Jeder Zustand hat zwei Merkmale, keiner hängt an Farbe allein:</p>
-<div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table><thead><tr><th scope="col">Zustand</th><th scope="col">Merkmale</th></tr></thead><tbody><tr><td>aktiv</td><td>getönte Fläche + Schriftgewicht + Ink-Balken links</td></tr><tr><td>ausgewählt</td><td>getönte Fläche + 1,5-pt-Ring</td></tr><tr><td>deaktiviert</td><td>Deckkraft 38 % + fehlende Fläche</td></tr><tr><td>Deadline</td><td>rotes Wort + Flaggen-Symbol + Restzeit</td></tr><tr><td>Fehler</td><td>Randlinie + Symbol + Klartext, was zu tun ist</td></tr><tr><td>Laden</td><td>Skelettfläche an der Stelle des Inhalts, nie ein Spinner ohne Kontext</td></tr></tbody></table></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col">Zustand</th><th scope="col">Merkmale</th></tr></thead><tbody><tr><td>aktiv</td><td>getönte Fläche + Schriftgewicht + Ink-Balken links</td></tr><tr><td>ausgewählt</td><td>getönte Fläche + 1,5-pt-Ring</td></tr><tr><td>deaktiviert</td><td>Deckkraft 38 % + fehlende Fläche</td></tr><tr><td>Deadline</td><td>rotes Wort + Flaggen-Symbol + Restzeit</td></tr><tr><td>Fehler</td><td>Randlinie + Symbol + Klartext, was zu tun ist</td></tr><tr><td>Laden</td><td>Skelettfläche an der Stelle des Inhalts, nie ein Spinner ohne Kontext</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <h3 id="bewegung"><span class="h-t">Bewegung</span><a class="anchor" href="#bewegung" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <p>Vier Übergänge, jeder mit einer Aufgabe:</p>
 <ul><li><strong>Öffnen</strong> (260 ms): Karte wächst aus ihrer Position. Das Detail einer Aufgabe klappt <em>in</em> der Liste auf, statt einen Screen zu schieben (<code>task-detail.html</code>) — von Things 3.</li><li><strong>Modulwechsel</strong> (180 ms): nur Überblendung. Ein Wechsel ist kein Ereignis.</li><li><strong>Bestätigen</strong> (120 ms): Die Checkbox zieht ihren Ring zusammen, während der Haken wächst. Auf <code>today.html</code> und <code>tasks.html</code> ist dieser Moment <strong>eingefroren sichtbar</strong>.</li><li><strong>Übergabe</strong> (420 ms) — die Signature: Die Auswahl faltet sich zu einer kleinen Karte, fliegt zum Ziel und landet dort als Chip. In <code>note-editor.html</code> steht sie mitten im Flug, mit Spur und dem Umriss am Ausgangsort.</li></ul>
@@ -419,7 +490,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
 <ul><li><strong>Kein Team-Werkzeug.</strong> Es gibt Teilen, aber keine Kommentarfäden, keine Zuweisungen, keine Rollen. Wer zu fünft an einem Dokument arbeitet, ist hier falsch.</li><li><strong>Keine zweite Notion.</strong> Keine Datenbanken, keine Formeln, keine frei konfigurierbaren Ansichten. Die App hat eine Meinung, wie die fünf Module zusammenhängen — genau das ist ihr Wert.</li><li><strong>Kein Belohnungssystem.</strong> Es gibt eine Serie, aber keine Punkte, keine Ränge, keine Vergleiche mit anderen. Und die Serie ist abschaltbar: Eine App darf niemanden dafür bestrafen, dass er sie diese Woche nur für Aufgaben braucht — der Fehler, den Apple Journal bis heute nicht behebt.</li><li><strong>Kein Theme-Baukasten.</strong> Zwei Modi, beide fertig gestaltet. Bear hat 28 Themes; das ist Personalisierung als Ersatz für Entscheidung.</li><li><strong>Kein Marktplatz.</strong> Die Bibliothek ist der Ort für die eigenen Dokumente, nicht für Vorlagenwerbung.</li></ul>
 <h2 id="award-bilanz"><span class="h-t">Award-Bilanz</span><a class="anchor" href="#award-bilanz" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p>Bewertung des vorliegenden Entwurfs gegen die fünf ADA-Kategorien. Skala: <strong>1 = preiswürdig … 5 = disqualifizierend</strong>.</p>
-<div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table><thead><tr><th scope="col">Kategorie</th><th scope="col">Note</th><th scope="col">Begründung</th></tr></thead><tbody><tr><td><strong>Inklusion</strong></td><td><strong>2</strong></td><td>Alle Kontraste sind gerechnet und dokumentiert, jeder Zustand trägt zwei Merkmale, Dynamic Type ist in zwei Stufen durchgezeichnet, 44-pt-Ziele durchgehend. Ein eigener Schirm zeigt sechs leere Zustände, die alle den nächsten Schritt benennen statt ihn zu verstecken. Zur 1 fehlt die geprüfte VoiceOver-Reihenfolge: Ein Mockup kann Vorlesereihenfolge und Rotor-Struktur behaupten, aber nicht beweisen.</td></tr><tr><td><strong>Delight &amp; Fun</strong></td><td><strong>2</strong></td><td>Vier Momente sind als eingefrorene Zwischenzustände wirklich sichtbar — die fliegende Karte, die Checkbox im Umlegen, die Karte im Flip, der Schalter zwischen den Positionen. Zur 1 fehlt die Bewegung selbst: In statischen Screens bleibt die Signature-Animation eine Behauptung.</td></tr><tr><td><strong>Interaktion</strong></td><td><strong>2</strong></td><td>Der nächste Schritt ist überall benannt und beziffert („Lernen · ca. 4 Minuten"), das Detail klappt in der Liste auf statt zu navigieren, dieselbe Aufgabe kostet auf dem iPhone nicht mehr Taps. Abzug für das Lineal- und Zoom-Verhalten im Canvas, das nur beschrieben, nicht durchgespielt ist.</td></tr><tr><td><strong>Visuals &amp; Grafik</strong></td><td><strong>1–2</strong></td><td>Ein Raster, eine Typo-Skala, eine Materialsprache über 18 Screens hinweg, ein einziger Akzent, alle Werte in einer gemeinsamen Datei. Das ist die stärkste Kategorie des Entwurfs. Der halbe Punkt Abzug geht an die Notizbuch-Cover: Sie sind aus Mustern gebaut, weil kein Bildmaterial vorlag.</td></tr><tr><td><strong>Innovation</strong></td><td><strong>1</strong></td><td>Die Kette ist keine Fußnote, sondern trägt den Einstiegsscreen, den Editor, die Lernsitzung und den Graphen. Sie ist überall dieselbe Leiste, hinterlässt überall denselben Herkunfts-Chip, und keiner der 18 untersuchten Konkurrenten hat sie.</td></tr></tbody></table></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col">Kategorie</th><th scope="col">Note</th><th scope="col">Begründung</th></tr></thead><tbody><tr><td><strong>Inklusion</strong></td><td><strong>2</strong></td><td>Alle Kontraste sind gerechnet und dokumentiert, jeder Zustand trägt zwei Merkmale, Dynamic Type ist in zwei Stufen durchgezeichnet, 44-pt-Ziele durchgehend. Ein eigener Schirm zeigt sechs leere Zustände, die alle den nächsten Schritt benennen statt ihn zu verstecken. Zur 1 fehlt die geprüfte VoiceOver-Reihenfolge: Ein Mockup kann Vorlesereihenfolge und Rotor-Struktur behaupten, aber nicht beweisen.</td></tr><tr><td><strong>Delight &amp; Fun</strong></td><td><strong>2</strong></td><td>Vier Momente sind als eingefrorene Zwischenzustände wirklich sichtbar — die fliegende Karte, die Checkbox im Umlegen, die Karte im Flip, der Schalter zwischen den Positionen. Zur 1 fehlt die Bewegung selbst: In statischen Screens bleibt die Signature-Animation eine Behauptung.</td></tr><tr><td><strong>Interaktion</strong></td><td><strong>2</strong></td><td>Der nächste Schritt ist überall benannt und beziffert („Lernen · ca. 4 Minuten"), das Detail klappt in der Liste auf statt zu navigieren, dieselbe Aufgabe kostet auf dem iPhone nicht mehr Taps. Abzug für das Lineal- und Zoom-Verhalten im Canvas, das nur beschrieben, nicht durchgespielt ist.</td></tr><tr><td><strong>Visuals &amp; Grafik</strong></td><td><strong>1–2</strong></td><td>Ein Raster, eine Typo-Skala, eine Materialsprache über 18 Screens hinweg, ein einziger Akzent, alle Werte in einer gemeinsamen Datei. Das ist die stärkste Kategorie des Entwurfs. Der halbe Punkt Abzug geht an die Notizbuch-Cover: Sie sind aus Mustern gebaut, weil kein Bildmaterial vorlag.</td></tr><tr><td><strong>Innovation</strong></td><td><strong>1</strong></td><td>Die Kette ist keine Fußnote, sondern trägt den Einstiegsscreen, den Editor, die Lernsitzung und den Graphen. Sie ist überall dieselbe Leiste, hinterlässt überall denselben Herkunfts-Chip, und keiner der 18 untersuchten Konkurrenten hat sie.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <h3 id="die-eine-sache-die-noch-fehlt"><span class="h-t">Die eine Sache, die noch fehlt</span><a class="anchor" href="#die-eine-sache-die-noch-fehlt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <p><strong>Bewegung, die man sehen kann.</strong> Alles andere ist da — aber die Jury sitzt vor einem laufenden Gerät, nicht vor einem PNG. Die Übergabe ist der Moment, an dem sich diese App von jeder anderen unterscheidet, und in einem statischen Screen bleibt sie ein Standbild mit Spur.</p>
 <p>Was fehlt, ist ein <strong>lauffähiger Prototyp genau dieser 420 ms</strong>: der markierte Satz, der sich zur Karte faltet, an der Übergabe-Leiste abhebt, in die Seitenspalte fliegt und den Zähler dort umspringen lässt. Das Canvas-Mockup in diesem Repo zeigt, dass so etwas als echte Engine baubar ist. Solange dieser eine Übergang nur behauptet ist, hält die Jury nicht inne — mit ihm wird er die Stelle, die man einem Freund zeigt.</p>
@@ -521,6 +592,28 @@ h2 code,h3 code,th code{ font-size:.9em; }
   window.addEventListener('scroll', schedule, { passive:true });
   window.addEventListener('resize', schedule);
   update();
+
+  /* Tabellen: passt eine in der Breite, wird die Scrollbox aufgehoben.
+     Dann klebt ihre Kopfzeile beim Weiterscrollen am oberen Fensterrand.
+     Muss sie seitwaerts scrollen, bleibt sie eine Box. */
+  var boxes = [].slice.call(document.querySelectorAll('.tablebox'));
+  function markBox(b){
+    var wrap = b.closest('.tablewrap');
+    var mehr = b.scrollWidth > b.clientWidth + 2;
+    b.classList.toggle('is-frei', !mehr);
+    wrap.classList.toggle('is-mehr', mehr && b.scrollLeft + b.clientWidth < b.scrollWidth - 2);
+  }
+  function fitTables(){ for (var i=0;i<boxes.length;i++) markBox(boxes[i]); }
+  if (boxes.length){
+    for (var bi=0; bi<boxes.length; bi++){
+      (function(b){
+        b.addEventListener('scroll', function(){ markBox(b); }, { passive:true });
+      })(boxes[bi]);
+    }
+    fitTables();
+    var rt;
+    window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(fitTables, 150); });
+  }
 
   /* Auf schmalen Fenstern schliesst ein Klick das Verzeichnis wieder. */
   var det = document.querySelector('.toc-narrow');
