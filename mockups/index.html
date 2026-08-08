@@ -66,6 +66,13 @@
     <div><span class="dot dot--cards" style="margin-top:7px"></span><p><b>Lernkarten</b><br>Wiederholung nach Termin</p></div>
   </div>
 
+  <!-- ══ Canvas ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Canvas — die Referenz</h2><span>bereits gebaut, mit funktionierender Zeichen-Engine</span></div>
+    <p>Das sechste Modul existiert als lauffähiges Mockup mit echter Engine: unendliche Fläche, elf Werkzeuge, Formerkennung, Lasso. Es wird hier nicht neu entworfen — es ist die Referenz für die Materialsprache aller übrigen Screens. Der Screenshot ist anklickbar und führt in das laufende Whiteboard.</p>
+    <div class="grid" id="gridCanvas"></div>
+  </section>
+
   <!-- ══ Der Entwurf ══ -->
   <section class="sec">
     <div class="sec__head"><h2>Der Entwurf</h2><span>dreizehn Screens · je hell und dunkel, je iPad und iPhone</span></div>
@@ -78,15 +85,6 @@
     <div class="sec__head"><h2>Best-of der Konkurrenz</h2><span>sechs Bereiche · je drei Vorbilder zusammengeführt</span></div>
     <p>Vorstufe des Entwurfs: Pro Bereich ist ein Screen gebaut, der die stärksten Strukturideen von drei bestehenden Apps kombiniert — noch ohne den modulübergreifenden Fluss, der die eigene App ausmacht. Diese Mockups zeigen, was der Stand der Technik hergibt.</p>
     <div class="grid" id="gridBest"></div>
-  </section>
-
-  <!-- ══ Canvas ══ -->
-  <section class="sec">
-    <div class="sec__head"><h2>Canvas</h2><span>bereits gebaut, mit funktionierender Zeichen-Engine</span></div>
-    <p>Das sechste Modul existiert als lauffähiges Mockup mit echter Engine: unendliche Fläche, elf Werkzeuge, Formerkennung, Lasso. Es ist die Referenz für die Materialsprache der übrigen Screens.</p>
-    <div class="doclist">
-      <a href="../index.html"><span class="ico" data-ico="canvas"></span><div><b>Canvas — Whiteboard</b><br><span>Zeichenfläche, Werkzeugleiste, Formerkennung</span></div></a>
-    </div>
   </section>
 
   <!-- ══ Dokumente ══ -->
@@ -139,6 +137,12 @@
       (tags ? '<div class="item__tags">' + tags.map(t => '<span class="chip">' + t + '</span>').join('') + '</div>' : '');
     return a;
   };
+
+  document.getElementById('gridCanvas').appendChild(card(
+    '../index.html', '_renders/canvas-whiteboard-ipad-hell.png',
+    'Canvas — Whiteboard',
+    'Unendliche Fläche, elf Werkzeuge, Formerkennung, Lasso',
+    ['Lauffähig']));
 
   const gn = document.getElementById('gridNext');
   NEXT.forEach(([f, t, s, tags]) =>

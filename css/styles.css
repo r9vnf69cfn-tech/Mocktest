@@ -1199,6 +1199,24 @@ input[type="range"]::-moz-range-thumb {
   .tab { min-width: 108px; }
 }
 
+/* Sehr schmal (iPhone hochkant): Selbst mit der Überlaufregel bleibt für die
+   Werkzeugmitte zu wenig Platz. Der Zubehör-Knopf darf dabei niemals mit
+   herausscrollen — sonst sind die ausgelagerten Werkzeuge unerreichbar.
+   Er klebt deshalb am rechten Rand und überdeckt, was darunter wegscrollt. */
+@media (max-width: 560px) {
+  :root { --btn: 38px; --pill: 32px; }
+  [data-action="addBoard"] { display: none; }
+  .navbar__section--mid { padding-right: 0; }
+  .navbar__section--mid > .hairline-v:last-of-type { display: none; }
+  [data-action="accessories"] {
+    position: sticky;
+    right: 0;
+    z-index: 2;
+    background: var(--chrome-bg-solid);
+    box-shadow: -10px 0 10px -6px var(--chrome-bg-solid);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 1ms !important;

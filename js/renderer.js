@@ -144,7 +144,12 @@
         this.invalidate();
         return;
       }
-      const pad = padding === undefined ? 80 : padding;
+      // Ein fester Rand quetscht schmale Geräte zusammen: 150 px Rand auf einem
+      // 393 px breiten iPhone lassen 93 px für den Inhalt übrig — das Ergebnis
+      // waren 21 % Zoom. Der Rand darf deshalb höchstens ein Achtel der kürzeren
+      // Bildschirmkante beanspruchen.
+      const wish = padding === undefined ? 80 : padding;
+      const pad = Math.min(wish, Math.min(this.width, this.height) / 8);
       const bw = Math.max(box.x1 - box.x0, 1);
       const bh = Math.max(box.y1 - box.y0, 1);
       const scale = geo.clamp(Math.min((this.width - pad * 2) / bw, (this.height - pad * 2) / bh), MIN_SCALE, 3);
