@@ -21,12 +21,24 @@
   const MAX_SCALE = 16;
   const ZOOM_STOPS = [0.1, 0.25, 0.5, 0.75, 1, 1.5, 2, 4, 8, 16];
 
+  /* Schriftenliste wie in GoodNotes. Jeder Eintrag nennt zuerst die Apple-
+   * Schrift und danach Alternativen, damit die Auswahl auch außerhalb von
+   * macOS/iOS unterscheidbar bleibt. */
   const FONTS = {
     system: '-apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif',
-    serif: 'Charter, Georgia, "Times New Roman", serif',
+    newyork: '"New York", ui-serif, Charter, Georgia, serif',
+    sfmono: '"SF Mono", ui-monospace, Menlo, Consolas, monospace',
+    helvetica: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+    georgia: 'Georgia, "Times New Roman", serif',
+    palatino: 'Palatino, "Palatino Linotype", "Book Antiqua", serif',
+    avenir: '"Avenir Next", Avenir, Montserrat, "Segoe UI", sans-serif',
+    futura: 'Futura, "Century Gothic", "Trebuchet MS", sans-serif',
+    menlo: 'Menlo, "DejaVu Sans Mono", monospace',
+    markerfelt: '"Marker Felt", "Comic Sans MS", "Segoe Print", cursive',
+    bradley: '"Bradley Hand", "Segoe Script", "Comic Sans MS", cursive',
+    noteworthy: 'Noteworthy, "Segoe Print", "Comic Sans MS", cursive',
+    chalkboard: '"Chalkboard SE", Chalkboard, "Comic Sans MS", cursive',
     rounded: '"SF Pro Rounded", ui-rounded, "Avenir Next Rounded", Nunito, system-ui, sans-serif',
-    mono: '"SF Mono", ui-monospace, Menlo, Consolas, monospace',
-    marker: '"Bradley Hand", "Segoe Print", "Comic Sans MS", cursive',
   };
 
   const PAPER = {
@@ -234,7 +246,7 @@
       if (tpl === 'blank') return;
 
       const s = this.cam.scale;
-      let step = 32 * s;
+      let step = (this.board.spacing || 26) * s;
       while (step < 14) step *= 2;
       while (step > 92) step /= 2;
 
@@ -346,6 +358,9 @@
         polygonPath(ctx, sh.vertices, sh.rounded ? cornerRadiusFor(sh.vertices) : 0);
       } else if (sh.rx !== undefined && sh.rx !== null) {
         ctx.ellipse(sh.cx, sh.cy, Math.max(sh.rx, 0.5), Math.max(sh.ry, 0.5), sh.rotation || 0, 0, Math.PI * 2);
+      } else if (sh.center && sh.radius > 0) {
+        // Die Erkennung liefert auch rückwärts laufende Bögen.
+        ctx.arc(sh.center.x, sh.center.y, sh.radius, sh.startAngle, sh.endAngle, sh.endAngle < sh.startAngle);
       } else if (sh.shape === 'arrow') {
         const { from, to } = sh;
         ctx.moveTo(from.x, from.y);

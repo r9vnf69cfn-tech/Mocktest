@@ -25,6 +25,7 @@
       this.collapsed = false;
       this.showRuler = false;
       this.bindGrip();
+      keepFocus(this.node);
     }
 
     /** Zweiter Tipp auf das aktive Werkzeug klappt die Kapsel ein bzw. aus. */
@@ -326,8 +327,20 @@
         key: 'shapeopts',
         anchor,
         content: pop.menu([
+          { title: 'Erkennungsmodus' },
+          ...[
+            ['immediate', 'Sofort', 'Form wird beim Absetzen umgewandelt'],
+            ['hold', 'Nach kurzem Halten', 'Erst nach 350 ms Stillstand am Ende'],
+            ['off', 'Aus', 'Zug bleibt freihändig'],
+          ].map(([id, label, sub]) => ({
+            label, sub,
+            on: s.recognize === id,
+            onClick: () => { s.recognize = id; this.render(); },
+          })),
+          '=',
           { title: 'Formen' },
           { switch: true, label: 'Ecken abrunden', on: s.rounded, onChange: (v) => { s.rounded = v; this.render(); this.app.render(); } },
+          { switch: true, label: 'Am Raster ausrichten', sub: 'Eckpunkte auf 20 Einheiten runden', on: s.snapGrid, onChange: (v) => { s.snapGrid = v; } },
           { switch: true, label: 'Füllung', on: s.fill, onChange: (v) => { s.fill = v; this.render(); this.app.render(); } },
           {
             node: pop.slider({
@@ -392,23 +405,34 @@
 
     openFontMenu(anchor) {
       const s = this.ctrl.settings.text;
-      pop.open({
-        key: 'font',
-        anchor,
-        content: pop.menu(
-          [{ title: 'Schrift' }].concat(
-            T.FONT_CHOICES.map((f) => ({
-              label: f.label,
-              on: s.fontFamily === f.id,
-              onClick: () => {
-                s.fontFamily = f.id;
-                this.render();
-                this.app.applyTextStyle();
-              },
-            }))
-          )
-        ),
+      const rows = [];
+      let group = null;
+      for (const f of T.FONT_CHOICES) {
+        if (f.group !== group) {
+          group = f.group;
+          rows.push({ title: group });
+        }
+        rows.push({
+          label: f.label,
+          on: s.fontFamily === f.id,
+          // Jede Schrift zeigt sich in sich selbst.
+          node: null,
+          font: GN.render.FONTS[f.id],
+          onClick: () => {
+            s.fontFamily = f.id;
+            this.render();
+            this.app.applyTextStyle();
+          },
+        });
+      }
+      const content = pop.menu(rows);
+      // Beschriftungen in der jeweiligen Schrift setzen
+      const labels = content.querySelectorAll('.row__label');
+      const fonts = rows.filter((r) => r.font).map((r) => r.font);
+      labels.forEach((n, i) => {
+        if (fonts[i]) n.style.fontFamily = fonts[i];
       });
+      pop.open({ key: 'font', anchor, content });
     }
 
     openLineSpacing(anchor) {
@@ -593,7 +617,7 @@
     shapes(box) {
       const s = this.ctrl.settings.shapes;
       box.appendChild(this.toggle({
-        icon: 'cornerRound', label: 'Füllung', title: 'Form füllen',
+        icon: 'filterShape', label: 'Füllung', title: 'Form füllen',
         on: s.fill,
         onToggle: () => { s.fill = !s.fill; },
       }));
@@ -635,6 +659,11 @@
       box.appendChild(this.sep());
       box.appendChild(this.colors(s, {}));
       box.appendChild(this.sep());
+      box.appendChild(this.toggle({
+        icon: 'cornerRound', label: 'Ecken', title: 'Ecken abrunden',
+        on: s.rounded,
+        onToggle: () => { s.rounded = !s.rounded; },
+      }));
       box.appendChild(this.chip({ icon: 'customize', title: 'Formoptionen', onClick: (a) => this.openShapeOptions(a), chevron: false }));
     },
 
@@ -861,6 +890,20 @@
       default:
         return base;
     }
+  }
+
+  /**
+   * Verhindert, dass ein Klick auf die Kapsel den Fokus aus einem offenen
+   * Textfeld zieht. Ohne das schließt sich der Texteditor, bevor die
+   * Stiländerung ihn erreicht — die Textoptionen blieben wirkungslos.
+   * Eingabefelder in der Kapsel selbst bleiben ausgenommen.
+   */
+  function keepFocus(node) {
+    node.addEventListener('pointerdown', (e) => {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+      e.preventDefault();
+    });
   }
 
   function fmt(v, unit) {

@@ -51,6 +51,11 @@
         to: p.to ? { ...p.to } : null,
         vertices: p.vertices ? p.vertices.map((v) => ({ ...v })) : null,
         cx: p.cx, cy: p.cy, rx: p.rx, ry: p.ry, rotation: p.rotation || 0,
+        // Kreisbogen
+        center: p.center ? { ...p.center } : null,
+        radius: p.radius,
+        startAngle: p.startAngle,
+        endAngle: p.endAngle,
       };
       item.bbox = shapeBox(item);
       return Object.freeze(item);
@@ -120,12 +125,23 @@
   function shapeBox(item) {
     const pad = item.width / 2 + 2;
     if (item.vertices && item.vertices.length) {
-      const b = geo.boxFromPoints(item.vertices, pad);
-      return b;
+      return geo.boxFromPoints(item.vertices, pad);
     }
     if (item.rx !== undefined && item.rx !== null) {
-      const r = Math.max(item.rx, item.ry);
-      return { x0: item.cx - r - pad, y0: item.cy - r - pad, x1: item.cx + r + pad, y1: item.cy + r + pad };
+      // Hülle der gedrehten Ellipse — nicht max(rx, ry) für beide Achsen,
+      // sonst ist der Quader eines flachen Ovals auf der kurzen Achse
+      // um ein Vielfaches zu groß.
+      const rot = item.rotation || 0;
+      const c = Math.cos(rot);
+      const s = Math.sin(rot);
+      const dx = Math.hypot(item.rx * c, item.ry * s);
+      const dy = Math.hypot(item.rx * s, item.ry * c);
+      return { x0: item.cx - dx - pad, y0: item.cy - dy - pad, x1: item.cx + dx + pad, y1: item.cy + dy + pad };
+    }
+    if (item.center && item.radius > 0) {
+      // Bogen: Endpunkte plus die im Winkelbereich liegenden Achsenextrema
+      const pts = arcPoints(item);
+      return geo.boxFromPoints(pts, pad);
     }
     const f = item.from || { x: 0, y: 0 };
     const t = item.to || f;
@@ -135,6 +151,19 @@
       x1: Math.max(f.x, t.x) + pad,
       y1: Math.max(f.y, t.y) + pad,
     };
+  }
+
+  /** Stützpunkte entlang eines Kreisbogens (für Hülle und Treffer). */
+  function arcPoints(item, steps) {
+    const n = steps || 48;
+    const a0 = item.startAngle || 0;
+    const a1 = item.endAngle === undefined ? Math.PI : item.endAngle;
+    const out = [];
+    for (let i = 0; i <= n; i++) {
+      const a = a0 + ((a1 - a0) * i) / n;
+      out.push({ x: item.center.x + Math.cos(a) * item.radius, y: item.center.y + Math.sin(a) * item.radius });
+    }
+    return out;
   }
 
   function textBox(t) {
@@ -189,6 +218,10 @@
           ch.rx = item.rx * (t.sx === undefined ? 1 : Math.abs(t.sx));
           ch.ry = item.ry * (t.sy === undefined ? 1 : Math.abs(t.sy));
         }
+        if (item.center) {
+          ch.center = P(item.center);
+          ch.radius = item.radius * scale;
+        }
         return patch(item, ch);
       }
       case 'tape':
@@ -238,6 +271,7 @@
       this.title = p.title || 'Whiteboard';
       this.template = p.template || 'dots';   // blank | dots | grid | lines
       this.paper = p.paper || 'white';        // white | yellow | dark
+      this.spacing = p.spacing || 26;         // Rasterabstand in Welteinheiten (≈7 mm)
       this.items = p.items || [];
       this.camera = p.camera || null;
       this.history = [{ items: this.items }];
@@ -275,7 +309,7 @@
     }
 
     add(items, label) {
-      const list = Array.isArray(items) ? items : [items];
+      const list = (Array.isArray(items) ? items : [items]).filter(Boolean);
       if (!list.length) return;
       this.commit(this.items.concat(list), label || 'Hinzufügen');
     }
@@ -332,6 +366,7 @@
         title: this.title,
         template: this.template,
         paper: this.paper,
+        spacing: this.spacing,
         camera: this.camera,
         items: this.items,
       };
@@ -428,5 +463,5 @@
     }
   }
 
-  GN.model = { Board, Workspace, create, patch, transformItem, categoryOf, shapeBox, textBox, tapeBox, STORAGE_KEY };
+  GN.model = { Board, Workspace, create, patch, transformItem, categoryOf, shapeBox, textBox, tapeBox, arcPoints, STORAGE_KEY };
 })(window);

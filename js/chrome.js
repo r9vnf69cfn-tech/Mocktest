@@ -295,7 +295,10 @@
       map.addEventListener('pointermove', (e) => {
         if (dragging) panTo(e);
       });
-      map.addEventListener('pointerup', () => { dragging = false; });
+      const stop = () => { dragging = false; };
+      map.addEventListener('pointerup', stop);
+      map.addEventListener('pointercancel', stop);
+      map.addEventListener('lostpointercapture', stop);
       map.addEventListener('dblclick', () => {
         this.app.renderer.fitContent();
         this.app.onCameraChanged();

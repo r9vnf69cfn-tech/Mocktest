@@ -30,7 +30,7 @@
       this.toolMenu = new GN.ToolMenu(this);
 
       GN.hydrateIcons(document);
-      this.applyTheme(readStored('gn-theme') || 'light');
+      this.applyTheme(readStored('gn-theme') || preferredTheme());
       this.startClock();
 
       this.ws.on((reason) => this.onDocChanged(reason));
@@ -124,10 +124,13 @@
 
       document.addEventListener('keydown', (e) => this.onKeyDown(e));
       document.addEventListener('keyup', (e) => {
-        if (e.code === 'Space') {
-          this.ctrl.spaceDown = false;
-          this.appEl.classList.remove('is-panning');
-        }
+        if (e.code === 'Space') this.releaseSpace();
+      });
+      // Ein Fensterwechsel schluckt das keyup — ohne das hier bliebe die
+      // Leertaste gedrückt und Zeichnen wäre danach blockiert.
+      global.addEventListener('blur', () => this.releaseSpace());
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) this.releaseSpace();
       });
 
       global.addEventListener('dragover', (e) => e.preventDefault());
@@ -168,6 +171,11 @@
       });
     }
 
+    releaseSpace() {
+      this.ctrl.spaceDown = false;
+      this.appEl.classList.remove('is-panning');
+    }
+
     onAction(action, btn) {
       switch (action) {
         case 'undo': this.board.undo(); this.ctrl.clearSelection(); break;
@@ -182,7 +190,7 @@
         case 'accessories': this.openAccessories(btn); break;
         case 'more': this.openMoreMenu(btn); break;
         case 'share': this.openShareMenu(btn); break;
-        case 'addBoard': this.addBoard(); break;
+        case 'addBoard': this.openAddBoardMenu(btn); break;
         case 'newTab': this.addBoard(); break;
         case 'library': this.toast('Die Bibliothek ist in diesem Mockup nicht enthalten.'); break;
         case 'minimap': this.toggleMinimap(); break;
@@ -193,7 +201,11 @@
     onKeyDown(e) {
       const target = e.target;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
-        if (e.key === 'Escape') target.blur();
+        // Escape aus einem Popover-Feld heraus soll auch das Popover schließen.
+        if (e.key === 'Escape') {
+          target.blur();
+          pop.close();
+        }
         return;
       }
       const meta = e.metaKey || e.ctrlKey;
@@ -215,6 +227,7 @@
         } else if (k === 'y') {
           e.preventDefault();
           this.board.redo();
+          this.ctrl.clearSelection();
         } else if (k === 'a') {
           e.preventDefault();
           this.selectAll();
@@ -308,6 +321,7 @@
       this.chrome.renderMinimap();
       this.positionEditor();
       this.board.camera = { ...this.renderer.cam };
+      this.ws.save();   // sonst überlebt der Bildausschnitt kein Neuladen
     }
 
     onToolChanged() {
@@ -319,8 +333,14 @@
         this.renderer.requestFrame();
       }
       this.closeTextEditor();
-      // Bild & Kamera hat kein Werkzeugmenü: der Griff öffnet direkt die Auswahl.
+      // Bild & Kamera und Elemente öffnen ihr Panel direkt beim Aktivieren.
       if (this.ctrl.active === 'image') setTimeout(() => this.requestImage(null), 30);
+      if (this.ctrl.active === 'elements') {
+        setTimeout(() => {
+          const anchor = document.querySelector('[data-tool="elements"]');
+          if (anchor && !pop.isOpen('stickers')) this.toolMenu.openStickerPanel(anchor);
+        }, 30);
+      }
     }
 
     updateSelectionUI() {
@@ -348,19 +368,44 @@
 
     /* ── Boards ───────────────────────────────────────────────────────── */
 
-    addBoard() {
+    addBoard(opts) {
+      const copy = opts && opts.copy;
+      const source = this.board;
       const n = this.ws.boards.length + 1;
-      this.board.camera = { ...this.renderer.cam };
-      this.ws.addBoard({ title: `Board ${n}`, template: this.board.template, paper: this.board.paper }, this.ws.activeIndex + 1);
+      source.camera = { ...this.renderer.cam };
+      this.ws.addBoard({
+        title: copy ? `${source.title} Kopie` : `Board ${n}`,
+        template: source.template,
+        paper: source.paper,
+        spacing: source.spacing,
+        margin: source.margin,
+        items: copy ? source.items.slice() : [],
+      }, this.ws.activeIndex + 1);
       this.renderer.setBoard(this.board);
-      this.renderer.cam = { x: this.renderer.width / 2, y: this.renderer.height / 2, scale: 1 };
+      if (copy) this.renderer.cam = { ...source.camera };
+      else this.renderer.cam = { x: this.renderer.width / 2, y: this.renderer.height / 2, scale: 1 };
       this.ctrl.clearSelection();
       this.onCameraChanged();
-      this.toast('Neues Board angelegt');
+      this.toast(copy ? 'Board dupliziert' : 'Neues Board angelegt');
+    }
+
+    openAddBoardMenu(anchor) {
+      pop.open({
+        key: 'addboard',
+        anchor,
+        content: pop.menu([
+          { title: 'Board hinzufügen' },
+          { label: 'Leeres Board', sub: 'Übernimmt Muster und Papierfarbe', icon: 'plus', onClick: () => this.addBoard() },
+          { label: 'Board duplizieren', sub: 'Mit allen Objekten des aktuellen Boards', icon: 'duplicate', onClick: () => this.addBoard({ copy: true }) },
+          '-',
+          { label: 'Muster wählen …', icon: 'template', chevron: true, onClick: () => defer(() => this.openTemplateMenu(anchor)) },
+        ]),
+      });
     }
 
     setActiveBoard(index) {
       this.board.camera = { ...this.renderer.cam };
+      this.renderer.laserTrail = [];
       this.ws.setActive(index);
       this.renderer.setBoard(this.board);
       if (this.board.camera) Object.assign(this.renderer.cam, this.board.camera);
@@ -378,7 +423,12 @@
       }
       this.ws.closeBoard(index);
       this.renderer.setBoard(this.board);
+      // Das nachrückende Board bringt seine eigene Kamera mit.
+      if (this.board.camera) Object.assign(this.renderer.cam, this.board.camera);
+      else this.renderer.cam = { x: this.renderer.width / 2, y: this.renderer.height / 2, scale: 1 };
       this.ctrl.clearSelection();
+      this.closeTextEditor();
+      this.centerRuler();
       this.onCameraChanged();
     }
 
@@ -1108,6 +1158,13 @@
 
   function slug(s) {
     return String(s).toLowerCase().replace(/[^a-z0-9äöüß]+/gi, '-').replace(/^-|-$/g, '') || 'whiteboard';
+  }
+
+  /** Ohne gespeicherte Wahl folgt das Design dem System des Betrachters. */
+  function preferredTheme() {
+    const stamped = document.documentElement.getAttribute('data-theme');
+    if (stamped === 'dark' || stamped === 'light') return stamped;
+    return global.matchMedia && global.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
   function readStored(key) {

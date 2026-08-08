@@ -58,11 +58,20 @@
   ];
 
   const FONT_CHOICES = [
-    { id: 'system', label: 'System' },
-    { id: 'serif', label: 'Serif' },
-    { id: 'rounded', label: 'Rund' },
-    { id: 'mono', label: 'Mono' },
-    { id: 'marker', label: 'Handschrift' },
+    { id: 'system', label: 'SF Pro', group: 'Serifenlos' },
+    { id: 'helvetica', label: 'Helvetica Neue', group: 'Serifenlos' },
+    { id: 'avenir', label: 'Avenir Next', group: 'Serifenlos' },
+    { id: 'futura', label: 'Futura', group: 'Serifenlos' },
+    { id: 'rounded', label: 'SF Pro Rounded', group: 'Serifenlos' },
+    { id: 'newyork', label: 'New York', group: 'Serifen' },
+    { id: 'georgia', label: 'Georgia', group: 'Serifen' },
+    { id: 'palatino', label: 'Palatino', group: 'Serifen' },
+    { id: 'sfmono', label: 'SF Mono', group: 'Feste Breite' },
+    { id: 'menlo', label: 'Menlo', group: 'Feste Breite' },
+    { id: 'markerfelt', label: 'Marker Felt', group: 'Handschrift' },
+    { id: 'bradley', label: 'Bradley Hand', group: 'Handschrift' },
+    { id: 'noteworthy', label: 'Noteworthy', group: 'Handschrift' },
+    { id: 'chalkboard', label: 'Chalkboard', group: 'Handschrift' },
   ];
 
   const BOX_STYLES = [
@@ -125,6 +134,8 @@
         fillColor: '#00A99D',
         fillOpacity: 0.25,
         rounded: false,
+        recognize: 'immediate',   // immediate | hold | off
+        snapGrid: false,
       },
       lasso: {
         type: 'free',
@@ -323,22 +334,22 @@
 
       if (this.session && this.session.type === 'pan') {
         this.session = null;
+        this.restoreFromEraserOverride();
         return;
       }
-      if (!this.session) return;
+      if (!this.session) {
+        this.restoreFromEraserOverride();
+        return;
+      }
 
       const h = HANDLERS[this.active];
       if (h && h.up) h.up.call(this, this.worldPoint(e), e);
       this.session = null;
-
-      if (this.eraserOverride) {
-        const back = this.eraserOverride;
-        this.eraserOverride = null;
-        this.setTool(back);
-      }
+      this.restoreFromEraserOverride();
     }
 
     cancel() {
+      this.restoreFromEraserOverride();
       if (!this.session) return;
       const h = HANDLERS[this.active];
       if (h && h.cancel) h.cancel.call(this);
@@ -347,6 +358,14 @@
       this.renderer.lasso = null;
       this.renderer.marquee = null;
       this.renderer.invalidate();
+    }
+
+    /** Schaltet nach dem Radiererende des Stifts zurück aufs vorige Werkzeug. */
+    restoreFromEraserOverride() {
+      if (!this.eraserOverride) return;
+      const back = this.eraserOverride;
+      this.eraserOverride = null;
+      this.setTool(back);
     }
 
     /* ── Hilfen ───────────────────────────────────────────────────────── */
@@ -793,9 +812,14 @@
         if (!s || s.type !== 'stroke') return;
         const set = this.settings.shapes;
         const raw = s.raw.map((r) => ({ x: r.x, y: r.y }));
-        const recognized = GN.shapes && GN.shapes.recognize
+
+        // Erkennungsmodus: sofort, erst nach kurzem Stillhalten, oder gar nicht
+        const held = performance.now() - s.lastMoveAt > 350;
+        const wants = set.recognize === 'immediate' || (set.recognize === 'hold' && held);
+        const recognized = wants && GN.shapes && GN.shapes.recognize
           ? GN.shapes.recognize(raw, { snapAngles: !e || !e.altKey })
           : null;
+        if (recognized && set.snapGrid) snapShapeToGrid(recognized, 20);
 
         if (recognized) {
           this.board.add(
@@ -813,6 +837,10 @@
               cx: recognized.cx, cy: recognized.cy,
               rx: recognized.rx, ry: recognized.ry,
               rotation: recognized.rotation,
+              center: recognized.center,
+              radius: recognized.radius,
+              startAngle: recognized.startAngle,
+              endAngle: recognized.endAngle,
             }),
             'Form'
           );
@@ -886,7 +914,10 @@
         if (s.type === 'move') {
           const dx = p.x - s.start.x;
           const dy = p.y - s.start.y;
-          if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) s.moved = true;
+          // Schwelle in Bildschirm-Pixeln — in Weltkoordinaten wären bei
+          // 1600 % Zoom erst 8 px Mausweg als Bewegung gezählt worden.
+          const moveEps = 0.5 / this.renderer.cam.scale;
+          if (Math.abs(dx) > moveEps || Math.abs(dy) > moveEps) s.moved = true;
           const map = {};
           for (const it of s.items0) map[it.id] = M.transformItem(it, { dx, dy });
           this.board.stage(applyMap(s.before, map));
@@ -965,6 +996,13 @@
 
     text: {
       down(p) {
+        // Ein Klick, während ein Feld offen ist, schließt erst dieses ab —
+        // `pointerdown` kommt vor `blur`, sonst entstünde sofort ein zweites,
+        // leeres Feld an der Klickstelle.
+        if (this.app.editor) {
+          this.app.closeTextEditor();
+          return;
+        }
         const hit = topItemAt(this.board, p.x, p.y, ['text']);
         if (hit) {
           this.app.editText(hit);
@@ -1007,7 +1045,8 @@
         const s = this.settings.laser;
         this.session = { type: 'laser' };
         this.renderer.laserPersistent = s.trail === 'persist';
-        if (s.trail === 'dot') this.renderer.laserTrail = [];
+        // "Bleibend" heißt: die vorige Spur verschwindet beim nächsten Antippen.
+        if (s.trail !== 'fade') this.renderer.laserTrail = [];
         this.renderer.laserTrail.push({ x: p.x, y: p.y, t: performance.now(), color: s.color, gap: true });
         this.renderer.requestFrame();
       },
@@ -1020,6 +1059,24 @@
       up() {},
     },
   };
+
+  /** Rundet die Stützpunkte einer erkannten Form auf ein Weltraster. */
+  function snapShapeToGrid(shape, step) {
+    const r = (v) => Math.round(v / step) * step;
+    if (shape.vertices) shape.vertices = shape.vertices.map((v) => ({ x: r(v.x), y: r(v.y) }));
+    if (shape.from) shape.from = { x: r(shape.from.x), y: r(shape.from.y) };
+    if (shape.to) shape.to = { x: r(shape.to.x), y: r(shape.to.y) };
+    if (shape.cx !== undefined) {
+      shape.cx = r(shape.cx);
+      shape.cy = r(shape.cy);
+      shape.rx = Math.max(r(shape.rx), step / 2);
+      shape.ry = Math.max(r(shape.ry), step / 2);
+    }
+    if (shape.center) {
+      shape.center = { x: r(shape.center.x), y: r(shape.center.y) };
+      shape.radius = Math.max(r(shape.radius), step / 2);
+    }
+  }
 
   function unionOf(items) {
     let box = null;

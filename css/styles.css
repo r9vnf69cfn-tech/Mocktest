@@ -493,13 +493,25 @@ button {
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: auto;
-  max-height: calc(100vh - 260px);
+  /* Oben die Kapselränder, unten Minimap bzw. Zoomsteuerung freihalten */
+  max-height: calc(100vh - var(--statusbar-h) - var(--tabsbar-h) - var(--navbar-h) - 190px);
 }
-/* Vertikal angedockt bleibt nur die Ikonografie — Beschriftungen entfallen */
-.toolmenu[data-dock="left"] .chip__label,
-.toolmenu[data-dock="right"] .chip__label,
+/* Vertikal angedockt tragen nur Knöpfe mit Icon ihre Beschriftung nicht mehr —
+   reine Textknöpfe (Schriftart, Zeilenabstand) behalten sie, sonst blieben
+   leere Flächen zurück. */
+.toolmenu[data-dock="left"] .chip:has(.icon) .chip__label,
+.toolmenu[data-dock="right"] .chip:has(.icon) .chip__label,
+.toolmenu[data-dock="left"] .tm-toggle:has(.icon) .chip__label,
+.toolmenu[data-dock="right"] .tm-toggle:has(.icon) .chip__label,
 .toolmenu[data-dock="left"] .tm-hint,
 .toolmenu[data-dock="right"] .tm-hint { display: none; }
+.toolmenu[data-dock="left"] .chip,
+.toolmenu[data-dock="right"] .chip { max-width: 100%; font-size: 12px; padding: 0 6px; }
+/* Der Größen-Stepper wird sonst breiter als die Spalte */
+.toolmenu[data-dock="left"] .stepper input,
+.toolmenu[data-dock="right"] .stepper input { width: 30px; }
+.toolmenu[data-dock="left"] .stepper button,
+.toolmenu[data-dock="right"] .stepper button { width: 22px; }
 .toolmenu[data-dock="left"] .hairline-v,
 .toolmenu[data-dock="right"] .hairline-v {
   width: 24px; height: 1px;
@@ -782,8 +794,11 @@ button {
 
 /* ── 7. Popovers ──────────────────────────────────────────────────────── */
 
-.popover-layer { position: fixed; inset: 0; z-index: 100; }
+/* Die Schicht deckt den ganzen Viewport ab, darf Klicks aber nicht abfangen —
+   sonst bräuchte jeder Griff neben ein offenes Popover zwei Klicks. */
+.popover-layer { position: fixed; inset: 0; z-index: 100; pointer-events: none; }
 .popover-layer[hidden] { display: none; }
+.popover { pointer-events: auto; }
 
 .popover {
   position: absolute;

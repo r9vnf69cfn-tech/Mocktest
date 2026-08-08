@@ -62,6 +62,13 @@
     host.hidden = false;
 
     const node = el('div', { class: 'popover glass-popover' + (opts.className ? ' ' + opts.className : ''), role: 'dialog' });
+    // Klicks im Popover sollen den Fokus eines offenen Textfelds nicht stehlen
+    // (sonst schließt sich der Texteditor, bevor die Änderung ihn erreicht).
+    node.addEventListener('pointerdown', (e) => {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'CANVAS')) return;
+      e.preventDefault();
+    });
     node.appendChild(opts.content);
     host.appendChild(node);
     position(node, opts.anchor, opts.placement);

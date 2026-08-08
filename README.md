@@ -118,6 +118,11 @@ Grautöne, Maße, Radien, Schatten, Typografie) und die Popover-Struktur.
 - **Ergänzt:** Export als PNG und JSON, Suche über Textfelder, Tastenkürzel-
   Übersicht — praktisch für ein Mockup, das man herumzeigen will.
 
+**Nicht umgesetzt** (es bleibt ein Mockup, kein Produkt): Kollaborationslinks und
+Präsentationsmodus im Teilen-Menü, das Drehen einer Auswahl samt der acht
+Skaliergriffe, die Farbpipette und die Randlinie im Muster-Menü. Die Auswahl
+bietet vier Eckgriffe und proportionales Skalieren.
+
 Die Werkzeug-Icons sind neu gezeichnete SVGs im SF-Symbols-Duktus, keine Kopien
 der GoodNotes-Grafiken. GoodNotes ist eine Marke von Time Base Technology
 Limited; dieses Projekt steht in keiner Verbindung dazu und dient als
