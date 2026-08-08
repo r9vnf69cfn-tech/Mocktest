@@ -590,9 +590,11 @@
       node.style.width = item.w * k + 'px';
       node.style.font = GN.render.fontString({ ...item, fontSize: item.fontSize * k });
       node.style.lineHeight = item.fontSize * k * item.lineSpacing + 'px';
+      // Dieselbe Anzeige-Umkehrung wie im Canvas: was gleich gezeichnet wird,
+      // muss beim Tippen schon so aussehen.
       node.style.color = item.boxStyle === 'sticky' || item.boxStyle === 'callout'
         ? GN.render.readableInk(item.color)
-        : item.color;
+        : r.ink(item.color);
       node.style.textAlign = item.align === 'justify' ? 'justify' : item.align;
       node.style.padding = 6 * k + 'px';
       node.style.textDecoration = [item.underline && 'underline', item.strike && 'line-through'].filter(Boolean).join(' ') || 'none';

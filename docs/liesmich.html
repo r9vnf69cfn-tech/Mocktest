@@ -69,6 +69,13 @@
      ~69 Zeichen. Die Einheit ch skaliert mit der Systemschrift, die
      Zeichenzahl bleibt damit auch bei anderer Schrift stabil. */
   --measure:52ch;
+  /* Blattbreite. Ohne Verzeichnis haengt sie an der Lesebreite: Blatt =
+     Satzspiegel + 44 px Blattrand links/rechts + 24 px Seitenrand
+     links/rechts + 82 px Zugabe, die Tabellen und Code nutzen. Sonst
+     stuende zwischen dem Zeilenende und der Blattkante leeres Papier —
+     genau das passierte vorher zwischen 1040 und 1099 px. Erst wenn das
+     Verzeichnis die linke Spalte fuellt, waechst das Blatt auf 1040 px. */
+  --sheet:calc(var(--measure) + 218px);
   --bar:56px;
 }
 @media (prefers-color-scheme: dark){
@@ -112,7 +119,9 @@ body{
   margin:0;
   background:var(--ground);
   color:var(--ink-1);
-  font:400 17px/27px var(--sans);
+  /* Dieselbe Skala, die das Dokument selbst abdruckt: 28/34 · 20/26 ·
+     17/23 · 15/20 · 13/16, zwei Gewichte. Auch die Zeilenhoehen. */
+  font:400 17px/23px var(--sans);
   font-synthesis-weight:none;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
@@ -151,17 +160,18 @@ a:hover{ text-decoration-color:currentColor; }
 .themes button.is-on{ background:var(--accent); color:var(--accent-on); }
 
 /* ── Titelblock ─────────────────────────────────────────────────── */
-.masthead{ max-width:1040px; margin:0 auto; padding:56px 24px 32px; }
+.masthead{ max-width:var(--sheet); margin:0 auto; padding:56px 24px 32px; }
 .eyebrow{
   margin:0 0 12px; font:600 13px/16px var(--sans);
   letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3);
 }
 .masthead h1{ margin:0; font:600 28px/34px var(--sans); letter-spacing:-.015em; max-width:22ch; }
-.masthead .sub{ margin:12px 0 0; font:400 17px/27px var(--sans); color:var(--ink-2); max-width:var(--measure); }
+.masthead .sub{ margin:12px 0 0; font:400 17px/23px var(--sans); color:var(--ink-2); max-width:var(--measure); }
 
 /* ── Seitenraster ───────────────────────────────────────────────── */
-.page{ max-width:1040px; margin:0 auto; padding:0 24px 120px; }
+.page{ max-width:var(--sheet); margin:0 auto; padding:0 24px 120px; }
 @media (min-width:1100px){
+  :root{ --sheet:1040px; }
   .page{ display:grid; grid-template-columns:240px minmax(0,1fr); gap:48px; align-items:start; }
 }
 
@@ -221,13 +231,16 @@ a:hover{ text-decoration-color:currentColor; }
 }
 @media (max-width:640px){ .doc{ padding:4px 20px 36px; border-radius:14px; } }
 /* Fliesstext bleibt auf Lesebreite; Tabellen, Code und die
-   Abschnittslinien duerfen die volle Blattbreite nutzen. */
+   Abschnittslinie der H2 duerfen die volle Blattbreite nutzen.
+   Die Trennlinie vor einer H3 bleibt bewusst auf Satzbreite: kuerzere
+   Linie + kleinere Ueberschrift = zwei Merkmale, an denen man den
+   kleineren Einschnitt vom groesseren unterscheidet. */
 .doc > *{ max-width:var(--measure); }
-.doc > .tablewrap,.doc > pre,.doc > hr,.doc > h2{ max-width:none; }
+.doc > .tablewrap,.doc > pre,.doc > h2{ max-width:none; }
 .doc > h2 .h-t{ display:inline-block; max-width:var(--measure); }
 
 .doc p{ margin:0 0 20px; }
-.doc .lead{ font:400 20px/32px var(--sans); color:var(--ink-1); margin:32px 0 28px; }
+.doc .lead{ font:400 20px/26px var(--sans); color:var(--ink-1); margin:32px 0 28px; }
 .doc{ counter-reset:sec; }
 .doc h2{
   counter-increment:sec; counter-reset:sub;
@@ -261,6 +274,13 @@ a:hover{ text-decoration-color:currentColor; }
 }
 h2:hover .anchor,h3:hover .anchor,h4:hover .anchor,.anchor:focus-visible{ opacity:1; }
 .anchor:hover{ color:var(--ink-1); background:var(--fill); }
+/* Ohne Zeigegeraet gibt es kein :hover. Dort stuende sonst ein
+   unsichtbares, 24 px grosses Ziel neben jeder Ueberschrift, das beim
+   Antippen der Ueberschrift zuschnappt. Also sichtbar zeigen. */
+@media (hover:none){
+  .anchor{ opacity:1; }
+  .anchor:hover{ color:var(--ink-3); background:none; }
+}
 
 .doc ul,.doc ol{ margin:0 0 20px; padding-left:24px; }
 .doc li{ margin:0 0 10px; padding-left:4px; }
@@ -273,17 +293,22 @@ h2:hover .anchor,h3:hover .anchor,h4:hover .anchor,.anchor:focus-visible{ opacit
   border:0; height:1px; background:var(--line);
   margin:44px 0;
 }
+.doc hr + h3{ margin-top:0; padding-top:0; }
 
+/* Der Balken ist Auszeichnung, kein Zustand: er darf den Ink-Akzent
+   nicht tragen, der aktivem Zustand, primaerer Aktion und Auswahl
+   vorbehalten ist. Der Kasten wird ohnehin durch Flaeche und Radius
+   erkannt — der Balken ist das dritte, schwaechste Merkmal. */
 blockquote{
   margin:28px 0; padding:20px 24px;
-  background:var(--fill); border-left:2px solid var(--accent);
+  background:var(--fill); border-left:2px solid var(--ink-4);
   border-radius:0 12px 12px 0;
 }
 blockquote > *:last-child{ margin-bottom:0; }
 blockquote p{ margin:0 0 14px; }
 
 code{
-  font:400 15px/1.4 var(--mono);
+  font:400 15px/20px var(--mono);
   background:var(--fill); color:var(--ink-1);
   padding:2px 5px; border-radius:5px;
   overflow-wrap:anywhere;
@@ -293,7 +318,7 @@ pre{
   background:var(--paper-2); border:1px solid var(--line); border-radius:12px;
   overflow-x:auto;
 }
-pre code{ background:none; padding:0; font-size:13px; line-height:20px; white-space:pre; }
+pre code{ background:none; padding:0; font-size:13px; line-height:16px; white-space:pre; }
 h2 code,h3 code,th code{ font-size:.9em; }
 
 /* ── Tabellen ───────────────────────────────────────────────────── */
@@ -350,7 +375,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
 .tablebox th,.tablebox td{
   text-align:left; vertical-align:top;
   padding:12px 16px;
-  font-size:15px; line-height:22px;
+  font-size:15px; line-height:20px;
   border-bottom:1px solid var(--line);
 }
 .tablebox.is-frei{ overflow:visible; }
@@ -376,11 +401,33 @@ h2 code,h3 code,th code{ font-size:.9em; }
 .ta-right{ text-align:right; }
 .ta-center{ text-align:center; }
 
-/* ── Fuss ───────────────────────────────────────────────────────── */
-.colophon{
-  max-width:1040px; margin:0 auto; padding:0 24px 64px;
-  font:400 13px/20px var(--sans); color:var(--ink-3);
+/* Muss die Tabelle seitwaerts scrollen, bleiben die vordersten Spalten
+   stehen — sonst sieht man beim Scrollen nach rechts die Optionen, aber
+   nicht mehr das Werkzeug, zu dem sie gehoeren. Wie viele Spalten das
+   sind, entscheidet das Skript: nur so viele, wie zusammen unter 45 %
+   der sichtbaren Breite bleiben, hoechstens zwei. Die Flaeche muss
+   decken, sonst schiebt sich Text darunter durch. */
+.tablebox td.kleb,.tablebox th.kleb{
+  position:sticky; z-index:1;
+  background-color:var(--paper);
 }
+.tablebox tbody tr:nth-child(even) td.kleb{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--fill),var(--fill));
+}
+.tablebox th.kleb{ top:0; z-index:2; background-color:var(--paper-2); }
+/* Die Kante zeigt sich erst, wenn wirklich etwas dahinter liegt. */
+.tablewrap.is-ab .tablebox .kleb-letzte{ box-shadow:1px 0 0 var(--line-2); }
+
+/* ── Fuss ───────────────────────────────────────────────────────── */
+/* Am Ende eines langen Dokuments ist die Kopfleiste zehntausende Pixel
+   entfernt. Der Fuss verspricht deshalb nicht den Weg zurueck, er ist
+   er: dieselbe Adresse wie oben links, als eigene Verknuepfung. */
+.colophon{
+  max-width:var(--sheet); margin:0 auto; padding:0 24px 64px;
+  font:400 13px/16px var(--sans); color:var(--ink-3);
+}
+.colophon a{ color:var(--ink-1); }
 @media (min-width:1100px){ .colophon{ padding-left:312px; } }
 
 /* ── Druck ──────────────────────────────────────────────────────── */
@@ -390,7 +437,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
     --ink-1:#000000; --ink-2:#333333; --ink-3:#444444;
     --line:#BBBBBB; --line-2:#888888; --fill:#F2F2F2; --accent:#000000;
   }
-  body{ background:#FFFFFF; color:#000000; font-size:11pt; line-height:16pt; }
+  body{ background:#FFFFFF; color:#000000; font-size:11pt; line-height:15pt; }
   .topbar,.toc,.toc-narrow,.themes,.back,.anchor{ display:none !important; }
   .masthead{ padding:0 0 18pt; }
   .page{ display:block; max-width:none; padding:0; }
@@ -402,7 +449,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
   .masthead h1{ font:600 20pt/24pt var(--sans); }
   .masthead .sub{ font-size:10pt; line-height:14pt; }
   .eyebrow{ font-size:8pt; line-height:11pt; }
-  .doc .lead{ font:400 13pt/19pt var(--sans); margin:14pt 0 12pt; }
+  .doc .lead{ font:400 13pt/17pt var(--sans); margin:14pt 0 12pt; }
   .doc h2{ font:600 14pt/18pt var(--sans); }
   .doc h3{ font:600 12pt/16pt var(--sans); margin-top:18pt; }
   .doc h2::before,.doc h3::before{ font-size:8.5pt; line-height:11pt; margin-bottom:4pt; }
@@ -418,6 +465,9 @@ h2 code,h3 code,th code{ font-size:.9em; }
   .tablebox{ overflow:visible; max-height:none; break-inside:avoid; page-break-inside:avoid; border:1px solid #BBBBBB; }
   .tablebox table{ min-width:0 !important; }
   .tablebox th{ position:static; background:#F2F2F2; }
+  /* Auf Papier scrollt nichts, also klebt auch nichts. */
+  .tablebox td.kleb,.tablebox th.kleb{ position:static; box-shadow:none; background:none; }
+  .tablebox th.kleb{ background:#F2F2F2; }
   tr,thead,blockquote,pre,li{ break-inside:avoid; page-break-inside:avoid; }
   a{ color:#000000; text-decoration:none; }
   .colophon{ padding:0; }
@@ -426,7 +476,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
 </head>
 <body>
 <div class="topbar">
-  <a class="back" href="../index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
+  <a class="back" href="../mockups/index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
   <div class="themes" role="group" aria-label="Erscheinungsbild">
     <button type="button" data-val="light">Hell</button>
     <button type="button" data-val="dark">Dunkel</button>
@@ -456,10 +506,10 @@ js/  icons.js  geometry.js  shapes.js  model.js  renderer.js
      popovers.js  tools.js  toolmenu.js  chrome.js  app.js</code></pre>
 <h2 id="aufbau-der-oberflaeche"><span class="h-t">Aufbau der Oberfläche</span><a class="anchor" href="#aufbau-der-oberflaeche" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p>Die obere Chrome besteht aus drei Ebenen — so wie im Whiteboard-Modus von GoodNotes:</p>
-<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col">Ebene</th><th scope="col">Höhe</th><th scope="col">Inhalt</th></tr></thead><tbody><tr><td>Statusleiste</td><td>20 px</td><td>Uhrzeit, WLAN, Batterie (rein optisch, Uhr läuft mit)</td></tr><tr><td><strong>Dokument-Tabs</strong></td><td>44 px</td><td>Bibliothek · Tabs mit Boardtitel und Schließen-× · „+" für neuen Tab</td></tr><tr><td><strong>Navigationsleiste</strong></td><td>52 px</td><td><strong>links:</strong> Seitenleiste, Suche, AI, Ansichtsmodus — <strong>Mitte:</strong> Rückgängig/Wiederholen ‖ die elf Werkzeuge ‖ Zubehör — <strong>rechts:</strong> Board hinzufügen, Teilen, Mehr</td></tr><tr><td><strong>Werkzeugmenü</strong></td><td>48 px</td><td>Schwebende Glaskapsel unter der Leiste, Inhalt je nach aktivem Werkzeug. Am Griff links an alle vier Bildschirmränder ziehbar; seitlich angedockt klappt sie auf vertikal um.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col">Ebene</th><th scope="col">Höhe</th><th scope="col">Inhalt</th></tr></thead><tbody><tr><td>Statusleiste</td><td>20 px</td><td>Uhrzeit, WLAN, Batterie (rein optisch, Uhr läuft mit)</td></tr><tr><td><strong>Dokument-Tabs</strong></td><td>44 px</td><td>Bibliothek · Tabs mit Boardtitel und Schließen-× · „+“ für neuen Tab</td></tr><tr><td><strong>Navigationsleiste</strong></td><td>52 px</td><td><strong>links:</strong> Seitenleiste, Suche, AI, Ansichtsmodus — <strong>Mitte:</strong> Rückgängig/Wiederholen ‖ die elf Werkzeuge ‖ Zubehör — <strong>rechts:</strong> Board hinzufügen, Teilen, Mehr</td></tr><tr><td><strong>Werkzeugmenü</strong></td><td>48 px</td><td>Schwebende Glaskapsel unter der Leiste, Inhalt je nach aktivem Werkzeug. Am Griff links an alle vier Bildschirmränder ziehbar; seitlich angedockt klappt sie auf vertikal um.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Unten links liegt die <strong>Minimap</strong> (ziehen verschiebt die Ansicht, Doppelklick passt alles ein), unten rechts die <strong>Zoomsteuerung</strong>.</p>
 <h2 id="die-elf-werkzeuge"><span class="h-t">Die elf Werkzeuge</span><a class="anchor" href="#die-elf-werkzeuge" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
-<p>Reihenfolge und Verhalten folgen der GoodNotes-Vorlage. „Klebt" bedeutet: das Werkzeug bleibt aktiv. Die übrigen springen nach ihrer Aktion zurück aufs Lasso — das ist das Rückfallwerkzeug.</p>
+<p>Reihenfolge und Verhalten folgen der GoodNotes-Vorlage. „Klebt“ bedeutet: das Werkzeug bleibt aktiv. Die übrigen springen nach ihrer Aktion zurück aufs Lasso — das ist das Rückfallwerkzeug.</p>
 <div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:820px"><thead><tr><th scope="col">#</th><th scope="col">Werkzeug</th><th scope="col">Taste</th><th scope="col">Klebt</th><th scope="col">Optionen im Werkzeugmenü</th></tr></thead><tbody><tr><td>1</td><td><strong>Stift</strong></td><td><code>1</code> <code>P</code></td><td>✔</td><td>Stiftart (Füller, Kugelschreiber, Pinsel, Bleistift) · 3 Stärken · 3 Farben + Farbwähler · Druckempfindlichkeit, Glättung, gerade Linien</td></tr><tr><td>2</td><td><strong>Radierer</strong></td><td><code>2</code> <code>E</code></td><td>✔</td><td>Typ (Präzision, Standard, Strich) · 3 Größen · nur Textmarker · Bilder löschbar · Board leeren</td></tr><tr><td>3</td><td><strong>Textmarker</strong></td><td><code>3</code> <code>H</code></td><td>✔</td><td>3 Stärken · 3 Farben · gerade Linien · unter der Tinte zeichnen</td></tr><tr><td>4</td><td><strong>Klebeband</strong></td><td><code>4</code></td><td>✔</td><td>5 Muster (einfarbig, Streifen, Punkte, Karo, gerissen) · Farben · Breite · Deckkraft</td></tr><tr><td>5</td><td><strong>Formen</strong></td><td><code>5</code> <code>S</code></td><td>—</td><td>Füllung + Füllfarbe · Linienstil (durchgezogen, gestrichelt, gepunktet) · 3 Stärken · Farben · Ecken abrunden</td></tr><tr><td>6</td><td><strong>Lasso</strong></td><td><code>6</code> <code>L</code></td><td>✔</td><td>Freihand/Rechteck · fünf Filter (Handschrift, Bilder, Text, Formen, Elemente)</td></tr><tr><td>7</td><td><strong>Text</strong></td><td><code>7</code> <code>T</code></td><td>—</td><td>Schriftart · Größen-Stepper · <strong>B</strong> <em>I</em> U S̶ · Farbe · Ausrichtung · Zeilenabstand · Feldstil · Anheften</td></tr><tr><td>8</td><td><strong>Elemente</strong></td><td><code>8</code></td><td>—</td><td>36 Sticker, Schnellauswahl und Größe</td></tr><tr><td>9</td><td><strong>Bild &amp; Kamera</strong></td><td><code>9</code></td><td>—</td><td>öffnet direkt die Auswahl (Foto/Datei)</td></tr><tr><td>10</td><td><strong>Lineal</strong></td><td><code>0</code></td><td>Umschalter</td><td>Lineal/Winkelmesser · Winkel · Einrasten — ändert das aktive Werkzeug nicht</td></tr><tr><td>11</td><td><strong>Laserpointer</strong></td><td><code>\</code></td><td>✔</td><td>Farben · Spur: verblassend, bleibend, nur Punkt</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Ein zweiter Tipp auf das aktive Werkzeug klappt sein Menü ein und wieder aus.</p>
 <h2 id="zeichen-engine"><span class="h-t">Zeichen-Engine</span><a class="anchor" href="#zeichen-engine" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
@@ -476,7 +526,7 @@ js/  icons.js  geometry.js  shapes.js  model.js  renderer.js
     </article>
   </main>
 </div>
-<p class="colophon">Aus README.md erzeugt. Zurück zur Übersicht über die Verknüpfung oben links.</p>
+<p class="colophon">Aus README.md erzeugt. <a href="../mockups/index.html">Zurück zur Übersicht</a></p>
 <script>
 (function(){
   var root = document.documentElement;
@@ -574,17 +624,70 @@ js/  icons.js  geometry.js  shapes.js  model.js  renderer.js
      Dann klebt ihre Kopfzeile beim Weiterscrollen am oberen Fensterrand.
      Muss sie seitwaerts scrollen, bleibt sie eine Box. */
   var boxes = [].slice.call(document.querySelectorAll('.tablebox'));
-  function markBox(b){
+
+  /* Vordere Spalten festhalten, solange seitwaerts gescrollt wird.
+     Gemessen wird vor dem Kleben — sticky aendert die Breiten nicht. */
+  function klebSpalten(b, mehr){
+    var t = b.querySelector('table');
+    if (!t || !t.tHead) return;
+    var zeilen = [].slice.call(t.rows);
+    for (var r = 0; r < zeilen.length; r++){
+      var z = zeilen[r].cells;
+      for (var c = 0; c < z.length; c++){
+        z[c].classList.remove('kleb','kleb-letzte');
+        z[c].style.left = '';
+      }
+    }
+    if (!mehr) return;
+    var kopf = t.tHead.rows[0].cells;
+    var grenze = b.clientWidth * 0.45, summe = 0, links = [], n = 0;
+    for (var i = 0; i < kopf.length - 1 && i < 2; i++){
+      var w = kopf[i].getBoundingClientRect().width;
+      if (i > 0 && summe + w > grenze) break;
+      links.push(summe); summe += w; n = i + 1;
+    }
+    /* Bliebe nur eine schmale Zaehlspalte stehen, sagt sie nichts —
+       dann lieber gar nichts festhalten und die Breite dem Inhalt
+       geben. Genau das passiert auf dem Telefon. */
+    if (n === 1 && summe < 64) n = 0;
+    for (var r2 = 0; r2 < zeilen.length; r2++){
+      var z2 = zeilen[r2].cells;
+      for (var c2 = 0; c2 < n && c2 < z2.length; c2++){
+        z2[c2].classList.add('kleb');
+        if (c2 === n - 1) z2[c2].classList.add('kleb-letzte');
+        z2[c2].style.left = links[c2] + 'px';
+      }
+    }
+  }
+
+  function markBox(b, voll){
     var wrap = b.closest('.tablewrap');
     var mehr = b.scrollWidth > b.clientWidth + 2;
-    b.classList.toggle('is-frei', !mehr);
+    if (voll){
+      b.classList.toggle('is-frei', !mehr);
+      /* Rolle, Tabstopp und Ansage gelten nur, solange wirklich etwas zu
+         scrollen ist. Sonst schickte die Tabelle Tastatur und Vorlese-
+         software durch einen leeren Halt und kuendigte einen Weg an, den
+         es nicht gibt. */
+      if (mehr){
+        b.setAttribute('role','region');
+        b.setAttribute('tabindex','0');
+        b.setAttribute('aria-label','Tabelle, seitlich scrollbar');
+      } else {
+        b.removeAttribute('role');
+        b.removeAttribute('tabindex');
+        b.removeAttribute('aria-label');
+      }
+      klebSpalten(b, mehr);
+    }
     wrap.classList.toggle('is-mehr', mehr && b.scrollLeft + b.clientWidth < b.scrollWidth - 2);
+    wrap.classList.toggle('is-ab', mehr && b.scrollLeft > 2);
   }
-  function fitTables(){ for (var i=0;i<boxes.length;i++) markBox(boxes[i]); }
+  function fitTables(){ for (var i=0;i<boxes.length;i++) markBox(boxes[i], true); }
   if (boxes.length){
     for (var bi=0; bi<boxes.length; bi++){
       (function(b){
-        b.addEventListener('scroll', function(){ markBox(b); }, { passive:true });
+        b.addEventListener('scroll', function(){ markBox(b, false); }, { passive:true });
       })(boxes[bi]);
     }
     fitTables();

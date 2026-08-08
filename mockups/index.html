@@ -8,16 +8,30 @@
 <style>
   .wrap { max-width: 1180px; margin: 0 auto; padding: 56px 30px 0; }
 
-  .lead { max-width: 68ch; }
-  .lead p { font: 400 17px/25px var(--sans); color: var(--ink-2); margin: 0 0 12px; }
+  /* ── Typo dieser Seite ────────────────────────────────────────────────
+     Genau die Fünfer-Skala aus system.css §2, ohne eigene Zwischenwerte:
+     28/34 · 20/26 · 17/23 · 15/20 · 13/16, Gewichte nur 400 und 600.
+     (Früher liefen hier 17/25 und 15/22 mit — zwei Durchschüsse für
+     dieselben Rollen. Lesetext folgt jetzt derselben Regel wie überall.)
+
+     Satzbreiten stehen in em, gemessen am Textgrad des Absatzes selbst.
+     ch bezöge sich auf die geerbte Schriftgröße des Containers (16px),
+     nicht auf die 17px bzw. 15px des Textes — die Zeilen liefen dadurch
+     rund ein Achtel zu lang. 35em ≈ 68 Zeichen, auf jeder Typo-Stufe. */
+
+  .lead h1 { max-width: 24em; }
+  .lead p { font: 400 17px/23px var(--sans); color: var(--ink-2); margin: 0 0 12px; max-width: 35em; }
   .lead strong { color: var(--ink-1); font-weight: 600; }
   .lead .eyebrow { font: 600 13px/16px var(--sans); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 10px; }
 
   .sec { margin-top: 52px; }
-  .sec__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+  .sec__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
   .sec__head h2 { font: 600 20px/26px var(--sans); margin: 0; letter-spacing: -.015em; }
-  .sec__head span { font: 400 15px/20px var(--sans); color: var(--ink-3); }
-  .sec > p { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0 0 20px; max-width: 68ch; }
+  /* Die Unterzeile steht eine Stufe tiefer und trägt Gewicht — sonst ist sie,
+     sobald sie umbricht, vom Fließtext darunter nicht zu unterscheiden
+     (beide 15px, beide grau). Größe und Gewicht sind das zweite Merkmal. */
+  .sec__head span { font: 600 13px/16px var(--sans); color: var(--ink-3); }
+  .sec > p { font: 400 15px/20px var(--sans); color: var(--ink-2); margin: 0 0 20px; max-width: 35em; }
 
   /* ── Kasten: So benutzt du diesen Ordner ──────────────────────────── */
   .howto {
@@ -25,22 +39,29 @@
     background: var(--paper); border-radius: var(--r-card); box-shadow: var(--sh-card);
   }
   .howto h2 { font: 600 20px/26px var(--sans); letter-spacing: -.015em; margin: 0 0 14px; }
-  /* Zwei Spalten, nicht auto-fit: bei drei Spalten bliebe die vierte
-     Zeile halb leer und der Kasten wirkt wie ein Fehler. */
+  /* Zwei Spalten fest, nicht auto-fit: bei drei Spalten bliebe die zweite
+     Zeile halb leer und der Kasten wirkt wie ein Fehler. Der Umbruch auf
+     eine Spalte hängt deshalb an einer eigenen Abfrage (820px) und nicht
+     an der allgemeinen 620px-Abfrage — sonst wäre der Kasten zwischen 621
+     und 760px schmaler als bei 620px. */
   .howto__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 30px; }
   .howto__item { display: flex; align-items: flex-start; gap: 11px; }
   .howto__item .ico { width: 20px; height: 20px; color: var(--ink-3); margin-top: 1px; }
-  .howto__item p { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0; }
+  .howto__item p { font: 400 15px/20px var(--sans); color: var(--ink-2); margin: 0; max-width: 35em; }
   .howto__item b { color: var(--ink-1); font-weight: 600; }
 
   /* ── Die sechs Bereiche ───────────────────────────────────────────── */
   .mods { display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 20px 28px; }
   .mods__name { display: flex; align-items: center; gap: 9px; font: 600 17px/23px var(--sans); color: var(--ink-1); margin: 0 0 3px; }
-  .mods__desc { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0; }
+  .mods__desc { font: 400 15px/20px var(--sans); color: var(--ink-2); margin: 0; }
   /* Heute trägt keine Modul-Farbe — der Punkt bleibt hohl statt grau,
      damit kein sechster Farbwert behauptet wird. */
   .dot--home { background: none; box-shadow: inset 0 0 0 1.4px var(--ink-4); }
-  .mods__note { font: 400 15px/22px var(--sans); color: var(--ink-3); margin: 20px 0 0; max-width: 68ch; }
+  /* Der Selektor muss .sec > p schlagen — die Notiz ist ein direktes Kind
+     von .sec. Ohne das Element im Selektor kämen weder der Abstand nach
+     oben noch die tertiäre Farbe an. */
+  .sec > p.mods__note { color: var(--ink-3); margin: 24px 0 0; }
+  .mods__note b { font-weight: 600; color: var(--ink-1); }
 
   /* ── Vorschaukacheln ──────────────────────────────────────────────── */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 22px; }
@@ -73,9 +94,42 @@
 
   /* ── Fußzeile ─────────────────────────────────────────────────────── */
   .foot { margin: 56px 0 0; padding: 22px 0 60px; border-top: 1px solid var(--line); }
-  .foot p { font: 400 15px/22px var(--sans); color: var(--ink-3); margin: 0 0 6px; max-width: 68ch; }
+  .foot p { font: 400 15px/20px var(--sans); color: var(--ink-3); margin: 0 0 6px; max-width: 35em; }
   .foot p:last-child { margin-bottom: 0; }
   .foot code { font: 400 13px/16px var(--mono); color: var(--ink-2); }
+
+  /* ── Dynamic Type: die große Stufe ────────────────────────────────────
+     Der Kasten oben verspricht, die Leiste schalte auf jeder Seite die
+     Schriftgröße um. Ohne diesen Block wäre das auf dieser Seite gelogen:
+     system.css skaliert nur die .t-*-Klassen, und die trägt hier allein die
+     Überschrift. Die Sprünge sind dieselben wie in system.css §2:
+     28/34→34/41 · 20/26→24/30 · 17/23→21/28 · 15/20→19/25 · 13/16→16/20. */
+  :root[data-type="gross"] .howto h2,
+  :root[data-type="gross"] .sec__head h2          { font-size: 24px; line-height: 30px; }
+  :root[data-type="gross"] .lead p,
+  :root[data-type="gross"] .mods__name,
+  :root[data-type="gross"] .item__title,
+  :root[data-type="gross"] .doclist b             { font-size: 21px; line-height: 28px; }
+  :root[data-type="gross"] .howto__item p,
+  :root[data-type="gross"] .sec > p,
+  :root[data-type="gross"] .mods__desc,
+  :root[data-type="gross"] .item__sub,
+  :root[data-type="gross"] .doclist span.sub,
+  :root[data-type="gross"] .foot p                { font-size: 19px; line-height: 25px; }
+  :root[data-type="gross"] .lead .eyebrow,
+  :root[data-type="gross"] .sec__head span,
+  :root[data-type="gross"] .foot code             { font-size: 16px; line-height: 20px; }
+  /* .chip bringt seine 13/16 aus system.css mit und hat dort keine große
+     Stufe. Auf dieser Seite muss es mitwachsen, sonst stünde in der großen
+     Typo-Stufe eine sechste Größe auf der Seite. Die Höhe wächst mit. */
+  :root[data-type="gross"] .chip { font-size: 16px; line-height: 20px; height: 32px; }
+
+  /* Der Kasten fällt früher auf eine Spalte als der Rest der Seite:
+     zwei Spalten unter rund 820px Fensterbreite ergäben eine Textspalte
+     unter 300px — schmaler als im einspaltigen Zustand darunter. */
+  @media (max-width: 820px) {
+    .howto__grid { grid-template-columns: 1fr; gap: 14px; }
+  }
 
   @media (max-width: 620px) {
     /* Die Bedienleiste des Mockups liegt fixiert oben rechts — der Kopf
@@ -83,7 +137,6 @@
     .wrap { padding: 84px 18px 0; }
     .sec { margin-top: 40px; }
     .howto { padding: 18px 18px; margin-top: 26px; }
-    .howto__grid { grid-template-columns: 1fr; }
     .mods { grid-template-columns: 1fr; gap: 18px; }
     .grid { grid-template-columns: 1fr; gap: 20px; }
     /* Die Dateiart bleibt rechts stehen, statt unter den Text zu rutschen. */
@@ -164,7 +217,7 @@
   <!-- ══ Canvas ══ -->
   <section class="sec">
     <div class="sec__head"><h2>Canvas — die Referenz</h2><span>bereits gebaut, mit funktionierender Zeichen-Engine</span></div>
-    <p>Das sechste Modul existiert als lauffähiges Mockup mit echter Engine: unendliche Fläche, elf Werkzeuge, Formerkennung, Lasso. Es wird hier nicht neu entworfen — es ist die Referenz für die Materialsprache aller übrigen Screens. Der Screenshot ist anklickbar und führt in das laufende Whiteboard.</p>
+    <p>Canvas ist das einzige der fünf Module, das bereits läuft: ein Mockup mit echter Engine, unendlicher Fläche, elf Werkzeugen, Formerkennung und Lasso. Es wird hier nicht neu entworfen, sondern ist die Referenz für die Materialsprache aller übrigen Screens. Der Screenshot ist anklickbar und führt in das laufende Whiteboard.</p>
     <div class="grid" id="gridCanvas"></div>
   </section>
 
@@ -224,24 +277,29 @@
 <script src="shared/mock.js"></script>
 <script>
 (function () {
+  /* Die Kacheln trugen bis hierher zusätzlich Marken wie „Innovation" oder
+     „Delight" — die Bewertungskategorien der Apple Design Awards. Auf dieser
+     Seite stand nirgends, was sie bedeuten, und zwei davon waren englisch.
+     Die Unterzeile beschreibt den Screen ohnehin konkreter als das Etikett;
+     die Award-Bilanz steht im Dokument „Das ist die App". */
   const NEXT = [
-    ['today', 'Heute', 'Tageseinstieg mit der Ketten-Karte', ['Innovation', 'Interaktion']],
-    ['library', 'Bibliothek', 'Cover-Raster, Smart-Ordner, Kontextmenü', ['Visuals']],
-    ['notes-list', 'Notizen-Liste', 'Tag-Baum, Mehrfachauswahl, Übergabe', ['Innovation']],
-    ['note-editor', 'Notiz-Editor', 'Blöcke, Wiki-Links, Lückentext-Karte im Flug', ['Delight', 'Innovation']],
-    ['journal-home', 'Journal-Home', 'Timeline, Streak, Rückblick', ['Delight']],
-    ['journal-entry', 'Journal-Eintrag', 'Fotos, Audio, Stimmung und Energie', ['Delight', 'Inklusion']],
-    ['tasks', 'Aufgaben', 'Zonen, natürliche Sprache, Geplant vs. Deadline', ['Interaktion']],
-    ['task-detail', 'Aufgaben-Detail', 'Detail klappt in der Liste auf', ['Interaktion']],
-    ['flashcards-home', 'Lernkarten-Start', 'Decks, Zähler, Heatmap', ['Visuals']],
-    ['review-session', 'Review-Session', 'Karte im Flip, Termin im Knopf', ['Delight']],
-    ['graph', 'Graph', 'Alle Objekte als Netz', ['Innovation']],
-    ['settings', 'Einstellungen', 'Design-Vorschau, Speicher, Sync-Fehler', ['Inklusion']],
-    ['leere-zustaende', 'Leere Zustände', 'Sechs leere Orte — jeder nennt den ersten Schritt', ['Inklusion']],
+    ['today', 'Heute', 'Tageseinstieg mit der Ketten-Karte'],
+    ['library', 'Bibliothek', 'Cover-Raster, Smart-Ordner, Kontextmenü'],
+    ['notes-list', 'Notizen-Liste', 'Tag-Baum, Mehrfachauswahl, Übergabe'],
+    ['note-editor', 'Notiz-Editor', 'Blöcke, Wiki-Links, Lückentext-Karte im Flug'],
+    ['journal-home', 'Journal-Home', 'Timeline, Streak, Rückblick'],
+    ['journal-entry', 'Journal-Eintrag', 'Fotos, Audio, Stimmung und Energie'],
+    ['tasks', 'Aufgaben', 'Zonen, natürliche Sprache, Geplant vs. Deadline'],
+    ['task-detail', 'Aufgaben-Detail', 'Detail klappt in der Liste auf'],
+    ['flashcards-home', 'Lernkarten-Start', 'Decks, Zähler, Heatmap'],
+    ['review-session', 'Review-Session', 'Karte im Flip, Termin im Knopf'],
+    ['graph', 'Graph', 'Alle Objekte als Netz'],
+    ['settings', 'Einstellungen', 'Design-Vorschau, Speicher, Sync-Fehler'],
+    ['leere-zustaende', 'Leere Zustände', 'Sechs leere Orte — jeder nennt den ersten Schritt'],
   ];
   const BEST = [
     ['library', 'Bibliothek', 'GoodNotes 6 · Craft · Apple Notes'],
-    ['today', 'Today', 'Things 3 · Apple Journal · Notion'],
+    ['today', 'Heute', 'Things 3 · Apple Journal · Notion'],
     ['notes', 'Notizen', 'Bear 2 · Craft · Apple Notes'],
     ['journal', 'Journal', 'Day One · Apple Journal · Journey'],
     ['tasks', 'Aufgaben', 'Things 3 · Todoist · TickTick'],
@@ -267,8 +325,8 @@
     ['Lauffähig']));
 
   const gn = document.getElementById('gridNext');
-  NEXT.forEach(([f, t, s, tags]) =>
-    gn.appendChild(card('app-next/' + f + '.html', '_renders/app-next-' + f + '-ipad-hell.png', t, s, tags)));
+  NEXT.forEach(([f, t, s]) =>
+    gn.appendChild(card('app-next/' + f + '.html', '_renders/app-next-' + f + '-ipad-hell.png', t, s)));
 
   const gb = document.getElementById('gridBest');
   BEST.forEach(([f, t, s]) =>

@@ -24,7 +24,7 @@ GoodNotes:
 | Ebene | Höhe | Inhalt |
 |---|---|---|
 | Statusleiste | 20 px | Uhrzeit, WLAN, Batterie (rein optisch, Uhr läuft mit) |
-| **Dokument-Tabs** | 44 px | Bibliothek · Tabs mit Boardtitel und Schließen-× · „+" für neuen Tab |
+| **Dokument-Tabs** | 44 px | Bibliothek · Tabs mit Boardtitel und Schließen-× · „+“ für neuen Tab |
 | **Navigationsleiste** | 52 px | **links:** Seitenleiste, Suche, AI, Ansichtsmodus — **Mitte:** Rückgängig/Wiederholen ‖ die elf Werkzeuge ‖ Zubehör — **rechts:** Board hinzufügen, Teilen, Mehr |
 | **Werkzeugmenü** | 48 px | Schwebende Glaskapsel unter der Leiste, Inhalt je nach aktivem Werkzeug. Am Griff links an alle vier Bildschirmränder ziehbar; seitlich angedockt klappt sie auf vertikal um. |
 
@@ -33,7 +33,7 @@ passt alles ein), unten rechts die **Zoomsteuerung**.
 
 ## Die elf Werkzeuge
 
-Reihenfolge und Verhalten folgen der GoodNotes-Vorlage. „Klebt" bedeutet: das
+Reihenfolge und Verhalten folgen der GoodNotes-Vorlage. „Klebt“ bedeutet: das
 Werkzeug bleibt aktiv. Die übrigen springen nach ihrer Aktion zurück aufs Lasso
 — das ist das Rückfallwerkzeug.
 

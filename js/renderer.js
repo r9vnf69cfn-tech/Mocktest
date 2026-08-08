@@ -47,6 +47,49 @@
     dark: { bg: '#1F1F21', rule: '#3A3A3C', grid: '#333336', dot: '#3C3C40' },
   };
 
+  /* ══ Dunkles Blatt ══════════════════════════════════════════════════════
+   *
+   * Der Dunkelmodus verdunkelt auch die Seite, nicht nur die Leisten — sonst
+   * ist die Zeichenfläche die einzige grelle Fläche im dunklen Fenster.
+   *
+   * Betroffen ist ausschließlich WEISSES Papier: Weiß ist der Standard, keine
+   * Entscheidung. Creme und Dunkel hat jemand im Menü bewusst gewählt; diese
+   * Wahl gehört dem Board und bleibt in beiden Designs unangetastet.
+   *
+   * Auf einem dunklen Blatt wird zu dunkle Tinte hell DARGESTELLT. Das ist
+   * reine Anzeige — item.color bleibt, wie es gespeichert ist; beim
+   * Zurückschalten auf Hell steht wieder schwarze Tinte da.
+   *
+   * SCHWELLE — Kontrast der Tinte gegen das dunkle Blatt #1F1F21 (relative
+   * Luminanz nach WCAG 2.x: L = 0,01381). Unter 3:1 wird umgekehrt, ab 3:1
+   * bleibt die Farbe. 3:1 ist die WCAG-Grenze für grafische Objekte (1.4.11);
+   * ein Strich ist genau das. Nachgerechnet:
+   *
+   *   #000000 schwarz        1,28:1  →  umgekehrt #FFFFFF  16,45:1
+   *   #3A3A3C grau           1,45:1  →  umgekehrt #C3C3C5   9,35:1
+   *   #00204A dunkelblau     1,02:1  →  umgekehrt #B5D5FF  10,91:1
+   *   #5A0E0A dunkelrot      1,18:1  →  umgekehrt #F5A9A5   8,70:1
+   *   #007AFF blau           4,10:1  →  bleibt
+   *   #FF3B30 rot            4,64:1  →  bleibt
+   *   #D02B20 Semantik-Rot   3,17:1  →  bleibt
+   *   #1D7F4E Semantik-Grün  3,29:1  →  bleibt
+   *   #FFF200 Textmarker    14,07:1  →  bleibt
+   *   #FFD43B Zettel gelb   11,54:1  →  bleibt
+   *   #8CE99A Zettel grün   11,16:1  →  bleibt
+   *
+   * Umgekehrt wird die Helligkeit an der Mitte gespiegelt (HSL: l → 1−l),
+   * Farbton und Sättigung bleiben. Danach notfalls weiter aufhellen, bis
+   * 4,5:1 steht — Handschrift wird gelesen, nicht nur gesehen.
+   *
+   * RASTER auf #1F1F21: Linien #3A3A3C 1,45:1 · Karo #333336 1,31:1 ·
+   * Punkte #3C3C40 1,50:1. Bewusst schwach: das Raster ist Hilfslinie, kein
+   * Inhalt. Auf weißem Papier liegt es mit 1,65 / 1,37 / 1,70:1 in derselben
+   * Größenordnung, das dunkle Blatt ist also nicht flauer als das helle.
+   * ═════════════════════════════════════════════════════════════════════ */
+
+  const INK_FLIP_BELOW = 3;   // darunter ist die Tinte auf dem dunklen Blatt unlesbar
+  const INK_TARGET = 4.5;     // so weit wird sie mindestens aufgehellt
+
   class Renderer {
     constructor(canvas) {
       this.canvas = canvas;
@@ -242,8 +285,27 @@
 
     /* ── Papier ────────────────────────────────────────────────────────── */
 
+    /** Papiersorte, wie sie gerade dargestellt wird — siehe Block „Dunkles
+     *  Blatt". Ändert board.paper nicht. */
+    paperKey() {
+      const key = PAPER[this.board.paper] ? this.board.paper : 'white';
+      return key === 'white' && isDarkTheme() ? 'dark' : key;
+    }
+
+    /** Ist das Blatt gerade dunkel? Egal ob durch das Design oder durch die
+     *  Wahl „Dunkel" im Papiermenü — schwarze Tinte ist in beiden Fällen
+     *  gleich unlesbar. */
+    sheetIsDark() {
+      return this.paperKey() === 'dark';
+    }
+
+    /** Tinte für die Anzeige. Auf hellem Blatt unverändert. */
+    ink(color) {
+      return this.sheetIsDark() ? displayInk(color) : color;
+    }
+
     drawPaper(ctx) {
-      const paper = PAPER[this.board.paper] || PAPER.white;
+      const paper = PAPER[this.paperKey()];
       ctx.fillStyle = paper.bg;
       ctx.fillRect(0, 0, this.width, this.height);
 
@@ -319,8 +381,14 @@
       if (s.tool === 'highlighter') {
         // Ein einziger Pfad, einmal komponiert — Selbstüberschneidungen
         // dunkeln dadurch nicht nach.
+        //
+        // Der Marker bleibt farbig, auch auf dunklem Blatt: gelb ist gelb.
+        // Nur die Rechenart dreht sich um. Auf hellem Papier nimmt der Marker
+        // Licht weg (multiply), auf dunklem gibt er welches dazu (screen) —
+        // sonst würde er die hell dargestellte Handschrift unter sich
+        // abdunkeln statt sie zu markieren.
         ctx.globalAlpha = 0.4;
-        ctx.globalCompositeOperation = 'multiply';
+        ctx.globalCompositeOperation = this.sheetIsDark() ? 'screen' : 'multiply';
         ctx.strokeStyle = s.color;
         ctx.lineWidth = s.width;
         ctx.lineCap = 'butt';
@@ -331,8 +399,11 @@
         return;
       }
 
+      // Stift: die Farbe ist Tinte und folgt der Anzeige-Umkehrung.
+      const color = this.ink(s.color);
+
       if (s.pen === 'ball') {
-        ctx.strokeStyle = s.color;
+        ctx.strokeStyle = color;
         ctx.lineWidth = s.width;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -343,7 +414,7 @@
       }
 
       const taper = s.pen === 'brush' ? 0.85 : s.pen === 'pencil' ? 0.4 : 0.62;
-      ctx.fillStyle = s.color;
+      ctx.fillStyle = color;
       if (s.pen === 'pencil') ctx.globalAlpha = 0.86;
       fillVariableStroke(ctx, pts, s.width, taper);
       if (s.pen === 'pencil') drawPencilGrain(ctx, pts, s.width);
@@ -352,7 +423,9 @@
 
     drawShape(ctx, sh) {
       ctx.save();
-      ctx.strokeStyle = sh.color;
+      // Form: gezogene Linie wie Tinte, die Füllung ist ein Ton derselben
+      // Farbe und wird mitgeführt, damit beide zusammen bleiben.
+      ctx.strokeStyle = this.ink(sh.color);
       ctx.lineWidth = sh.width;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
@@ -385,7 +458,7 @@
       if (sh.fill && closed) {
         ctx.save();
         ctx.globalAlpha = sh.fillOpacity;
-        ctx.fillStyle = sh.fill;
+        ctx.fillStyle = this.ink(sh.fill);
         ctx.fill();
         ctx.restore();
       }
@@ -393,6 +466,9 @@
       ctx.restore();
     }
 
+    /* Klebeband ist keine Tinte, sondern ein Stück Material, das auf dem
+     * Blatt liegt. Ein Streifen Washi-Tape wird im Dunkeln nicht dunkler —
+     * seine Farbe bleibt darum in beiden Designs unverändert. */
     drawTape(ctx, t) {
       const ang = Math.atan2(t.to.y - t.from.y, t.to.x - t.from.x);
       const len = geo.dist(t.from.x, t.from.y, t.to.x, t.to.y);
@@ -464,6 +540,14 @@
       const lines = wrapText(ctx, t.text, t.w - pad * 2);
       const boxH = Math.max(t.h, lines.length * lineHeight + pad * 2);
 
+      // Ein Haftnotizzettel ist Papier, keine Tinte: seine Farbe ist die
+      // Fläche, auf der die Schrift liegt. Ein gelber Zettel bleibt gelb, und
+      // die Schrift darauf richtet sich weiter nach dem Zettel. Bei „filled"
+      // und „border" ist t.color dagegen die Schriftfarbe und der Kasten nur
+      // ein Ton davon — beide werden zusammen umgekehrt.
+      const sticky = t.boxStyle === 'sticky' || t.boxStyle === 'callout';
+      const paint = sticky ? t.color : this.ink(t.color);
+
       // Boxstil
       if (t.boxStyle && t.boxStyle !== 'none') {
         ctx.save();
@@ -472,26 +556,25 @@
         else roundRectPath(ctx, t.x, t.y, t.w, boxH, t.boxStyle === 'sticky' ? 2 : 8);
         if (t.boxStyle === 'border') {
           ctx.globalAlpha = 0.4;
-          ctx.strokeStyle = t.color;
+          ctx.strokeStyle = paint;
           ctx.lineWidth = 1.5;
           ctx.stroke();
         } else if (t.boxStyle === 'filled') {
           ctx.globalAlpha = 0.12;
-          ctx.fillStyle = t.color;
+          ctx.fillStyle = paint;
           ctx.fill();
         } else {
           // sticky / callout: volle Farbe mit weichem Schatten
           ctx.shadowColor = 'rgba(0,0,0,0.14)';
           ctx.shadowBlur = 8;
           ctx.shadowOffsetY = 2;
-          ctx.fillStyle = t.color;
+          ctx.fillStyle = paint;
           ctx.fill();
         }
         ctx.restore();
       }
 
-      const sticky = t.boxStyle === 'sticky' || t.boxStyle === 'callout';
-      ctx.fillStyle = sticky ? readableInk(t.color) : t.color;
+      ctx.fillStyle = sticky ? readableInk(t.color) : paint;
 
       let y = t.y + pad;
       for (const line of lines) {
@@ -522,6 +605,8 @@
       }
     }
 
+    /* Sticker und Bilder bringen ihre eigenen Farben mit — ein Emoji oder ein
+     * Foto ist keine Tinte und wird nicht umgefärbt. */
     drawSticker(ctx, st) {
       ctx.save();
       ctx.font = `${st.size}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
@@ -665,6 +750,11 @@
       const c = this.toScreen(r.x, r.y);
       const len = r.length;
       const h = 62;
+      // Kante und Skala des Lineals liegen auf dem Blatt und müssen sich vom
+      // Blatt abheben — auf dem dunklen also hell.
+      const dark = this.sheetIsDark();
+      const edge = dark ? 'rgba(235,235,245,0.50)' : 'rgba(60,60,67,0.45)';
+      const tick = dark ? 'rgba(235,235,245,0.55)' : 'rgba(60,60,67,0.5)';
       ctx.save();
       ctx.translate(c.x, c.y);
       ctx.rotate((r.angle * Math.PI) / 180);
@@ -675,10 +765,10 @@
         ctx.closePath();
         ctx.fillStyle = 'rgba(160,175,190,0.20)';
         ctx.fill();
-        ctx.strokeStyle = 'rgba(60,60,67,0.5)';
+        ctx.strokeStyle = tick;
         ctx.lineWidth = 1.2;
         ctx.stroke();
-        ctx.strokeStyle = 'rgba(60,60,67,0.45)';
+        ctx.strokeStyle = edge;
         for (let deg = 0; deg <= 180; deg += 5) {
           const a = Math.PI + (deg * Math.PI) / 180;
           const inner = (len / 2) * (deg % 15 === 0 ? 0.86 : 0.93);
@@ -692,10 +782,10 @@
         roundRectPath(ctx, -len / 2, -h / 2, len, h, 5);
         ctx.fillStyle = 'rgba(160,175,190,0.22)';
         ctx.fill();
-        ctx.strokeStyle = 'rgba(60,60,67,0.45)';
+        ctx.strokeStyle = edge;
         ctx.lineWidth = 1.2;
         ctx.stroke();
-        ctx.strokeStyle = 'rgba(60,60,67,0.5)';
+        ctx.strokeStyle = tick;
         ctx.lineWidth = 1;
         for (let x = -len / 2 + 10; x < len / 2; x += 10) {
           const major = Math.round((x + len / 2 - 10) / 10) % 5 === 0;
@@ -768,7 +858,8 @@
       out.width = Math.max(1, Math.round(w * s));
       out.height = Math.max(1, Math.round(h * s));
       const ctx = out.getContext('2d');
-      ctx.fillStyle = (PAPER[this.board.paper] || PAPER.white).bg;
+      // Dieselbe Regel wie auf dem Bildschirm — sonst weicht das PNG ab.
+      ctx.fillStyle = PAPER[this.paperKey()].bg;
       ctx.fillRect(0, 0, out.width, out.height);
       ctx.setTransform(s, 0, 0, s, -x0 * s, -y0 * s);
       for (const it of this.board.items) {
@@ -1028,6 +1119,90 @@
     return lum > 0.6 ? '#1C1C1E' : '#FFFFFF';
   }
 
+  /* ── Tinte auf dunklem Blatt ─────────────────────────────────────────── */
+
+  /** Relative Luminanz nach WCAG 2.x. */
+  function relLuminance(c) {
+    const f = (v) => {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
+  }
+
+  function contrastRatio(a, b) {
+    const l1 = relLuminance(a);
+    const l2 = relLuminance(b);
+    return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  }
+
+  function rgbToHsl(c) {
+    const r = c.r / 255, g = c.g / 255, b = c.b / 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    let h = 0;
+    if (d) {
+      if (mx === r) h = ((g - b) / d) % 6;
+      else if (mx === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60;
+      if (h < 0) h += 360;
+    }
+    const l = (mx + mn) / 2;
+    return { h, s: d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1)), l };
+  }
+
+  function hslToRgb(h, s, l) {
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+    let r = 0, g = 0, b = 0;
+    if (h < 60) { r = c; g = x; } else if (h < 120) { r = x; g = c; }
+    else if (h < 180) { g = c; b = x; } else if (h < 240) { g = x; b = c; }
+    else if (h < 300) { r = x; b = c; } else { r = c; b = x; }
+    return { r: Math.round((r + m) * 255), g: Math.round((g + m) * 255), b: Math.round((b + m) * 255) };
+  }
+
+  const inkCache = new Map();
+
+  /** Anzeigefarbe einer Tinte auf dem dunklen Blatt. Zu dunkle Farben werden
+   *  an der Helligkeitsmitte gespiegelt, alles Farbige bleibt, wie es ist.
+   *  Der Vorrat ist klein und die Rechnung nie nötig, solange nichts Neues
+   *  auftaucht — daher der Cache. Schwelle und Zahlen: Block „Dunkles Blatt". */
+  function displayInk(color) {
+    if (typeof color !== 'string') return color;
+    const cached = inkCache.get(color);
+    if (cached !== undefined) return cached;
+
+    let out = color;
+    const c = parseHex(color);
+    const bg = parseHex(PAPER.dark.bg);
+    if (c && contrastRatio(c, bg) < INK_FLIP_BELOW) {
+      const hsl = rgbToHsl(c);
+      let l = 1 - hsl.l;
+      let rgb = hslToRgb(hsl.h, hsl.s, l);
+      while (l < 1 && contrastRatio(rgb, bg) < INK_TARGET) {
+        l = Math.min(1, l + 0.02);
+        rgb = hslToRgb(hsl.h, hsl.s, l);
+      }
+      out = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+    }
+    inkCache.set(color, out);
+    return out;
+  }
+
+  /* Das Design steht im Wurzelelement; ohne Stempel gilt das System des
+   * Betrachters. Gepuffert, weil pro Objekt und Bild abgefragt — applyTheme
+   * räumt den Puffer über clearVarCache() mit ab. */
+  let darkTheme = null;
+  function isDarkTheme() {
+    if (darkTheme === null) {
+      const stamped = document.documentElement.getAttribute('data-theme');
+      darkTheme = stamped === 'dark'
+        || (stamped !== 'light' && !!(global.matchMedia && global.matchMedia('(prefers-color-scheme: dark)').matches));
+    }
+    return darkTheme;
+  }
+
   let varCache = {};
   function cssVar(name, fallback) {
     if (varCache[name] === undefined) {
@@ -1036,11 +1211,15 @@
     }
     return varCache[name];
   }
-  function clearVarCache() { varCache = {}; }
+  function clearVarCache() {
+    varCache = {};
+    darkTheme = null;
+  }
 
   GN.Renderer = Renderer;
   GN.render = {
     FONTS, PAPER, ZOOM_STOPS, MIN_SCALE, MAX_SCALE,
     fontString, wrapText, roundRectPath, withAlpha, shade, readableInk, parseHex, clearVarCache,
+    displayInk, relLuminance, contrastRatio,
   };
 })(window);

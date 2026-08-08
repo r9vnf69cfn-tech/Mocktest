@@ -8,13 +8,13 @@ Eine App für Studium und Alltag, in der Handschrift, Notizen, Tagebuch, Aufgabe
 
 Für Studierende und alle, die über Monate an denselben Themen arbeiten. Nicht für den, der nur eine Einkaufsliste braucht — dafür ist sie zu viel. Sondern für den, der heute eine Vorlesung mitschreibt, daraus morgen lernt, nächste Woche ein Protokoll abgibt und am Ende des Semesters wissen will, wo das alles zusammenhing.
 
-Die Beispielwelt aller Mockups ist deshalb konkret: Emil, Biologie im dritten Semester, Notizbuch „Zellbiologie", Abgabe bei Prof. Wendt am Freitag.
+Die Beispielwelt aller Mockups ist deshalb konkret: Emil, Biologie im dritten Semester, Notizbuch „Zellbiologie“, Abgabe bei Prof. Wendt am Freitag.
 
 ## Der eine Grund zu wechseln
 
 **Der Weg zwischen den Werkzeugen entfällt.** Heute kostet dieselbe Arbeit fünf Apps und drei Exporte: In Bear steht die Notiz, in Anki liegen die Karten, in Things die Abgabe — und keine dieser Apps weiß von den anderen. Hier ist die Kette ein Objekt: Die Notiz weiß, dass aus ihr zwölf Karten wurden, die Karte weiß, aus welchem Absatz sie stammt, und der Tageseinstieg erzählt beides in einer Zeile.
 
-Kein Konkurrent kann das. RemNote kommt am nächsten, bezahlt es aber mit einer Lernkurve, die Rezensenten regelmäßig als Haupthürde nennen (siehe `01_konkurrenz-anatomie.md`, Kapitel Lernkarten).
+Kein Konkurrent kann das. RemNote kommt am nächsten, bezahlt es aber mit einer Lernkurve, die Rezensenten regelmäßig als Haupthürde nennen (siehe `konkurrenz-anatomie.html`, Kapitel Lernkarten).
 
 ---
 
@@ -48,7 +48,7 @@ Fünf Größen, zwei Gewichte, feste Rollen:
 | Sekundär | 15/20 | 400 | Untertitel, Metadaten, Vorschauzeilen |
 | Marke | 13/16 | 600 | Chips, Zähler, Eyebrows |
 
-Genau **eine** begründete Ausnahme: Die Tab-Beschriftung auf dem iPhone läuft mit 11 pt (iOS-Standard). Bei 13 pt kollidieren „Bibliothek" und „Aufgaben" auf 393 pt Breite — überlappender Text wiegt schwerer als eine sechste Stufe an einer Stelle.
+Genau **eine** begründete Ausnahme: Die Tab-Beschriftung auf dem iPhone läuft mit 11 pt (iOS-Standard). Bei 13 pt kollidieren „Bibliothek“ und „Aufgaben“ auf 393 pt Breite — überlappender Text wiegt schwerer als eine sechste Stufe an einer Stelle.
 
 **Serif ist keine sechste Größe, sondern eine Regel:** Die Oberfläche spricht Sans, was der Nutzer geschrieben hat, darf Serif. Sichtbar im Notiz-Editor (`app-next/note-editor.html`), im Journal-Eintrag (`journal-entry.html`) und auf der Antwortseite der Lernkarte (`review-session.html`). Der Bruch markiert eine echte Grenze: hier Werkzeug, dort Inhalt.
 
@@ -86,11 +86,11 @@ Vier Übergänge, jeder mit einer Aufgabe:
 
 ## Wie sie sich anfühlt
 
-**Die Übergabe.** Ein Satz in der Notiz ist markiert, darüber steht eine Leiste — dieselbe, egal ob die Auswahl Handschrift, Text oder Objekte sind. Ein Tipp auf „Lückentext-Karte", und die Karte faltet sich aus dem Satz heraus, fliegt in die rechte Spalte und der Zähler dort springt von 11 auf 12.
+**Die Übergabe.** Ein Satz in der Notiz ist markiert, darüber steht eine Leiste — dieselbe, egal ob die Auswahl Handschrift, Text oder Objekte sind. Ein Tipp auf „Lückentext-Karte“, und die Karte faltet sich aus dem Satz heraus, fliegt in die rechte Spalte und der Zähler dort springt von 11 auf 12.
 
-**Die Kette am Morgen.** Der Tageseinstieg begrüßt nicht mit einer Kachelwand, sondern erzählt: „Zellbiologie" → 12 Karten → 8 heute fällig, ca. 4 Minuten. Jede Station ist anspringbar, und am Ende steht der Knopf, der die vier Minuten sofort einlöst.
+**Die Kette am Morgen.** Der Tageseinstieg begrüßt nicht mit einer Kachelwand, sondern erzählt: „Zellbiologie“ → 12 Karten → 8 heute fällig, ca. 4 Minuten. Jede Station ist anspringbar, und am Ende steht der Knopf, der die vier Minuten sofort einlöst.
 
-**Der Termin im Knopf.** Beim Lernen steht auf jedem der vier Bewertungsknöpfe das ausgerechnete nächste Intervall — „Gut · 5 Tage". Man bewertet nicht sein Gefühl, sondern wählt sichtbar den nächsten Termin; „Gut" bekommt mehr Fläche als die anderen drei, weil es in neun von zehn Fällen die Antwort ist.
+**Der Termin im Knopf.** Beim Lernen steht auf jedem der vier Bewertungsknöpfe das ausgerechnete nächste Intervall — „Gut · 5 Tage“. Man bewertet nicht sein Gefühl, sondern wählt sichtbar den nächsten Termin; „Gut“ bekommt mehr Fläche als die anderen drei, weil es in neun von zehn Fällen die Antwort ist.
 
 **Der Rückweg.** Auf der Antwortseite der Karte steht in einem eingelassenen Feld, wie der Satz in der eigenen Notiz lautete. Wer stutzt, springt mit einem Tipp zurück in die Vorlesung von damals, ohne die Sitzung zu verlassen.
 
@@ -116,7 +116,7 @@ Bewertung des vorliegenden Entwurfs gegen die fünf ADA-Kategorien. Skala: **1 =
 |---|---|---|
 | **Inklusion** | **2** | Alle Kontraste sind gerechnet und dokumentiert, jeder Zustand trägt zwei Merkmale, Dynamic Type ist in zwei Stufen durchgezeichnet, 44-pt-Ziele durchgehend. Ein eigener Schirm zeigt sechs leere Zustände, die alle den nächsten Schritt benennen statt ihn zu verstecken. Zur 1 fehlt die geprüfte VoiceOver-Reihenfolge: Ein Mockup kann Vorlesereihenfolge und Rotor-Struktur behaupten, aber nicht beweisen. |
 | **Delight & Fun** | **2** | Vier Momente sind als eingefrorene Zwischenzustände wirklich sichtbar — die fliegende Karte, die Checkbox im Umlegen, die Karte im Flip, der Schalter zwischen den Positionen. Zur 1 fehlt die Bewegung selbst: In statischen Screens bleibt die Signature-Animation eine Behauptung. |
-| **Interaktion** | **2** | Der nächste Schritt ist überall benannt und beziffert („Lernen · ca. 4 Minuten"), das Detail klappt in der Liste auf statt zu navigieren, dieselbe Aufgabe kostet auf dem iPhone nicht mehr Taps. Abzug für das Lineal- und Zoom-Verhalten im Canvas, das nur beschrieben, nicht durchgespielt ist. |
+| **Interaktion** | **2** | Der nächste Schritt ist überall benannt und beziffert („Lernen · ca. 4 Minuten“), das Detail klappt in der Liste auf statt zu navigieren, dieselbe Aufgabe kostet auf dem iPhone nicht mehr Taps. Abzug für das Lineal- und Zoom-Verhalten im Canvas, das nur beschrieben, nicht durchgespielt ist. |
 | **Visuals & Grafik** | **1–2** | Ein Raster, eine Typo-Skala, eine Materialsprache über 18 Screens hinweg, ein einziger Akzent, alle Werte in einer gemeinsamen Datei. Das ist die stärkste Kategorie des Entwurfs. Der halbe Punkt Abzug geht an die Notizbuch-Cover: Sie sind aus Mustern gebaut, weil kein Bildmaterial vorlag. |
 | **Innovation** | **1** | Die Kette ist keine Fußnote, sondern trägt den Einstiegsscreen, den Editor, die Lernsitzung und den Graphen. Sie ist überall dieselbe Leiste, hinterlässt überall denselben Herkunfts-Chip, und keiner der 18 untersuchten Konkurrenten hat sie. |
 
@@ -135,5 +135,5 @@ Was fehlt, ist ein **lauffähiger Prototyp genau dieser 420 ms**: der markierte 
 - Kontaktbögen: `mockups/_renders/kontaktbogen-*.png` — alle Screens auf je einem Blatt
 - Vorstufe: `mockups/best-of/` — sechs Bereiche, je drei Vorbilder zusammengeführt
 - Gestaltungssystem: `mockups/shared/system.css` — Tokens, Skala, Kontrastwerte
-- Konkurrenz-Anatomie: `docs/01_konkurrenz-anatomie.md` — 18 Apps zerlegt
+- Konkurrenz-Anatomie: `docs/konkurrenz-anatomie.html` — 18 Apps zerlegt
 - Canvas: `index.html` im Repo-Stamm — lauffähig, mit echter Zeichen-Engine
