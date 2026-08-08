@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aufgaben — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
 </head>
 <body>
 
@@ -17,7 +18,13 @@ KOMMENTARBLOCK — Aufgaben
   Gruppe trägt einen Zähler, damit die Länge der Liste vor dem Scrollen bekannt
   ist. Bewertung: das Beste an Things — und billig zu haben.
 · Things 3 — die Checkbox als Delight-Moment (großes Ziel, ruhiger Ring, Haken
-  wächst). Übernommen als .check.is-checking, hier eingefroren sichtbar.
+  wächst). Übernommen und in Runde 2 ausgeführt: Die Checkboxen sind Knöpfe und
+  lösen die Erledigen-Bewegung wirklich aus (data-bw="erledigen") — Kreis wird
+  Haken, der sich einzeichnet, dann steht die Zeile 1000 ms still (diese Pause
+  IST das Rückgängig, deshalb braucht Velum kein Banner), dann verabschiedet sie
+  sich und die Nachbarn schließen die Lücke. Eine Zeile behält den
+  eingefrorenen .check.is-checking, damit der Moment auch im Standbild steht.
+  22 pt Zeichen, 44 pt Trefferfläche über negative Ränder.
   Bewertung: kostet nichts und ist der Moment, den man am Tag zwanzigmal sieht.
   Genau dort gehört Sorgfalt hin.
 · Things 3 — „Magic Plus": Erfassen ist immer erreichbar, ohne Modus. Übernommen,
@@ -56,10 +63,16 @@ Zwei Dinge, die keine der drei Vorlagen zusammen hat:
    Flagge und Resttagen, wann es weg sein muss. Aufgaben-Apps werfen das
    üblicherweise in ein Feld „Fällig am" und erzeugen damit jeden Abend ein
    schlechtes Gewissen für Termine, die nie Fristen waren.
-2. Der Herkunfts-Chip. „Laborprotokoll Zellkultur schreiben" weiß, dass es aus
-   der Notiz „Zellbiologie" entstanden ist, „Übungsblatt 5 fertig rechnen" weiß,
-   dass es aus dem Canvas kommt. Eine Aufgabe ist hier nie ein Zettel ohne
-   Vorgeschichte — ein Tipp führt zurück an die Stelle, an der sie entstand.
+2. Der Herkunfts-Chip, und zwar als FADEN. „Laborprotokoll Zellkultur schreiben"
+   weiß, dass es aus der Notiz „Zellbiologie" entstanden ist, „Übungsblatt 5
+   fertig rechnen" weiß, dass es aus dem Canvas kommt. Der Chip steht nicht
+   allein: davor sitzt ein Knoten (die Aufgabe) und dazwischen ein Faden von
+   2,5 pt (die Stärke für „A wurde zu B"). Man sieht die Beziehung, bevor man
+   das Wort liest. Eine Aufgabe ist hier nie ein Zettel ohne Vorgeschichte.
+3. Teilschritte hängen als Faden unter der Aufgabe. „Rückmeldung an Prof.
+   Wendt" trägt zwei Schritte an einem senkrechten Faden: gefüllter Punkt =
+   erledigt, hohler = offen. Der Chip „1 von 2 Schritten" und die Punkte sagen
+   dasselbe auf zwei Wegen; keiner der beiden trägt es allein.
 
 ADA-KATEGORIE: Interaktion (fünf Ansichten auf einem Datenbestand, Erfassen in
 einem Satz, Mehrfachauswahl mit Übergabe-Leiste) und Inklusion (jeder Zustand
@@ -75,8 +88,15 @@ KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
   Swipe-Aktion     accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
   Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort. Bereichs-Dots
   sind Ink, nicht bunt: Bereiche sind keine Module.
+  Faden (--thread) auf Papier      3,10:1 (hell) ·  3,13:1 (dunkel)
+  Knoten (Ink) auf Papier         17,77:1 (hell) · 15,86:1 (dunkel)
+  Gemessen (Untergrund aus dem gerenderten Bild unter den Buchstaben gelesen,
+  nicht aus der Kartenfarbe geraten): kein Textelement dieses Schirms fällt in
+  einem der beiden Erscheinungsbilder unter 4,5:1.
 
 TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+SERIF: eine Rolle — .serif--screen-title an „Heute". Sonst nichts; eine
+Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
 ============================================================================= -->
 
 <div class="mocktitle">
@@ -132,7 +152,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
         <main class="content">
           <div class="navbar" style="padding-top:6px; padding-bottom:6px">
             <div style="min-width:0">
-              <div class="t-title">Heute</div>
+              <div class="serif--screen-title">Heute</div>
               <div class="t-sub c-3" style="white-space:nowrap">Donnerstag, 13. November</div>
             </div>
 
@@ -154,13 +174,13 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
             <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neu</button>
           </div>
 
-          <div class="scroll" style="padding-top:12px; padding-bottom:14px; display:flex; flex-direction:column; gap:12px">
+          <div class="scroll" style="padding-top:9px; padding-bottom:10px; display:flex; flex-direction:column; gap:9px">
 
             <!-- ══ Schnellerfassung, Zustand „getippt" ══
                  Der Beweis für natürliche Sprache: der Satz bleibt stehen, wie
                  Emil ihn geschrieben hat — die Auswertung steht als Chips
                  darunter und ist einzeln antippbar. -->
-            <section class="card" style="padding:10px 12px">
+            <section class="card" style="padding:8px 12px">
               <div style="display:flex; align-items:center; gap:10px">
                 <div class="field" style="flex:1 1 auto; height:42px; padding:0 14px">
                   <span class="ico" data-ico="plus" style="width:18px;height:18px"></span>
@@ -185,30 +205,41 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
             <div style="display:grid; grid-template-columns:1fr 200px; gap:16px; align-items:start">
 
               <!-- ── Liste, gruppiert nach Bereich ── -->
-              <div style="display:flex; flex-direction:column; gap:10px">
+              <div style="display:flex; flex-direction:column; gap:8px">
 
                 <!-- Biologie: hier liegt die Mehrfachauswahl -->
                 <section class="card" style="padding:6px">
-                  <div style="display:flex; align-items:center; gap:8px; padding:5px 12px 3px">
+                  <div style="display:flex; align-items:center; gap:8px; padding:2px 12px 1px">
                     <span class="dot" style="background:var(--ink-2)"></span>
                     <span class="t-label c-2">Biologie</span>
                     <span style="flex:1"></span>
                     <span class="t-label c-3 num">2</span>
                   </div>
 
-                  <div class="row is-selected">
-                    <span class="check"></span>
+                  <!-- Die Checkbox IST der Knopf für die Erledigen-Bewegung.
+                       Sie behält ihre 22 pt, bekommt aber über negative Ränder
+                       eine 44-pt-Trefferfläche — das Zeichen wächst nicht, das
+                       Ziel schon. Ausgelöst wird über data-Attribute, ohne eine
+                       Zeile JavaScript in diesem Schirm. data-bw-echo zeigt auf
+                       den Herkunfts-Chip: erledigt ist auch dort sichtbar, wo
+                       die Aufgabe herkam — das andere Ende des Fadens. -->
+                  <div class="row is-selected" id="a-labor">
+                    <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" data-bw-echo="#h-labor" aria-label="Laborprotokoll erledigen"><span class="bw-check"></span></button>
                     <div class="row__main">
                       <span class="t-body row__title">Laborprotokoll Zellkultur schreiben</span>
-                      <span class="t-sub c-3">Messwerte von Tag 3 eintragen</span>
+                      <span class="t-sub c-2">Messwerte von Tag 3 eintragen</span>
                     </div>
+                    <!-- Herkunft als Faden: Knoten = diese Aufgabe, Faden 2,5 pt
+                         = „A wurde zu B", Chip = die Notiz, aus der sie kam. -->
                     <div class="row__meta">
-                      <span class="origin"><span class="dot dot--notes"></span>Zellbiologie</span>
+                      <span class="dot dot--node" style="--node-ring: color-mix(in srgb, var(--accent) 7%, var(--paper))"></span>
+                      <svg class="thread thread--h thread--origin" style="width:18px; margin:0 -2px"></svg>
+                      <span class="origin" id="h-labor"><span class="dot dot--notes"></span>Zellbiologie</span>
                     </div>
                   </div>
 
                   <div class="row is-selected">
-                    <span class="check"></span>
+                    <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Karteikarten erledigen"><span class="bw-check"></span></button>
                     <div class="row__main">
                       <span class="t-body row__title">Karteikarten Anatomie nacharbeiten</span>
                     </div>
@@ -218,7 +249,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                   </div>
 
                   <!-- Übergabe-Leiste: erscheint an jeder Auswahl, überall gleich -->
-                  <div style="display:flex; justify-content:center; margin-top:4px">
+                  <div style="display:flex; justify-content:center; margin-top:2px">
                     <span class="handoff">
                       <span class="handoff__from t-label"><span class="dot dot--tasks"></span>aus <span class="num">2</span> Aufgaben</span>
                       <button class="handoff__btn is-primary"><span class="ico" data-ico="calendar" style="width:14px;height:14px"></span>Planen</button>
@@ -231,7 +262,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
                 <!-- Analysis II -->
                 <section class="card" style="padding:6px">
-                  <div style="display:flex; align-items:center; gap:8px; padding:5px 12px 3px">
+                  <div style="display:flex; align-items:center; gap:8px; padding:2px 12px 1px">
                     <span class="dot" style="background:var(--ink-2)"></span>
                     <span class="t-label c-2">Analysis II</span>
                     <span style="flex:1"></span>
@@ -241,7 +272,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                   <!-- Die Zeile, an der die getrennte Semantik hängt:
                        grau = wann ich es tue · rot = wann es zu spät ist -->
                   <div class="row">
-                    <span class="check"></span>
+                    <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Statistik-Blatt erledigen"><span class="bw-check"></span></button>
                     <div class="row__main">
                       <span class="t-body row__title">Statistik-Blatt 4 abgeben</span>
                       <span class="t-sub c-3">Abgabe heute 18:00</span>
@@ -252,7 +283,11 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                     </div>
                   </div>
 
-                  <!-- Zwischenzustand: der Haken wächst gerade -->
+                  <!-- Zwischenzustand, eingefroren: der Haken wächst gerade.
+                       Diese eine Zeile behält .check.is-checking statt der
+                       auslösbaren .bw-check — ein Haken mitten im Zeichnen ist
+                       ein Bild, kein Knopf, und der Schirm soll den Moment auch
+                       im Standbild zeigen. Alle anderen Zeilen sind auslösbar. -->
                   <div class="row">
                     <span class="check is-checking"></span>
                     <div class="row__main">
@@ -260,6 +295,8 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                     </div>
                     <div class="row__meta">
                       <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Geplant morgen</span>
+                      <span class="dot dot--node"></span>
+                      <svg class="thread thread--h thread--origin" style="width:18px; margin:0 -2px"></svg>
                       <span class="origin"><span class="dot dot--canvas"></span>Canvas</span>
                     </div>
                   </div>
@@ -267,34 +304,53 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
                 <!-- Uni -->
                 <section class="card" style="padding:6px">
-                  <div style="display:flex; align-items:center; gap:8px; padding:5px 12px 3px">
+                  <div style="display:flex; align-items:center; gap:8px; padding:2px 12px 1px">
                     <span class="dot" style="background:var(--ink-2)"></span>
                     <span class="t-label c-2">Uni</span>
                     <span style="flex:1"></span>
                     <span class="t-label c-3 num">1</span>
                   </div>
-                  <div class="row">
-                    <span class="check"></span>
+                  <div class="row" style="padding-bottom:2px">
+                    <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Rückmeldung erledigen"><span class="bw-check"></span></button>
                     <div class="row__main">
                       <span class="t-body row__title">Rückmeldung an Prof. Wendt</span>
-                      <span class="t-sub c-3">Labortermin für Jana und Milan bestätigen</span>
                     </div>
                     <div class="row__meta">
                       <span class="chip"><span class="ico" data-ico="list" style="width:13px;height:13px"></span><span class="num">1</span> von <span class="num">2</span> Schritten</span>
+                    </div>
+                  </div>
+                  <!-- TEILSCHRITTE HÄNGEN ALS FADEN unter der Aufgabe.
+                       Der senkrechte Faden läuft von der Checkbox der Aufgabe
+                       zu jedem Schritt; die Kante ist „Schritt gehört zu dieser
+                       Aufgabe", nicht Herkunft — deshalb 1,5 pt und nicht 2,5.
+                       Punkt gefüllt = erledigt, hohl = offen. Die Schrittzahl
+                       im Chip oben („1 von 2") und die Punkte sagen dasselbe
+                       auf zwei Wegen. -->
+                  <div style="display:flex; gap:12px; padding:0 12px 5px">
+                    <div style="width:22px; flex:none; display:flex; flex-direction:column; align-items:center">
+                      <svg class="thread thread--v" style="height:12px; flex:none"></svg>
+                      <span class="dot dot--tasks"></span>
+                      <svg class="thread thread--v" style="flex:1 1 0; min-height:12px"></svg>
+                      <span class="dot dot--hollow"></span>
+                      <span style="flex:0 0 2px"></span>
+                    </div>
+                    <div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                      <span class="t-sub c-3" style="line-height:20px; text-decoration:line-through">Termin mit Wendt abgestimmt</span>
+                      <span class="t-sub c-2" style="line-height:20px; margin-top:6px">Jana und Milan zusagen</span>
                     </div>
                   </div>
                 </section>
 
                 <!-- Persönlich -->
                 <section class="card" style="padding:6px">
-                  <div style="display:flex; align-items:center; gap:8px; padding:5px 12px 3px">
+                  <div style="display:flex; align-items:center; gap:8px; padding:2px 12px 1px">
                     <span class="dot" style="background:var(--ink-2)"></span>
                     <span class="t-label c-2">Persönlich</span>
                     <span style="flex:1"></span>
                     <span class="t-label c-3 num">1</span>
                   </div>
                   <div class="row">
-                    <span class="check"></span>
+                    <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Bücher verlängern erledigen"><span class="bw-check"></span></button>
                     <div class="row__main">
                       <span class="t-body row__title">Bücher in der Bibliothek verlängern</span>
                     </div>
@@ -421,13 +477,13 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
       <div class="content">
         <div class="navbar" style="border:0; padding:6px var(--pad-iphone) 0">
-          <div class="t-title">Heute</div>
+          <div class="serif--screen-title">Heute</div>
           <div class="navbar__spacer"></div>
           <button class="iconbtn"><span class="ico" data-ico="calendar"></span></button>
           <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
         </div>
 
-        <div class="scroll" style="padding-top:5px; padding-bottom:4px; display:flex; flex-direction:column; gap:5px">
+        <div class="scroll" style="padding-top:4px; padding-bottom:3px; display:flex; flex-direction:column; gap:4px">
 
           <!-- Dieselben fünf Ansichten: vier im Segment, Kalender oben rechts -->
           <div class="segmented" style="display:flex">
@@ -439,21 +495,21 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
           <!-- Biologie -->
           <section class="card" style="padding:4px">
-            <div style="display:flex; align-items:center; gap:8px; padding:3px 10px 0">
+            <div style="display:flex; align-items:center; gap:8px; padding:1px 10px 0">
               <span class="dot" style="background:var(--ink-2)"></span>
               <span class="t-label c-2">Biologie</span>
               <span style="flex:1"></span>
               <span class="t-label c-3 num">2</span>
             </div>
-            <div class="row" style="padding:6px 12px">
-              <span class="check"></span>
+            <div class="row" style="padding:4px 12px">
+              <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" data-bw-echo="#h-labor-p" aria-label="Laborprotokoll erledigen"><span class="bw-check"></span></button>
               <div class="row__main" style="gap:4px">
                 <span class="t-body">Laborprotokoll Zellkultur schreiben</span>
-                <span style="display:flex; gap:6px"><span class="origin" style="height:20px"><span class="dot dot--notes"></span>Zellbiologie</span><span class="chip" style="height:20px"><span class="ico" data-ico="clock" style="width:12px;height:12px"></span>Geplant 14:00</span></span>
+                <span style="display:flex; align-items:center; gap:6px"><span class="dot dot--node"></span><svg class="thread thread--h thread--origin" style="width:16px; margin:0 -3px"></svg><span class="origin" id="h-labor-p" style="height:20px"><span class="dot dot--notes"></span>Zellbiologie</span><span class="chip" style="height:20px"><span class="ico" data-ico="clock" style="width:12px;height:12px"></span>Geplant 14:00</span></span>
               </div>
             </div>
-            <div class="row" style="padding:6px 12px">
-              <span class="check"></span>
+            <div class="row" style="padding:4px 12px">
+              <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Karteikarten erledigen"><span class="bw-check"></span></button>
               <div class="row__main" style="gap:4px">
                 <span class="t-body">Karteikarten Anatomie nacharbeiten</span>
                 <span><span class="chip" style="height:20px"><span class="ico" data-ico="undo" style="width:12px;height:12px"></span>Wöchentlich</span></span>
@@ -463,49 +519,63 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
           <!-- Analysis II -->
           <section class="card" style="padding:4px">
-            <div style="display:flex; align-items:center; gap:8px; padding:3px 10px 0">
+            <div style="display:flex; align-items:center; gap:8px; padding:1px 10px 0">
               <span class="dot" style="background:var(--ink-2)"></span>
               <span class="t-label c-2">Analysis II</span>
               <span style="flex:1"></span>
               <span class="t-label c-3 num">2</span>
             </div>
-            <div class="row" style="padding:6px 12px">
-              <span class="check"></span>
+            <div class="row" style="padding:4px 12px">
+              <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Statistik-Blatt erledigen"><span class="bw-check"></span></button>
               <div class="row__main" style="gap:4px">
                 <span class="t-body">Statistik-Blatt 4 abgeben</span>
                 <span style="display:flex; gap:6px"><span class="chip" style="height:20px"><span class="ico" data-ico="clock" style="width:12px;height:12px"></span>Geplant 16:00</span><span class="chip chip--danger" style="height:20px"><span class="ico" data-ico="flag" style="width:12px;height:12px"></span>noch 0 Tage</span></span>
               </div>
             </div>
             <!-- Zwischenzustand: der Haken wächst gerade -->
-            <div class="row" style="padding:6px 12px">
+            <div class="row" style="padding:4px 12px">
               <span class="check is-checking"></span>
               <div class="row__main" style="gap:4px">
                 <span class="t-body">Übungsblatt 5 fertig rechnen</span>
-                <span><span class="origin" style="height:20px"><span class="dot dot--canvas"></span>Canvas</span></span>
+                <span style="display:flex; align-items:center; gap:0"><span class="dot dot--node"></span><svg class="thread thread--h thread--origin" style="width:16px; margin:0 -3px"></svg><span class="origin" style="height:20px"><span class="dot dot--canvas"></span>Canvas</span></span>
               </div>
             </div>
           </section>
 
           <!-- Uni -->
           <section class="card" style="padding:4px">
-            <div style="display:flex; align-items:center; gap:8px; padding:3px 10px 0">
+            <div style="display:flex; align-items:center; gap:8px; padding:1px 10px 0">
               <span class="dot" style="background:var(--ink-2)"></span>
               <span class="t-label c-2">Uni</span>
               <span style="flex:1"></span>
               <span class="t-label c-3 num">1</span>
             </div>
-            <div class="row" style="padding:6px 12px">
-              <span class="check"></span>
+            <div class="row" style="padding:4px 12px 2px">
+              <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Rückmeldung erledigen"><span class="bw-check"></span></button>
               <div class="row__main" style="gap:4px">
                 <span class="t-body">Rückmeldung an Prof. Wendt</span>
                 <span><span class="chip" style="height:20px"><span class="ico" data-ico="list" style="width:12px;height:12px"></span><span class="num">1</span> von <span class="num">2</span> Schritten</span></span>
+              </div>
+            </div>
+            <!-- Dieselben Teilschritte am Faden wie am iPad -->
+            <div style="display:flex; gap:12px; padding:0 12px 6px">
+              <div style="width:22px; flex:none; display:flex; flex-direction:column; align-items:center">
+                <svg class="thread thread--v" style="height:8px; flex:none"></svg>
+                <span class="dot dot--tasks"></span>
+                <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
+                <span class="dot dot--hollow"></span>
+                <span style="flex:0 0 2px"></span>
+              </div>
+              <div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                <span class="t-sub c-3" style="line-height:20px; text-decoration:line-through">Termin mit Wendt abgestimmt</span>
+                <span class="t-sub c-2" style="line-height:20px; margin-top:4px">Jana und Milan zusagen</span>
               </div>
             </div>
           </section>
 
           <!-- Persönlich — hier läuft der Swipe -->
           <section class="card" style="padding:4px">
-            <div style="display:flex; align-items:center; gap:8px; padding:3px 10px 0">
+            <div style="display:flex; align-items:center; gap:8px; padding:1px 10px 0">
               <span class="dot" style="background:var(--ink-2)"></span>
               <span class="t-label c-2">Persönlich</span>
               <span style="flex:1"></span>
@@ -520,8 +590,8 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                   <span class="t-label">Planen</span>
                 </div>
               </div>
-              <div class="row" style="padding:6px 12px; transform:translateX(88px); background:var(--paper); box-shadow:-1px 0 0 var(--line-2), -10px 0 20px rgba(0,0,0,.18)">
-                <span class="check"></span>
+              <div class="row" style="padding:4px 12px; transform:translateX(88px); background:var(--paper); box-shadow:-1px 0 0 var(--line-2), -10px 0 20px rgba(0,0,0,.18)">
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Bücher verlängern erledigen"><span class="bw-check"></span></button>
                 <div class="row__main" style="gap:4px">
                   <span class="t-body">Bücher in der Bibliothek verlängern</span>
                   <span><span class="chip" style="height:20px"><span class="ico" data-ico="location" style="width:12px;height:12px"></span>Bibliothek</span></span>
@@ -558,6 +628,13 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
   <h2>Aufgaben — Steckbrief</h2>
   <p>Eine Liste, die nach Bereich gruppiert, ihre Herkunft kennt und zwischen „heute geplant" und „heute fällig" unterscheidet. Fünf Ansichten liegen auf denselben Daten; gewechselt wird im Kopf, nicht im Menü.</p>
 
+  <h3>Der Faden auf diesem Schirm</h3>
+  <table>
+    <tr><td>Teilschritte</td><td><strong>Aufgabe → Schritt 1 → Schritt 2</strong>, senkrecht, 1,5 pt. Nicht 2,5: ein Schritt ist kein Ergebnis der Aufgabe, er gehört zu ihr. Die Schritte sind geordnet und umsortierbar — deshalb ist die Reihenfolge selbst eine Kante und der Faden keine Zierleiste. Gefüllter Punkt = erledigt, hohler = offen.</td></tr>
+    <tr><td>Herkunft</td><td><strong>Aufgabe → Quelle</strong>, waagerecht, 2,5 pt (<span class="num">--origin</span>: „A wurde zu B"). Knoten = die Aufgabe, Chip = Notiz „Zellbiologie" bzw. Canvas. Zwei Objekte, beide benannt — sonst stünde dort kein Faden.</td></tr>
+    <tr><td>kein Faden</td><td>Die Wochenreihe rechts (Mo–So mit Balken) bekommt keinen: sieben Tagesbalken sind eine Messreihe, keine Beziehung. Die Gruppentrenner und die Zeilenlinien bleiben <span class="num">--line</span>.</td></tr>
+  </table>
+
   <h3>Woher die Ideen stammen</h3>
   <table>
     <tr><td>Things 3 — Gruppierung</td><td>Bereiche statt Stundenraster, jede Gruppe mit Zähler. Übernommen, weil Emil in „Biologie" und „Analysis II" denkt. Bewertung: die stärkste Ordnungsidee im Feld.</td></tr>
@@ -582,7 +659,8 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
     <tr><td>gefüllt</td><td>Sechs offene Aufgaben in vier Bereichen, eine davon mit Frist heute 18:00. Die Zahl <span class="num">6</span> stimmt mit der Sidebar und mit Today überein.</td></tr>
     <tr><td>aktiv</td><td>„Aufgaben" in der Sidebar: Fläche + Gewicht + Ink-Balken links. „Liste" im Segment: Papier-Fläche + Ink-Text + Schatten. Heute in der Wochenreihe: Fläche + Ink-Text + voller Balken.</td></tr>
     <tr><td>ausgewählt</td><td>Die zwei Zeilen unter „Biologie": getönte Fläche + Ring innen + fetter Titel. Darunter die Übergabe-Leiste, die zählt, woraus die Auswahl besteht („aus <span class="num">2</span> Aufgaben") — dieselbe Leiste wie in Notizen und Bibliothek.</td></tr>
-    <tr><td>Zwischenzustand 1</td><td><strong>„Übungsblatt 5 fertig rechnen" wird gerade erledigt.</strong> Der Ring ist zur Fläche geworden, der weiche Hof steht noch außen, der Haken sitzt auf <span class="num">60 %</span> und ist halbdurchsichtig — auf beiden Geräten dieselbe Zeile.</td></tr>
+    <tr><td>Zwischenzustand 1</td><td><strong>„Übungsblatt 5 fertig rechnen" wird gerade erledigt.</strong> Der Ring ist zur Fläche geworden, der weiche Hof steht noch außen, der Haken sitzt auf <span class="num">60 %</span> und ist halbdurchsichtig — auf beiden Geräten dieselbe Zeile. Diese eine Zeile behält bewusst den eingefrorenen <span class="num">.check.is-checking</span>: ein Haken mitten im Zeichnen ist ein Bild, kein Knopf.</td></tr>
+    <tr><td>auslösbar</td><td><strong>Alle anderen Checkboxen tun es wirklich.</strong> <span class="num">data-bw="erledigen"</span> — Haken zeichnet sich (180 ms), <span class="num">1000 ms</span> Verweildauer (die Pause <em>ist</em> das Rückgängig), Zeile geht (240 ms), Nachbarn schließen die Lücke (260 ms). Beim „Laborprotokoll" wird gleichzeitig sein Herkunfts-Chip aktiv: erledigt ist auch dort sichtbar, wo die Aufgabe herkam — das andere Ende des Fadens. Kein JavaScript im Schirm; nur Attribute.</td></tr>
     <tr><td>Zwischenzustand 2</td><td><strong>Der Swipe auf dem iPhone ist angefangen.</strong> „Bücher in der Bibliothek verlängern" liegt <span class="num">72</span> pt rechts und wirft einen Schatten auf die Aktion darunter; „Planen" ist bereits vollständig lesbar, nicht nur ein Streifen Farbe.</td></tr>
     <tr><td>Zwischenzustand 3</td><td><strong>Die Schnellerfassung ist mitten im Tippen.</strong> Der Satz steht mit Schreibmarke im Feld, die erkannten Teile sind im Text hinterlegt, und darunter stehen die vier Chips, die daraus geworden sind.</td></tr>
     <tr><td>eingeklappt</td><td>„Heute erledigt <span class="num">2</span>" am Listenende: erledigte Arbeit verschwindet nicht, sie zieht sich zusammen.</td></tr>
@@ -600,5 +678,6 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 </div>
 
 <script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
 </body>
 </html>

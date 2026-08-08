@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Journal-Eintrag — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
 </head>
 <body>
 
@@ -18,12 +19,20 @@ KOMMENTARBLOCK — Journal-Eintrag
   und der Eintrag später trotzdem auffindbar ist. Anders als Day One steht der
   Kontext neben dem Text, nicht darüber: Beim Öffnen liest man zuerst den
   eigenen Satz, nicht das Wetter.
-· Day One (Serif-Fließtext): Übernommen und zur Regel gemacht — die Oberfläche
-  spricht Sans, was Emil geschrieben hat, steht in Serif. Bewertung: der
-  einzige Grund, warum ein Journal sich anders anfühlt als eine Notiz-App.
+· Day One (Serif-Fließtext): Übernommen und zur Regel gemacht — aber aus einem
+  anderen Grund als Day One. Day One setzt Tagebuchtext in Serif, weil es
+  literarisch wirkt. Velum tut es, um STIMME von MATERIAL zu trennen: der
+  Eintragstext trägt .serif--voice, der Notiz-Editor bekommt Sans. Der Beweis
+  für die Regel ist also, was Velum dadurch NICHT tut. Kein Konkurrent muss
+  diese Unterscheidung treffen, weil bei keinem Notiz und Eintrag im selben
+  Datenmodell liegen. Bewertung: der einzige Grund, warum ein Journal sich
+  anders anfühlt als eine Notiz-App.
 · Day One (Foto-Streifen im Eintrag): Übernommen mit unterschiedlichen
   Seitenverhältnissen statt Quadratraster. Bewertung: gut — ein Quadratraster
-  macht aus Erinnerungen einen Instagram-Feed.
+  macht aus Erinnerungen einen Instagram-Feed. Es stehen echte Aufnahmen darin
+  (Labor, Mikroskop, Schreibtisch), keine Verlaufsflächen. Die Bildunterschrift
+  liegt nicht auf den Bildpunkten, sondern in einem Chip mit eigener
+  Papierfläche: nur so ist ihr Kontrast eine Zahl und keine Hoffnung.
 · Journey (Stimmung und Energie am Eintrag): Übernommen als fünfstufige
   Ink-Balken mit ausgeschriebenem Wort und als Regler mit Zahl. Bewertung: die
   Idee ist richtig, die Ausführung bei Journey nicht — dort sind es bunte
@@ -44,11 +53,16 @@ BEWUSST NICHT ÜBERNOMMEN
 
 DAS BESONDERE AN DIESEM SCHIRM
 Der Eintrag weiß, woher er kommt und was er ausgelöst hat. Unten steht die
-Kette: „aus ‚Zellbiologie‘" (Notiz) → dieser Eintrag → „Laborprotokoll Zellkultur
-schreiben" (Aufgabe). Kein Journal kann das, weil keines die Notiz und die
-Aufgabe im selben Datenmodell hält. Und: die Sprachnotiz aus dem Labor läuft
-gerade — die Wellenform ist bis zur Abspielposition in Ink gefüllt, der Rest
-liegt grau.
+Kette als FADEN mit drei Knoten: Notiz „Zellbiologie" → dieser Eintrag →
+Aufgabe „Laborprotokoll". Runde 1 hatte nur zwei Glieder; ein Faden dazwischen
+hätte Notiz → Aufgabe behauptet, und diese Kante gibt es nicht. Der Eintrag ist
+deshalb selbst das mittlere Glied — und als einziges kein Knopf, weil man nicht
+dorthin springen kann, wo man schon ist. Kein Journal kann diese Kette zeigen,
+weil keines die Notiz und die Aufgabe im selben Datenmodell hält.
+Und der Ton: die Sprachnotiz aus dem Labor läuft (Wellenform bis zur
+Abspielposition in Ink), darunter nimmt Velum gerade einen Nachtrag auf — die
+laufende Wellenform ist die einzige Dauerbewegung im ganzen System und sagt
+ununterbrochen: das Mikrofon hört.
 
 ADA-KATEGORIE: Delight (die laufende Sprachnotiz und die halb aufgeklappte
 Kontext-Leiste auf dem iPhone sind zwei eingefrorene Zwischenzustände) und
@@ -62,10 +76,18 @@ KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
   CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
   Wellenform, Stimmungs- und Energiebalken sind ink-1 auf fill-3 — Länge, Höhe
   und Anzahl tragen die Information, nicht die Farbe.
+  Faden (--thread) auf Papier      3,10:1 (hell) ·  3,13:1 (dunkel)
+  Knoten (Ink) auf Papier         17,77:1 (hell) · 15,86:1 (dunkel)
+  Bildunterschrift ink-2 auf der Papierfläche des Chips, nicht auf dem Foto:
+  gemessen über den tatsächlichen Bildpunkten unter den Buchstaben — beide
+  Erscheinungsbilder über 4,5:1. Auf ein Foto kommt nur, was einen gemessenen
+  Untergrund mitbringt.
   Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
 
 TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
-Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
+SERIF: zwei Rollen. .serif--screen-title am Datum, das der Screen-Titel ist,
+und .serif--voice im Eintragstext — der siebte und letzte Ort, und der einzige
+Schirm im ganzen Entwurf, an dem er gilt. Blankes .serif kommt nicht mehr vor.
 ============================================================================= -->
 
 <div class="mocktitle">
@@ -144,44 +166,52 @@ Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
                   <span class="t-label c-3 num">EINTRAG 34 VON 41</span>
                 </div>
 
-                <h1 class="t-title" style="margin:8px 0 0">Mittwoch, 12. November</h1>
-                <h2 class="t-section c-2" style="margin:6px 0 0">Laborgruppe hat es endlich verstanden</h2>
+                <h1 class="serif--screen-title" style="margin:6px 0 0">Mittwoch, 12. November</h1>
+                <h2 class="t-section c-2" style="margin:2px 0 0">Laborgruppe hat es endlich verstanden</h2>
 
-                <div class="serif" style="margin-top:14px">
-                  <p class="t-body serif" style="margin:0">Die Woche war voll, aber heute hat die Laborgruppe mich getragen — Jana und Milan haben das Protokoll auseinandergenommen.</p>
-                  <p class="t-body serif" style="margin:12px 0 0">Kurz vor fünf erklärte ich die Färbung noch einmal von vorn, und Jana hat den Satz vor mir zu Ende gebracht. Milan malte die Skizze frei an die Tafel.</p>
-                  <p class="t-body serif" style="margin:12px 0 0">Prof. Wendt kam vorbei und korrigierte nichts. Auf dem Rückweg über den Campus war ich zum ersten Mal seit September ruhig.</p>
+                <!-- DIE STIMME. .serif--voice gilt hier — und nur hier im ganzen
+                     Entwurf. Der Eintragstext ist durchgehende Prosa, die Emil
+                     selbst verfasst hat; der Notiz-Editor bekommt dafür Sans.
+                     Genau diese Gegenprobe ist der Grund für die Regel. -->
+                <div style="margin-top:11px">
+                  <p class="serif--voice" style="margin:0">Die Woche war voll, aber heute hat die Laborgruppe mich getragen — Jana und Milan haben das Protokoll auseinandergenommen.</p>
+                  <p class="serif--voice" style="margin:8px 0 0">Kurz vor fünf erklärte ich die Färbung noch einmal von vorn, und Jana hat den Satz vor mir zu Ende gebracht. Milan malte die Skizze frei an die Tafel.</p>
+                  <p class="serif--voice" style="margin:8px 0 0">Prof. Wendt kam vorbei und korrigierte nichts. Auf dem Rückweg über den Campus war ich zum ersten Mal seit September ruhig.</p>
                 </div>
 
-                <!-- Foto-Streifen: Papier und Grau, drei Seitenverhältnisse -->
-                <div style="display:flex; align-items:center; gap:8px; margin-top:20px">
+                <!-- Foto-Streifen: echte Aufnahmen, drei Seitenverhältnisse.
+                     Die Bildunterschrift steht NICHT auf dem Foto, sondern in
+                     einem Chip mit eigener Papierfläche — sie bringt ihren
+                     gemessenen Untergrund mit, statt sich auf Bildpunkte zu
+                     verlassen, die von Foto zu Foto anders sind. -->
+                <div style="display:flex; align-items:center; gap:8px; margin-top:14px">
                   <span class="ico c-3" data-ico="photo" style="width:15px;height:15px"></span>
                   <span class="t-label c-3">DREI FOTOS · 21:48</span>
                   <div style="flex:1"></div>
                   <span class="t-label c-3">Automatisch zugeordnet</span>
                 </div>
-                <div style="display:flex; gap:8px; margin-top:8px; height:132px">
-                  <div style="flex:1.7; border-radius:10px; position:relative; overflow:hidden; background:
-                      linear-gradient(160deg, var(--fill-3), var(--fill)),
-                      repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px)">
-                    <span class="chip" style="position:absolute; left:8px; bottom:8px; background:var(--paper)">Färbung, dritter Versuch</span>
+                <div style="display:flex; gap:8px; margin-top:8px; height:80px">
+                  <div style="flex:1.7; border-radius:10px; position:relative; overflow:hidden">
+                    <img src="../assets/bilder/journal/labor-1200.jpg" alt="Arbeitsplatz im Praktikumslabor, Färbelösungen und Objektträger" style="width:100%; height:100%; object-fit:cover; display:block">
+                    <span class="chip" style="position:absolute; left:8px; bottom:8px; background:var(--paper); box-shadow:0 1px 3px rgba(0,0,0,.28)">Färbung, dritter Versuch</span>
                   </div>
-                  <div style="flex:0.85; border-radius:10px; background:
-                      linear-gradient(20deg, var(--fill-2), var(--fill)),
-                      repeating-linear-gradient(0deg, var(--fill-2) 0 3px, transparent 3px 11px)"></div>
-                  <div style="flex:1.15; border-radius:10px; background:
-                      linear-gradient(120deg, var(--fill-3), var(--fill-2)),
-                      radial-gradient(circle at 36% 40%, var(--fill) 0 26px, transparent 26px)"></div>
+                  <div style="flex:0.85; border-radius:10px; overflow:hidden">
+                    <img src="../assets/bilder/journal/mikroskop-1200.jpg" alt="Mikroskop mit eingelegtem Präparat" style="width:100%; height:100%; object-fit:cover; display:block">
+                  </div>
+                  <div style="flex:1.15; border-radius:10px; overflow:hidden">
+                    <img src="../assets/bilder/journal/schreibtisch-1200.jpg" alt="Schreibtisch mit Protokollheft und Notizen" style="width:100%; height:100%; object-fit:cover; display:block">
+                  </div>
                 </div>
 
                 <!-- Sprachnotiz — läuft gerade (Zwischenzustand) -->
-                <div class="card card--flat" style="margin-top:16px; padding:12px 14px; display:flex; align-items:center; gap:14px">
+                <div class="card card--flat" style="margin-top:11px; padding:9px 14px">
+                <div style="display:flex; align-items:center; gap:14px">
                   <button style="width:44px; height:44px; flex:none; border-radius:50%; background:var(--accent); box-shadow:0 0 0 6px var(--accent-soft); display:flex; align-items:center; justify-content:center; gap:4px">
                     <i style="width:3.5px; height:15px; border-radius:1px; background:var(--accent-on)"></i>
                     <i style="width:3.5px; height:15px; border-radius:1px; background:var(--accent-on)"></i>
                   </button>
                   <div style="flex:1 1 auto; min-width:0">
-                    <div style="display:flex; align-items:center; gap:7px; margin-bottom:9px; white-space:nowrap">
+                    <div style="display:flex; align-items:center; gap:7px; margin-bottom:7px; white-space:nowrap">
                       <span class="ico c-3" data-ico="mic" style="width:14px;height:14px"></span>
                       <span class="t-label c-2">Sprachnotiz aus dem Labor</span>
                       <span class="t-label c-3">· spielt</span>
@@ -195,22 +225,66 @@ Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
                   </div>
                 </div>
 
-                <!-- Der Fluss: Herkunft und Folge -->
-                <div class="divider" style="margin:20px 0 8px"><span class="t-label c-3">VERBUNDEN</span></div>
+                <!-- Nachtrag — wird JETZT aufgenommen. Die laufende Wellenform
+                     ist die einzige Dauerbewegung im ganzen System und hat einen
+                     harten Grund: sie sagt „das Mikrofon hört gerade", und das
+                     muss ununterbrochen wahr bleiben. Ein stehendes Bild kann
+                     das nicht. Sie läuft ohne eine Zeile JavaScript in diesem
+                     Schirm: .bw-welle.is-an aus bewegung.css, die Balken baut
+                     bewegung.js beim Start aus data-balken.
+                     Zwei-Merkmal: laufende Balken + das Wort „nimmt auf" +
+                     die mitlaufende Zeit. Kein Rot — Rot gehört Frist und
+                     Löschen, nicht dem Mikrofon. -->
+                <div style="display:flex; align-items:center; gap:14px; margin-top:8px; padding-top:8px; border-top:1px solid var(--line)">
+                  <button style="width:44px; height:44px; flex:none; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center" aria-label="Aufnahme beenden">
+                    <i style="width:14px; height:14px; border-radius:3px; background:var(--accent-on)"></i>
+                  </button>
+                  <div style="flex:1 1 auto; min-width:0">
+                    <div style="display:flex; align-items:center; gap:7px; margin-bottom:3px; white-space:nowrap">
+                      <span class="ico c-3" data-ico="mic" style="width:14px;height:14px"></span>
+                      <span class="t-label c-2">Nachtrag · nimmt auf</span>
+                      <div style="flex:1"></div>
+                      <span class="t-label c-3 num">0:12</span>
+                    </div>
+                    <div class="bw-welle is-an" data-balken="38" style="height:20px"></div>
+                  </div>
+                </div>
+                </div>
+
+                <!-- Der Fluss: DREI Knoten auf einem Faden der Stärke --origin.
+                     Runde 1 hatte zwei Glieder, „entstanden aus" und „daraus
+                     entstanden" — ein Faden zwischen ihnen hätte Notiz → Aufgabe
+                     behauptet, und diese Kante gibt es im Datenmodell nicht. Der
+                     Eintrag selbst ist das mittlere Glied; erst dann sind beide
+                     Fäden echte Kanten: Notiz → Eintrag und Eintrag → Aufgabe.
+                     Das mittlere Glied ist kein Knopf — man kann nicht dorthin
+                     springen, wo man schon ist. -->
+                <div class="divider" style="margin:8px 0 4px"><span class="t-label c-3">VERBUNDEN</span></div>
                 <div class="card" style="padding:0; overflow:hidden">
                   <div class="chain">
-                    <button class="chain__link" style="text-align:left; flex:0.78">
+                    <button class="chain__link" style="text-align:left">
+                      <span class="dot dot--node chain__knot"></span>
                       <span class="chain__eyebrow t-label">ENTSTANDEN AUS</span>
-                      <span style="margin:2px 0 2px"><span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie“</span></span>
-                      <span class="t-sub c-3">Notiz · 12. Nov, 16:20</span>
+                      <span style="margin:2px 0 2px"><span class="origin"><span class="dot dot--notes"></span>Zellbiologie</span></span>
+                      <span class="t-sub c-3">Notiz · 12. Nov</span>
                     </button>
-                    <button class="chain__link" style="text-align:left; flex:1.22">
-                      <span class="chain__eyebrow t-label">DARAUS ENTSTANDEN</span>
-                      <span style="margin:2px 0 2px"><span class="chip"><span class="dot dot--tasks"></span>Laborprotokoll Zellkultur schreiben</span></span>
-                      <span class="t-sub c-3">Aufgabe · offen · Biologie</span>
+                    <div class="chain__link" style="text-align:left; background:var(--accent-soft)">
+                      <svg class="thread thread--h thread--origin"></svg>
+                      <span class="dot dot--node chain__knot" style="--node-ring: color-mix(in srgb, var(--accent) 7%, var(--paper))"></span>
+                      <span class="chain__eyebrow t-label"><span class="dot dot--journal"></span>DIESER EINTRAG</span>
+                      <span class="t-sub is-strong clamp-1" style="margin:2px 0 2px">12. November</span>
+                      <span class="t-sub c-3">Journal · 22:10</span>
+                    </div>
+                    <button class="chain__link" style="text-align:left">
+                      <svg class="thread thread--h thread--origin"></svg>
+                      <span class="dot dot--node chain__knot"></span>
+                      <span class="chain__eyebrow t-label">DARAUS WURDE</span>
+                      <span style="margin:2px 0 2px"><span class="chip"><span class="dot dot--tasks"></span>Laborprotokoll</span></span>
+                      <span class="t-sub c-3">Aufgabe · offen</span>
                     </button>
                   </div>
                 </div>
+
               </article>
 
               <!-- ═══ Kontext-Spalte ═══ -->
@@ -341,7 +415,8 @@ Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
 
               </aside>
             </div>
-          </div>
+
+              </div>
         </main>
       </div>
     </div>
@@ -373,33 +448,36 @@ Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
             <div style="flex:1"></div>
             <span class="t-label c-3 num">22:10</span>
           </div>
-          <h1 class="t-title" style="margin:4px 0 0">12. November</h1>
+          <h1 class="serif--screen-title" style="margin:4px 0 0">12. November</h1>
           <h2 class="t-section c-2" style="margin:4px 0 0">Laborgruppe hat es endlich verstanden</h2>
 
-          <div style="margin-top:9px">
-            <p class="t-body serif" style="margin:0">Die Woche war voll, aber heute hat die Laborgruppe mich getragen — Jana und Milan haben das Protokoll auseinandergenommen.</p>
-            <p class="t-body serif" style="margin:6px 0 0">Kurz vor fünf erklärte ich die Färbung noch einmal von vorn, und Jana hat den Satz vor mir zu Ende gebracht. Milan malte die Skizze frei an die Tafel.</p>
-            <p class="t-body serif" style="margin:6px 0 0">Prof. Wendt kam vorbei und korrigierte nichts. Auf dem Rückweg über den Campus war ich zum ersten Mal seit September ruhig.</p>
+          <!-- Dieselbe Stimme wie am iPad: .serif--voice, nirgends sonst -->
+          <div style="margin-top:7px">
+            <p class="serif--voice" style="margin:0">Die Woche war voll, aber heute hat die Laborgruppe mich getragen — Jana und Milan haben das Protokoll auseinandergenommen.</p>
+            <p class="serif--voice" style="margin:4px 0 0">Kurz vor fünf erklärte ich die Färbung noch einmal von vorn, und Jana hat den Satz vor mir zu Ende gebracht. Milan malte die Skizze frei an die Tafel.</p>
+            <p class="serif--voice" style="margin:4px 0 0">Prof. Wendt kam vorbei und korrigierte nichts. Auf dem Rückweg über den Campus war ich zum ersten Mal seit September ruhig.</p>
           </div>
 
-          <!-- Fotos als Reihe -->
-          <div style="display:flex; gap:6px; margin-top:8px; height:46px">
-            <div style="flex:1.7; border-radius:9px; background:
-                linear-gradient(160deg, var(--fill-3), var(--fill)),
-                repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px)"></div>
-            <div style="flex:0.85; border-radius:9px; background:
-                linear-gradient(20deg, var(--fill-2), var(--fill)),
-                repeating-linear-gradient(0deg, var(--fill-2) 0 3px, transparent 3px 11px)"></div>
-            <div style="flex:1.15; border-radius:9px; background:
-                linear-gradient(120deg, var(--fill-3), var(--fill-2)),
-                radial-gradient(circle at 36% 40%, var(--fill) 0 18px, transparent 18px)"></div>
+          <!-- Fotos als Reihe — dieselben drei Aufnahmen, 400er Fassung -->
+          <div style="display:flex; gap:6px; margin-top:6px; height:44px">
+            <div style="flex:1.7; border-radius:9px; overflow:hidden">
+              <img src="../assets/bilder/journal/labor-400.jpg" alt="Arbeitsplatz im Praktikumslabor, Färbelösungen und Objektträger" style="width:100%; height:100%; object-fit:cover; display:block">
+            </div>
+            <div style="flex:0.85; border-radius:9px; overflow:hidden">
+              <img src="../assets/bilder/journal/mikroskop-400.jpg" alt="Mikroskop mit eingelegtem Präparat" style="width:100%; height:100%; object-fit:cover; display:block">
+            </div>
+            <div style="flex:1.15; border-radius:9px; overflow:hidden">
+              <img src="../assets/bilder/journal/schreibtisch-400.jpg" alt="Schreibtisch mit Protokollheft und Notizen" style="width:100%; height:100%; object-fit:cover; display:block">
+            </div>
           </div>
 
           <!-- Sprachnotiz — läuft gerade -->
-          <div class="card card--flat" style="margin-top:9px; padding:7px 11px; display:flex; align-items:center; gap:10px">
-            <button style="width:36px; height:36px; flex:none; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px var(--accent-soft); display:flex; align-items:center; justify-content:center; gap:3.5px">
-              <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
-              <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
+          <div class="card card--flat" style="margin-top:7px; padding:5px 11px; display:flex; align-items:center; gap:10px">
+            <button style="width:44px; height:44px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Sprachnotiz anhalten">
+              <span style="width:36px; height:36px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px var(--accent-soft); display:flex; align-items:center; justify-content:center; gap:3.5px">
+                <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
+                <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
+              </span>
             </button>
             <div style="flex:1 1 auto; min-width:0">
               <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px; white-space:nowrap">
@@ -415,15 +493,38 @@ Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
             </div>
           </div>
 
+          <!-- Derselbe laufende Nachtrag wie am iPad, eine Zeile hoch -->
+          <div class="card card--flat" style="margin-top:6px; padding:3px 10px; display:flex; align-items:center; gap:9px">
+            <button style="width:44px; height:44px; flex:none; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center" aria-label="Aufnahme beenden">
+              <i style="width:12px; height:12px; border-radius:3px; background:var(--accent-on)"></i>
+            </button>
+            <span class="t-label c-2" style="flex:none; white-space:nowrap">Nachtrag · nimmt auf</span>
+            <div class="bw-welle is-an" data-balken="16" style="flex:1 1 auto; min-width:0; height:20px"></div>
+            <span class="t-label c-3 num" style="flex:none">0:12</span>
+          </div>
+
+          <!-- Der Fluss — derselbe Faden wie am iPad, nur in einer Zeile.
+               Der Knoten in der Mitte ist dieser Eintrag; erst dadurch sind
+               beide Fadenstücke echte Kanten und nicht eine erfundene
+               Verbindung von der Notiz zur Aufgabe. -->
+          <div class="threadrow" style="margin-top:8px">
+            <button style="flex:none; height:44px; display:inline-flex; align-items:center; padding:0"><span class="origin"><span class="dot dot--notes"></span>Zellbiologie</span></button>
+            <svg class="thread thread--h thread--origin" style="margin:0 7px"></svg>
+            <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+            <svg class="thread thread--h thread--origin" style="margin:0 7px"></svg>
+            <button style="flex:none; height:44px; display:inline-flex; align-items:center; padding:0"><span class="chip"><span class="dot dot--tasks"></span>Laborprotokoll</span></button>
+          </div>
+          <div class="t-label c-3" style="margin-top:4px">Aus der Notiz wurde dieser Eintrag, daraus die Aufgabe.</div>
+
           <!-- Kontext-Leiste, halb aufgeklappt (Zwischenzustand) -->
-          <section class="card" style="margin-top:9px; padding:0; overflow:hidden">
-            <div style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--accent-soft); white-space:nowrap">
+          <section class="card" style="margin-top:7px; padding:0; overflow:hidden">
+            <div style="display:flex; align-items:center; gap:8px; padding:7px 12px; background:var(--accent-soft); white-space:nowrap">
               <span class="t-label">KONTEXT</span>
               <div style="flex:1"></div>
               <span class="t-label c-3">klappt auf …</span>
               <span class="ico c-3" data-ico="chevD" style="width:16px;height:16px; transform:rotate(180deg)"></span>
             </div>
-            <div style="height:80px; overflow:hidden; position:relative; padding:9px 12px 0">
+            <div style="height:74px; overflow:hidden; position:relative; padding:8px 12px 0">
               <div style="display:flex; align-items:center; gap:8px; white-space:nowrap">
                 <span class="t-label c-3">STIMMUNG</span>
                 <div style="flex:1"></div>
@@ -460,12 +561,6 @@ Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
             </div>
           </section>
 
-          <!-- Der Fluss -->
-          <div style="display:flex; align-items:center; gap:6px; margin-top:9px; white-space:nowrap">
-            <span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie“</span>
-            <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
-            <span class="chip"><span class="dot dot--tasks"></span>Laborprotokoll</span>
-          </div>
         </div>
 
         <nav class="tabbar">
@@ -486,11 +581,18 @@ Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
   <h2>Journal-Eintrag — Steckbrief</h2>
   <p>Der emotionalste Schirm der App. Links steht ausschließlich, was Emil selbst gemacht hat: Datum, Titel, Text in Serif, drei Fotos, eine Sprachnotiz. Alles, was die App dazu weiß, steht rechts und stört nicht.</p>
 
+  <h3>Der Faden auf diesem Schirm</h3>
+  <table>
+    <tr><td>Die Kette unten</td><td><strong>Notiz → dieser Eintrag → Aufgabe</strong>, zwei Fäden der Stärke <span class="num">--origin</span> (2,5 pt), drei Knoten. Beide Fäden sind echte Kanten. Runde 1 hatte zwei Glieder; ein Strich dazwischen hätte <em>Notiz → Aufgabe</em> behauptet — eine Kante, die das Datenmodell nicht kennt. Deshalb ist der Eintrag selbst das mittlere Glied, getönt und als einziges kein Knopf.</td></tr>
+    <tr><td>iPhone</td><td>Derselbe Faden in einer Zeile: Chip · Faden · Knoten · Faden · Chip. Der Knoten in der Mitte ist wieder dieser Eintrag; die Zeile darunter sagt es aus, damit der Punkt nicht allein steht.</td></tr>
+    <tr><td>kein Faden</td><td>Weder der Foto-Streifen noch die Wellenform noch der Stimmungs-Regler bekommen einen. Drei Fotos nebeneinander sind keine Beziehung, und ein Regler verbindet keine zwei Objekte. Die Trennlinien bleiben <span class="num">--line</span>.</td></tr>
+  </table>
+
   <h3>Woher die Ideen stammen</h3>
   <table>
     <tr><td>Day One — Foto, Wetter, Ort</td><td>Der Kontext wird automatisch mitgeschrieben. <strong>Sehr stark übernommen</strong>, aber verschoben: Bei Day One steht er über dem Text, hier daneben. Beim Öffnen liest man zuerst den eigenen Satz.</td></tr>
-    <tr><td>Day One — Serif-Fließtext</td><td>Übernommen und zur Systemregel gemacht: Die Oberfläche spricht Sans, was der Nutzer geschrieben hat, steht in Serif. Der einzige Grund, warum ein Journal sich anders anfühlt als eine Notiz-App.</td></tr>
-    <tr><td>Day One — Foto-Streifen</td><td>Übernommen mit drei echten Seitenverhältnissen statt Quadratraster. Ein Quadratraster macht aus Erinnerungen einen Feed.</td></tr>
+    <tr><td>Day One — Serif-Fließtext</td><td>Übernommen — aber aus einem anderen Grund. Day One setzt Tagebuch in Serif, weil es literarisch wirkt. Velum trennt damit <strong>Stimme</strong> von <strong>Material</strong>: hier <span class="num">.serif--voice</span>, im Notiz-Editor Sans. Der Beweis für die Regel ist, was sie <em>verbietet</em> — und diese Unterscheidung muss kein Konkurrent treffen, weil bei keinem Notiz und Eintrag im selben Datenmodell liegen.</td></tr>
+    <tr><td>Day One — Foto-Streifen</td><td>Übernommen mit drei echten Seitenverhältnissen statt Quadratraster. Ein Quadratraster macht aus Erinnerungen einen Feed. Es stehen echte Aufnahmen darin; die Bildunterschrift bringt ihre eigene Papierfläche mit, statt sich auf die Bildpunkte zu verlassen.</td></tr>
     <tr><td>Journey — Stimmung, Energie</td><td>Die Idee ist richtig, die Ausführung nicht: Journey nimmt bunte Emojis. Hier sind es fünf Ink-Balken mit Zahl und ausgeschriebenem Wort und ein Regler mit Skala.</td></tr>
     <tr><td>Apple Journal — Ruhe</td><td>Keine Werkzeugleiste über dem Text, keine Formatierungsknöpfe, kein Wortzähler. Alles, was nicht Text ist, liegt rechts oder unten.</td></tr>
   </table>
@@ -509,7 +611,8 @@ Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
     <tr><td>ausgewählt</td><td>Stimmungsstufe 3: getönte Fläche + Ring + Balken in Ink + Zahl in 600 + das Wort „Ausgeglichen". Energie 4: Füllung bis 75 % + Reglerknopf + „4" in 600 auf der Skala.</td></tr>
     <tr><td>aktiv</td><td>„Journal" in der Sidebar (Fläche + Gewicht + Ink-Balken), „Bibliothek" in der Tab-Bar, der Stern in der Navigationsleiste (Fläche + Ink statt Grau).</td></tr>
     <tr><td>Zwischenzustand 1</td><td><strong>Die Sprachnotiz läuft.</strong> Die Wellenform ist bis 0:47 in Ink gefüllt, dahinter grau; die Abspielposition steht als Ink-Strich im Bild; der Knopf zeigt Pause und trägt den weichen Ring, den auch die Checkbox in der Erledigen-Animation trägt.</td></tr>
-    <tr><td>Zwischenzustand 2</td><td><strong>Die Kontext-Leiste auf dem iPhone klappt gerade auf.</strong> Sie sagt es selbst („klappt auf …"), das Winkelzeichen zeigt schon nach oben, die Stimmung steht vollständig da — und „Energie · 4 von 5" verläuft am unteren Rand noch im Papier. Wer wartet, sieht auch Ort, Wetter und Tags.</td></tr>
+    <tr><td>Zwischenzustand 2</td><td><strong>Der Nachtrag wird aufgenommen.</strong> Die Wellenform läuft — 38 Balken, Maßstab 0,35 ↔ 1 in 900 ms, je Balken um 70 ms versetzt. Es ist die einzige Dauerbewegung im System, und sie hat einen harten Grund: sie sagt „das Mikrofon hört gerade", und das muss ununterbrochen wahr bleiben. Sie braucht keine Zeile JavaScript in diesem Schirm — <span class="num">.bw-welle.is-an</span> genügt. Unter <em>Bewegung reduzieren</em> stehen die Balken auf ihrem Grundprofil still; dann trägt die mitlaufende Zeit den Beweis. Kein Rot: Rot gehört Frist und Löschen, nicht dem Mikrofon.</td></tr>
+    <tr><td>Zwischenzustand 3</td><td><strong>Die Kontext-Leiste auf dem iPhone klappt gerade auf.</strong> Sie sagt es selbst („klappt auf …"), das Winkelzeichen zeigt schon nach oben, die Stimmung steht vollständig da — und „Energie · 4 von 5" verläuft am unteren Rand noch im Papier. Wer wartet, sieht auch Ort, Wetter und Tags.</td></tr>
     <tr><td>leer</td><td>Ein Eintrag ohne Fotos, ohne Sprachnotiz und ohne Verknüpfung zeigt nur Datum, Titel und Text; die Kontext-Spalte behält Ort, Wetter und Zeiten, weil die automatisch anfallen. Es gibt keinen leeren Eintrag ohne Text — dann ist es ein Entwurf (siehe Journal-Home).</td></tr>
   </table>
 
@@ -519,10 +622,14 @@ Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
   <h3>Zwei-Merkmal-Regel</h3>
   <p>Kein Zustand hängt an Farbe. Ausgewählt (Stimmung 3) = Fläche + Ring + Gewicht + Wort. Aktiv (Sidebar) = Fläche + Gewicht + Ink-Balken. Läuft (Sprachnotiz) = gefüllte Wellenform + Abspielstrich + Pause-Zeichen + Zeitangabe. Nicht gewählt (Stimmung 1, 2, 4, 5) = Deckkraft + fehlende Fläche. Modul-Dots sind 6 pt und stehen nie ohne ihr Wort — „Journal" in Kopfzeile und Sidebar, „Zellbiologie" im Herkunfts-Chip, „Laborprotokoll" im Aufgaben-Chip.</p>
 
+  <h3>Serif auf diesem Schirm</h3>
+  <p>Zwei Rollen, mehr nicht. <span class="num">.serif--screen-title</span> trägt das Datum, weil das Datum hier der Screen-Titel ist. <span class="num">.serif--voice</span> trägt die drei Absätze des Eintrags — der siebte Ort aus dem DNA-Nachtrag, und <strong>dies ist der einzige Schirm des ganzen Entwurfs, an dem er gilt</strong>. Alles andere spricht Sans: Bildunterschriften, Kontextspalte, Kettenglieder, Chips. Die Gegenprobe steht im Notiz-Editor, wo derselbe Nutzer denselben Stift benutzt und trotzdem Sans bekommt — eine Notiz ist Arbeitsmaterial, ein Eintrag eine Stimme.</p>
+
   <h3>Inline gestylt (nicht in system.css)</h3>
-  <p>Ohne system.css zu ändern, sind inline entstanden: die Wellenform aus 3-pt-Ink-Balken mit Abspielstrich, das Pause-Zeichen aus zwei Balken (es gibt kein Pause-Icon im Satz), die fünfstufige Stimmungsleiter, der Energie-Regler aus <code>.bar</code> plus Knopf, die graue Ortskarte und die drei Foto-Platzhalter aus Papier und Grau.</p>
+  <p>Ohne system.css zu ändern, sind inline entstanden: die aufnehmende Wellenform als <span class="num">.bw-welle</span> aus bewegung.css (Balken und Grundprofil baut bewegung.js aus <span class="num">data-balken</span>), die abgespielte Wellenform aus 3-pt-Ink-Balken mit Abspielstrich, das Pause-Zeichen aus zwei Balken (es gibt kein Pause-Icon im Satz), die fünfstufige Stimmungsleiter, der Energie-Regler aus <code>.bar</code> plus Knopf, die graue Ortskarte und die drei Foto-Platzhalter aus Papier und Grau.</p>
 </div>
 
 <script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
 </body>
 </html>

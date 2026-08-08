@@ -17,6 +17,13 @@ KOMMENTARBLOCK — Journal-Home
   verbindet. Bewertung: sehr stark, weil man beim Scrollen die Zeit sieht, ohne
   eine einzige Überschrift zu lesen. Anders als Day One sitzt die Marke
   außerhalb der Karte auf der Linie, damit die Karte selbst ruhig bleibt.
+  Verschärft in Runde 2: Die Linie ist keine Linie mehr, sondern ein FADEN
+  (1,5 pt, --thread). Er verbindet je zwei benachbarte Einträge desselben
+  Journals — genau die Kante, die der Eintrags-Schirm mit ‹ › abläuft. Jeder
+  Eintrag sitzt als Knoten darauf, jeder Tag ohne Eintrag als hohler Punkt
+  („11. Nov. · kein Eintrag"), und unten endet der Faden in einem hohlen Punkt,
+  weil Oktober noch nicht geladen ist. Day One zeigt eine Zierleiste; hier ist
+  der Strich die Datenkante.
 · Day One (Rückblick „On this day"): Übernommen als „Vor einem Jahr"-Karte in
   der Seitenspalte — dieselbe Karte wie auf „Today", damit der Rückblick überall
   gleich aussieht. Bewertung: gut, aber nur als Angebot. Day One unterbricht
@@ -24,12 +31,15 @@ KOMMENTARBLOCK — Journal-Home
 · Day One (Streak): Übernommen als Zahl mit Rekord und einer 12-Wochen-Reihe.
   Bewertung: geteilt. Die Zahl motiviert, die Abzeichen-Sammlung von Day One
   motiviert nicht — sie erzeugt Druck. Wir zeigen die Zahl und die Lücken,
-  aber keine Trophäen und keinen Verlust-Countdown.
+  aber keine Trophäen und keinen Verlust-Countdown. Die Reihe ist ein Faden aus
+  Punkten (1 pt): jeder Punkt eine Woche, jedes Stück die Kante „Woche folgt
+  auf Woche". Deshalb sind die Lücken nicht wegzulassen — ein Faden mit einer
+  offenen Stelle ist eine Aussage, eine Reihe ohne sie wäre eine Behauptung.
 · Apple Journal (Impuls-Karten): Übernommen als genau eine Impuls-Karte mit
-  konkreter Frage in Serif — dieselbe Frage wie auf „Today", weil es derselbe
-  Tag ist. Bewertung: sehr gut gegen das leere Blatt. Nicht übernommen ist
-  Apples Vorschlags-Strom aus Fotos, Musik und Orten: das ist ein Feed, kein
-  Tagebuch.
+  konkreter Frage — dieselbe Frage wie auf „Today", weil es derselbe Tag ist.
+  Bewertung: sehr gut gegen das leere Blatt. Die Frage steht in Sans, nicht in
+  Serif: sie ist Velums Text, nicht Emils. Nicht übernommen ist Apples
+  Vorschlags-Strom aus Fotos, Musik und Orten: das ist ein Feed, kein Tagebuch.
 · Journey (Stimmungsverlauf): Übernommen als schlichte Linie über 14 Tage.
   Bewertung: die Idee ist richtig, die Ausführung bei Journey nicht — dort ist
   der Verlauf bunt und die Stimmung ein Emoji. Hier ist die Linie Ink, und die
@@ -67,11 +77,20 @@ KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
   CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
   Stimmungs- und Energiebalken sind ink-1 auf fill-3 — Anzahl und Form tragen
   die Information, nicht die Farbe.
+  Faden (--thread) auf Grund       3,03:1 (hell) ·  3,10:1 (dunkel)
+  Knoten (Ink) auf Grund          15,90:1 (hell) · 17,27:1 (dunkel)
+  Datumsmarke ink-1 auf Grund     15,90:1 (hell) · 17,27:1 (dunkel)
   Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
 
 TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
-Serif nur dort, wo Emil selbst geschrieben hat — im Eintragstext, im Rückblick
-und in der Impulsfrage.
+SERIF: genau eine Rolle auf diesem Schirm — .serif--journal-date an den
+Datumsmarken der Zeitachse (20/26 600). Das Datum ist im Journal Inhalt, nicht
+Metadatum. Der Monat daneben bleibt Sans (13/16), weil er die Marke beschriftet
+und system.css §10 kein Serif in Beschriftungen zulässt. Sonst nirgends: die
+Eintrags-Vorschauen in der Liste sind Zeiger auf den Eintrag, nicht der Eintrag
+— sie stehen in Sans; .serif--voice gilt ausschließlich im Eintrags-Schirm.
+Der Rückblick-Ausschnitt und die Impulsfrage ebenfalls Sans (Listenzeile bzw.
+Text der App).
 ============================================================================= -->
 
 <div class="mocktitle">
@@ -126,7 +145,7 @@ und in der Impulsfrage.
         <!-- Inhalt -->
         <main class="content">
           <div class="navbar">
-            <span class="t-title">Journal</span>
+            <span class="serif--screen-title">Journal</span>
             <span class="dot dot--journal" style="align-self:center"></span>
             <span class="t-sub c-3 num" style="align-self:center">128 Einträge</span>
             <div class="navbar__spacer"></div>
@@ -144,28 +163,39 @@ und in der Impulsfrage.
             <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Eintrag</button>
           </div>
 
-          <div class="scroll" style="display:flex; flex-direction:column">
+          <div class="scroll" style="display:flex; flex-direction:column; padding-bottom:0">
 
             <div style="display:grid; grid-template-columns: minmax(0,1fr) 284px; gap:16px; align-items:start">
 
-              <!-- ══ Timeline ══ -->
-              <div style="display:flex; flex-direction:column; gap:11px">
+              <!-- ══ Timeline — die Zeitachse IST ein senkrechter Faden ══
+                   Der Faden verbindet je zwei benachbarte Einträge desselben
+                   Journals; genau diese Kante läuft der Eintrags-Schirm mit
+                   seinen ‹ ›-Knöpfen ab („Eintrag 34 von 41"). Jeder Eintrag
+                   sitzt als Knoten darauf, ein Tag ohne Eintrag als hohler
+                   Punkt. Die Marke ist die Serif-Datumsmarke.
+                   Kein Abstand zwischen den Zeilen: der Faden liefe sonst
+                   alle 11 pt ins Leere. Der Abstand sitzt am Kartenrand. -->
+              <div style="display:flex; flex-direction:column">
 
                 <!-- Eintrag 1 — heute, die Sprachnotiz läuft noch ein (Zwischenzustand) -->
                 <div style="display:flex; gap:14px">
                   <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <span class="t-section num" style="line-height:24px">13</span>
+                    <!-- vor dem ersten Knoten liegt nichts: kein Faden, nur der
+                         gleiche Vorlauf, damit alle Knoten auf einer Höhe sitzen -->
+                    <span style="height:13px; flex:none"></span>
+                    <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+                    <span class="serif--journal-date" style="margin-top:3px">13</span>
                     <span class="t-label c-3">Nov.</span>
-                    <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:8px"></div>
+                    <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
                   </div>
-                  <article class="card" style="flex:1 1 auto; min-width:0; padding:13px">
+                  <article class="card" style="flex:1 1 auto; min-width:0; padding:13px; margin-bottom:7px">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
                       <span class="t-label c-3">Donnerstag · 8:05</span>
                       <div style="flex:1"></div>
                       <span class="chip"><span class="ico" data-ico="mic" style="width:13px;height:13px"></span>2:03</span>
                     </div>
                     <div class="t-section">Vor dem Praktikum</div>
-                    <p class="t-body serif c-2 clamp-2" style="margin:4px 0 0">Die Kultur von Dienstag sieht gut aus — die Dichte stimmt, nichts trüb. Jana meint, wir können die Passage heute schon ansetzen, wenn Milan das Medium rechtzeitig …</p>
+                    <p class="t-body c-2 clamp-2" style="margin:4px 0 0">Die Kultur von Dienstag sieht gut aus — die Dichte stimmt, nichts trüb. Jana meint, wir können die Passage heute schon ansetzen, wenn Milan das Medium rechtzeitig …</p>
 
                     <!-- laufende Übertragung: Fortschritt + Restzeit + Skelett für den Rest -->
                     <div style="margin-top:9px; padding:8px 12px; border-radius:11px; background:var(--fill); display:flex; flex-direction:column; gap:6px">
@@ -207,30 +237,31 @@ und in der Impulsfrage.
                 <!-- Eintrag 2 — gestern, Entwurf mit Foto-Streifen -->
                 <div style="display:flex; gap:14px">
                   <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <span class="t-section num" style="line-height:24px">12</span>
+                    <svg class="thread thread--v" style="height:13px; flex:none"></svg>
+                    <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+                    <span class="serif--journal-date" style="margin-top:3px">12</span>
                     <span class="t-label c-3">Nov.</span>
-                    <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:8px"></div>
+                    <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
                   </div>
-                  <article class="card" style="flex:1 1 auto; min-width:0; padding:13px">
+                  <article class="card" style="flex:1 1 auto; min-width:0; padding:13px; margin-bottom:7px">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
                       <span class="t-label c-3">Mittwoch · 22:10</span>
                       <div style="flex:1"></div>
                       <span class="chip chip--ghost">Entwurf</span>
                     </div>
                     <div class="t-section c-2">Ohne Titel</div>
-                    <p class="t-body serif c-2 clamp-2" style="margin:4px 0 0">Die Woche war voll, aber die Laborgruppe hat mich getragen. Jana und Milan haben das Protokoll in zwei Stunden auseinandergenommen, und plötzlich ergab die Färbung …</p>
+                    <p class="t-body c-2 clamp-2" style="margin:4px 0 0">Die Woche war voll, aber die Laborgruppe hat mich getragen. Jana und Milan haben das Protokoll in zwei Stunden auseinandergenommen, und plötzlich ergab die Färbung …</p>
 
                     <!-- Foto-Streifen: Papier und Grau, kein echtes Bild -->
                     <div style="display:flex; gap:6px; margin-top:9px">
-                      <div style="flex:1; height:56px; border-radius:8px; background:
-                          linear-gradient(160deg, var(--fill-3), var(--fill)),
-                          repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px)"></div>
-                      <div style="flex:1; height:56px; border-radius:8px; background:
-                          linear-gradient(20deg, var(--fill-2), var(--fill)),
-                          repeating-linear-gradient(0deg, var(--fill-2) 0 3px, transparent 3px 10px)"></div>
-                      <div style="flex:1; height:56px; border-radius:8px; position:relative; background:
-                          linear-gradient(120deg, var(--fill-3), var(--fill-2)),
-                          radial-gradient(circle at 30% 40%, var(--fill) 0 12px, transparent 12px)">
+                      <div style="flex:1; height:52px; border-radius:8px; overflow:hidden">
+                        <img src="../assets/bilder/journal/labor-400.jpg" alt="Arbeitsplatz im Praktikumslabor" style="width:100%;height:100%;object-fit:cover;display:block">
+                      </div>
+                      <div style="flex:1; height:52px; border-radius:8px; overflow:hidden">
+                        <img src="../assets/bilder/journal/mikroskop-400.jpg" alt="Mikroskop mit Präparat" style="width:100%;height:100%;object-fit:cover;display:block">
+                      </div>
+                      <div style="flex:1; height:52px; border-radius:8px; overflow:hidden; position:relative">
+                        <img src="../assets/bilder/journal/schreibtisch-400.jpg" alt="Schreibtisch mit Protokollheft" style="width:100%;height:100%;object-fit:cover;display:block">
                         <span class="t-label c-2 num" style="position:absolute; right:6px; bottom:5px; padding:2px 6px; border-radius:6px; background:var(--paper)">+4</span>
                       </div>
                     </div>
@@ -260,21 +291,35 @@ und in der Impulsfrage.
                   </article>
                 </div>
 
+                <!-- 11. November — kein Eintrag. Der hohle Punkt sitzt AUF dem
+                     Faden zwischen dem 12. und dem 10.; er ist kein eigener
+                     Faden, sondern eine Stelle darauf, an der nichts steht. -->
+                <div style="display:flex; gap:14px; margin-bottom:7px">
+                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
+                    <svg class="thread thread--v" style="height:13px; flex:none"></svg>
+                    <span class="dot dot--hollow"></span>
+                    <svg class="thread thread--v" style="flex:1 1 0; min-height:8px"></svg>
+                  </div>
+                  <span class="t-label c-3" style="padding:8px 0 2px">11. Nov. · kein Eintrag</span>
+                </div>
+
                 <!-- Eintrag 3 — 10. Nov, mit Herkunfts-Chip statt Fotos -->
                 <div style="display:flex; gap:14px">
                   <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <span class="t-section num" style="line-height:24px">10</span>
+                    <svg class="thread thread--v" style="height:13px; flex:none"></svg>
+                    <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+                    <span class="serif--journal-date" style="margin-top:3px">10</span>
                     <span class="t-label c-3">Nov.</span>
-                    <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:8px"></div>
+                    <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
                   </div>
-                  <article class="card" style="flex:1 1 auto; min-width:0; padding:13px">
+                  <article class="card" style="flex:1 1 auto; min-width:0; padding:13px; margin-bottom:7px">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
                       <span class="t-label c-3">Montag · 19:35</span>
                       <div style="flex:1"></div>
                       <span class="origin"><span class="dot dot--notes"></span>aus „Laborjournal"</span>
                     </div>
                     <div class="t-section">Zellkultur angesetzt</div>
-                    <p class="t-body serif c-2 clamp-2" style="margin:4px 0 0">Erste eigene Passage. Ich habe für das Zählen dreimal so lange gebraucht wie Milan und trotzdem war es der beste Nachmittag seit Semesterbeginn.</p>
+                    <p class="t-body c-2 clamp-2" style="margin:4px 0 0">Erste eigene Passage. Ich habe für das Zählen dreimal so lange gebraucht wie Milan und trotzdem war es der beste Nachmittag seit Semesterbeginn.</p>
                     <div style="display:flex; align-items:center; column-gap:9px; row-gap:8px; margin-top:10px; flex-wrap:wrap">
                       <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
                         <span style="display:inline-flex; align-items:flex-end; gap:2px; height:12px">
@@ -300,14 +345,22 @@ und in der Impulsfrage.
                   </article>
                 </div>
 
-                <button class="btn btn--sm btn--quiet" style="width:100%">
-                  <span class="ico" data-ico="chevD" style="width:16px;height:16px"></span>Ältere Einträge · Oktober
-                </button>
+                <!-- Der Faden endet nicht, er endet nur hier: der hohle Punkt
+                     sagt „es geht weiter, ist aber noch nicht geladen". -->
+                <div style="display:flex; gap:14px">
+                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
+                    <svg class="thread thread--v" style="height:13px; flex:none"></svg>
+                    <span class="dot dot--hollow"></span>
+                  </div>
+                  <button class="btn btn--sm btn--quiet" style="flex:1 1 auto; min-width:0; justify-content:flex-start; padding-left:0">
+                    <span class="ico" data-ico="chevD" style="width:16px;height:16px"></span>Ältere Einträge · Oktober
+                  </button>
+                </div>
 
               </div>
 
               <!-- ══ Seitenspalte ══ -->
-              <div style="display:flex; flex-direction:column; gap:12px">
+              <div style="display:flex; flex-direction:column; gap:9px">
 
                 <!-- Serie -->
                 <section class="card" style="padding:13px">
@@ -319,22 +372,27 @@ und in der Impulsfrage.
                   <div class="count" style="margin-bottom:9px">
                     <span class="count__n num">12</span><span class="count__w t-sub">Tage in Folge</span>
                   </div>
-                  <div style="display:flex; align-items:center; gap:4px; margin-bottom:7px">
-                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line-2)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line-2)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line-2)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
-                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
+                  <!-- Die Serie ist ein Faden aus Punkten: jeder Punkt ist eine
+                       Woche, jedes Fadenstück die Kante „Woche folgt auf Woche".
+                       Gefüllt = geschrieben, hohl = Lücke, Ring = die laufende.
+                       1 pt, weil Nachbarschaft die schwächste Beziehung ist —
+                       die Zeitachse links trägt 1,5 pt. -->
+                  <div class="threadrow" style="margin-bottom:8px">
+                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
                     <!-- laufende Woche: halb gefüllt, weil erst Donnerstag ist -->
-                    <i style="width:11px;height:11px;border-radius:50%;background:linear-gradient(to top, var(--ink-1) 57%, transparent 57%); box-shadow:inset 0 0 0 1.5px var(--accent-ring)"></i>
+                    <span class="dot dot--ring" style="background:linear-gradient(to top, var(--mod-journal) 0 57%, var(--fill-3) 57% 100%)"></span>
                   </div>
-                  <div class="t-label c-3">12 Wochen · halb = laufend</div>
+                  <div class="t-label c-3">12 Wochen · hohl = Lücke · halb = läuft</div>
                 </section>
 
                 <!-- Kalender-Ausschnitt: Vorschau auf den Tab „Kalender" -->
@@ -401,15 +459,13 @@ und in der Impulsfrage.
 
                 <!-- Rückblick — dieselbe Karte wie auf „Today" -->
                 <section class="card" style="padding:0; overflow:hidden">
-                  <div style="height:48px; background:
-                      linear-gradient(160deg, var(--fill-3), var(--fill)),
-                      repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px);
-                      display:flex; align-items:center; padding:0 12px">
-                    <span class="chip" style="background:var(--paper)"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>Vor einem Jahr</span>
+                  <div style="height:48px; position:relative; display:flex; align-items:center; padding:0 12px">
+                    <img src="../assets/bilder/journal/seminarraum-400.jpg" alt="Praktikumsraum" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover">
+                    <span class="chip" style="position:relative; background:var(--paper); box-shadow:0 1px 3px rgba(0,0,0,.28)"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>Vor einem Jahr</span>
                   </div>
                   <div style="padding:8px 13px 10px">
                     <div class="t-body is-strong clamp-1">Erster Tag im Labor</div>
-                    <div class="t-sub serif c-2 clamp-2">„Ich habe drei Stunden gebraucht, um die Pipette richtig zu halten."</div>
+                    <div class="t-sub c-2 clamp-2">„Ich habe drei Stunden gebraucht, um die Pipette richtig zu halten."</div>
                   </div>
                 </section>
 
@@ -419,7 +475,7 @@ und in der Impulsfrage.
                     <span class="dot dot--journal"></span>
                     <span class="t-label c-3 card__title">IMPULS FÜR HEUTE</span>
                   </div>
-                  <p class="t-body serif" style="margin:0 0 10px">Was hat dich heute länger beschäftigt, als du erwartet hättest?</p>
+                  <p class="t-body" style="margin:0 0 10px">Was hat dich heute länger beschäftigt, als du erwartet hättest?</p>
                   <button class="btn btn--sm" style="width:100%"><span class="ico" data-ico="edit" style="width:16px;height:16px"></span>Eintrag beginnen</button>
                 </section>
 
@@ -443,7 +499,7 @@ und in der Impulsfrage.
       <div class="content" style="position:relative">
         <div class="navbar" style="border:0; padding-bottom:2px">
           <button class="iconbtn" style="width:30px; margin-left:-8px"><span class="ico" data-ico="chevL"></span></button>
-          <span class="t-title">Journal</span>
+          <span class="serif--screen-title">Journal</span>
           <span class="dot dot--journal" style="align-self:center"></span>
           <div class="navbar__spacer"></div>
           <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
@@ -459,27 +515,32 @@ und in der Impulsfrage.
             <button style="flex:1; padding:0 8px">Karte</button>
           </div>
 
-          <!-- Serie als schmale Karte -->
-          <section class="card" style="padding:10px 14px; display:flex; align-items:center; gap:10px">
-            <span class="ico c-2" data-ico="flame" style="width:18px;height:18px"></span>
-            <div style="flex:1 1 auto; min-width:0">
-              <div class="t-body is-strong"><span class="num">12</span> Tage in Folge</div>
-              <div class="t-label c-3 num">Rekord 34</div>
+          <!-- Serie als schmale Karte — derselbe Faden aus Punkten wie am iPad,
+               nur unter die Zeile gelegt, weil zwölf Punkte mit Fadenstücken
+               neben dem Text keine 44 pt Tapfläche mehr ließen. -->
+          <section class="card" style="padding:10px 14px">
+            <div style="display:flex; align-items:center; gap:10px">
+              <span class="ico c-2" data-ico="flame" style="width:18px;height:18px"></span>
+              <div style="flex:1 1 auto; min-width:0">
+                <div class="t-body is-strong"><span class="num">12</span> Tage in Folge</div>
+              </div>
+              <span class="t-label c-3 num">Rekord 34</span>
             </div>
-            <div style="display:flex; align-items:center; gap:3px">
-              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
-              <i style="width:7px;height:7px;border-radius:50%;background:linear-gradient(to top, var(--ink-1) 57%, transparent 57%); box-shadow:inset 0 0 0 1px var(--accent-ring)"></i>
+            <div class="threadrow" style="margin:9px 0 6px">
+              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--ring" style="background:linear-gradient(to top, var(--mod-journal) 0 57%, var(--fill-3) 57% 100%)"></span>
             </div>
+            <div class="t-label c-3">12 Wochen · hohl = Lücke · halb = läuft</div>
           </section>
 
           <!-- Impuls in einer Zeile — dieselbe Aufgabe, gleiche Tapzahl wie am iPad -->
@@ -487,26 +548,29 @@ und in der Impulsfrage.
             <span class="dot dot--journal"></span>
             <span style="flex:1 1 auto; min-width:0">
               <span class="t-label c-3" style="display:block">IMPULS FÜR HEUTE</span>
-              <span class="t-sub serif c-1 clamp-1">Was hat dich heute länger beschäftigt, als du erwartet hättest?</span>
+              <span class="t-sub c-1 clamp-1">Was hat dich heute länger beschäftigt, als du erwartet hättest?</span>
             </span>
             <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
           </button>
 
-          <!-- Timeline -->
+          <!-- Timeline — dieselbe Zeitachse als Faden, dieselben Knoten -->
+          <div style="display:flex; flex-direction:column">
           <div style="display:flex; gap:10px">
             <div style="width:34px; flex:none; display:flex; flex-direction:column; align-items:center">
-              <span class="t-section num" style="line-height:24px">13</span>
+              <span style="height:11px; flex:none"></span>
+              <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+              <span class="serif--journal-date" style="margin-top:3px">13</span>
               <span class="t-label c-3">Nov.</span>
-              <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:6px"></div>
+              <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
             </div>
-            <article class="card" style="flex:1 1 auto; min-width:0; padding:12px">
+            <article class="card" style="flex:1 1 auto; min-width:0; padding:12px; margin-bottom:12px">
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px">
                 <span class="t-label c-3">Heute · 8:05 · Labor 2</span>
                 <div style="flex:1"></div>
                 <span class="chip" style="height:22px"><span class="ico" data-ico="mic" style="width:13px;height:13px"></span>2:03</span>
               </div>
               <div class="t-section">Vor dem Praktikum</div>
-              <p class="t-sub serif c-2 clamp-2" style="margin:4px 0 0">Die Kultur von Dienstag sieht gut aus — die Dichte stimmt, nichts trüb. Jana meint, wir können die Passage heute schon ansetzen …</p>
+              <p class="t-sub c-2 clamp-2" style="margin:4px 0 0">Die Kultur von Dienstag sieht gut aus — die Dichte stimmt, nichts trüb. Jana meint, wir können die Passage heute schon ansetzen …</p>
               <div style="margin-top:9px; padding:9px 10px; border-radius:10px; background:var(--fill); display:flex; flex-direction:column; gap:7px">
                 <div style="display:flex; align-items:center; gap:8px">
                   <span class="ico c-2" data-ico="mic" style="width:15px;height:15px"></span>
@@ -541,9 +605,11 @@ und in der Impulsfrage.
 
           <div style="display:flex; gap:10px">
             <div style="width:34px; flex:none; display:flex; flex-direction:column; align-items:center">
-              <span class="t-section num" style="line-height:24px">12</span>
+              <svg class="thread thread--v" style="height:11px; flex:none"></svg>
+              <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+              <span class="serif--journal-date" style="margin-top:3px">12</span>
               <span class="t-label c-3">Nov.</span>
-              <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:6px"></div>
+              <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
             </div>
             <article class="card" style="flex:1 1 auto; min-width:0; padding:12px">
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px">
@@ -552,21 +618,21 @@ und in der Impulsfrage.
                 <span class="chip chip--ghost" style="height:22px">Entwurf</span>
               </div>
               <div class="t-section c-2">Ohne Titel</div>
-              <p class="t-sub serif c-2 clamp-2" style="margin:4px 0 0">Die Woche war voll, aber die Laborgruppe hat mich getragen. Jana und Milan haben das Protokoll in zwei Stunden auseinandergenommen …</p>
+              <p class="t-sub c-2 clamp-2" style="margin:4px 0 0">Die Woche war voll, aber die Laborgruppe hat mich getragen. Jana und Milan haben das Protokoll in zwei Stunden auseinandergenommen …</p>
               <div style="display:flex; gap:6px; margin-top:9px">
-                <div style="flex:1; height:54px; border-radius:8px; background:
-                    linear-gradient(160deg, var(--fill-3), var(--fill)),
-                    repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px)"></div>
-                <div style="flex:1; height:54px; border-radius:8px; background:
-                    linear-gradient(20deg, var(--fill-2), var(--fill)),
-                    repeating-linear-gradient(0deg, var(--fill-2) 0 3px, transparent 3px 10px)"></div>
-                <div style="flex:1; height:54px; border-radius:8px; position:relative; background:
-                    linear-gradient(120deg, var(--fill-3), var(--fill-2)),
-                    radial-gradient(circle at 30% 40%, var(--fill) 0 12px, transparent 12px)">
+                <div style="flex:1; height:54px; border-radius:8px; overflow:hidden">
+                  <img src="../assets/bilder/journal/labor-400.jpg" alt="Arbeitsplatz im Praktikumslabor" style="width:100%;height:100%;object-fit:cover;display:block">
+                </div>
+                <div style="flex:1; height:54px; border-radius:8px; overflow:hidden">
+                  <img src="../assets/bilder/journal/mikroskop-400.jpg" alt="Mikroskop mit Präparat" style="width:100%;height:100%;object-fit:cover;display:block">
+                </div>
+                <div style="flex:1; height:54px; border-radius:8px; overflow:hidden; position:relative">
+                  <img src="../assets/bilder/journal/schreibtisch-400.jpg" alt="Schreibtisch mit Protokollheft" style="width:100%;height:100%;object-fit:cover;display:block">
                   <span class="t-label c-2 num" style="position:absolute; right:5px; top:5px; padding:2px 6px; border-radius:6px; background:var(--paper)">+4</span>
                 </div>
               </div>
             </article>
+          </div>
           </div>
 
         </div>
@@ -592,14 +658,21 @@ und in der Impulsfrage.
 <!-- Steckbrief -->
 <div class="sheetnote">
   <h2>Journal-Home — Steckbrief</h2>
-  <p>Vier Ansichten auf dieselben Einträge: Timeline, Kalender, Medien, Karte. Der Schirm zeigt die Timeline — links die Einträge an der Zeitlinie, rechts das, was sie im Zusammenhang bedeuten. Geschriebenes steht in Serif, die Oberfläche spricht Sans.</p>
+  <p>Vier Ansichten auf dieselben Einträge: Timeline, Kalender, Medien, Karte. Der Schirm zeigt die Timeline — links die Einträge an der Zeitachse, rechts das, was sie im Zusammenhang bedeuten. Die Zeitachse ist ein Faden, die Einträge sind Knoten darauf.</p>
+
+  <h3>Der Faden auf diesem Schirm</h3>
+  <table>
+    <tr><td>Zeitachse</td><td><strong>Eintrag ↔ benachbarter Eintrag</strong> desselben Journals, 1,5 pt. Genau diese Kante läuft der Eintrags-Schirm mit seinen ‹ ›-Knöpfen ab („Eintrag 34 von 41"). Knoten = Eintrag, hohler Punkt = Tag ohne Eintrag (11. Nov.) und das offene Ende unten = Oktober, noch nicht geladen.</td></tr>
+    <tr><td>Serie</td><td><strong>Woche ↔ Folgewoche</strong>, 1 pt (schwächste Nähe, deshalb dünner als die Zeitachse). Zwölf Punkte, drei davon hohl: die Lücken bleiben stehen. Der letzte trägt den Ink-Ring und ist halb gefüllt — die Woche läuft noch.</td></tr>
+    <tr><td>kein Faden</td><td>Der Stimmungsverlauf bekommt <em>keinen</em>: eine Kurve über 14 Messwerte verbindet keine zwei Objekte. Sie bleibt ein Diagramm — mit Fläche, Achse und Knickpunkten, alles drei Dinge, die ein Faden nie hat. Der Wochenstreifen und die Trennlinien ebenfalls nicht.</td></tr>
+  </table>
 
   <h3>Woher die Ideen stammen</h3>
   <table>
-    <tr><td>Day One — Datum-Marke</td><td>Tag groß, Monat klein, links an einer durchgehenden Linie. <strong>Sehr stark:</strong> man liest die Zeit beim Scrollen, ohne eine Überschrift zu brauchen. Anders als Day One sitzt die Marke außerhalb der Karte, damit die Karte selbst ruhig bleibt.</td></tr>
+    <tr><td>Day One — Datum-Marke</td><td>Tag groß, Monat klein, links an einer durchgehenden Linie. <strong>Sehr stark:</strong> man liest die Zeit beim Scrollen, ohne eine Überschrift zu brauchen. Anders als Day One sitzt die Marke außerhalb der Karte — und die Linie ist keine Zierleiste, sondern der Faden zwischen zwei Einträgen. Der Tag steht in <span class="num">.serif--journal-date</span>, weil das Datum im Journal Inhalt ist.</td></tr>
     <tr><td>Day One — Rückblick</td><td>„Vor einem Jahr" als Angebot in der Seitenspalte, dieselbe Karte wie auf „Today". <strong>Gut,</strong> aber nie als Vollbild-Unterbrechung wie im Original.</td></tr>
-    <tr><td>Day One — Streak</td><td>Zahl, Rekord und 12-Wochen-Reihe. <strong>Geteilt:</strong> Die Zahl trägt, die Abzeichen tragen nicht. Wir zeigen auch die Lücken — drei offene Punkte in zwölf Wochen — statt sie zu verstecken.</td></tr>
-    <tr><td>Apple Journal — Impuls</td><td>Eine konkrete Frage statt eines leeren Feldes, in Serif. <strong>Sehr gut</strong> gegen das leere Blatt. Es ist bewusst genau eine Frage, kein Vorschlags-Strom.</td></tr>
+    <tr><td>Day One — Streak</td><td>Zahl, Rekord und 12-Wochen-Reihe. <strong>Geteilt:</strong> Die Zahl trägt, die Abzeichen tragen nicht. Wir zeigen auch die Lücken — drei offene Punkte in zwölf Wochen — statt sie zu verstecken. Als Faden aus Punkten wird aus der Reihe eine Folge.</td></tr>
+    <tr><td>Apple Journal — Impuls</td><td>Eine konkrete Frage statt eines leeren Feldes. <strong>Sehr gut</strong> gegen das leere Blatt. Es ist bewusst genau eine Frage, kein Vorschlags-Strom. Sie steht in Sans: die Frage ist Velums Text, nicht Emils.</td></tr>
     <tr><td>Journey — Stimmungsverlauf</td><td>Die Idee, Stimmung über Zeit zu zeigen. <strong>Richtig, Ausführung nicht:</strong> Journey macht daraus bunte Emojis. Hier ist die Linie Ink, die Stimmung ein fünfstufiger Balken.</td></tr>
   </table>
 
@@ -627,7 +700,10 @@ und in der Impulsfrage.
   <p><strong>Delight:</strong> Der Eintrag im Werden. Die Sprachnotiz aus dem Labor läuft als Text ein, während man die Timeline liest — mit ehrlicher Restzeit statt eines Spinners und einem Skelett, das die Zeile schon reserviert, in die der Satz gleich fällt.</p>
 
   <h3>Zwei-Merkmal-Regel</h3>
-  <p>Kein Zustand hängt an Farbe. Aktiv = Fläche + Gewicht (+ Balken in der Sidebar). Ausgewählt (heute im Wochenstreifen) = Fläche + Ring. Deaktiviert (kommende Tage) = Deckkraft + fehlende Fläche. Entwurf = Wort „Entwurf" + Rahmen-Chip + gedämpfter Titel. Stimmung und Energie = Anzahl gefüllter Balken + Zahl im Wort. Wetter = Symbol + Zahl. Modul-Dots sind 6 pt und stehen nie ohne ihr Wort — „Journal" im Titel und in der Sidebar, „Laborjournal" im Herkunfts-Chip.</p>
+  <p>Kein Zustand hängt an Farbe. Aktiv = Fläche + Gewicht (+ Balken in der Sidebar). Ausgewählt (heute im Wochenstreifen) = Fläche + Ring. Deaktiviert (kommende Tage) = Deckkraft + fehlende Fläche. Entwurf = Wort „Entwurf" + Rahmen-Chip + gedämpfter Titel. Stimmung und Energie = Anzahl gefüllter Balken + Zahl im Wort. Wetter = Symbol + Zahl. Modul-Dots sind 6 pt und stehen nie ohne ihr Wort — „Journal" im Titel und in der Sidebar, „Laborjournal" im Herkunfts-Chip. In der Serie tragen die Punkte ihre Aussage über Form (gefüllt / hohl / Ring) <em>und</em> die Beschriftung darunter, nie über die Modulfarbe allein: Journal-Orange hält auf Papier nur <span class="num">2,83:1</span>.</p>
+
+  <h3>Serif auf diesem Schirm</h3>
+  <p>Genau eine Rolle: <span class="num">.serif--journal-date</span> an den drei Datumsmarken der Zeitachse (20/26, Gewicht 600). Der Monat daneben bleibt Sans in 13/16 — er beschriftet die Marke, und Serif in Beschriftungen verbietet system.css §10. Die Eintrags-Vorschauen in der Liste, der Rückblick-Ausschnitt und die Impulsfrage stehen in Sans: eine Vorschau ist ein Zeiger auf den Eintrag, nicht der Eintrag. <span class="num">.serif--voice</span> gilt ausschließlich im Eintrags-Schirm — und dass es hier <em>nicht</em> gilt, ist der Beweis, dass die Regel eine Unterscheidung trifft.</p>
 </div>
 
 <script src="../shared/mock.js"></script>

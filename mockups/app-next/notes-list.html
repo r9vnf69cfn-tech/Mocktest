@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Notizen-Liste — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
 </head>
 <body>
 
@@ -43,12 +44,23 @@ BEWUSST NICHT ÜBERNOMMEN
   UND Tags, aber sie stehen in einer Spalte untereinander, nicht ineinander.
 
 DAS BESONDERE AN DIESEM SCHIRM
-Die Auswahlkreise sind immer da — es gibt keinen Auswahlmodus. Wer zwei Notizen
-antippt, hat zwei Notizen ausgewählt, und in derselben Sekunde erscheint die
-Übergabe-Leiste: „aus 2 Notizen → Lernkarten · Aufgabe · Journal". Es ist
-dieselbe Leiste wie in der Notiz, im Canvas und im Journal — gleiche Reihenfolge,
-gleiche Wörter, gleiche Höhe. Deshalb kostet die Mehrfachauswahl null Extra-Taps
-und das iPhone braucht keinen Schritt mehr als das iPad.
+Zwei Dinge.
+(1) DIE VERWEIS-RINNE. Links neben den Zeilen läuft ein Faden je Verweis. Drei
+    Kanten, alle im Datenmodell belegt und auf demselben Schirm nachlesbar:
+    Zellbiologie → Osmose und Zellmembran (der Wiki-Link [[Osmose]] steht im
+    Text), Laborjournal → Zellbiologie und Semesterplanung → Zellbiologie (die
+    beiden Backlinks, die der Notiz-Editor namentlich aufzählt). Weil dort drei
+    Fäden zusammenlaufen, ist „Zellbiologie" der einzige KNOTEN der Liste — die
+    übrigen Enden sind einfache Punkte in der Modulfarbe. Eine Notizliste, in
+    der man sieht, welche Notiz die anderen trägt, hat keine der Vorlagen: Bear
+    zeigt Tags, Apple Notes Ordner, Craft nichts davon.
+(2) DIE ÜBERGABE. Die Auswahlkreise sind immer da — es gibt keinen
+    Auswahlmodus. Wer zwei Notizen antippt, hat zwei Notizen ausgewählt, und in
+    derselben Sekunde erscheint die Übergabe-Leiste. Ihr erster Knopf löst die
+    Bewegung wirklich aus: der Faden wächst von der Auswahl zum Lernkarten-
+    Modul, die Karte fliegt auf ihm, das Ziel bleibt getönt zurück. Es ist
+    dieselbe Leiste wie in der Notiz, im Canvas und im Journal — gleiche
+    Reihenfolge, gleiche Wörter, gleiche Höhe.
 
 ADA-KATEGORIE: Interaktion (Auswahl und Übergabe sind ein Handgriff, kein Modus)
 und Innovation (aus zwei Notizen wird ein Kartenstapel, ohne Export und ohne
@@ -68,7 +80,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
 <div class="mocktitle">
   <h1>Notizen-Liste</h1>
-  <p>Alle Notizen, nach Tags geordnet. Links wächst der Tag-Baum mit dem Schreiben, rechts steht jede Notiz mit zwei Zeilen Vorschau. Zwei Notizen sind ausgewählt — die Übergabe-Leiste bietet an, daraus Lernkarten, eine Aufgabe oder einen Journaleintrag zu machen.</p>
+  <p>Alle Notizen, nach Tags geordnet. Links wächst der Tag-Baum mit dem Schreiben, rechts steht jede Notiz mit zwei Zeilen Vorschau — und in der Rinne davor läuft für jeden Verweis ein Faden. Zwei Notizen sind ausgewählt; die Übergabe-Leiste macht daraus in einer Bewegung Lernkarten.</p>
 </div>
 
 <div class="stage">
@@ -76,7 +88,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
   <!-- ══════════════════════════ iPad ══════════════════════════ -->
   <div class="device">
     <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · dreispaltig: Sidebar · Tags · Notizen</span></div>
-    <div class="screen screen--ipad">
+    <div class="screen screen--ipad" id="nl-ipad">
       <div class="statusbar">
         <span class="num">9:41</span>
         <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
@@ -100,7 +112,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
             <button class="navitem is-active"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span><span class="navitem__count t-label num">42</span></button>
             <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
             <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
-            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+            <button class="navitem" id="nl-cards"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards" id="nl-cards-punkt"></span><span class="navitem__count t-label num">23</span></button>
           </div>
 
           <div class="sidebar__group">
@@ -118,7 +130,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
         <!-- Inhalt -->
         <main class="content">
           <div class="navbar">
-            <div class="t-title" style="display:flex; align-items:center; gap:10px">Notizen<span class="dot dot--notes"></span></div>
+            <div class="serif--screen-title" style="display:flex; align-items:center; gap:10px">Notizen<span class="dot dot--notes"></span></div>
             <div class="navbar__spacer"></div>
             <div class="field" style="width:290px">
               <span class="ico" data-ico="search"></span>
@@ -199,6 +211,9 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                   <button>Mit Karten</button>
                 </div>
                 <div style="flex:1"></div>
+                <!-- Der Schalter gibt den Fäden in der Rinne ihr Wort. Ohne ihn
+                     stünde dort ein Strich, den niemand benennen kann. -->
+                <button aria-pressed="true" style="display:flex; align-items:center; height:44px; margin-block:-9px"><span class="chip chip--solid"><svg class="thread thread--h" style="width:15px; stroke:currentColor"></svg>Verweise</span></button>
                 <button class="chip chip--ghost"><span class="ico" data-ico="sort" style="width:14px;height:14px"></span>Geändert</button>
               </div>
 
@@ -209,7 +224,8 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <!-- 1 -->
-                <div class="row" style="align-items:flex-start; padding:12px">
+                <div id="nl-zell" class="row" style="align-items:flex-start; padding:12px 12px 12px 68px">
+                  <span class="dot dot--node" id="nl-zell-pkt" style="position:absolute; left:12px; top:26px; transform:translate(-50%,-50%); z-index:2" title="Knoten: hier treffen sich drei Verweise"></span>
                   <span class="check" style="margin-top:2px"></span>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
@@ -227,7 +243,8 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <!-- 2 -->
-                <div class="row" style="align-items:flex-start; padding:12px">
+                <div id="nl-sem" class="row" style="align-items:flex-start; padding:12px 12px 12px 68px">
+                  <span class="dot dot--notes" id="nl-sem-pkt" style="position:absolute; left:12px; top:26px; transform:translate(-50%,-50%); z-index:2"></span>
                   <span class="check" style="margin-top:2px"></span>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
@@ -248,12 +265,13 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <!-- 3 — ausgewählt: Fläche + Ring + Gewicht, und angehakt -->
-                <div class="row is-selected" style="align-items:flex-start; padding:12px">
+                <div id="nl-osmose" class="row is-selected" style="align-items:flex-start; padding:12px 12px 12px 68px">
+                  <span class="dot dot--notes" id="nl-osmose-pkt" style="position:absolute; left:12px; top:26px; transform:translate(-50%,-50%); z-index:2"></span>
                   <span class="check is-done" style="margin-top:2px"></span>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
                       <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Osmose und Zellmembran</span>
-                      <span class="t-label c-3 num" style="flex:none">Di 11. Nov</span>
+                      <span class="t-label c-2 num" style="flex:none">Di 11. Nov</span>
                     </div>
                     <div class="t-sub c-2 clamp-2">Wasser wandert dorthin, wo mehr gelöst ist. Versuch mit Kartoffelstäbchen: nach 40 Minuten 3 mm kürzer, in der Salzlösung deutlich weicher.</div>
                     <div style="display:flex; gap:6px; margin-top:8px">
@@ -264,12 +282,13 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <!-- 4 — gerade angetippt: Häkchen mitten in der Animation -->
-                <div class="row" style="align-items:flex-start; padding:12px; background:var(--accent-soft)">
+                <div id="nl-labor" class="row" style="align-items:flex-start; padding:12px 12px 12px 68px; background:var(--accent-soft)">
+                  <span class="dot dot--notes" id="nl-labor-pkt" style="position:absolute; left:12px; top:26px; transform:translate(-50%,-50%); z-index:2"></span>
                   <span class="check is-checking" style="margin-top:2px"></span>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
                       <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Laborjournal — Zellkultur, Tag 3</span>
-                      <span class="t-label c-3 num" style="flex:none">Mo 10. Nov</span>
+                      <span class="t-label c-2 num" style="flex:none">Mo 10. Nov</span>
                     </div>
                     <div class="t-sub c-2 clamp-2">Passage 4, Konfluenz bei 80 %. Jana hat das Medium um 9:15 gewechselt, Milan zählt morgen früh aus. Das Foto vom Inkubator liegt dabei.</div>
                     <div style="display:flex; gap:6px; margin-top:8px">
@@ -283,7 +302,10 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <div style="display:flex; justify-content:center; padding:12px 0 14px">
                   <span class="handoff">
                     <span class="handoff__from t-label"><span class="dot dot--notes"></span>aus <span class="num">2</span> Notizen</span>
-                    <button class="handoff__btn is-primary"><span class="dot dot--cards"></span>Lernkarten</button>
+                    <button class="handoff__btn is-primary"
+                            data-bw="uebergeben" data-bw-von="#nl-osmose" data-bw-nach="#nl-cards"
+                            data-bw-punkt="#nl-cards-punkt" data-bw-box="#nl-ipad" data-bw-kurve="34"
+                            data-bw-text="Osmose und Zellmembran · Laborjournal Tag 3"><span class="dot dot--cards"></span>Lernkarten</button>
                     <button class="handoff__btn"><span class="dot dot--tasks"></span>Aufgabe</button>
                     <button class="handoff__btn"><span class="dot dot--journal"></span>Journal</button>
                     <button class="handoff__btn" style="padding:0 9px"><span class="ico" data-ico="close" style="width:15px;height:15px"></span></button>
@@ -291,7 +313,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <!-- 5 -->
-                <div class="row" style="align-items:flex-start; padding:12px">
+                <div class="row" style="align-items:flex-start; padding:12px 12px 12px 68px">
                   <span class="check" style="margin-top:2px"></span>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
@@ -307,7 +329,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <!-- 6 -->
-                <div class="row" style="align-items:flex-start; padding:12px">
+                <div class="row" style="align-items:flex-start; padding:12px 12px 12px 68px">
                   <span class="check" style="margin-top:2px"></span>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
@@ -333,7 +355,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
   <!-- ══════════════════════════ iPhone ══════════════════════════ -->
   <div class="device">
     <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Tags als Chip-Band, „+" im Daumenbereich</span></div>
-    <div class="screen screen--iphone">
+    <div class="screen screen--iphone" id="nl-iphone">
       <div class="statusbar">
         <span class="num">9:41</span>
         <span class="statusbar__right"><span class="statusbar__bat"></span></span>
@@ -341,7 +363,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
       <div class="content" style="position:relative">
         <div class="navbar" style="border:0; padding-bottom:2px">
-          <div class="t-title" style="display:flex; align-items:center; gap:9px">Notizen<span class="dot dot--notes"></span></div>
+          <div class="serif--screen-title" style="display:flex; align-items:center; gap:9px">Notizen<span class="dot dot--notes"></span></div>
           <div class="navbar__spacer"></div>
           <button class="iconbtn"><span class="ico" data-ico="sort"></span></button>
           <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
@@ -371,7 +393,8 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
           </div>
 
           <!-- 1 -->
-          <div class="row" style="align-items:flex-start; padding:10px">
+          <div id="p-zell" class="row" style="align-items:flex-start; padding:10px 10px 10px 44px">
+            <span class="dot dot--node" style="position:absolute; left:8px; top:22px; transform:translate(-50%,-50%); z-index:2" title="Knoten: hier treffen sich zwei Verweise"></span>
             <span class="check" style="margin-top:2px"></span>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
@@ -393,7 +416,8 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
           </div>
 
           <!-- 2 — ausgewählt -->
-          <div class="row is-selected" style="align-items:flex-start; padding:10px">
+          <div id="p-osmose" class="row is-selected" style="align-items:flex-start; padding:10px 10px 10px 44px">
+            <span class="dot dot--notes" style="position:absolute; left:8px; top:22px; transform:translate(-50%,-50%); z-index:2"></span>
             <span class="check is-done" style="margin-top:2px"></span>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
@@ -404,13 +428,14 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <span class="chip" style="height:24px">#uni/bio</span>
                 <span class="chip" style="height:24px">#prüfung</span>
                 <span style="flex:1 1 auto"></span>
-                <span class="t-label c-3 num" style="flex:none">Di 11. Nov</span>
+                <span class="t-label c-2 num" style="flex:none">Di 11. Nov</span>
               </div>
             </div>
           </div>
 
           <!-- 3 — Häkchen mitten in der Animation -->
-          <div class="row" style="align-items:flex-start; padding:10px; background:var(--accent-soft)">
+          <div id="p-labor" class="row" style="align-items:flex-start; padding:10px 10px 10px 44px; background:var(--accent-soft)">
+            <span class="dot dot--notes" style="position:absolute; left:8px; top:22px; transform:translate(-50%,-50%); z-index:2"></span>
             <span class="check is-checking" style="margin-top:2px"></span>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
@@ -430,14 +455,17 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
           <div style="display:flex; justify-content:center; padding:13px 0 20px">
             <span class="handoff">
               <span class="handoff__from t-label" style="padding:0 8px 0 6px"><span class="dot dot--notes"></span>aus <span class="num">2</span></span>
-              <button class="handoff__btn is-primary" style="padding:0 10px"><span class="dot dot--cards"></span>Lernkarten</button>
+              <button class="handoff__btn is-primary" style="padding:0 10px"
+                      data-bw="uebergeben" data-bw-von="#p-osmose" data-bw-nach="#p-lernen"
+                      data-bw-box="#nl-iphone" data-bw-kurve="26"
+                      data-bw-text="Osmose und Zellmembran · Laborjournal Tag 3"><span class="dot dot--cards"></span>Lernkarten</button>
               <button class="handoff__btn" style="padding:0 10px"><span class="dot dot--tasks"></span>Aufgabe</button>
               <button class="handoff__btn" style="padding:0 8px"><span class="ico" data-ico="more" style="width:16px;height:16px"></span></button>
             </span>
           </div>
 
           <!-- 4 -->
-          <div class="row" style="align-items:flex-start; padding:10px">
+          <div class="row" style="align-items:flex-start; padding:10px 10px 10px 44px">
             <span class="check" style="margin-top:2px"></span>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
@@ -454,7 +482,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
           </div>
 
           <!-- 5 -->
-          <div class="row" style="align-items:flex-start; padding:10px">
+          <div class="row" style="align-items:flex-start; padding:10px 10px 10px 44px">
             <span class="check" style="margin-top:2px"></span>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
@@ -482,7 +510,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
           <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
           <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
           <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
-          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab" id="p-lernen"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
           <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
         </nav>
         <div class="home-indicator"></div>
@@ -513,6 +541,14 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
     <li><strong>Ein eigener „Auswählen"-Modus</strong> (iOS-Standard) — die Auswahlkreise sind immer da. Das spart auf dem iPhone genau den Tap, der es sonst teurer macht als das iPad.</li>
   </ul>
 
+  <h3>Der Faden auf diesem Schirm</h3>
+  <table>
+    <tr><td>Verweise in der Rinne</td><td>Drei Fäden zu 1,5 pt („normale Beziehung: Verweis"). <strong>Zellbiologie → Osmose und Zellmembran</strong> — der Wiki-Link steht im Notiztext. <strong>Laborjournal → Zellbiologie</strong> und <strong>Semesterplanung → Zellbiologie</strong> — die beiden Notiz-Backlinks aus dem Info-Panel des Editors. Gespannt mit <span class="num">MOCK.thread()</span>, damit sie bei Dynamic Type und Fensterbreite nachgeführt werden; von Hand gesetzte Koordinaten täten das nicht. Die drei Bögen sind unterschiedlich stark gekrümmt (30 / 66 / 100), damit sie sich in der 68-pt-Rinne nicht zu einem Bündel legen.</td></tr>
+    <tr><td>Der Knoten</td><td>Genau einer: „Zellbiologie". Ein <span class="num">.dot--node</span> steht nur dort, wo sich Fäden treffen — hier sind es drei. Alle anderen Enden sind 6-pt-Punkte in der Modulfarbe „Notizen", weil sie Objekte sind und keine Kreuzungen.</td></tr>
+    <tr><td>Die Übergabe</td><td>Vom Auswahlanker zum Lernkarten-Eintrag der Seitenleiste (iPad) bzw. zum „Lernen"-Tab (iPhone). Der Faden wächst mit, die Karte fliegt auf ihm, das Ziel bleibt getönt und sein Punkt bekommt den Ink-Ring. <strong>Der Zähler „23" bleibt bewusst stehen:</strong> die Attribut-Schnittstelle von <span class="num">bewegung.js</span> zählt genau um eins hoch, aus zwei Notizen werden aber zwei Karten. Ein falscher Zähler wäre schlimmer als keiner.</td></tr>
+    <tr><td>Was kein Faden ist</td><td>Die Führungslinie unter <span class="num">#uni</span> im Tag-Baum. Sie verbindet keine zwei Objekte, sondern zeigt eine Einrückung an — sie bleibt deshalb <span class="num">--line-2</span>, 1 px, ohne runde Enden, und sieht anders aus als jeder Faden auf diesem Schirm. Dasselbe gilt für die Trennlinien zwischen den Zeilen und die Spaltenkante.</td></tr>
+  </table>
+
   <h3>Zustände auf diesem Schirm</h3>
   <table>
     <tr><td>gefüllt</td><td>Der gezeigte Zustand: 42 Notizen, zwei angeheftet, vier Tags mit Anzahl, sechs Zeilen sichtbar.</td></tr>
@@ -538,13 +574,51 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
     <li>Das <strong>Datum rutscht in die Chip-Zeile</strong>, rechtsbündig. So bekommt der Titel die volle Breite und muss nicht nach vier Wörtern abbrechen. Dieselbe Information, andere Zeile.</li>
     <li>Die <strong>Übergabe-Leiste zeigt zwei Ziele plus „⋯"</strong> statt drei. Reihenfolge, Wörter, Höhe und der Herkunfts-Text „aus 2" bleiben gleich — man erkennt dieselbe Leiste wieder.</li>
     <li>Der <strong>„+"-Knopf schwebt unten rechts</strong> im Daumenbereich, nicht oben in der Leiste. Er verdeckt bewusst nur Listeninhalt, nie die Übergabe-Leiste.</li>
+    <li><strong>Zwei Fäden statt drei</strong> — „Semesterplanung" steht nicht in der iPhone-Liste, also fehlt auch ihr Verweis. Die Rinne ist 44 statt 68 pt breit; die Bögen sind entsprechend flacher. Der Knoten bleibt der Knoten.</li>
+    <li><strong>Das Ziel der Übergabe</strong> ist auf dem iPhone der „Lernen"-Tab statt des Seitenleisten-Eintrags — dasselbe Objekt, andere Stelle im Chrome. Er bekommt die getönte Fläche, nicht den aktiven Zustand: aktiv ist am Tab Ink + Gewicht + gefülltes Symbol, das lässt sich nicht verwechseln.</li>
     <li><strong>Gleiche Anzahl Taps:</strong> Notiz antippen → Notiz antippen → Ziel antippen. Drei Taps auf beiden Geräten.</li>
   </ul>
 
   <h3>Inline gesetzt (nicht in system.css)</h3>
+  <p>Die <strong>Verweis-Rinne</strong> ist nur ein Innenabstand: die Zeilen tragen <span class="num">padding-left: 68px</span> (iPad) bzw. <span class="num">44px</span> (iPhone), die Punkte sitzen darin absolut. Es kam kein Bauteil dazu — Punkt, Knoten und Faden sind dieselben Klassen wie überall.</p>
   <p>Die Tag-Spalte (240 pt, <span class="num">paper-2</span> mit rechter Linie), die Führungslinie der Tag-Kinder, die Papierfläche hinter der Notizliste, die Filterleiste, die zweizeilige Zeilenform (<span class="num">align-items:flex-start</span>), die Karte „4 Notizen ohne Tag", das waagerechte Chip-Band und der schwebende „+"-Knopf auf dem iPhone stehen ausschließlich im <span class="num">style</span>-Attribut. An system.css wurde nichts geändert.</p>
 </div>
 
 <script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
+<script>
+/* DIE VERWEIS-FÄDEN.
+   Drei Kanten, alle im Datenmodell belegt und auf demselben Schirm nachlesbar
+   (die Backlinks-Spalte des Notiz-Editors nennt sie beim Namen):
+
+     Zellbiologie      → Osmose und Zellmembran     [[Osmose]] steht im Text
+     Laborjournal      → Zellbiologie               Backlink
+     Semesterplanung   → Zellbiologie               Backlink
+
+   „Zellbiologie" ist deshalb der einzige KNOTEN der Liste — dort treffen sich
+   drei Fäden, und nur dort steht .dot--node. Die übrigen Enden sind einfache
+   Punkte in der Modulfarbe „Notizen".
+
+   MOCK.thread führt bei jeder Größenänderung nach (Dynamic Type, Dunkelmodus,
+   Fensterbreite). Von Hand gesetzte Koordinaten täten das nicht. */
+(function () {
+  if (!window.MOCK) return;
+  function spannen() {
+    var box = document.querySelector('#nl-ipad .scroll');
+    if (box) {
+      MOCK.thread('#nl-zell-pkt', '#nl-osmose-pkt', { strength: 'normal', curve: -66, box: box, fromSide: 'left', toSide: 'left' });
+      MOCK.thread('#nl-labor-pkt', '#nl-zell-pkt',  { strength: 'normal', curve:  100, box: box, fromSide: 'left', toSide: 'left' });
+      MOCK.thread('#nl-sem-pkt',   '#nl-zell-pkt',  { strength: 'normal', curve:  30, box: box, fromSide: 'left', toSide: 'left' });
+    }
+    var box2 = document.querySelector('#nl-iphone .scroll');
+    if (box2) {
+      MOCK.thread('#p-zell .dot--node', '#p-osmose .dot--notes', { strength: 'normal', curve: -36, box: box2, fromSide: 'left', toSide: 'left' });
+      MOCK.thread('#p-labor .dot--notes', '#p-zell .dot--node',  { strength: 'normal', curve:  56, box: box2, fromSide: 'left', toSide: 'left' });
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', spannen);
+  else spannen();
+})();
+</script>
 </body>
 </html>

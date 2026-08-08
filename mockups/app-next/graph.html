@@ -26,11 +26,12 @@ KOMMENTARBLOCK — Graph
   ohne zweites Fenster. BEWERTUNG: Obsidian braucht dafür ein eigenes Panel
   im Sidebar-Dock. Ein Knopf am ausgewählten Knoten ist ein Schritt weniger.
 · RemNote, Wissensnetz: die Lernkarte gehört sichtbar zur Quelle, aus der sie
-  entstanden ist. Übernommen als eigene Linienart „Herkunft" (punktiert) —
+  entstanden ist. Übernommen als eigene Fadenstärke „Herkunft" (2,5 pt) —
   „Zellbiologie" ⇢ Deck ⇢ Karten und „Zellbiologie" ⇢ Laborprotokoll.
   BEWERTUNG: konzeptionell die wichtigste der drei Vorlagen. RemNote versteckt
-  die Beziehung aber in Referenz-Syntax im Text; hier ist sie eine Linie, die
-  man von Wiki-Link und Tag unterscheiden kann, ohne etwas anzuklicken.
+  die Beziehung aber in Referenz-Syntax im Text; hier ist sie ein Faden, den
+  man an Stärke UND Richtung von Wiki-Link und Tag unterscheiden kann, ohne
+  etwas anzuklicken.
 · Craft, Backlinks: die Rückseite eines Dokuments — wer zeigt hierher?
   Übernommen als erste Zeile des Info-Panels („3 Backlinks"), gleichrangig mit
   den erzeugten Karten und der Aufgabe. BEWERTUNG: Craft macht Backlinks
@@ -52,17 +53,31 @@ BEWUSST NICHT ÜBERNOMMEN
   der genau das kostet, was den Graph nützlich macht.
 
 DAS BESONDERE AN DIESEM SCHIRM
-Die Linien haben Grammatik. Durchgezogen = Wiki-Link (ich habe verlinkt),
-gestrichelt = Tag (etwas Drittes hält zusammen), punktiert = Herkunft (dieses
-Objekt ist aus jenem entstanden). Kein Konkurrent kann die dritte Art, weil
-keiner Notizen, Karten und Aufgaben in einem Datenmodell hat: Nur hier ist
-sichtbar, dass die 12 Karten und das Laborprotokoll KINDER der Vorlesungsnotiz
-sind und nicht bloß Nachbarn. Der Graph ist damit kein Bild des Wissens,
-sondern ein Bild der Arbeit.
+Zwei Dinge, und beide beantworten denselben Vorwurf: dass ein Wissensgraph ein
+hübsches Bild ohne Aussage ist.
 
-ADA-KATEGORIE: Visuals (die Liniengrammatik und die Modul-Ringe machen ein
-dichtes Netz lesbar, ohne bunt zu werden) und Innovation (Herkunft als eigene,
-sichtbare Beziehungsart).
+(1) DIE POSITION BEDEUTET ETWAS. Senkrecht liegt die HERKUNFTSTIEFE:
+    oben, was Emil selbst geschrieben hat (Notizen, Canvas, Journal, Tags) —
+    darunter, was daraus entstanden ist (Decks, Aufgaben) — darunter, was
+    daraus wieder entstand (einzelne Karten). Daraus folgt eine Regel, die man
+    im Bild nachprüfen kann: JEDER Herkunfts-Faden überquert eine Bandgrenze
+    und läuft dabei nach unten. Wiki-Link und Tag bleiben im obersten Band und
+    laufen quer. Die Richtung sagt also schon, welche Art Beziehung man sieht,
+    bevor man die Stärke misst. Obsidians Kräfte-Layout kann das nicht, weil
+    es keine Herkunft kennt — nicht weil es schlechter rechnet.
+
+(2) DIE LINIEN HABEN GRAMMATIK, und sie ist dieselbe wie überall in der App:
+    Wiki-Link 1,5 pt · Tag 1 pt (gestrichelt, weil „etwas Drittes hält
+    zusammen" die schwächste Aussage ist) · Herkunft 2,5 pt. Es sind dieselben
+    drei Klassen (.thread, .thread--weak, .thread--origin) wie in der
+    Ketten-Karte und in der Marginalspalte des Editors — kein Sonderweg.
+    In Runde 1 war Herkunft PUNKTIERT und damit optisch die schwächste der
+    drei Arten, obwohl sie die stärkste Beziehung ist. Und die Strichstärken
+    liefen frei von 1 bis 3 pt, ohne dass die Zahl etwas bedeutete. Beides ist
+    korrigiert: es gibt genau drei Stärken, und jede heißt etwas.
+
+ADA-KATEGORIE: Visuals (ein dichtes Netz bleibt lesbar, ohne bunt zu werden)
+und Innovation (Herkunft als eigene, sichtbare Beziehungsart — und als Achse).
 
 KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
   Knotentitel      ink-1 auf Grund    16,6:1   (hell) · 15,1:1 (dunkel)
@@ -81,7 +96,7 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
 
 <div class="mocktitle">
   <h1>Graph</h1>
-  <p>Die Visitenkarte des Konzepts: 27 Objekte aus Emils Semester, verbunden durch drei Arten von Beziehung. „Zellbiologie" ist ausgewählt — man sieht auf einen Blick, was daraus entstanden ist.</p>
+  <p>Die Visitenkarte des Konzepts: 27 Objekte aus Emils Semester, verbunden durch drei Arten von Beziehung. Die Höhe im Bild sagt, wie weit etwas vom Selbstgeschriebenen entfernt ist — deshalb läuft jeder Herkunfts-Faden nach unten. „Zellbiologie" ist ausgewählt.</p>
 </div>
 
 <div class="stage">
@@ -132,13 +147,17 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
         <main class="content">
           <div class="navbar">
             <div>
-              <div class="t-title">Graph</div>
-              <div class="t-sub c-3"><span class="num">27</span> Objekte · <span class="num">41</span> Verbindungen · Semester läuft seit 8 Wochen</div>
+              <div class="serif--screen-title">Graph</div>
+              <div class="t-sub c-3"><span class="num">27</span> Objekte · <span class="num">32</span> Verbindungen · Semester läuft seit 8 Wochen</div>
             </div>
             <div class="navbar__spacer"></div>
+            <!-- Runde 1 hatte hier „Kräfte · Raster"; der zweite Zustand war
+                 nirgends gezeichnet und nirgends erklärt. Jetzt benennen die
+                 beiden Zustände, was die Position bedeutet — und der erste ist
+                 der Vorgabezustand, weil er etwas aussagt. -->
             <div class="segmented">
-              <button class="is-on">Kräfte</button>
-              <button>Raster</button>
+              <button class="is-on">Herkunft</button>
+              <button>Kräfte</button>
             </div>
             <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
           </div>
@@ -153,163 +172,48 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
                 </pattern>
               </defs>
               <rect x="0" y="0" width="874" height="740" fill="url(#gGrid)"></rect>
-
-              <!-- ── Verbindungen: durchgezogen = Wiki-Link ── -->
-              <g style="stroke:var(--line-2)" stroke-linecap="round">
-                <line x1="170" y1="130" x2="325" y2="240" stroke-width="3" style="stroke:var(--ink-4)"></line>
-                <line x1="245" y1="340" x2="325" y2="240" stroke-width="2.2" style="stroke:var(--ink-4)"></line>
-                <line x1="355" y1="585" x2="230" y2="555" stroke-width="2.4" style="stroke:var(--ink-4)"></line>
-                <line x1="70"  y1="350" x2="325" y2="240" stroke-width="1.6"></line>
-                <line x1="70"  y1="350" x2="355" y2="585" stroke-width="1.6"></line>
-                <line x1="70"  y1="350" x2="170" y2="130" stroke-width="1.2"></line>
-                <line x1="245" y1="340" x2="170" y2="130" stroke-width="1.4"></line>
-                <line x1="355" y1="585" x2="470" y2="560" stroke-width="2"></line>
-                <line x1="355" y1="585" x2="325" y2="240" stroke-width="1"></line>
-                <line x1="95"  y1="430" x2="70"  y2="350" stroke-width="1.4"></line>
-                <line x1="472" y1="168" x2="462" y2="300" stroke-width="1.2"></line>
-                <line x1="472" y1="168" x2="545" y2="455" stroke-width="1.2"></line>
-                <line x1="472" y1="168" x2="620" y2="400" stroke-width="1.2"></line>
-                <line x1="472" y1="168" x2="600" y2="510" stroke-width="1.2"></line>
-                <line x1="472" y1="168" x2="690" y2="565" stroke-width="1.2"></line>
-                <line x1="470" y1="560" x2="560" y2="590" stroke-width="1.2"></line>
-                <line x1="720" y1="630" x2="760" y2="690" stroke-width="1.6"></line>
+              <text x="24" y="100" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">GESCHRIEBEN — Notizen · Canvas · Journal · Tags</text>
+              <text x="24" y="304" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">DARAUS ENTSTANDEN — Decks und Aufgaben</text>
+              <text x="24" y="505" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">UND DARAUS — einzelne Karten und Aufgaben</text>
+              <g class="thread thread--weak" stroke-dasharray="5 4"><path d="M229.3 137.4Q195.9 148.2 173.9 175.5"></path><path d="M249.4 139.0Q310.5 183.4 357.7 242.3"></path><path d="M252.9 131.7Q472.4 139.1 686.1 190.1"></path><path d="M397.4 140.7Q374.0 186.3 374.0 237.5"></path><path d="M410.8 132.2Q543.3 186.2 686.3 189.2"></path><path d="M390.1 134.8Q264.6 212.1 126.7 264.3"></path><path d="M100.8 132.2Q241.7 152.2 379.4 187.9"></path><path d="M100.9 131.4Q326.4 135.0 545.1 190.0"></path><path d="M537.5 139.7Q515.1 186.6 512.0 238.5"></path><path d="M530.9 134.0Q466.9 140.5 419.2 183.5"></path></g>
+              <g class="thread"><path d="M177.9 199.9Q259.8 245.8 353.6 249.4"></path><path d="M178.6 196.9Q339.8 198.5 492.2 251.3"></path><path d="M179.0 192.0Q432.5 232.0 686.0 192.0"></path><path d="M386.7 250.9Q539.1 236.5 686.2 194.6"></path><path d="M421.0 192.0Q483.0 204.0 545.0 192.0"></path><path d="M418.2 202.5Q479.1 184.4 494.1 246.0"></path><path d="M644.3 139.0Q573.2 180.7 520.2 243.7"></path><path d="M128.0 269.2Q242.6 296.1 353.0 255.1"></path><path d="M684.1 252.8Q437.5 170.4 178.8 195.3"></path></g>
+              <g class="thread thread--origin"><path d="M159.6 219.4Q151.9 276.3 193.4 316.1"></path><path d="M175.8 205.2Q311.3 236.2 415.8 327.7"></path><path d="M215.0 348.2Q333.9 412.6 413.2 522.1"></path><path d="M213.7 349.6Q353.1 419.0 413.8 562.4"></path><path d="M194.1 354.1Q147.5 429.7 143.0 518.5"></path><path d="M195.0 354.4Q135.9 447.9 142.7 558.3"></path><path d="M195.7 354.5Q122.0 467.2 142.1 600.2"></path><path d="M384.8 206.5Q324.7 319.2 209.4 374.0"></path><path d="M401.1 213.0Q359.2 292.4 409.2 367.0"></path><path d="M410.7 399.0Q445.1 498.7 419.6 601.0"></path><path d="M195.8 446.4Q144.4 536.1 143.2 639.4"></path><path d="M372.7 270.8Q414.1 340.8 396.3 420.1"></path><path d="M495.1 263.4Q310.3 311.7 208.1 473.1"></path></g>
+              <g opacity=".32"><circle cx="115" cy="270" r="12" style="fill:var(--paper); stroke:var(--mod-journal)" stroke-width="2"></circle><circle cx="115" cy="270" r="21" style="fill:none; stroke:var(--mod-journal)" stroke-width="1" stroke-dasharray="3 4" opacity=".7"></circle><text x="133" y="275" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Erster Tag im Labor</text></g>
+              <g opacity=".32"><circle cx="695" cy="254" r="10" style="fill:var(--paper); stroke:var(--mod-journal)" stroke-width="2"></circle><circle cx="695" cy="254" r="19" style="fill:none; stroke:var(--mod-journal)" stroke-width="1" stroke-dasharray="3 4" opacity=".7"></circle><text x="711" y="259" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Entwurf ohne Titel</text></g>
+              <g>
+              <circle cx="90" cy="130" r="10" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="2" stroke-dasharray="3 3"></circle><text x="106" y="135" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#uni/mathe</text>
+              <circle cx="240" cy="130" r="12" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="2" stroke-dasharray="3 3"></circle><text x="258" y="135" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#uni/bio</text>
+              <circle cx="400" cy="130" r="10" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="2" stroke-dasharray="3 3"></circle><text x="416" y="135" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#labor</text>
+              <circle cx="540" cy="130" r="9" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="2" stroke-dasharray="3 3"></circle><text x="555" y="135" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#prüfung</text>
+              <circle cx="655" cy="130" r="13" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle><text x="674" y="135" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Lesenotizen Soziologie</text>
+              <circle cx="400" cy="192" r="20" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle><text x="426" y="197" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Analysis II</text>
+              <circle cx="560" cy="192" r="14" style="fill:var(--paper); stroke:var(--mod-canvas)" stroke-width="2"></circle><text x="580" y="197" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Übungsblatt 5</text>
+              <circle cx="700" cy="192" r="13" style="fill:var(--paper); stroke:var(--mod-canvas)" stroke-width="2"></circle><text x="719" y="197" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Zellkultur-Skizze</text>
+              <circle cx="370" cy="254" r="16" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle><text x="392" y="259" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Laborjournal</text>
+              <circle cx="508" cy="254" r="15" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle><text x="529" y="259" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Semesterplanung</text>
+              <circle cx="200" cy="335" r="19" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="225" y="340" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Deck Zellbiologie</text>
+              <circle cx="430" cy="335" r="15" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle><text x="451" y="340" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Laborprotokoll</text>
+              <circle cx="200" cy="383" r="12" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle><text x="218" y="388" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Statistik-Blatt 4</text>
+              <circle cx="410" cy="383" r="15" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="431" y="388" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Statistik-Formeln</text>
+              <circle cx="200" cy="431" r="15" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="221" y="436" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Anatomie Grundlagen</text>
+              <circle cx="398" cy="431" r="10" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle><text x="414" y="436" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Rückmeldung Wendt</text>
+              <circle cx="200" cy="479" r="9" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle><text x="215" y="484" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Bücher verlängern</text>
+              <circle cx="140" cy="528" r="9" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="155" y="533" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Endopl. Retikulum</text>
+              <circle cx="140" cy="569" r="10" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="156" y="574" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Mitochondrium</text>
+              <circle cx="140" cy="610" r="9" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="155" y="615" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Golgi-Apparat</text>
+              <circle cx="140" cy="651" r="11" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle><text x="157" y="656" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Karteikarten nacharbeiten</text>
+              <circle cx="420" cy="528" r="8" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="434" y="533" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Osmose</text>
+              <circle cx="420" cy="569" r="8" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="434" y="574" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Zellmembran</text>
+              <circle cx="420" cy="610" r="8" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="434" y="615" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Grenzwertsätze</text>
               </g>
-
-              <!-- ── Verbindungen: gestrichelt = Tag ── -->
-              <g style="stroke:var(--line-2)" stroke-dasharray="5 4" stroke-linecap="round">
-                <line x1="330" y1="112" x2="325" y2="240" stroke-width="1.4"></line>
-                <line x1="330" y1="112" x2="170" y2="130" stroke-width="1.2"></line>
-                <line x1="330" y1="112" x2="472" y2="168" stroke-width="1.2"></line>
-                <line x1="215" y1="470" x2="325" y2="240" stroke-width="1.2"></line>
-                <line x1="215" y1="470" x2="245" y2="340" stroke-width="1.2"></line>
-                <line x1="215" y1="470" x2="310" y2="400" stroke-width="1.2"></line>
-                <line x1="215" y1="470" x2="472" y2="168" stroke-width="1.2"></line>
-                <line x1="300" y1="490" x2="355" y2="585" stroke-width="1.4"></line>
-                <line x1="300" y1="490" x2="230" y2="555" stroke-width="1.2"></line>
-                <line x1="300" y1="490" x2="470" y2="560" stroke-width="1.2"></line>
-                <line x1="600" y1="660" x2="415" y2="672" stroke-width="1.2"></line>
-                <line x1="600" y1="660" x2="720" y2="630" stroke-width="1.2"></line>
-                <line x1="600" y1="660" x2="470" y2="560" stroke-width="1.2"></line>
-              </g>
-
-              <!-- ── Verbindungen: punktiert = Herkunft ── -->
-              <g style="stroke:var(--ink-4)" stroke-dasharray="1 4.5" stroke-linecap="round">
-                <line x1="325" y1="240" x2="472" y2="168" stroke-width="2.6"></line>
-                <line x1="325" y1="240" x2="310" y2="400" stroke-width="2"></line>
-                <line x1="325" y1="240" x2="545" y2="455" stroke-width="1.4"></line>
-                <line x1="325" y1="240" x2="462" y2="300" stroke-width="1.4"></line>
-                <line x1="355" y1="585" x2="415" y2="672" stroke-width="1.6"></line>
-                <line x1="355" y1="585" x2="560" y2="590" stroke-width="1.2"></line>
-                <line x1="170" y1="130" x2="120" y2="505" stroke-width="1.4"></line>
-                <line x1="70"  y1="350" x2="65"  y2="570" stroke-width="1.2"></line>
-              </g>
-
-              <!-- ── Zwischenzustand: „Journal" wurde gerade ausgeblendet.
-                   Die beiden Journal-Knoten und ihre Linien sind mitten im
-                   Ausblenden — Rest-Deckkraft plus schrumpfender Geisterring. -->
-              <g opacity=".2" style="stroke:var(--line-2)" stroke-linecap="round">
-                <line x1="62" y1="175" x2="170" y2="130" stroke-width="1.4"></line>
-                <line x1="58" y1="262" x2="170" y2="130" stroke-width="1.2"></line>
-                <line x1="62" y1="175" x2="325" y2="240" stroke-width="1"></line>
-              </g>
-              <g opacity=".32">
-                <circle cx="62" cy="175" r="21" style="fill:none; stroke:var(--mod-journal)" stroke-width="1" stroke-dasharray="3 4" opacity=".7"></circle>
-                <circle cx="62" cy="175" r="12" style="fill:var(--paper); stroke:var(--mod-journal)" stroke-width="2"></circle>
-                <text x="80" y="180" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Erster Tag im Labor</text>
-                <circle cx="58" cy="262" r="18" style="fill:none; stroke:var(--mod-journal)" stroke-width="1" stroke-dasharray="3 4" opacity=".7"></circle>
-                <circle cx="58" cy="262" r="10" style="fill:var(--paper); stroke:var(--mod-journal)" stroke-width="2"></circle>
-                <text x="74" y="267" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Entwurf ohne Titel</text>
-              </g>
-
-              <!-- ── Knoten ── -->
-              <g style="paint-order:stroke">
-                <!-- Notizen -->
-                <circle cx="170" cy="130" r="16" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle>
-                <text x="192" y="135" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Laborjournal</text>
-
-                <circle cx="70" cy="350" r="15" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle>
-                <text x="91" y="355" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Semesterplanung</text>
-
-                <circle cx="95" cy="430" r="13" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle>
-                <text x="114" y="435" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Lesenotizen Soziologie</text>
-
-                <circle cx="355" cy="585" r="20" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2.2"></circle>
-                <text x="381" y="590" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Analysis II</text>
-
-                <!-- Canvas -->
-                <circle cx="245" cy="340" r="13" style="fill:var(--paper); stroke:var(--mod-canvas)" stroke-width="2"></circle>
-                <text x="266" y="345" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Zellkultur-Skizze</text>
-
-                <circle cx="230" cy="555" r="14" style="fill:var(--paper); stroke:var(--mod-canvas)" stroke-width="2"></circle>
-                <text x="251" y="560" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Übungsblatt 5</text>
-
-                <!-- Aufgaben -->
-                <circle cx="310" cy="400" r="15" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle>
-                <text x="331" y="405" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Laborprotokoll Zellkultur</text>
-
-                <circle cx="120" cy="505" r="10" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle>
-                <text x="136" y="510" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Rückmeldung Prof. Wendt</text>
-
-                <circle cx="65" cy="570" r="9" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle>
-                <text x="80" y="575" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Bücher verlängern</text>
-
-                <circle cx="415" cy="672" r="12" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle>
-                <text x="433" y="677" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Statistik-Blatt 4 abgeben</text>
-
-                <circle cx="760" cy="690" r="11" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle>
-                <text x="742" y="695" text-anchor="end" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Karteikarten nacharbeiten</text>
-
-                <!-- Lernkarten und Decks -->
-                <circle cx="472" cy="168" r="19" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2.2"></circle>
-                <text x="472" y="205" text-anchor="middle" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Deck Zellbiologie</text>
-
-                <circle cx="462" cy="300" r="8" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="1.8"></circle>
-                <text x="477" y="305" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Osmose</text>
-
-                <circle cx="545" cy="455" r="10" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="1.8"></circle>
-                <text x="563" y="460" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Mitochondrium</text>
-
-                <circle cx="620" cy="400" r="9" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="1.8"></circle>
-                <text x="636" y="405" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Golgi-Apparat</text>
-
-                <circle cx="600" cy="510" r="9" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="1.8"></circle>
-                <text x="616" y="515" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Endoplasmatisches Retikulum</text>
-
-                <circle cx="690" cy="565" r="8" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="1.8"></circle>
-                <text x="705" y="570" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Zellmembran</text>
-
-                <circle cx="470" cy="560" r="15" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle>
-                <text x="491" y="565" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Statistik-Formeln</text>
-
-                <circle cx="560" cy="590" r="8" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="1.8"></circle>
-                <text x="575" y="595" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Grenzwertsätze</text>
-
-                <circle cx="720" cy="630" r="15" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle>
-                <text x="702" y="635" text-anchor="end" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Anatomie Grundlagen</text>
-
-                <!-- Tags: kein Modul, deshalb Ink-Ring gestrichelt statt Modulfarbe -->
-                <circle cx="330" cy="112" r="12" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="1.6" stroke-dasharray="3 3"></circle>
-                <text x="348" y="117" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#uni/bio</text>
-
-                <circle cx="215" cy="470" r="10" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="1.6" stroke-dasharray="3 3"></circle>
-                <text x="231" y="475" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#labor</text>
-
-                <circle cx="300" cy="490" r="11" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="1.6" stroke-dasharray="3 3"></circle>
-                <text x="317" y="495" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#uni/mathe</text>
-
-                <circle cx="600" cy="660" r="9" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="1.6" stroke-dasharray="3 3"></circle>
-                <text x="615" y="665" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#prüfung</text>
-
-                <!-- ══ Ausgewählt: Fläche + Ink-Ring + fetter Titel (drei Merkmale) ══
-                     Der äußere Ring ist der noch laufende Auswahl-Puls. -->
-                <circle cx="325" cy="240" r="47" style="fill:var(--accent-soft)" opacity=".5"></circle>
-                <circle cx="325" cy="240" r="38" style="fill:var(--accent-soft)"></circle>
-                <circle cx="325" cy="240" r="38" style="fill:none; stroke:var(--accent-ring)" stroke-width="1" stroke-dasharray="2 5"></circle>
-                <circle cx="325" cy="240" r="28" style="fill:var(--paper); stroke:var(--accent)" stroke-width="3"></circle>
-                <circle cx="362" cy="231" r="3" style="fill:var(--mod-notes)"></circle>
-                <text x="373" y="236" class="t-body is-strong c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:4px; stroke-linejoin:round">Zellbiologie</text>
-                <text x="373" y="256" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Notiz · 11 Verbindungen</text>
-              </g>
+              <!-- ══ Ausgewählt: getönte Fläche + Ink-Ring + fetter Titel ══ -->
+              <circle cx="150" cy="205" r="47" style="fill:var(--accent-soft)" opacity=".5"></circle>
+              <circle cx="150" cy="205" r="38" style="fill:var(--accent-soft)"></circle>
+              <circle cx="150" cy="205" r="38" style="fill:none; stroke:var(--accent-ring)" stroke-width="1" stroke-dasharray="2 5"></circle>
+              <circle cx="150" cy="205" r="28" style="fill:var(--paper); stroke:var(--accent)" stroke-width="3"></circle>
+              <circle cx="187" cy="196" r="3" style="fill:var(--mod-notes)"></circle>
+              <text x="197" y="201" class="t-body is-strong c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Zellbiologie</text>
+              <text x="197" y="221" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Notiz · 7 Verbindungen</text>
             </svg>
 
             <!-- ══ Filterleiste: Chips zum Ein- und Ausblenden ══ -->
@@ -323,7 +227,7 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
             </div>
 
             <!-- ══ Info-Panel: schwebende Karte am ausgewählten Knoten ══ -->
-            <section class="card" style="position:absolute; right:20px; top:52px; width:282px; padding:14px; z-index:30; box-shadow:var(--sh-float)">
+            <section class="card" style="position:absolute; right:20px; bottom:20px; width:282px; padding:14px; z-index:30; box-shadow:var(--sh-float)">
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px">
                 <span class="t-label c-3">AUSGEWÄHLTER KNOTEN</span>
                 <div style="flex:1"></div>
@@ -337,48 +241,54 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
 
               <div style="height:1px; background:var(--line); margin:12px 0 4px"></div>
 
-              <button class="row" style="min-height:38px; padding:5px 8px; width:100%">
+              <button class="row" style="min-height:34px; padding:4px 8px; width:100%">
                 <span class="count"><span class="count__n num">3</span><span class="count__w t-sub">Backlinks</span></span>
                 <div style="flex:1"></div>
                 <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
               </button>
-              <button class="row" style="min-height:38px; padding:5px 8px; width:100%">
+              <button class="row" style="min-height:34px; padding:4px 8px; width:100%">
                 <span class="count"><span class="count__n num">12</span><span class="count__w t-sub">erzeugte Karten</span></span>
                 <div style="flex:1"></div>
                 <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
               </button>
-              <button class="row" style="min-height:38px; padding:5px 8px; width:100%">
+              <button class="row" style="min-height:34px; padding:4px 8px; width:100%">
                 <span class="count"><span class="count__n num">1</span><span class="count__w t-sub">Aufgabe</span></span>
                 <div style="flex:1"></div>
                 <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
               </button>
 
-              <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px">
+              <div style="display:flex; flex-direction:column; gap:7px; margin-top:10px">
                 <button class="btn btn--primary btn--sm" style="width:100%"><span class="ico" data-ico="notes" style="width:16px;height:16px"></span>Öffnen</button>
-                <button class="btn btn--sm" style="width:100%"><span class="ico" data-ico="graph" style="width:16px;height:16px"></span>Nur diesen Cluster zeigen</button>
+                <button class="btn btn--sm" style="width:100%"><span class="ico" data-ico="graph" style="width:16px;height:16px"></span>Nur diesen Cluster</button>
+              </div>
+
+              <!-- ══ Die Grammatik der Fäden ══ Die drei Arten unterscheiden
+                   sich in der STÄRKE (1 · 1,5 · 2,5 pt), wie die DNA sie
+                   festlegt — und zusätzlich in der Richtung: Herkunft läuft
+                   immer von einem Band ins nächste, also senkrecht; Wiki-Link
+                   und Tag bleiben im obersten Band und laufen quer. -->
+              <div style="height:1px; background:var(--line); margin:11px 0 8px"></div>
+              <div class="t-label c-3" style="margin-bottom:6px">VERBINDUNGEN</div>
+              <div style="display:flex; align-items:center; gap:10px; height:19px">
+                <svg class="thread thread--h" style="width:30px; flex:none"></svg>
+                <span class="t-label c-2" style="flex:1 1 auto">Wiki-Link</span>
+                <span class="t-label c-3 num">1,5 pt</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; height:19px">
+                <svg class="thread thread--h thread--weak" style="width:30px; flex:none; stroke-dasharray:5 4"></svg>
+                <span class="t-label c-2" style="flex:1 1 auto">Tag</span>
+                <span class="t-label c-3 num">1 pt</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; height:19px">
+                <svg class="thread thread--h thread--origin" style="width:30px; flex:none"></svg>
+                <span class="t-label c-2" style="flex:1 1 auto">Herkunft</span>
+                <span class="t-label c-3 num">2,5 pt</span>
               </div>
             </section>
 
-            <!-- ══ Legende ══ -->
-            <div class="card card--flat" style="position:absolute; left:20px; bottom:20px; width:274px; padding:11px 13px; z-index:30; background:var(--chrome); backdrop-filter:blur(24px) saturate(180%)">
-              <div class="t-label c-3" style="margin-bottom:7px">VERBINDUNGEN</div>
-              <div style="display:flex; align-items:center; gap:10px; height:18px">
-                <svg width="28" height="6" viewBox="0 0 28 6" style="flex:none"><line x1="0" y1="3" x2="28" y2="3" stroke-width="2" style="stroke:var(--ink-4)" stroke-linecap="round"></line></svg>
-                <span class="t-label c-2">Wiki-Link</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:10px; height:18px">
-                <svg width="28" height="6" viewBox="0 0 28 6" style="flex:none"><line x1="0" y1="3" x2="28" y2="3" stroke-width="2" stroke-dasharray="5 4" style="stroke:var(--ink-4)" stroke-linecap="round"></line></svg>
-                <span class="t-label c-2">Tag</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:10px; height:18px">
-                <svg width="28" height="6" viewBox="0 0 28 6" style="flex:none"><line x1="0" y1="3" x2="28" y2="3" stroke-width="2.4" stroke-dasharray="1 4.5" style="stroke:var(--ink-4)" stroke-linecap="round"></line></svg>
-                <span class="t-label c-2">Herkunft</span>
-              </div>
-              <div class="t-label c-3" style="margin-top:6px; white-space:nowrap">Kreisgröße = Verbindungen</div>
-            </div>
 
             <!-- ══ Zoom ══ -->
-            <div style="position:absolute; right:20px; bottom:24px; z-index:30; width:58px; display:flex; flex-direction:column; padding:4px; gap:2px; border-radius:var(--r-pill); background:var(--chrome); backdrop-filter:blur(28px) saturate(180%); box-shadow:var(--sh-float), inset 0 0 0 1px var(--line)">
+            <div style="position:absolute; right:20px; top:14px; z-index:30; width:58px; display:flex; flex-direction:column; padding:4px; gap:2px; border-radius:var(--r-pill); background:var(--chrome); backdrop-filter:blur(28px) saturate(180%); box-shadow:var(--sh-float), inset 0 0 0 1px var(--line)">
               <button class="iconbtn" style="width:50px; height:40px"><span class="ico" data-ico="plus"></span></button>
               <div class="t-label c-3 num" style="text-align:center; white-space:nowrap">100 %</div>
               <button class="iconbtn" style="width:50px; height:40px"><span class="ico" data-ico="minus"></span></button>
@@ -401,7 +311,7 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
 
       <div class="content">
         <div class="navbar" style="border:0; padding-bottom:2px">
-          <div class="t-title">Graph</div>
+          <div class="serif--screen-title">Graph</div>
           <div class="navbar__spacer"></div>
           <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
         </div>
@@ -419,77 +329,33 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
         <div style="flex:1 1 auto; position:relative; overflow:hidden; min-height:0; background:var(--ground)">
 
           <svg viewBox="0 0 393 617" preserveAspectRatio="xMidYMid slice" style="position:absolute; inset:0; width:100%; height:100%; display:block" aria-label="Graph um „Zellbiologie"">
-            <rect x="0" y="0" width="393" height="617" fill="url(#gGrid)"></rect>
-
-            <g style="stroke:var(--line-2)" stroke-linecap="round">
-              <line x1="58" y1="86" x2="168" y2="150" stroke-width="2.6" style="stroke:var(--ink-4)"></line>
-              <line x1="64" y1="200" x2="168" y2="150" stroke-width="2" style="stroke:var(--ink-4)"></line>
-              <line x1="64" y1="200" x2="58" y2="86" stroke-width="1.2"></line>
-              <line x1="280" y1="92" x2="348" y2="60" stroke-width="1.2"></line>
-              <line x1="280" y1="92" x2="306" y2="176" stroke-width="1.2"></line>
-              <line x1="168" y1="150" x2="310" y2="328" stroke-width="1.2"></line>
-            </g>
-            <g style="stroke:var(--line-2)" stroke-dasharray="5 4" stroke-linecap="round">
-              <line x1="166" y1="44" x2="168" y2="150" stroke-width="1.4"></line>
-              <line x1="166" y1="44" x2="58" y2="86" stroke-width="1.2"></line>
-              <line x1="166" y1="44" x2="280" y2="92" stroke-width="1.2"></line>
-              <line x1="96" y1="296" x2="168" y2="150" stroke-width="1.2"></line>
-              <line x1="96" y1="296" x2="64" y2="200" stroke-width="1.2"></line>
-              <line x1="96" y1="296" x2="215" y2="252" stroke-width="1.2"></line>
-            </g>
-            <g style="stroke:var(--ink-4)" stroke-dasharray="1 4.5" stroke-linecap="round">
-              <line x1="168" y1="150" x2="280" y2="92" stroke-width="2.6"></line>
-              <line x1="168" y1="150" x2="215" y2="252" stroke-width="2"></line>
-              <line x1="168" y1="150" x2="306" y2="176" stroke-width="1.4"></line>
-            </g>
-
-            <!-- Zwischenzustand: Journal blendet aus -->
-            <g opacity=".2" style="stroke:var(--line-2)" stroke-linecap="round">
-              <line x1="36" y1="262" x2="58" y2="86" stroke-width="1.4"></line>
-            </g>
-            <g opacity=".32">
-              <circle cx="36" cy="262" r="18" style="fill:none; stroke:var(--mod-journal)" stroke-width="1" stroke-dasharray="3 4" opacity=".7"></circle>
-              <circle cx="36" cy="262" r="10" style="fill:var(--paper); stroke:var(--mod-journal)" stroke-width="2"></circle>
-              <text x="50" y="267" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Erster Tag im Labor</text>
-            </g>
-
-            <g>
-              <circle cx="58" cy="86" r="14" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle>
-              <text x="58" y="116" text-anchor="middle" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Laborjournal</text>
-
-              <circle cx="310" cy="328" r="15" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle>
-              <text x="310" y="302" text-anchor="middle" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Analysis II</text>
-
-              <circle cx="64" cy="200" r="12" style="fill:var(--paper); stroke:var(--mod-canvas)" stroke-width="2"></circle>
-              <text x="80" y="205" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Zellkultur-Skizze</text>
-
-              <circle cx="215" cy="252" r="13" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle>
-              <text x="232" y="257" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Laborprotokoll</text>
-
-              <circle cx="280" cy="92" r="17" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2.2"></circle>
-              <text x="280" y="124" text-anchor="middle" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Deck Zellbiologie</text>
-
-              <circle cx="348" cy="60" r="9" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="1.8"></circle>
-              <text x="335" y="65" text-anchor="end" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Mitochondrium</text>
-
-              <circle cx="306" cy="176" r="8" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="1.8"></circle>
-              <text x="293" y="181" text-anchor="end" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Osmose</text>
-
-              <circle cx="166" cy="44" r="11" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="1.6" stroke-dasharray="3 3"></circle>
-              <text x="150" y="49" text-anchor="end" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#uni/bio</text>
-
-              <circle cx="96" cy="296" r="9" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="1.6" stroke-dasharray="3 3"></circle>
-              <text x="111" y="301" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#labor</text>
-
-              <!-- ausgewählt -->
-              <circle cx="168" cy="150" r="44" style="fill:var(--accent-soft)" opacity=".5"></circle>
-              <circle cx="168" cy="150" r="36" style="fill:var(--accent-soft)"></circle>
-              <circle cx="168" cy="150" r="36" style="fill:none; stroke:var(--accent-ring)" stroke-width="1" stroke-dasharray="2 5"></circle>
-              <circle cx="168" cy="150" r="26" style="fill:var(--paper); stroke:var(--accent)" stroke-width="3"></circle>
-              <circle cx="196" cy="141" r="3" style="fill:var(--mod-notes)"></circle>
-              <text x="206" y="146" class="t-body is-strong c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:4px; stroke-linejoin:round">Zellbiologie</text>
-            </g>
-          </svg>
+              <rect x="0" y="0" width="393" height="617" fill="url(#gGrid)"></rect>
+              <text x="14" y="26" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">GESCHRIEBEN</text>
+              <text x="14" y="238" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">DARAUS ENTSTANDEN</text>
+              <text x="14" y="292" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">UND DARAUS</text>
+              <g class="thread thread--weak" stroke-dasharray="5 4"><path d="M59.7 62.3Q65.3 101.2 85.8 134.6"></path><path d="M67.0 52.0Q133.5 42.0 200.0 52.0"></path><path d="M66.9 207.8Q143.0 142.2 204.7 62.9"></path><path d="M70.0 215.0Q148.5 205.0 227.0 215.0"></path></g>
+              <g class="thread"><path d="M115.1 141.9Q171.5 115.4 203.9 62.0"></path><path d="M120.2 169.6Q164.8 214.3 227.8 210.4"></path><path d="M217.3 66.8Q213.8 136.6 238.0 202.2"></path><path d="M319.1 100.0Q278.9 68.2 228.6 58.3"></path></g>
+              <g class="thread thread--origin"><path d="M86.2 185.5Q60.9 210.1 65.8 245.0"></path><path d="M119.4 171.6Q219.5 190.3 297.4 256.0"></path><path d="M77.7 265.3Q186.0 301.5 300.2 306.2"></path><path d="M69.8 277.1Q95.9 276.8 85.1 300.5"></path></g>
+              <g opacity=".32"><circle cx="330" cy="105" r="11" style="fill:var(--paper); stroke:var(--mod-journal)" stroke-width="2"></circle><circle cx="330" cy="105" r="20" style="fill:none; stroke:var(--mod-journal)" stroke-width="1" stroke-dasharray="3 4" opacity=".7"></circle><text x="313" y="110" class="t-label c-2" text-anchor="end" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Erster Tag</text></g>
+              <g>
+              <circle cx="56" cy="52" r="10" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="2" stroke-dasharray="3 3"></circle><text x="72" y="57" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#uni/bio</text>
+              <circle cx="215" cy="52" r="14" style="fill:var(--paper); stroke:var(--mod-notes)" stroke-width="2"></circle><text x="235" y="57" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Laborjournal</text>
+              <circle cx="60" cy="215" r="9" style="fill:var(--paper); stroke:var(--ink-4)" stroke-width="2" stroke-dasharray="3 3"></circle><text x="75" y="220" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">#labor</text>
+              <circle cx="240" cy="215" r="12" style="fill:var(--paper); stroke:var(--mod-canvas)" stroke-width="2"></circle><text x="258" y="220" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Zellkultur-Skizze</text>
+              <circle cx="60" cy="262" r="17" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="83" y="267" class="t-label c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Deck Zellbiologie</text>
+              <circle cx="310" cy="262" r="13" style="fill:var(--paper); stroke:var(--mod-tasks)" stroke-width="2"></circle><text x="291" y="267" class="t-label c-1" text-anchor="end" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Protokoll</text>
+              <circle cx="90" cy="308" r="8" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="104" y="313" class="t-label c-2" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Osmose</text>
+              <circle cx="310" cy="308" r="9" style="fill:var(--paper); stroke:var(--mod-cards)" stroke-width="2"></circle><text x="295" y="313" class="t-label c-2" text-anchor="end" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Mitochondrium</text>
+              </g>
+              <!-- ══ Ausgewählt: getönte Fläche + Ink-Ring + fetter Titel ══ -->
+              <circle cx="110" cy="150" r="45" style="fill:var(--accent-soft)" opacity=".5"></circle>
+              <circle cx="110" cy="150" r="36" style="fill:var(--accent-soft)"></circle>
+              <circle cx="110" cy="150" r="36" style="fill:none; stroke:var(--accent-ring)" stroke-width="1" stroke-dasharray="2 5"></circle>
+              <circle cx="110" cy="150" r="26" style="fill:var(--paper); stroke:var(--accent)" stroke-width="3"></circle>
+              <circle cx="144" cy="141" r="3" style="fill:var(--mod-notes)"></circle>
+              <text x="155" y="146" class="t-body is-strong c-1" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Zellbiologie</text>
+              <text x="155" y="166" class="t-label c-3" fill="currentColor" style="paint-order:stroke; stroke:var(--ground); stroke-width:3.5px; stroke-linejoin:round">Notiz · 7 Verbindungen</text>
+            </svg>
 
           <!-- Zoom -->
           <div style="position:absolute; right:8px; top:120px; z-index:30; width:40px; display:flex; flex-direction:column; padding:3px; gap:2px; border-radius:var(--r-pill); background:var(--chrome); backdrop-filter:blur(28px) saturate(180%); box-shadow:var(--sh-float), inset 0 0 0 1px var(--line)">
@@ -507,7 +373,7 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
                 <div class="t-section clamp-1">Zellbiologie</div>
                 <div style="display:flex; align-items:center; gap:6px; margin-top:2px">
                   <span class="dot dot--notes"></span>
-                  <span class="t-sub c-3 clamp-1">Notiz · 11 Verbindungen</span>
+                  <span class="t-sub c-3 clamp-1">Notiz · Notizbuch Biologie</span>
                 </div>
               </div>
               <button class="iconbtn" style="width:30px; height:30px; border-radius:8px"><span class="ico" data-ico="close" style="width:17px;height:17px"></span></button>
@@ -536,18 +402,19 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
               <button class="btn btn--sm" style="flex:1"><span class="ico" data-ico="graph" style="width:16px;height:16px"></span>Nur Cluster</button>
             </div>
 
-            <div style="display:flex; align-items:center; gap:12px; margin-top:10px; flex-wrap:wrap">
-              <span style="display:inline-flex; align-items:center; gap:6px">
-                <svg width="20" height="6" viewBox="0 0 20 6"><line x1="0" y1="3" x2="20" y2="3" stroke-width="2" style="stroke:var(--ink-4)" stroke-linecap="round"></line></svg>
-                <span class="t-label c-3">Wiki-Link</span>
+            <!-- Dieselbe Grammatik wie am iPad: die Stärke sagt die Nähe. -->
+            <div style="display:flex; align-items:center; gap:14px; margin-top:10px; flex-wrap:wrap">
+              <span style="display:inline-flex; align-items:center; gap:7px">
+                <svg class="thread thread--h" style="width:22px; flex:none"></svg>
+                <span class="t-label c-2">Wiki-Link</span>
               </span>
-              <span style="display:inline-flex; align-items:center; gap:6px">
-                <svg width="20" height="6" viewBox="0 0 20 6"><line x1="0" y1="3" x2="20" y2="3" stroke-width="2" stroke-dasharray="5 4" style="stroke:var(--ink-4)" stroke-linecap="round"></line></svg>
-                <span class="t-label c-3">Tag</span>
+              <span style="display:inline-flex; align-items:center; gap:7px">
+                <svg class="thread thread--h thread--weak" style="width:22px; flex:none; stroke-dasharray:5 4"></svg>
+                <span class="t-label c-2">Tag</span>
               </span>
-              <span style="display:inline-flex; align-items:center; gap:6px">
-                <svg width="20" height="6" viewBox="0 0 20 6"><line x1="0" y1="3" x2="20" y2="3" stroke-width="2.4" stroke-dasharray="1 4.5" style="stroke:var(--ink-4)" stroke-linecap="round"></line></svg>
-                <span class="t-label c-3">Herkunft</span>
+              <span style="display:inline-flex; align-items:center; gap:7px">
+                <svg class="thread thread--h thread--origin" style="width:22px; flex:none"></svg>
+                <span class="t-label c-2">Herkunft</span>
               </span>
             </div>
           </section>
@@ -569,19 +436,20 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
 <!-- Steckbrief -->
 <div class="sheetnote">
   <h2>Graph — Steckbrief</h2>
-  <p>Ein Bild von Emils Semester: 27 Objekte, 41 Verbindungen, drei Beziehungsarten. Der Graph ist kein Schmuck, sondern die einzige Ansicht, in der man die Kette „Notiz → Karten → Aufgabe" als Struktur sieht statt als Behauptung.</p>
+  <p>Ein Bild von Emils Semester: 27 Objekte, 32 Verbindungen, drei Beziehungsarten, drei Bänder. Der Graph ist kein Schmuck, sondern die einzige Ansicht, in der man die Kette „Notiz → Karten → Aufgabe" als Struktur sieht statt als Behauptung.</p>
 
   <h3>Woher die Ideen stammen</h3>
   <table>
     <tr><td>Obsidian — Graph View</td><td>Kräfte-Layout, Kreisgröße = Anzahl Verbindungen, selbst entstehende Cluster. <strong>Bewertung:</strong> das beste Layout im Feld, die schlechteste Beschriftung — Obsidian zeigt Titel erst beim Zoomen und färbt nach Ordner. Hier trägt jeder Knoten seinen Titel, und der Ring nennt das Modul.</td></tr>
     <tr><td>Obsidian — Local Graph</td><td>Der Ausschnitt um ein einzelnes Objekt. <strong>Bewertung:</strong> nützlich, aber bei Obsidian ein zweites Panel im Dock. Hier ein Knopf am ausgewählten Knoten: „Nur diesen Cluster zeigen".</td></tr>
-    <tr><td>RemNote — Wissensnetz</td><td>Die Lernkarte bleibt an ihrer Quelle. <strong>Bewertung:</strong> konzeptionell die wichtigste Vorlage, aber in Referenz-Syntax versteckt. Hier eine eigene, unterscheidbare Linienart: punktiert = Herkunft.</td></tr>
+    <tr><td>RemNote — Wissensnetz</td><td>Die Lernkarte bleibt an ihrer Quelle. <strong>Bewertung:</strong> konzeptionell die wichtigste Vorlage, aber in Referenz-Syntax versteckt. Hier eine eigene, unterscheidbare Fadenstärke (2,5 pt) — und zusätzlich eine eigene Richtung: Herkunft läuft immer über eine Bandgrenze nach unten.</td></tr>
     <tr><td>Craft — Backlinks</td><td>„Wer zeigt hierher?" als eigene Angabe. <strong>Bewertung:</strong> bei Craft am Dokumentende, wo niemand hinsieht. Hier erste Zeile des Info-Panels — und im Graph ohnehin als Linie sichtbar.</td></tr>
   </table>
 
   <h3>Bewusst nicht übernommen</h3>
   <ul>
     <li>Frei wählbare Farbgruppen (Obsidian) — Regenbogen-Wolken, deren Bedeutung nur der Autor kennt. Fünf Modulfarben, überall dieselbe Bedeutung.</li>
+    <li><strong>Das Kräfte-Layout als Vorgabe.</strong> Es steht weiter zur Verfügung (Segment „Kräfte"), aber es ist nicht mehr der erste Zustand: eine Position, die aus einer Simulation fällt, sagt nichts. Runde 1 hatte hier „Kräfte · Raster", und der zweite Zustand war nirgends gezeichnet und nirgends erklärt — jetzt heißen die beiden Zustände nach dem, was die Position bedeutet.</li>
     <li>Dauerhaft laufende Physik-Simulation — ein Graph, der wackelt, wenn man ihn ansieht, ist eine Spielerei.</li>
     <li>Die Regler-Wand für Center force, Repel force, Link distance — wer eine Notiz sucht, stellt keine Physik ein.</li>
     <li>3-D-Ansicht (Roam, Kumu) — Tiefe verdeckt Beschriftung und kostet genau das, was den Graph nützlich macht.</li>
@@ -590,22 +458,30 @@ eigenen font-size-Angaben, auch nicht in der Zeichenfläche.
 
   <h3>Zustände auf diesem Schirm</h3>
   <table>
-    <tr><td>gefüllt</td><td>Der gezeigte Zustand: 27 Objekte, 41 Verbindungen, zwei erkennbare Cluster (Biologie um „Zellbiologie", Analysis um „Analysis II").</td></tr>
-    <tr><td>ausgewählt</td><td>„Zellbiologie": getönte Fläche + Ink-Ring + fetter Titel — drei Merkmale, keines davon Farbe. Das Info-Panel schwebt daneben; eine Linie (Deck → „Golgi-Apparat") läuft sichtbar hinter dem Panel durch und kommt darunter wieder heraus.</td></tr>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: 27 Objekte, 32 Verbindungen, drei Bänder. Die beiden Cluster (Biologie um „Zellbiologie", Analysis um „Analysis II") sind weiter zu erkennen — sie liegen jetzt nebeneinander statt übereinander, weil die Höhe für die Herkunftstiefe gebraucht wird.</td></tr>
+    <tr><td>ausgewählt</td><td>„Zellbiologie": getönte Fläche + Ink-Ring + fetter Titel — drei Merkmale, keines davon Farbe. Das Info-Panel steht jetzt unten rechts statt oben rechts: oben lag es auf dem dichtesten Teil des obersten Bandes und verdeckte vier Objekte. Unten rechts überdeckt es nichts — alle 27 Etiketten sind gemessen frei von Rand, Panel und voneinander.</td></tr>
     <tr><td>aktiv</td><td>„Graph" in der Sidebar: Fläche + Gewicht + Ink-Balken. Vier Filter-Chips tragen Fläche und 600er Gewicht.</td></tr>
     <tr><td>deaktiviert</td><td>Chip „Journal": keine Fläche mehr (nur Kontur) + Deckkraft 38 % — zwei Merkmale.</td></tr>
-    <tr><td>Zwischenzustand</td><td>Der Filter „Journal" wurde eben angetippt: „Erster Tag im Labor" und „Entwurf ohne Titel" stehen mitten im Ausblenden — Rest-Deckkraft 32 %, ihre Linien schon bei 20 %, dazu der schrumpfende gestrichelte Geisterring um beide Knoten. Zusätzlich läuft der Auswahl-Puls um „Zellbiologie" noch (äußerer, gestrichelter Ring).</td></tr>
+    <tr><td>Zwischenzustand</td><td>Der Filter „Journal" wurde eben angetippt: „Erster Tag im Labor" und „Entwurf ohne Titel" stehen mitten im Ausblenden — Rest-Deckkraft 32 % samt schrumpfendem gestricheltem Geisterring. Zusätzlich läuft der Auswahl-Puls um „Zellbiologie" noch (äußerer, gestrichelter Ring).</td></tr>
     <tr><td>leer</td><td>Ohne Verknüpfungen zeigt der Graph nur die vorhandenen Objekte ohne Linien und darüber den Satz: „Noch keine Verbindungen. Schreib in einer Notiz [[ und wähl eine zweite." (Leerform siehe Bibliothek-Mockup)</td></tr>
   </table>
 
+  <h3>Der Faden auf diesem Schirm</h3>
+  <table>
+    <tr><td>Drei Stärken, drei Bedeutungen</td><td><strong>1 pt</strong> (<span class="num">.thread--weak</span>, gestrichelt) = Tag: etwas Drittes hält zusammen. <strong>1,5 pt</strong> (Vorgabe) = Wiki-Link: ich habe verlinkt. <strong>2,5 pt</strong> (<span class="num">.thread--origin</span>) = Herkunft: dieses Objekt ist aus jenem entstanden. Es sind exakt drei Werte, nicht sieben wie in Runde 1 — eine Strichstärke, die nichts bedeutet, ist ein Faden ohne Kante.</td></tr>
+    <tr><td>Die Farbe</td><td>Alle Fäden tragen <span class="num">--thread</span> (3,10:1 hell · 3,13:1 dunkel). Runde 1 benutzte <span class="num">--line-2</span> (1,46:1) und <span class="num">--ink-4</span> (1,95:1) — beide unter der 3:1-Schwelle, die die eigene DNA für Bedienoberfläche verlangt. Modulfarbe trägt weiter nur der Knoten, nie der Faden.</td></tr>
+    <tr><td>Die Bänder</td><td>Drei Beschriftungen, <strong>keine Trennlinien</strong>. Eine waagerechte Linie zwischen den Bändern sähe aus wie ein Faden und wäre keiner — sie verbindet keine zwei Objekte. Die Bänder werden allein durch die Position der Knoten und ihre Überschrift lesbar.</td></tr>
+    <tr><td>Nachprüfbar</td><td>13 Herkunfts-Fäden, 9 Wiki-Links, 10 Tag-Fäden = 32 Kanten zwischen 27 Objekten. Jede einzelne lässt sich benennen: <em>Zellbiologie → Deck Zellbiologie</em>, <em>Deck Zellbiologie → Osmose</em>, <em>Analysis II → Statistik-Blatt 4</em> und so weiter. Es gibt keinen Strich, für den das nicht ginge.</td></tr>
+  </table>
+
   <h3>Warum award-würdig</h3>
-  <p><strong>Visuals:</strong> Ein dichtes Netz bleibt lesbar, ohne bunt zu werden — Modulfarbe nur als 2-pt-Ring, Beschriftung mit Knockout-Kontur, damit kein Titel unter einer Linie verschwindet. <strong>Innovation:</strong> Die dritte Linienart. Wiki-Link und Tag kann jede Notiz-App; „Herkunft" kann nur eine App, in der Notizen, Karten und Aufgaben dasselbe Datenmodell teilen. Man sieht, dass die 12 Karten und das Laborprotokoll aus der Vorlesungsnotiz entstanden sind — nicht bloß, dass sie benachbart liegen.</p>
+  <p><strong>Visuals:</strong> Ein dichtes Netz bleibt lesbar, ohne bunt zu werden — Modulfarbe nur als 2-pt-Ring, Beschriftung mit Knockout-Kontur, damit kein Titel unter einem Faden verschwindet. <strong>Innovation:</strong> Die dritte Beziehungsart <em>und</em> die Achse. Wiki-Link und Tag kann jede Notiz-App; „Herkunft" kann nur eine App, in der Notizen, Karten und Aufgaben dasselbe Datenmodell teilen — und nur sie kann daraus eine Achse machen. Man sieht nicht bloß, dass das Deck und das Laborprotokoll neben der Vorlesungsnotiz liegen: sie liegen <em>darunter</em>, weil sie aus ihr entstanden sind.</p>
 
   <h3>Beide Geräte, dieselbe Aufgabe</h3>
   <p>Knoten antippen → Info sehen → öffnen oder Cluster isolieren: iPad zwei Taps, iPhone zwei Taps. Das Blatt von unten hält dieselben drei Zahlen und dieselben zwei Knöpfe wie das schwebende Panel; die Legende wandert auf dem iPhone in den Fuß des Blattes, damit die Zeichenfläche frei bleibt. Auf dem iPhone zeigt der Graph den Nahbereich um „Zellbiologie" — „Analysis II" schaut unten hinter der Blattkante hervor und sagt damit, dass das Netz weitergeht und das Blatt darüber liegt.</p>
 
   <h3>Zwei-Merkmal-Regel</h3>
-  <p>Ausgewählt = Fläche + Ring (+ Gewicht). Aktiver Chip = Fläche + 600er Gewicht. Ausgeblendet = fehlende Fläche + Deckkraft. Linienart = Strichmuster + Legendenwort, nie Farbe. Tag-Knoten = gestrichelter Ink-Ring + führendes „#". Modul-Dots sind 6 pt und stehen nur in den Chips und im Panel — immer direkt neben ihrem Wort; im Graph wird die Modulfarbe zur Kontur des Knotens, der seinen Titel daneben trägt.</p>
+  <p>Ausgewählt = Fläche + Ring (+ Gewicht). Aktiver Chip = Fläche + 600er Gewicht. Ausgeblendet = fehlende Fläche + Deckkraft. Beziehungsart = Fadenstärke + Richtung + Legendenwort, nie Farbe. Tag-Knoten = gestrichelter Ink-Ring + führendes „#". Modul-Dots sind 6 pt und stehen nur in den Chips und im Panel — immer direkt neben ihrem Wort; im Graph wird die Modulfarbe zur Kontur des Knotens, der seinen Titel daneben trägt.</p>
 </div>
 
 <script src="../shared/mock.js"></script>

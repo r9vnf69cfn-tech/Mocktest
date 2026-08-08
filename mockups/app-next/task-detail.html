@@ -5,6 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aufgaben-Detail — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
+<style>
+/* ──────────────────────────────────────────────────────────────────────────
+   Nur für diesen Schirm: die Geometrie des Verknüpfungs-Fächers.
+   Ein Knoten („diese Aufgabe"), von ihm drei Fäden zu den drei verknüpften
+   Objekten. Die Kurven müssen auf den Modulpunkten enden, nicht daneben —
+   deshalb stehen hier gemessene Werte und keine geschätzten, und deshalb
+   bekommt die große Schriftstufe eigene: dort sind die Zeilen höher.
+   Gemessen im Browser bei 1440 pt Fensterbreite (Werte in pt):
+     Vorgabe   Knotenmitte 16,5 / 8,0   Ziele 37,0 / 45,0 · 91,0 · 137,0
+     Aa groß   Knotenmitte 16,5 / 10,0  Ziele 37,0 / 53,5 · 108,5 · 163,5
+   ────────────────────────────────────────────────────────────────────────── */
+.fan__f { position: absolute; left: 16.5px; top: 8px; width: 20.5px; }
+.fan__f1 { height: 37px; }
+.fan__f2 { height: 83px; }
+.fan__f3 { height: 129px; }
+:root[data-type="gross"] .fan__f  { top: 10px; }
+:root[data-type="gross"] .fan__f1 { height: 43.5px; }
+:root[data-type="gross"] .fan__f2 { height: 98.5px; }
+:root[data-type="gross"] .fan__f3 { height: 153.5px; }
+</style>
 </head>
 <body>
 
@@ -14,7 +35,12 @@ KOMMENTARBLOCK — Aufgaben-Detail
 ÜBERNOMMEN
 · Things 3 — das Detail klappt IN der Liste auf, statt einen neuen Schirm zu
   schieben. Die Zeile wächst zur Karte, die Nachbarn rücken nach unten, die
-  Umgebung bleibt sichtbar. Übernommen als tragendes Prinzip dieses Schirms.
+  Umgebung bleibt sichtbar. Übernommen als tragendes Prinzip dieses Schirms —
+  und in Runde 2 als Bewegung ausgeführt: „Rückmeldung an Prof. Wendt"
+  (am iPhone „Statistik-Blatt 4 abgeben") klappt auf Antippen wirklich auf.
+  320 ms, springStandard, Ort und Maße statt Maßstab, Eckradius 14 → 0.
+  Zurück tritt dabei NUR die angetippte Zeile (Deckkraft 0,55), nicht die Liste:
+  dass die Umgebung stehen bleibt, ist der ganze Grund für dieses Muster.
   Bewertung: die beste Entscheidung, die eine Aufgaben-App treffen kann — Emil
   verliert nie den Ort, an dem er gerade war, und braucht kein „Zurück".
   Verschärft gegenüber Things: die Karte bleibt in der Liste UND nutzt die
@@ -55,10 +81,18 @@ BEWUSST NICHT ÜBERNOMMEN
   Daumen ist eine Falle. Rot bleibt Wort + Symbol, die Fläche bleibt neutral.
 
 DAS BESONDERE AN DIESEM SCHIRM
-Die aufgeklappte Karte weiß, woher sie kommt. Unter den Schritten sitzt der Chip
-mit dem Satz, aus dem die Aufgabe entstanden ist — „Vor dem Fixieren jede
-Färbung fotografisch dokumentieren." — und ein Tipp springt an genau diese
-Stelle in der Notiz „Zellbiologie". Keine Aufgaben-App kann das, weil keine die
+Die aufgeklappte Karte weiß, woher sie kommt. Unter den Schritten sitzt der Satz,
+aus dem die Aufgabe entstanden ist — „Vor dem Fixieren jede Färbung fotografisch
+dokumentieren." Er steht in .serif--quote, weil er eine fremde Stimme ist: er
+steht wörtlich so in der Notiz. Davor liegt der Faden (Knoten = diese Aufgabe,
+2,5 pt, Chip = die Notiz), und „Zur Stelle" zeichnet ihn LIVE über die halbe
+Breite des Schirms bis zur Notiz in der Spalte rechts — 420 ms, Ink, vom Finger
+aus rückwärts an der Kante entlang. Die Kante im Datenmodell bleibt dabei
+Notiz → Aufgabe; nur der Stift läuft sie rückwärts ab (DNA §2.2, Rückweg).
+Rechts steht dazu der Fächer: EIN Knoten „diese Aufgabe", von ihm drei Fäden zu
+den drei verknüpften Objekten — 2,5 pt zur Quelle, 1,5 pt zu Deck und Canvas.
+Keine senkrechte Reihe, denn die wäre eine Kette und würde Notiz → Deck → Canvas
+behaupten; diese Kanten gibt es nicht. Keine Aufgaben-App kann das, weil keine die
 Notiz im selben Datenmodell hält; und keine Notiz-App kann es, weil keine die
 Aufgabe hat. Dazu rechts der Verlauf, in dem beide Welten zusammenlaufen:
 „Aus Absatz 7 erstellt" steht dort neben „Jana hat einen Schritt ergänzt".
@@ -76,9 +110,17 @@ KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
   Frist/Löschen    danger auf Papier   5,2:1   (hell) ·  6,3:1 (dunkel)
   Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
   „Wiederholung · Keine" ist mit .is-off auf 38 % gesetzt und trägt zusätzlich
-  keine Fläche — Deckkraft allein wäre kein Zustand.
+  keine Fläche — Deckkraft allein wäre kein Zustand. Gemessen liegt dieser eine
+  Wert bei 1,66:1 (hell) bzw. 1,81:1 (dunkel): das ist der ausgewiesene
+  Ausnahmefall „inaktives Bedienelement", der einzige auf diesem Schirm.
+  Faden (--thread) auf Papier      3,10:1 (hell) ·  3,13:1 (dunkel)
+  Knoten (Ink) auf Papier         17,77:1 (hell) · 15,86:1 (dunkel)
+  Faden aktiv (Ink) auf Grund     15,90:1 (hell) · 17,27:1 (dunkel)
 
 TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+SERIF: zwei Rollen — .serif--screen-title an „Heute" und .serif--quote an dem
+Satz aus der Notiz. Der Aufgabentext selbst bleibt Sans: eine Aufgabe ist
+Arbeitsmaterial, keine Stimme. .serif--voice gilt ausschließlich im Journal.
 Der Aufgabentitel bleibt beim Aufklappen auf 17 pt — dieselbe Größe wie in der
 zugeklappten Zeile, nur mit Gewicht 600 und Eingabefläche. Ein Titel, der beim
 Öffnen von 17 auf 20 pt springt, macht aus dem Wachsen der Zeile einen
@@ -137,7 +179,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
         <!-- Inhalt -->
         <main class="content">
           <div class="navbar" style="padding-top:4px; padding-bottom:4px">
-            <div class="t-title">Heute</div>
+            <div class="serif--screen-title">Heute</div>
             <div class="segmented" style="margin-left:20px">
               <button class="is-on">Liste</button>
               <button>Planer</button>
@@ -151,10 +193,10 @@ Schirmwechsel; genau das soll hier nicht passieren.
           </div>
 
           <div class="scroll" style="padding-top:12px; padding-bottom:12px">
-            <div style="display:grid; grid-template-columns:minmax(0,1fr) 246px; gap:18px; align-items:start">
+            <div id="buehne-pad" style="display:grid; grid-template-columns:minmax(0,1fr) 246px; gap:18px; align-items:start">
 
               <!-- ══════ Die Liste. Eine Zeile darin ist aufgeklappt. ══════ -->
-              <section class="card" style="padding:6px; min-width:0">
+              <section class="card" id="liste-pad" style="padding:6px; min-width:0">
                 <div style="display:flex; align-items:center; gap:8px; padding:2px 12px 2px">
                   <span class="ico c-3" data-ico="clock" style="width:15px;height:15px"></span>
                   <span class="t-label c-2">Heute · Donnerstag, 13. November</span>
@@ -174,16 +216,58 @@ Schirmwechsel; genau das soll hier nicht passieren.
                   </div>
                 </div>
 
-                <div class="row" style="padding:6px 12px; min-height:50px">
+                <!-- Diese Zeile klappt auf. Der Auslöser sitzt an der Zeile
+                     selbst (role=button, damit die Checkbox darin ein eigener
+                     Knopf bleiben darf); die Bewegung ist ÖFFNEN aus
+                     bewegung.js — ein Zwilling der Zeile wechselt in 320 ms
+                     Ort, Breite, Höhe und Eckradius bis zum Rechteck der
+                     aufgeklappten Karte. Zurück tritt NUR die angetippte Zeile
+                     (Deckkraft 0,55), nicht die Liste: dass die Umgebung stehen
+                     bleibt, ist der ganze Grund, warum das Detail in der Liste
+                     aufklappt und keinen zweiten Schirm schiebt. -->
+                <div class="row" role="button" tabindex="0" id="zeile-wendt"
+                     style="padding:6px 12px; min-height:50px"
+                     data-bw="oeffnen" data-bw-von="#zeile-wendt" data-bw-nach="#karte-wendt" data-bw-huelle="#zeile-wendt">
                   <span class="check"></span>
                   <div class="row__main">
                     <span class="t-body row__title">Rückmeldung an Prof. Wendt</span>
-                    <span class="t-sub c-3">Uni</span>
+                    <span class="t-sub c-3">Uni · antippen klappt auf</span>
                   </div>
                   <div class="row__meta">
                     <span class="chip"><span class="ico" data-ico="list" style="width:13px;height:13px"></span><span class="num">1</span> von <span class="num">2</span> Schritten</span>
+                    <span class="ico c-3" data-ico="chevD" style="width:16px;height:16px"></span>
                   </div>
                 </div>
+
+                <!-- Das Ziel des Aufklappens: dieselbe Aufgabe als Karte.
+                     Startet hidden; oeffnen() blendet sie ein, während der
+                     Zwilling der Zeile auf ihr Rechteck wächst. -->
+                <article id="karte-wendt" hidden style="margin:7px 0; padding:12px 12px 10px; border-radius:var(--r-card);
+                                background:var(--paper); box-shadow:var(--sh-cover), inset 0 0 0 1.5px var(--accent-ring)">
+                  <div style="display:flex; align-items:center; gap:10px">
+                    <span class="check"></span>
+                    <div class="field" style="flex:1 1 auto; min-width:0; height:40px; padding:0 10px; box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                      <span class="t-body is-strong clamp-1">Rückmeldung an Prof. Wendt</span>
+                    </div>
+                    <button class="iconbtn is-active" style="width:34px;height:34px"><span class="ico" data-ico="chevD" style="width:18px;height:18px"></span></button>
+                  </div>
+                  <div style="background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line); border-radius:10px; padding:8px 11px; margin-top:9px">
+                    <p class="t-sub c-2" style="margin:0">Labortermin für Jana und Milan bestätigen. Wendt hat Dienstag und Donnerstag angeboten.</p>
+                  </div>
+                  <div style="display:flex; gap:12px; padding:9px 2px 2px">
+                    <div style="width:22px; flex:none; display:flex; flex-direction:column; align-items:center">
+                      <svg class="thread thread--v" style="height:10px; flex:none"></svg>
+                      <span class="dot dot--tasks"></span>
+                      <svg class="thread thread--v" style="flex:1 1 0; min-height:12px"></svg>
+                      <span class="dot dot--hollow"></span>
+                      <span style="flex:0 0 2px"></span>
+                    </div>
+                    <div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
+                      <span class="t-sub c-3" style="line-height:20px; text-decoration:line-through">Termin mit Wendt abgestimmt</span>
+                      <span class="t-sub c-2" style="line-height:20px; margin-top:6px">Jana und Milan zusagen</span>
+                    </div>
+                  </div>
+                </article>
 
                 <!-- ══════════════════════════════════════════════════════════
                      Die aufgeklappte Zeile. Sie ist keine neue Seite, sondern
@@ -254,11 +338,20 @@ Schirmwechsel; genau das soll hier nicht passieren.
                       </div>
 
                       <!-- Herkunft: der Satz, aus dem die Aufgabe entstand -->
+                      <!-- Die Herkunft. Der Satz ist eine fremde Stimme — er steht
+                           wörtlich so in der Notiz — und trägt deshalb .serif--quote.
+                           Davor der Faden: Knoten = diese Aufgabe, 2,5 pt = „A wurde
+                           zu B", Chip = die Notiz. „Zur Stelle" zeichnet denselben
+                           Faden live bis zur Notiz in der Spalte rechts. -->
                       <div style="margin-top:8px; padding:7px 10px 8px; background:var(--fill); border-radius:10px">
-                        <div class="t-sub c-2">„Vor dem Fixieren jede Färbung fotografisch dokumentieren."</div>
-                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; margin-top:6px">
+                        <div class="serif--quote c-2">„Vor dem Fixieren jede Färbung fotografisch dokumentieren."</div>
+                        <div style="display:flex; align-items:center; gap:6px; margin-top:6px">
+                          <span class="dot dot--node" style="--node-ring: color-mix(in srgb, var(--ink-1) 5%, var(--paper))"></span>
+                          <svg class="thread thread--h thread--origin" style="width:18px; margin:0 -2px"></svg>
                           <span class="origin" style="background:var(--paper)"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
-                          <button class="chip" style="background:var(--paper); color:var(--ink-1)"><span class="ico" data-ico="link" style="width:14px;height:14px"></span>Zur Stelle</button>
+                          <span style="flex:1"></span>
+                          <button class="chip" style="background:var(--paper); color:var(--ink-1)" aria-expanded="false"
+                                  data-bw="herkunft" data-bw-ursprung="#quelle-notiz" data-bw-box="#buehne-pad" data-bw-kurve="64"><span class="ico" data-ico="link" style="width:14px;height:14px"></span>Zur Stelle</button>
                         </div>
                       </div>
                     </div>
@@ -389,37 +482,54 @@ Schirmwechsel; genau das soll hier nicht passieren.
                   <button class="btn btn--sm btn--quiet" style="width:100%; margin-top:8px; justify-content:flex-start; padding:0">Ganzen Verlauf zeigen</button>
                 </section>
 
+                <!-- VERKNÜPFT als Fächer: EIN Knoten oben ist diese Aufgabe,
+                     von ihm läuft je ein Faden zu jedem verknüpften Objekt.
+                     Keine senkrechte Reihe — die wäre eine Kette und würde
+                     Notiz → Deck → Canvas behaupten, und diese Kanten gibt es
+                     nicht. Stärke sagt Nähe: 2,5 pt zur Quelle (aus ihr ist die
+                     Aufgabe entstanden), 1,5 pt zu Deck und Canvas (Verweis). -->
                 <section class="card" style="padding:12px 8px 4px">
                   <div class="card__head" style="margin:0 6px 6px">
                     <span class="ico" data-ico="link" style="width:16px;height:16px; color:var(--ink-3)"></span>
                     <span class="t-label c-3" style="flex:1">VERKNÜPFT</span>
                     <span class="t-label c-3 num">3</span>
                   </div>
-                  <button class="row" style="min-height:42px; padding:4px 8px; width:100%">
-                    <span class="dot dot--notes" style="margin:0 4px"></span>
-                    <div class="row__main" style="text-align:left">
-                      <span class="t-sub c-1 clamp-1">Zellbiologie</span>
-                      <span class="t-label c-3">Notiz · Quelle</span>
+                  <div class="fan" style="position:relative">
+                    <div style="display:flex; align-items:center; gap:8px; padding:0 0 6px 12px">
+                      <span class="dot dot--node"></span>
+                      <span class="t-label c-2">diese Aufgabe</span>
                     </div>
-                    <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
-                  </button>
-                  <button class="row" style="min-height:42px; padding:4px 8px; width:100%">
-                    <span class="dot dot--cards" style="margin:0 4px"></span>
-                    <div class="row__main" style="text-align:left">
-                      <span class="t-sub c-1 clamp-1">Zellbiologie</span>
-                      <span class="t-label c-3">Deck · <span class="num">8</span> heute fällig</span>
-                    </div>
-                    <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
-                  </button>
-                  <button class="row" style="min-height:42px; padding:4px 8px; width:100%">
-                    <span class="dot dot--canvas" style="margin:0 4px"></span>
-                    <div class="row__main" style="text-align:left">
-                      <span class="t-sub c-1 clamp-1">Messreihe Probe 1–5</span>
-                      <span class="t-label c-3">Canvas · gestern</span>
-                    </div>
-                    <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
-                  </button>
-                  <button class="row" style="min-height:36px; padding:4px 8px; width:100%; color:var(--ink-3)">
+                    <!-- Maße gemessen, nicht geschätzt: Knotenmitte 16,5/8,0 ·
+                         Zielpunkte 37,0/45,0 · 37,0/91,0 · 37,0/137,0 -->
+                    <svg class="thread thread--curve thread--origin fan__f fan__f1"></svg>
+                    <svg class="thread thread--curve fan__f fan__f2"></svg>
+                    <svg class="thread thread--curve fan__f fan__f3"></svg>
+                    <button class="row" id="quelle-notiz" style="min-height:42px; padding:4px 8px 4px 30px; width:100%">
+                      <span class="dot dot--notes" style="margin:0 4px"></span>
+                      <div class="row__main" style="text-align:left">
+                        <span class="t-sub c-1" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap">Zellbiologie</span>
+                        <span class="t-label c-3" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap">Notiz · Quelle</span>
+                      </div>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                    </button>
+                    <button class="row" style="min-height:42px; padding:4px 8px 4px 30px; width:100%">
+                      <span class="dot dot--cards" style="margin:0 4px"></span>
+                      <div class="row__main" style="text-align:left">
+                        <span class="t-sub c-1" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap">Zellbiologie</span>
+                        <span class="t-label c-3" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap">Deck · <span class="num">8</span> fällig</span>
+                      </div>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                    </button>
+                    <button class="row" style="min-height:42px; padding:4px 8px 4px 30px; width:100%">
+                      <span class="dot dot--canvas" style="margin:0 4px"></span>
+                      <div class="row__main" style="text-align:left">
+                        <span class="t-sub c-1" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap">Messreihe Probe 1–5</span>
+                        <span class="t-label c-3" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap">Canvas · gestern</span>
+                      </div>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                    </button>
+                  </div>
+                  <button class="row" style="min-height:44px; padding:4px 8px; width:100%; color:var(--ink-3)">
                     <span class="ico" data-ico="plus" style="width:16px;height:16px; margin:0 -1px"></span>
                     <span class="t-sub" style="flex:1; text-align:left">Verknüpfung hinzufügen</span>
                   </button>
@@ -457,27 +567,46 @@ Schirmwechsel; genau das soll hier nicht passieren.
 
       <div class="content">
         <div class="navbar" style="border:0; padding-bottom:0">
-          <div class="t-title">Heute</div>
+          <div class="serif--screen-title">Heute</div>
           <div class="navbar__spacer"></div>
           <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
         </div>
 
         <div class="scroll" style="padding-top:8px">
-          <section class="card" style="padding:4px">
+          <section class="card" id="liste-phone" style="padding:4px">
             <div style="display:flex; align-items:center; gap:8px; padding:4px 10px 0">
               <span class="t-label c-2">Heute</span>
               <span style="flex:1"></span>
               <span class="t-label c-3 num">5</span>
             </div>
 
-            <!-- eine normale Zeile darüber -->
-            <div class="row" style="min-height:50px">
+            <!-- Eine zugeklappte Zeile darüber — und sie ist der Auslöser:
+                 dieselbe Bewegung wie am iPad, ÖFFNEN aus bewegung.js. -->
+            <div class="row" role="button" tabindex="0" id="zeile-stat" style="min-height:50px"
+                 data-bw="oeffnen" data-bw-von="#zeile-stat" data-bw-nach="#karte-stat" data-bw-huelle="#zeile-stat">
               <span class="check"></span>
               <div class="row__main">
                 <span class="t-body row__title clamp-1">Statistik-Blatt 4 abgeben</span>
                 <span class="t-sub"><span class="chip chip--danger" style="height:21px"><span class="ico" data-ico="flag" style="width:12px;height:12px"></span>noch 0 Tage</span></span>
               </div>
+              <span class="ico c-3" data-ico="chevD" style="width:16px;height:16px"></span>
             </div>
+
+            <article id="karte-stat" hidden style="margin:5px 0; padding:10px; border-radius:var(--r-card);
+                            background:var(--paper); box-shadow:var(--sh-cover), inset 0 0 0 1.5px var(--accent-ring)">
+              <div style="display:flex; align-items:flex-start; gap:10px">
+                <span class="check" style="margin-top:4px"></span>
+                <div class="field" style="flex:1 1 auto; height:auto; padding:4px 9px; align-items:flex-start; box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                  <span class="t-body is-strong">Statistik-Blatt 4 abgeben</span>
+                </div>
+                <button class="iconbtn is-active" style="width:30px;height:30px"><span class="ico" data-ico="chevD" style="width:17px;height:17px"></span></button>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:7px">
+                <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Geplant 16:00</span>
+                <span class="chip chip--danger"><span class="ico" data-ico="flag" style="width:13px;height:13px"></span>Heute 18:00 · noch 0 Tage</span>
+                <span class="chip"><span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Analysis II</span>
+              </div>
+            </article>
 
             <!-- dieselbe aufgeklappte Karte, volle Breite -->
             <article style="margin:5px 0; padding:10px; border-radius:var(--r-card);
@@ -532,12 +661,18 @@ Schirmwechsel; genau das soll hier nicht passieren.
                 <span class="chip is-off"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>Keine Wiederholung</span>
               </div>
 
-              <div style="display:flex; align-items:center; gap:8px; margin-top:7px; padding:6px 9px; background:var(--fill); border-radius:9px">
-                <span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
+              <!-- Derselbe Faden wie am iPad: Knoten = diese Aufgabe,
+                   2,5 pt = Herkunft, Chip = die Notiz. Live gezeichnet wird er
+                   hier NICHT — auf dem Telefon steht die Quelle nicht mit im
+                   Bild, und ein Faden mit nur einem Ende ist keiner. -->
+              <button style="display:flex; align-items:center; gap:6px; width:100%; min-height:44px; margin-top:7px; padding:4px 9px; background:var(--fill); border-radius:9px; text-align:left">
+                <span class="dot dot--node" style="--node-ring: color-mix(in srgb, var(--ink-1) 5%, var(--paper))"></span>
+                <svg class="thread thread--h thread--origin" style="width:18px; margin:0 -2px"></svg>
+                <span class="origin" style="background:var(--paper)"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
                 <span style="flex:1"></span>
                 <span class="t-label c-2">Zur Stelle</span>
                 <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
-              </div>
+              </button>
             </article>
 
             <!-- die Liste geht weiter — sie wird unten angeschnitten, weil sie
@@ -586,6 +721,15 @@ Schirmwechsel; genau das soll hier nicht passieren.
   <h2>Aufgaben-Detail — Steckbrief</h2>
   <p>Das Detail ist kein Ort, sondern ein Zustand der Zeile. „Laborprotokoll Zellkultur schreiben" ist zur Karte gewachsen, die Nachbarn sind nach unten gerückt, die Liste bleibt sichtbar. Auf dem iPad nutzt die Karte die Breite zweispaltig — links die Arbeit (Schritte und Herkunft), rechts die Eigenschaften; Titel und Notiz laufen über beide Spalten, weil sie Text sind. Daneben steht der Verlauf und was an dieser Aufgabe hängt.</p>
 
+  <h3>Der Faden auf diesem Schirm</h3>
+  <table>
+    <tr><td>Herkunft, ruhend</td><td><strong>Aufgabe → Quelle</strong>, 2,5 pt. Knoten = diese Aufgabe, Chip = Notiz „Zellbiologie". Steht still im Bild, damit der Schirm das Motiv auch als Standbild trägt.</td></tr>
+    <tr><td>Herkunft, laufend</td><td><strong>„Zur Stelle" zeichnet denselben Faden</strong> quer über den Schirm bis zur Zeile „Zellbiologie · Notiz · Quelle" in der Spalte rechts — 420 ms, Ink, eine quadratische Bézier. Beide Enden sind sichtbare Objekte; ohne das gäbe es hier keinen Faden. Am iPhone bleibt er ruhend: dort steht die Quelle nicht mit im Bild, und ein Faden mit einem Ende ist keiner.</td></tr>
+    <tr><td>Verknüpft (Fächer)</td><td><strong>Ein Knoten, drei Fäden</strong>: von „diese Aufgabe" zu Notiz (2,5 pt · Quelle), Deck (1,5 pt · Verweis) und Canvas (1,5 pt · Verweis). Die Maße sind gemessen, nicht geschätzt — Knotenmitte 16,5/8,0, Zielpunkte 37,0/45,0 · 37,0/91,0 · 37,0/137,0; die drei Kurven enden auf den Modulpunkten, nicht daneben.</td></tr>
+    <tr><td>Teilschritte</td><td>Im aufgeklappten „Rückmeldung"-Kärtchen hängen die zwei Schritte am senkrechten Faden, wie in der Liste. In der großen Karte tragen die Schritte stattdessen Checkboxen — ein zweiter Punktesatz daneben würde denselben Zustand ein zweites Mal sagen.</td></tr>
+    <tr><td>kein Faden</td><td>Der Aktivitätsverlauf rechts bekommt keinen: eine Liste von Ereignissen ist keine Beziehung zwischen zwei Objekten. Die Spaltenlinie zwischen Schritten und Eigenschaften bleibt <span class="num">--line</span>.</td></tr>
+  </table>
+
   <h3>Woher die Ideen stammen</h3>
   <table>
     <tr><td>Things 3</td><td><strong>Detail klappt in der Liste auf.</strong> Das tragende Prinzip dieses Schirms: kein Schirmwechsel, kein „Zurück", die Umgebung bleibt stehen. Bewertung: die stärkste Idee im Aufgabenbereich überhaupt. Verschärft: Things zeigt auf dem iPad dieselbe schmale Spalte wie auf dem iPhone — hier wird die Karte zweispaltig und der Verlauf bekommt eine eigene Spalte.</td></tr>
@@ -610,6 +754,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
     <tr><td>aktiv / ausgewählt</td><td>Die aufgeklappte Zeile: eigene Höhe (Schatten <span class="num">sh-cover</span>) <em>und</em> Ring in <span class="num">accent-ring</span>. Der Einklapp-Knopf trägt zusätzlich Fläche (<span class="num">iconbtn.is-active</span>). Die Titelzeile hat Fläche + Ring, weil der Cursor darin steht.</td></tr>
     <tr><td>Zwischenzustand</td><td>Drei eingefrorene Momente: (1) der Haken am dritten Schritt wächst (<span class="num">check.is-checking</span>, Ring in accent-soft), (2) der Strich durch den Text ist erst zu <span class="num">46 %</span> gezogen, (3) der Fortschrittsbalken zeigt <span class="num">50 %</span> gefüllt und <span class="num">75 %</span> vorgezeichnet. Rechts läuft dazu die Sicherung dieser Änderung mit eigenem Balken.</td></tr>
     <tr><td>deaktiviert</td><td>„Wiederholung · Keine" — <span class="num">38 %</span> Deckkraft <em>und</em> keine Fläche. Auf dem iPhone derselbe Wert als Chip mit <span class="num">.is-off</span>.</td></tr>
+    <tr><td>auslösbar</td><td><strong>Das Aufklappen selbst.</strong> „Rückmeldung an Prof. Wendt" (iPhone: „Statistik-Blatt 4 abgeben") klappt auf Antippen auf: ein Zwilling der Zeile wechselt in <span class="num">320 ms</span> Ort, Breite, Höhe und Eckradius bis zum Rechteck der Karte, die Karte blendet ab 55 % der Zeit auf. Zurück tritt nur die angetippte Zeile. <strong>Ehrliche Einschränkung:</strong> <span class="num">MOTION.oeffnen</span> stellt die Ursprungszeile am Ende wieder her — im Mockup bleibt sie deshalb als gedämpfte Geisterzeile über der Karte stehen. In der App würde sie zusammenfallen; das wäre eine Zeile JavaScript im Schirm, und die ist hier verboten.</td></tr>
     <tr><td>leer</td><td>Ohne Schritte fehlt der Balken, und statt der Liste steht eine einzige Zeile „Schritt hinzufügen" — kein Leerbild, sondern der erste Schritt. Ohne Notiz bleibt das Feld weg, nicht leer stehen.</td></tr>
     <tr><td>Fehler</td><td>Scheitert die Sicherung, wird aus dem laufenden Balken rechts eine <span class="num">.notice--error</span>: „Nicht gesichert — Änderung liegt lokal" mit Wiederholen. Rot + Symbol + Randlinie.</td></tr>
   </table>
@@ -623,5 +768,6 @@ Schirmwechsel; genau das soll hier nicht passieren.
 </div>
 
 <script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
 </body>
 </html>
