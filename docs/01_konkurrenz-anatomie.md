@@ -44,7 +44,7 @@ Das ist der eigentliche Befund dieser Recherche. Jede der achtzehn Apps ist in i
 | **Bibliothek** | Cover-Raster mit Buchgefühl; Smart-Ordner mit Zähler | GoodNotes 6, Craft | Marktplatz-Reiter im persönlichen Arbeitsbereich |
 | **Today** | „Weitermachen“ als Material-Streifen, begrenzt | Notion (Form), Apple Journal (Inhalt) | Begrüßung im Display-Grad, feste Widget-Reihenfolge |
 
-Wie diese Ideen zusammengesetzt werden, steht in den sechs Best-of-Mockups unter `mockups/best-of/`; wie daraus der eigene Entwurf wird, in `mockups/app-next/`.
+Wie diese Ideen zusammengesetzt werden, steht in den sechs Best-of-Mockups unter [`mockups/best-of/`](../mockups/best-of/); wie daraus der eigene Entwurf wird, in [`mockups/app-next/`](../mockups/app-next/).
 
 ---
 

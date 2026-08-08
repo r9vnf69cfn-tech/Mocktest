@@ -122,18 +122,23 @@
    * Gerätrahmen — die Bedienleiste sitzt oben rechts, sie stören sich nicht.
    * ==================================================================== */
 
-  /* Reihenfolge und deutsche Anzeigenamen. Feste Ordnung, kein Sortieren. */
+  /* Reihenfolge und deutsche Anzeigenamen. Feste Ordnung, kein Sortieren.
+     Die Namen sind wortgleich mit den Kacheln der Übersicht (index.html):
+     'Journal-Start' und 'Lernkarten-Start' heißen die Einstiegsseiten der
+     beiden Module — hießen sie hier 'Journal' und 'Lernkarten', wäre in der
+     Leiste nicht zu unterscheiden, ob der Nachbar der Einstieg oder ein
+     Eintrag ist, und die Übersicht nennte dieselbe Datei anders. */
   const SCREENS = {
     'app-next': [
       ['today.html',           'Heute'],
       ['library.html',         'Bibliothek'],
       ['notes-list.html',      'Notizen-Liste'],
       ['note-editor.html',     'Notiz-Editor'],
-      ['journal-home.html',    'Journal'],
+      ['journal-home.html',    'Journal-Start'],
       ['journal-entry.html',   'Journal-Eintrag'],
       ['tasks.html',           'Aufgaben'],
       ['task-detail.html',     'Aufgaben-Detail'],
-      ['flashcards-home.html', 'Lernkarten'],
+      ['flashcards-home.html', 'Lernkarten-Start'],
       ['review-session.html',  'Review-Session'],
       ['graph.html',           'Graph'],
       ['settings.html',        'Einstellungen'],

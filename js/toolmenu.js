@@ -28,6 +28,21 @@
       keepFocus(this.node);
     }
 
+    /**
+     * Wie die Farbe auf dem Blatt ankommt — für Farbfelder, Stärke-Punkte und
+     * Vorschauen. Gerechnet wird sie nicht hier: die Anzeige-Umkehrung steht an
+     * einer einzigen Stelle, in renderer.ink(), und das Menü fragt genau die ab.
+     * Ohne das zeigte das Feld Schwarz, während der Strich weiß herauskommt.
+     *
+     * Umgekehrt wird nur Tinte. Der Textmarker liegt lasierend auf dem Blatt und
+     * das Klebeband ist ein Stück Material — beider Farbe lässt der Renderer
+     * unangetastet, also lassen die Felder sie auch stehen. Der Laserpunkt ist
+     * gar nichts auf dem Blatt, sondern ein Zeigegerät über allem.
+     */
+    ink(color, isInk) {
+      return isInk ? this.app.renderer.ink(color) : color;
+    }
+
     /** Zweiter Tipp auf das aktive Werkzeug klappt die Kapsel ein bzw. aus. */
     toggleCollapsed() {
       this.collapsed = !this.collapsed;
@@ -149,6 +164,7 @@
 
     /** Drei Farb-Slots plus „+" für den Farbwähler. */
     colors(set, cfg) {
+      const asInk = !!(cfg && cfg.ink);
       const kids = set.favorites.map((color, i) =>
         el('button', {
           type: 'button',
@@ -161,7 +177,7 @@
               this.afterColor(cfg);
             }
           },
-        }, [el('i', { style: `background:${color}` })])
+        }, [el('i', { style: `background:${this.ink(color, asInk)}` })])
       );
       kids.push(
         el('button', {
@@ -176,27 +192,44 @@
 
     openColorPicker(set, anchor, cfg, favIndex) {
       const conf = cfg || {};
-      pop.open({
-        key: 'color',
-        anchor,
-        className: 'popover--wide',
-        content: pop.colorPicker({
-          value: set.color,
-          presets: conf.presets,
-          allowOpacity: conf.allowOpacity,
-          opacity: conf.opacity,
-          onOpacity: conf.onOpacity,
-          onChange: (c) => {
-            set.color = c;
-            if (favIndex >= 0) set.favorites[favIndex] = c;
-            this.afterColor(conf);
-          },
-          onAddPreset: (c) => {
-            if (!set.favorites.some((f) => same(f, c))) set.favorites = [c, set.favorites[0], set.favorites[1]];
-            this.afterColor(conf);
-          },
-        }),
+      const content = pop.colorPicker({
+        value: set.color,
+        presets: conf.presets,
+        allowOpacity: conf.allowOpacity,
+        opacity: conf.opacity,
+        onOpacity: conf.onOpacity,
+        onChange: (c) => {
+          set.color = c;
+          if (favIndex >= 0) set.favorites[favIndex] = c;
+          this.afterColor(conf);
+        },
+        onAddPreset: (c) => {
+          if (!set.favorites.some((f) => same(f, c))) set.favorites = [c, set.favorites[0], set.favorites[1]];
+          this.afterColor(conf);
+        },
       });
+      this.showAsInk(content, !!conf.ink);
+      pop.open({ key: 'color', anchor, className: 'popover--wide', content });
+    }
+
+    /**
+     * Dieselbe Regel im Farbwähler: die Kacheln zeigen, was auf dem Blatt
+     * ankommt, ihr data-color bleibt die gespeicherte Tinte. Der Wähler selbst
+     * ist ein allgemeiner Baustein (popovers.js) und weiß nichts vom Blatt —
+     * gefärbt wird er darum von hier aus, und der Beobachter hält das durch,
+     * wenn der Wähler seine Kacheln neu baut (Umschalten der Reiter,
+     * „Zu Voreinstellungen hinzufügen"). Rad und HEX-Feld bleiben unberührt:
+     * dort wird eine Farbe ausgesucht, nicht ihre Wirkung gezeigt.
+     */
+    showAsInk(root, isInk) {
+      if (!isInk || !this.app.renderer.sheetIsDark()) return;
+      const paint = () => {
+        root.querySelectorAll('.cp__grid button[data-color]').forEach((b) => {
+          b.style.background = this.ink(b.dataset.color, true);
+        });
+      };
+      paint();
+      new MutationObserver(paint).observe(root, { childList: true, subtree: true });
     }
 
     afterColor(cfg) {
@@ -247,7 +280,7 @@
           T.PEN_TYPES.map((t) => ({
             label: t.label,
             sub: t.hint,
-            preview: penPreview(t.id, s.color),
+            preview: penPreview(t.id, this.ink(s.color, true)),
             on: s.type === t.id,
             onClick: () => {
               s.type = t.id;
@@ -532,15 +565,15 @@
       const s = this.ctrl.settings.pen;
       const type = T.PEN_TYPES.find((t) => t.id === s.type);
       box.appendChild(this.chip({
-        preview: penPreview(s.type, s.color),
+        preview: penPreview(s.type, this.ink(s.color, true)),
         label: type.label,
         title: 'Stiftart',
         onClick: (a) => this.openPenTypes(a),
       }));
       box.appendChild(this.sep());
-      box.appendChild(this.thickness(s, { display: (w) => 2 + w * 1.6, min: 0.5, max: 24, title: 'Stiftstärke', color: s.color }));
+      box.appendChild(this.thickness(s, { display: (w) => 2 + w * 1.6, min: 0.5, max: 24, title: 'Stiftstärke', color: this.ink(s.color, true) }));
       box.appendChild(this.sep());
-      box.appendChild(this.colors(s, {}));
+      box.appendChild(this.colors(s, { ink: true }));
       box.appendChild(this.sep());
       box.appendChild(this.chip({ icon: 'customize', title: 'Stifteinstellungen', onClick: (a) => this.openPenTypes(a), chevron: false }));
     },
@@ -576,6 +609,7 @@
       box.appendChild(this.sep());
       box.appendChild(this.colors(s, {
         presets: pop.HIGHLIGHT_PRESETS,
+        ink: false,
       }));
       box.appendChild(this.sep());
       box.appendChild(this.toggle({
@@ -609,7 +643,7 @@
       }
       box.appendChild(row);
       box.appendChild(this.sep());
-      box.appendChild(this.colors(s, { presets: pop.TAPE_PRESETS }));
+      box.appendChild(this.colors(s, { presets: pop.TAPE_PRESETS, ink: false }));
       box.appendChild(this.sep());
       box.appendChild(this.chip({ icon: 'customize', label: `${s.width} px`, title: 'Breite und Deckkraft', onClick: (a) => this.openTapeOptions(a) }));
     },
@@ -626,20 +660,17 @@
           el('button', {
             type: 'button', class: 'color-slot', title: 'Füllfarbe',
             onclick: (e) => {
-              pop.open({
-                key: 'fillcolor',
-                anchor: e.currentTarget,
-                className: 'popover--wide',
-                content: pop.colorPicker({
-                  value: s.fillColor,
-                  allowOpacity: true,
-                  opacity: s.fillOpacity,
-                  onOpacity: (v) => { s.fillOpacity = v; this.app.render(); },
-                  onChange: (c) => { s.fillColor = c; this.render(); this.app.render(); },
-                }),
+              const content = pop.colorPicker({
+                value: s.fillColor,
+                allowOpacity: true,
+                opacity: s.fillOpacity,
+                onOpacity: (v) => { s.fillOpacity = v; this.app.render(); },
+                onChange: (c) => { s.fillColor = c; this.render(); this.app.render(); },
               });
+              this.showAsInk(content, true);
+              pop.open({ key: 'fillcolor', anchor: e.currentTarget, className: 'popover--wide', content });
             },
-          }, [el('i', { style: `background:${s.fillColor}` })])
+          }, [el('i', { style: `background:${this.ink(s.fillColor, true)}` })])
         );
       }
       box.appendChild(this.sep());
@@ -655,9 +686,9 @@
         )
       );
       box.appendChild(this.sep());
-      box.appendChild(this.thickness(s, { display: (w) => 3 + w * 1.4, min: 0.5, max: 24, title: 'Linienstärke', color: s.color }));
+      box.appendChild(this.thickness(s, { display: (w) => 3 + w * 1.4, min: 0.5, max: 24, title: 'Linienstärke', color: this.ink(s.color, true) }));
       box.appendChild(this.sep());
-      box.appendChild(this.colors(s, {}));
+      box.appendChild(this.colors(s, { ink: true }));
       box.appendChild(this.sep());
       box.appendChild(this.toggle({
         icon: 'cornerRound', label: 'Ecken', title: 'Ecken abrunden',
@@ -737,7 +768,11 @@
       box.appendChild(style);
 
       box.appendChild(this.sep());
-      box.appendChild(this.colors(s, { onChange: () => this.app.applyTextStyle() }));
+      // Bei „Zettel" und „Sprechblase" ist die Farbe die Fläche, auf der die
+      // Schrift liegt, und kein Strich — der Renderer lässt sie darum stehen
+      // (drawText: `sticky`). Das Feld zeigt sie dann ebenso unverändert.
+      const textIsInk = s.boxStyle !== 'sticky' && s.boxStyle !== 'callout';
+      box.appendChild(this.colors(s, { ink: textIsInk, onChange: () => this.app.applyTextStyle() }));
 
       box.appendChild(this.sep());
       box.appendChild(
@@ -803,7 +838,7 @@
 
     laser(box) {
       const s = this.ctrl.settings.laser;
-      box.appendChild(this.colors(s, { presets: ['#FF3B30', '#00A99D', '#FFCC00', '#007AFF', '#AF52DE', '#34C759', '#FF9500', '#FF2D55', '#5856D6', '#FFFFFF', '#000000', '#8E8E93', '#FF6BAA', '#66D9E8', '#C0EB75'] }));
+      box.appendChild(this.colors(s, { ink: false, presets: ['#FF3B30', '#00A99D', '#FFCC00', '#007AFF', '#AF52DE', '#34C759', '#FF9500', '#FF2D55', '#5856D6', '#FFFFFF', '#000000', '#8E8E93', '#FF6BAA', '#66D9E8', '#C0EB75'] }));
       box.appendChild(this.sep());
       box.appendChild(this.chip({
         label: { fade: 'Verblassend', persist: 'Bleibend', dot: 'Nur Punkt' }[s.trail],

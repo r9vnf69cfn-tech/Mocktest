@@ -14,7 +14,7 @@ Die Beispielwelt aller Mockups ist deshalb konkret: Emil, Biologie im dritten Se
 
 **Der Weg zwischen den Werkzeugen entfällt.** Heute kostet dieselbe Arbeit fünf Apps und drei Exporte: In Bear steht die Notiz, in Anki liegen die Karten, in Things die Abgabe — und keine dieser Apps weiß von den anderen. Hier ist die Kette ein Objekt: Die Notiz weiß, dass aus ihr zwölf Karten wurden, die Karte weiß, aus welchem Absatz sie stammt, und der Tageseinstieg erzählt beides in einer Zeile.
 
-Kein Konkurrent kann das. RemNote kommt am nächsten, bezahlt es aber mit einer Lernkurve, die Rezensenten regelmäßig als Haupthürde nennen (siehe `konkurrenz-anatomie.html`, Kapitel Lernkarten).
+Kein Konkurrent kann das. RemNote kommt am nächsten, bezahlt es aber mit einer Lernkurve, die Rezensenten regelmäßig als Haupthürde nennen (siehe [`konkurrenz-anatomie.html`](konkurrenz-anatomie.html), Kapitel Lernkarten).
 
 ---
 
@@ -30,7 +30,7 @@ Daraus folgt alles Weitere: das Farbsystem, die Zurückhaltung der Oberfläche, 
 
 Ein einziger Akzent, **Ink**: fast-schwarz (`#16181C`) im hellen, fast-weiß (`#F2F3F5`) im dunklen Modus. Er hat genau drei Aufgaben — aktiver Zustand, primäre Aktion, Auswahl. Nichts sonst ist eingefärbt.
 
-Die fünf Modul-Farben erscheinen ausschließlich als **6-pt-Punkte** neben einem Wort und als Akzent auf Notizbuch-Covern. Sie färben nie eine Fläche, keinen Text und keinen Knopf; die Einstellungen erklären das dem Nutzer sogar wörtlich (`app-next/settings.html`). Rot bleibt dem Löschen und der Deadline vorbehalten, Grün dem Erfolg.
+Die fünf Modul-Farben erscheinen ausschließlich als **6-pt-Punkte** neben einem Wort und als Akzent auf Notizbuch-Covern. Sie färben nie eine Fläche, keinen Text und keinen Knopf; die Einstellungen erklären das dem Nutzer sogar wörtlich ([`app-next/settings.html`](../mockups/app-next/settings.html)). Rot bleibt dem Löschen und der Deadline vorbehalten, Grün dem Erfolg.
 
 Warum so streng: Sechs Module mit sechs Hausfarben ergeben ein Sammelsurium, in dem der Nutzer die Farbe der App liest statt seiner eigenen Inhalte. Bear (ein Akzent) und Things (ein Akzent) sind die beiden ADA-Gewinner im Feld — Todoist mit vier Prioritätsfarben ist die App, bei der man am längsten sucht, was gemeint ist.
 
@@ -50,11 +50,11 @@ Fünf Größen, zwei Gewichte, feste Rollen:
 
 Genau **eine** begründete Ausnahme: Die Tab-Beschriftung auf dem iPhone läuft mit 11 pt (iOS-Standard). Bei 13 pt kollidieren „Bibliothek“ und „Aufgaben“ auf 393 pt Breite — überlappender Text wiegt schwerer als eine sechste Stufe an einer Stelle.
 
-**Serif ist keine sechste Größe, sondern eine Regel:** Die Oberfläche spricht Sans, was der Nutzer geschrieben hat, darf Serif. Sichtbar im Notiz-Editor (`app-next/note-editor.html`), im Journal-Eintrag (`journal-entry.html`) und auf der Antwortseite der Lernkarte (`review-session.html`). Der Bruch markiert eine echte Grenze: hier Werkzeug, dort Inhalt.
+**Serif ist keine sechste Größe, sondern eine Regel:** Die Oberfläche spricht Sans, was der Nutzer geschrieben hat, darf Serif. Sichtbar im Notiz-Editor ([`app-next/note-editor.html`](../mockups/app-next/note-editor.html)), im Journal-Eintrag ([`journal-entry.html`](../mockups/app-next/journal-entry.html)) und auf der Antwortseite der Lernkarte ([`review-session.html`](../mockups/app-next/review-session.html)). Der Bruch markiert eine echte Grenze: hier Werkzeug, dort Inhalt.
 
 ### Raster und Dichte
 
-**iPad** (1194 × 834): Sidebar 320 pt, Inhalt mit 24 pt Rand, wo sinnvoll zweispaltig — links die Arbeit, rechts der Kontext. Diese Teilung trägt `today.html`, `tasks.html`, `journal-home.html` und `flashcards-home.html`.
+**iPad** (1194 × 834): Sidebar 320 pt, Inhalt mit 24 pt Rand, wo sinnvoll zweispaltig — links die Arbeit, rechts der Kontext. Diese Teilung trägt [`today.html`](../mockups/app-next/today.html), [`tasks.html`](../mockups/app-next/tasks.html), [`journal-home.html`](../mockups/app-next/journal-home.html) und [`flashcards-home.html`](../mockups/app-next/flashcards-home.html).
 
 **iPhone** (393 × 852): 20 pt Rand, Tab-Bar statt Sidebar, dieselben Abschnitte gestapelt. Wichtigste Regel: Was man häufig tut, liegt im unteren Drittel — Schnellerfassung, primäre Knöpfe, die Bewertungsknöpfe der Lernsitzung als 2×2-Raster.
 
@@ -77,10 +77,10 @@ Jeder Zustand hat zwei Merkmale, keiner hängt an Farbe allein:
 
 Vier Übergänge, jeder mit einer Aufgabe:
 
-- **Öffnen** (260 ms): Karte wächst aus ihrer Position. Das Detail einer Aufgabe klappt *in* der Liste auf, statt einen Screen zu schieben (`task-detail.html`) — von Things 3.
+- **Öffnen** (260 ms): Karte wächst aus ihrer Position. Das Detail einer Aufgabe klappt *in* der Liste auf, statt einen Screen zu schieben ([`task-detail.html`](../mockups/app-next/task-detail.html)) — von Things 3.
 - **Modulwechsel** (180 ms): nur Überblendung. Ein Wechsel ist kein Ereignis.
-- **Bestätigen** (120 ms): Die Checkbox zieht ihren Ring zusammen, während der Haken wächst. Auf `today.html` und `tasks.html` ist dieser Moment **eingefroren sichtbar**.
-- **Übergabe** (420 ms) — die Signature: Die Auswahl faltet sich zu einer kleinen Karte, fliegt zum Ziel und landet dort als Chip. In `note-editor.html` steht sie mitten im Flug, mit Spur und dem Umriss am Ausgangsort.
+- **Bestätigen** (120 ms): Die Checkbox zieht ihren Ring zusammen, während der Haken wächst. Auf [`today.html`](../mockups/app-next/today.html) und [`tasks.html`](../mockups/app-next/tasks.html) ist dieser Moment **eingefroren sichtbar**.
+- **Übergabe** (420 ms) — die Signature: Die Auswahl faltet sich zu einer kleinen Karte, fliegt zum Ziel und landet dort als Chip. In [`note-editor.html`](../mockups/app-next/note-editor.html) steht sie mitten im Flug, mit Spur und dem Umriss am Ausgangsort.
 
 ---
 
@@ -130,10 +130,10 @@ Was fehlt, ist ein **lauffähiger Prototyp genau dieser 420 ms**: der markierte 
 
 ## Verweise
 
-- Alle Mockups: `mockups/index.html`
-- Der Entwurf: `mockups/app-next/` — dreizehn Screens, je hell/dunkel und iPad/iPhone
+- Alle Mockups: [`mockups/index.html`](../mockups/index.html)
+- Der Entwurf: [`mockups/app-next/`](../mockups/app-next/) — dreizehn Screens, je hell/dunkel und iPad/iPhone
 - Kontaktbögen: `mockups/_renders/kontaktbogen-*.png` — alle Screens auf je einem Blatt
-- Vorstufe: `mockups/best-of/` — sechs Bereiche, je drei Vorbilder zusammengeführt
-- Gestaltungssystem: `mockups/shared/system.css` — Tokens, Skala, Kontrastwerte
-- Konkurrenz-Anatomie: `docs/konkurrenz-anatomie.html` — 18 Apps zerlegt
+- Vorstufe: [`mockups/best-of/`](../mockups/best-of/) — sechs Bereiche, je drei Vorbilder zusammengeführt
+- Gestaltungssystem: [`mockups/shared/system.css`](../mockups/shared/system.css) — Tokens, Skala, Kontrastwerte
+- Konkurrenz-Anatomie: [`docs/konkurrenz-anatomie.html`](konkurrenz-anatomie.html) — 18 Apps zerlegt
 - Canvas: `index.html` im Repo-Stamm — lauffähig, mit echter Zeichen-Engine

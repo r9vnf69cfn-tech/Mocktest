@@ -90,6 +90,51 @@
   const INK_FLIP_BELOW = 3;   // darunter ist die Tinte auf dem dunklen Blatt unlesbar
   const INK_TARGET = 4.5;     // so weit wird sie mindestens aufgehellt
 
+  /* ══ Marker auf dunklem Blatt ═══════════════════════════════════════════
+   *
+   * Der Marker ist lasierend: auf hellem Papier nimmt er Licht weg (multiply).
+   * #FFF200 bei 40 % ergibt dort rgb(255,250,153), ein helles Gelb, auf dem
+   * schwarze Handschrift mit 19,36:1 steht.
+   *
+   * Auf dunklem Blatt darf er nicht abdunkeln, sonst frisst er die hell
+   * dargestellte Handschrift unter sich. Darum screen: fährt die Bahn über
+   * schon gezeichnete helle Tinte, bleibt diese hell (weiß bleibt weiß). Wo
+   * die Ebene noch leer ist — der Normalfall, die Bahn liegt auf blankem
+   * Blatt —, gibt es nichts zu verrechnen, und die Bahn kommt als reine
+   * Deckung ihrer Farbe über dem Blatt heraus.
+   *
+   * Was dabei NICHT herauskommt, ist ein leuchtendes Gelb, und es kann auch
+   * keines herauskommen. Über der Bahn steht Handschrift, auf dem dunklen
+   * Blatt weiß dargestellt; Weiß hält 4,5:1 nur, solange die Bahn unter einer
+   * Leuchtdichte von 0,183 bleibt. Heller als rgb(125,120,19) darf die gelbe
+   * Bahn also nicht werden — und jedes Gelb dieser Helligkeit ist ein dunkles
+   * Gold. Die Markierung lebt auf dem dunklen Blatt vom Kontrast zum Blatt
+   * (3,5:1 und mehr), nicht von Leuchtkraft. Alles andere wäre eine Bahn, auf
+   * der man die markierte Handschrift nicht mehr liest.
+   *
+   * Statt fester 40 % wird darum je Farbe die höchste Deckung genommen, bei
+   * der weiße Tinte darüber noch 4,5:1 hält (Schritte von 0,01, gedeckelt bei
+   * 60 % — mehr wäre keine Lasur mehr). Feste 40 % ließen jede Farbe außer
+   * Gelb zu blass herauskommen. Gerechnet gegen das dunkle Blatt #1F1F21:
+   *
+   *   Farbe              Deckung    Bahn             Bahn/Blatt  weiß/Bahn
+   *   #FFF200 Gelb         42 %     rgb(125,120, 19)   3,58:1     4,60:1
+   *   #FFD43B Gold         47 %     rgb(136,116, 45)   3,59:1     4,58:1
+   *   #FFA94D Orange       56 %     rgb(156,108, 58)   3,62:1     4,55:1
+   *   #FF8787 Rot          60 %     rgb(165, 93, 94)   3,39:1     4,85:1
+   *   #8CE99A Grün         48 %     rgb( 83,128, 91)   3,61:1     4,56:1
+   *   #74C0FC Blau         57 %     rgb( 79,123,158)   3,65:1     4,51:1
+   *   #868E96 Grau         60 %     rgb( 93, 98,103)   2,67:1     6,16:1
+   *
+   * Zum Vergleich bei den früheren festen 40 %: Gelb 3,36:1 gegen das Blatt,
+   * Grau nur 1,89:1 — Grau war als Markierung kaum noch zu sehen.
+   * ═════════════════════════════════════════════════════════════════════ */
+
+  const MARKER_ALPHA = 0.4;       // helles Papier: unverändert
+  const MARKER_ALPHA_MAX = 0.6;   // dunkles Blatt: mehr wäre keine Lasur mehr
+  const MARKER_ALPHA_MIN = 0.15;
+  const INK_ON_MARKER = 4.5;      // weiße Handschrift auf der Bahn
+
   class Renderer {
     constructor(canvas) {
       this.canvas = canvas;
@@ -382,13 +427,11 @@
         // Ein einziger Pfad, einmal komponiert — Selbstüberschneidungen
         // dunkeln dadurch nicht nach.
         //
-        // Der Marker bleibt farbig, auch auf dunklem Blatt: gelb ist gelb.
-        // Nur die Rechenart dreht sich um. Auf hellem Papier nimmt der Marker
-        // Licht weg (multiply), auf dunklem gibt er welches dazu (screen) —
-        // sonst würde er die hell dargestellte Handschrift unter sich
-        // abdunkeln statt sie zu markieren.
-        ctx.globalAlpha = 0.4;
-        ctx.globalCompositeOperation = this.sheetIsDark() ? 'screen' : 'multiply';
+        // Rechenart und Deckkraft hängen am Blatt, nicht am Werkzeug:
+        // Block „Marker auf dunklem Blatt" ganz oben erklärt beides.
+        const dark = this.sheetIsDark();
+        ctx.globalAlpha = dark ? markerAlpha(s.color) : MARKER_ALPHA;
+        ctx.globalCompositeOperation = dark ? 'screen' : 'multiply';
         ctx.strokeStyle = s.color;
         ctx.lineWidth = s.width;
         ctx.lineCap = 'butt';
@@ -1188,6 +1231,39 @@
     }
     inkCache.set(color, out);
     return out;
+  }
+
+  const markerCache = new Map();
+
+  /** Deckkraft einer Markerbahn auf dem dunklen Blatt: die höchste, bei der
+   *  weiße Handschrift darüber noch INK_ON_MARKER hält. Zahlen und Begründung:
+   *  Block „Marker auf dunklem Blatt". Hängt nur an der Farbe, darum gepuffert. */
+  function markerAlpha(color) {
+    const cached = markerCache.get(color);
+    if (cached !== undefined) return cached;
+
+    const src = parseHex(color);
+    const bg = parseHex(PAPER.dark.bg);
+    let alpha = MARKER_ALPHA;
+    if (src && bg) {
+      alpha = MARKER_ALPHA_MIN;
+      for (let a = MARKER_ALPHA_MAX; a >= MARKER_ALPHA_MIN; a -= 0.01) {
+        if (contrastRatio(markerBand(src, bg, a), { r: 255, g: 255, b: 255 }) >= INK_ON_MARKER) {
+          alpha = a;
+          break;
+        }
+      }
+    }
+    markerCache.set(color, alpha);
+    return alpha;
+  }
+
+  /** Wie eine Bahn über blankem Blatt herauskommt. Die Objektebene ist dort
+   *  leer, screen hat also nichts zu verrechnen: es bleibt die Deckung der
+   *  Markerfarbe über der Blattfarbe. */
+  function markerBand(src, bg, a) {
+    const mix = (s, d) => (1 - a) * d + a * s;
+    return { r: mix(src.r, bg.r), g: mix(src.g, bg.g), b: mix(src.b, bg.b) };
   }
 
   /* Das Design steht im Wurzelelement; ohne Stempel gilt das System des

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="light">
+<html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -8,6 +8,20 @@
 <meta name="description" content="Pixelnaher Nachbau der GoodNotes-Whiteboard-Oberfläche: Tab-Leiste, Werkzeugleiste, schwebendes Werkzeugmenü und funktionierende Zeichenfläche.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2300A99D'/><path d='M9 22c3-9 5-12 7-12s2 3 0 7-3 5-1 5 4-2 6-5' stroke='white' stroke-width='2.5' fill='none' stroke-linecap='round'/></svg>">
 <link rel="stylesheet" href="css/styles.css">
+
+<!-- Design vor dem ersten Anstrich.
+     Gestempelt wird ausschließlich eine gespeicherte Wahl: dann gilt sie, in
+     beide Richtungen. Ohne gespeicherte Wahl bleibt das Wurzelelement absichtlich
+     ungestempelt — dann entscheidet @media (prefers-color-scheme: dark) in
+     styles.css, und zwar schon beim ersten Anstrich. Darum steht das hier im
+     Kopf und nicht in app.js: app.js läuft erst am Ende des Body und käme zu
+     spät, es würde die falsche Fassung aufblitzen lassen. -->
+<script>
+  try {
+    var gnTheme = localStorage.getItem('gn-theme');
+    if (gnTheme === 'dark' || gnTheme === 'light') document.documentElement.dataset.theme = gnTheme;
+  } catch (err) { /* Ohne Speicher (manche file://-Fälle) folgt das Design dem System. */ }
+</script>
 </head>
 <body>
 

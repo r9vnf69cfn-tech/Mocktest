@@ -39,12 +39,25 @@
     background: var(--paper); border-radius: var(--r-card); box-shadow: var(--sh-card);
   }
   .howto h2 { font: 600 20px/26px var(--sans); letter-spacing: -.015em; margin: 0 0 14px; }
-  /* Zwei Spalten fest, nicht auto-fit: bei drei Spalten bliebe die zweite
-     Zeile halb leer und der Kasten wirkt wie ein Fehler. Der Umbruch auf
-     eine Spalte hängt deshalb an einer eigenen Abfrage (820px) und nicht
-     an der allgemeinen 620px-Abfrage — sonst wäre der Kasten zwischen 621
-     und 760px schmaler als bei 620px. */
-  .howto__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px 30px; }
+  /* Der Umbruch auf eine Spalte hängt an der Mindestbreite einer Spalte,
+     nicht an einer Fensterbreite. Eine feste Abfrage (früher 820px) war für
+     15px-Text gerechnet und ließ in der großen Stufe 19px-Text in dieselbe
+     311px-Spalte laufen — 23 Zeichen je Zeile. --howto-col wächst deshalb
+     mit der Typo-Stufe, und auto-fit rechnet den Rest.
+     Eine Spalte trägt das Zeichen (20px) plus Abstand (11px), der Lesetext
+     ist also 31px schmaler als die Spalte: 360-31 = 329px bei 15px Text,
+     440-31 = 409px bei 19px — beide über 40 Zeichen je Zeile.
+     Drei Spalten können nicht entstehen: dafür bräuchte es 3·360+2·30 =
+     1140px im Kasten, innen sind höchstens 1180-60-48 = 1072px frei. Das
+     ist wichtig, weil bei vier Punkten die zweite Zeile sonst zu drei
+     Vierteln leer bliebe. min(100%, …) hält die Spalte auf schmalen
+     Fenstern im Kasten, statt ihn quer laufen zu lassen. */
+  .howto__grid {
+    --howto-col: 360px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--howto-col)), 1fr));
+    gap: 16px 30px;
+  }
   .howto__item { display: flex; align-items: flex-start; gap: 11px; }
   .howto__item .ico { width: 20px; height: 20px; color: var(--ink-3); margin-top: 1px; }
   .howto__item p { font: 400 15px/20px var(--sans); color: var(--ink-2); margin: 0; max-width: 35em; }
@@ -123,12 +136,20 @@
      Stufe. Auf dieser Seite muss es mitwachsen, sonst stünde in der großen
      Typo-Stufe eine sechste Größe auf der Seite. Die Höhe wächst mit. */
   :root[data-type="gross"] .chip { font-size: 16px; line-height: 20px; height: 32px; }
+  /* 19px Lesetext braucht eine breitere Spalte als 15px, sonst steht der
+     Kasten wieder in Fetzen. Rechnung siehe oben bei .howto__grid. */
+  :root[data-type="gross"] .howto__grid { --howto-col: 440px; }
 
-  /* Der Kasten fällt früher auf eine Spalte als der Rest der Seite:
-     zwei Spalten unter rund 820px Fensterbreite ergäben eine Textspalte
-     unter 300px — schmaler als im einspaltigen Zustand darunter. */
-  @media (max-width: 820px) {
-    .howto__grid { grid-template-columns: 1fr; gap: 14px; }
+  /* Die Bedienleiste steht fixiert oben rechts: 20px vom Rand, rund 298px
+     breit, Unterkante bei 66px. In der großen Stufe ist die gesperrte
+     Versalzeile des Vorspanns rund 324px breit und beginnt 30px vom linken
+     Rand — sie endet also bei 354px und läuft unter die Leiste, sobald das
+     Fenster schmaler als 672px ist. Statt eines Werts auf Kante steht die
+     Grenze bei 780px; das trägt auch eine Schrift, die die Zeile ein
+     Drittel breiter setzt als die hier gemessene. Der Kopf beginnt dann
+     unter der Leiste, wie unter 620px auch. */
+  @media (max-width: 780px) {
+    :root[data-type="gross"] .wrap { padding-top: 84px; }
   }
 
   @media (max-width: 620px) {
@@ -176,7 +197,7 @@
       </div>
       <div class="howto__item">
         <span class="ico" data-ico="photo"></span>
-        <p>Alle übrigen Screens sind <b>Standbilder</b>; zurück zu dieser Seite kommt man mit dem Zurück-Knopf des Browsers.</p>
+        <p>Alle übrigen Screens sind <b>Standbilder</b>. Unten mittig liegt auf jedem eine zweite Leiste: <b>Übersicht</b> führt hierher zurück, die Pfeile daneben zum vorigen und nächsten Screen — dasselbe tun die Pfeiltasten und die Taste <b>U</b>.</p>
       </div>
     </div>
   </div>
@@ -287,7 +308,7 @@
     ['library', 'Bibliothek', 'Cover-Raster, Smart-Ordner, Kontextmenü'],
     ['notes-list', 'Notizen-Liste', 'Tag-Baum, Mehrfachauswahl, Übergabe'],
     ['note-editor', 'Notiz-Editor', 'Blöcke, Wiki-Links, Lückentext-Karte im Flug'],
-    ['journal-home', 'Journal-Home', 'Timeline, Streak, Rückblick'],
+    ['journal-home', 'Journal-Start', 'Timeline, Streak, Rückblick'],
     ['journal-entry', 'Journal-Eintrag', 'Fotos, Audio, Stimmung und Energie'],
     ['tasks', 'Aufgaben', 'Zonen, natürliche Sprache, Geplant vs. Deadline'],
     ['task-detail', 'Aufgaben-Detail', 'Detail klappt in der Liste auf'],

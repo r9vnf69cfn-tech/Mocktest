@@ -21,6 +21,8 @@
      Tertiaertext ink-3 auf --paper            4,97:1
      Aktiver Schalter accent-on auf --accent   17,77:1
      Schalter ink-2 auf --fill ueber --ground  4,90:1
+     Verweisstrich ink-3 auf --paper           4,97:1
+     Verweisstrich ink-3 auf Code-Feld         4,79:1
 
   Dunkel:
      Fliesstext  ink-1 auf --paper             15,86:1
@@ -34,6 +36,8 @@
      Tertiaertext ink-3 auf --paper            5,11:1
      Aktiver Schalter accent-on auf --accent   17,27:1
      Schalter ink-2 auf --fill ueber --ground  6,82:1
+     Verweisstrich ink-3 auf --paper           5,11:1
+     Verweisstrich ink-3 auf Code-Feld         4,70:1
 
   Fliesstext und Tabellenzellen liegen in beiden Modi weit ueber 4,5:1.
   Die schwaechsten Werte sind Sekundaer- und Tertiaertext; auch die
@@ -69,12 +73,16 @@
      ~69 Zeichen. Die Einheit ch skaliert mit der Systemschrift, die
      Zeichenzahl bleibt damit auch bei anderer Schrift stabil. */
   --measure:52ch;
-  /* Blattbreite. Ohne Verzeichnis haengt sie an der Lesebreite: Blatt =
-     Satzspiegel + 44 px Blattrand links/rechts + 24 px Seitenrand
-     links/rechts + 82 px Zugabe, die Tabellen und Code nutzen. Sonst
-     stuende zwischen dem Zeilenende und der Blattkante leeres Papier —
-     genau das passierte vorher zwischen 1040 und 1099 px. Erst wenn das
-     Verzeichnis die linke Spalte fuellt, waechst das Blatt auf 1040 px. */
+  /* Blattbreite. Sie haengt an der Lesebreite: Blatt = Satzspiegel +
+     44 px Blattrand links/rechts + 24 px Seitenrand links/rechts +
+     82 px Zugabe, die Tabellen und Code nutzen. Sonst stuende zwischen
+     dem Zeilenende und der Blattkante leeres Papier.
+     Kommt das Verzeichnis dazu, waechst das Blatt um genau dessen
+     Spalte (--toc + --gap = 288 px) — die Textspalte bleibt dabei auf
+     den Pixel gleich breit (gemessen: 732 px mit und ohne Verzeichnis).
+     Vorher sprang sie an der Grenze von 732 auf 704 px zurueck. */
+  --toc:240px;
+  --gap:48px;
   --sheet:calc(var(--measure) + 218px);
   --bar:56px;
 }
@@ -129,8 +137,20 @@ body{
 /* Kein scroll-behavior:smooth: das 01-Dokument ist ueber 80 000 px hoch,
    ein Sprung ans Ende wuerde sekundenlang durch leere Flaechen animieren. */
 ::selection{ background:var(--fill-2); }
-a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--line-2); }
+/* Ein Verweis darf sich nicht allein durch die Farbe zeigen — er hat
+   ja dieselbe. Also traegt er die Unterstreichung, und die muss man
+   sehen: --line-2 (.18) ergab auf Papier 1,5:1, eine Haarlinie, die
+   neben einem bloss genannten Pfad nicht auffiel. --ink-3 misst
+   4,76:1 hell und 4,56:1 dunkel. */
+a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--ink-3); }
 a:hover{ text-decoration-color:currentColor; }
+/* Steht der Verweistext in einem Code-Feld — bei Pfaden die Regel —,
+   deckt dessen Flaeche die Unterstreichung des <a> zu: das Feld ist
+   22 px hoch, die Zeile des <a> nur 20. Dann unterstreicht das Feld
+   selbst; sonst waere ein anklickbarer Pfad von einem nur genannten
+   nicht zu unterscheiden. */
+a code{ text-decoration:underline; text-decoration-color:var(--ink-3); text-underline-offset:2px; }
+a:hover code{ text-decoration-color:currentColor; }
 :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
 
 /* ── Kopfleiste: Zurueck + Umschalter ───────────────────────────── */
@@ -170,14 +190,20 @@ a:hover{ text-decoration-color:currentColor; }
 
 /* ── Seitenraster ───────────────────────────────────────────────── */
 .page{ max-width:var(--sheet); margin:0 auto; padding:0 24px 120px; }
-@media (min-width:1100px){
-  :root{ --sheet:1040px; }
-  .page{ display:grid; grid-template-columns:240px minmax(0,1fr); gap:48px; align-items:start; }
+/* Die Grenze ist das Blatt selbst: 1068 px = Blatt ohne Verzeichnis
+   (780) + Verzeichnisspalte (240) + Rinne (48). Sobald das Fenster das
+   breitere Blatt traegt, erscheint das Verzeichnis — kein Streifen
+   dazwischen, in dem das Fenster schon breit genug waere und trotzdem
+   nichts passiert. Frueher lag die Grenze bei 1100 px, das Blatt aber
+   bei 1040 px: die 60 px dazwischen blieben ungenutzt. */
+@media (min-width:1068px){
+  :root{ --sheet:calc(var(--measure) + 218px + var(--toc) + var(--gap)); }
+  .page{ display:grid; grid-template-columns:var(--toc) minmax(0,1fr); gap:var(--gap); align-items:start; }
 }
 
 /* ── Inhaltsverzeichnis, breit ──────────────────────────────────── */
 .toc{ display:none; }
-@media (min-width:1100px){
+@media (min-width:1068px){
   .toc{
     display:block; position:sticky; top:calc(var(--bar) + 24px);
     max-height:calc(100vh - var(--bar) - 48px); overflow-y:auto;
@@ -203,7 +229,7 @@ a:hover{ text-decoration-color:currentColor; }
 .toc-narrow{
   margin:0 0 32px; background:var(--paper); border:1px solid var(--line); border-radius:14px;
 }
-@media (min-width:1100px){ .toc-narrow{ display:none; } }
+@media (min-width:1068px){ .toc-narrow{ display:none; } }
 .toc-narrow > summary{
   cursor:pointer; list-style:none;
   display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -264,6 +290,12 @@ a:hover{ text-decoration-color:currentColor; }
 .doc h3::before{ content:counter(sec,decimal-leading-zero) "." counter(sub); }
 .doc h4{ margin:32px 0 12px; font:600 15px/20px var(--sans); color:var(--ink-2); }
 .doc h2:first-child,.doc h3:first-child{ margin-top:32px; }
+/* Die Linie der H2 trennt zwei Abschnitte voneinander. Steht die erste
+   H2 am Blattanfang — auf das-ist-die-app.html steht kein Vorspann
+   davor —, trennte sie den Blattrand von der Ueberschrift: ein Strich
+   ueber nichts. Am Blattanfang faellt sie deshalb weg; die Nummer ueber
+   der Ueberschrift kennzeichnet den Abschnitt dort allein. */
+.doc > h2:first-child{ border-top:0; padding-top:0; }
 .doc h2,.doc h3,.doc h4{ scroll-margin-top:calc(var(--bar) + 20px); }
 
 .anchor{
@@ -364,7 +396,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
 }
 /* Tabellen duerfen breiter sein als der Fliesstext und greifen dafuer
    in den Blattrand. */
-@media (min-width:1100px){
+@media (min-width:1068px){
   .doc > .tablewrap{ margin-left:-28px; margin-right:-28px; width:calc(100% + 56px); }
 }
 .tablebox table{
@@ -419,6 +451,20 @@ h2 code,h3 code,th code{ font-size:.9em; }
 /* Die Kante zeigt sich erst, wenn wirklich etwas dahinter liegt. */
 .tablewrap.is-ab .tablebox .kleb-letzte{ box-shadow:1px 0 0 var(--line-2); }
 
+/* Spaltennamen sind kurz, ihre Zellen sind so breit wie der laengste
+   Inhalt darunter. Beim Scrollen nach rechts verschwand der Name daher
+   als Erstes unter den festgehaltenen Spalten, waehrend vom Inhalt noch
+   ein Rest herausragte — ein Wortfetzen ohne Ueberschrift. Der Name
+   klebt jetzt am rechten Rand des festgehaltenen Blocks (--klebw, vom
+   Skript gesetzt) und wandert nur so weit mit, wie seine Zelle reicht.
+   Ist die Spalte ganz durchgelaufen, geht der Name mit ihr. */
+.tablebox th > .th-t{
+  display:inline-block; max-width:100%;
+  position:sticky; left:var(--klebw,0px);
+}
+/* Die festgehaltenen Spalten stehen ohnehin still. */
+.tablebox th.kleb > .th-t{ position:static; }
+
 /* ── Fuss ───────────────────────────────────────────────────────── */
 /* Am Ende eines langen Dokuments ist die Kopfleiste zehntausende Pixel
    entfernt. Der Fuss verspricht deshalb nicht den Weg zurueck, er ist
@@ -428,7 +474,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
   font:400 13px/16px var(--sans); color:var(--ink-3);
 }
 .colophon a{ color:var(--ink-1); }
-@media (min-width:1100px){ .colophon{ padding-left:312px; } }
+@media (min-width:1068px){ .colophon{ padding-left:calc(var(--toc) + var(--gap) + 24px); } }
 
 /* ── Druck ──────────────────────────────────────────────────────── */
 @media print{
@@ -468,6 +514,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
   /* Auf Papier scrollt nichts, also klebt auch nichts. */
   .tablebox td.kleb,.tablebox th.kleb{ position:static; box-shadow:none; background:none; }
   .tablebox th.kleb{ background:#F2F2F2; }
+  .tablebox th > .th-t{ position:static; }
   tr,thead,blockquote,pre,li{ break-inside:avoid; page-break-inside:avoid; }
   a{ color:#000000; text-decoration:none; }
   .colophon{ padding:0; }
@@ -506,16 +553,16 @@ js/  icons.js  geometry.js  shapes.js  model.js  renderer.js
      popovers.js  tools.js  toolmenu.js  chrome.js  app.js</code></pre>
 <h2 id="aufbau-der-oberflaeche"><span class="h-t">Aufbau der Oberfläche</span><a class="anchor" href="#aufbau-der-oberflaeche" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p>Die obere Chrome besteht aus drei Ebenen — so wie im Whiteboard-Modus von GoodNotes:</p>
-<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col">Ebene</th><th scope="col">Höhe</th><th scope="col">Inhalt</th></tr></thead><tbody><tr><td>Statusleiste</td><td>20 px</td><td>Uhrzeit, WLAN, Batterie (rein optisch, Uhr läuft mit)</td></tr><tr><td><strong>Dokument-Tabs</strong></td><td>44 px</td><td>Bibliothek · Tabs mit Boardtitel und Schließen-× · „+“ für neuen Tab</td></tr><tr><td><strong>Navigationsleiste</strong></td><td>52 px</td><td><strong>links:</strong> Seitenleiste, Suche, AI, Ansichtsmodus — <strong>Mitte:</strong> Rückgängig/Wiederholen ‖ die elf Werkzeuge ‖ Zubehör — <strong>rechts:</strong> Board hinzufügen, Teilen, Mehr</td></tr><tr><td><strong>Werkzeugmenü</strong></td><td>48 px</td><td>Schwebende Glaskapsel unter der Leiste, Inhalt je nach aktivem Werkzeug. Am Griff links an alle vier Bildschirmränder ziehbar; seitlich angedockt klappt sie auf vertikal um.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Ebene</span></th><th scope="col"><span class="th-t">Höhe</span></th><th scope="col"><span class="th-t">Inhalt</span></th></tr></thead><tbody><tr><td>Statusleiste</td><td>20 px</td><td>Uhrzeit, WLAN, Batterie (rein optisch, Uhr läuft mit)</td></tr><tr><td><strong>Dokument-Tabs</strong></td><td>44 px</td><td>Bibliothek · Tabs mit Boardtitel und Schließen-× · „+“ für neuen Tab</td></tr><tr><td><strong>Navigationsleiste</strong></td><td>52 px</td><td><strong>links:</strong> Seitenleiste, Suche, AI, Ansichtsmodus — <strong>Mitte:</strong> Rückgängig/Wiederholen ‖ die elf Werkzeuge ‖ Zubehör — <strong>rechts:</strong> Board hinzufügen, Teilen, Mehr</td></tr><tr><td><strong>Werkzeugmenü</strong></td><td>48 px</td><td>Schwebende Glaskapsel unter der Leiste, Inhalt je nach aktivem Werkzeug. Am Griff links an alle vier Bildschirmränder ziehbar; seitlich angedockt klappt sie auf vertikal um.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Unten links liegt die <strong>Minimap</strong> (ziehen verschiebt die Ansicht, Doppelklick passt alles ein), unten rechts die <strong>Zoomsteuerung</strong>.</p>
 <h2 id="die-elf-werkzeuge"><span class="h-t">Die elf Werkzeuge</span><a class="anchor" href="#die-elf-werkzeuge" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p>Reihenfolge und Verhalten folgen der GoodNotes-Vorlage. „Klebt“ bedeutet: das Werkzeug bleibt aktiv. Die übrigen springen nach ihrer Aktion zurück aufs Lasso — das ist das Rückfallwerkzeug.</p>
-<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:820px"><thead><tr><th scope="col">#</th><th scope="col">Werkzeug</th><th scope="col">Taste</th><th scope="col">Klebt</th><th scope="col">Optionen im Werkzeugmenü</th></tr></thead><tbody><tr><td>1</td><td><strong>Stift</strong></td><td><code>1</code> <code>P</code></td><td>✔</td><td>Stiftart (Füller, Kugelschreiber, Pinsel, Bleistift) · 3 Stärken · 3 Farben + Farbwähler · Druckempfindlichkeit, Glättung, gerade Linien</td></tr><tr><td>2</td><td><strong>Radierer</strong></td><td><code>2</code> <code>E</code></td><td>✔</td><td>Typ (Präzision, Standard, Strich) · 3 Größen · nur Textmarker · Bilder löschbar · Board leeren</td></tr><tr><td>3</td><td><strong>Textmarker</strong></td><td><code>3</code> <code>H</code></td><td>✔</td><td>3 Stärken · 3 Farben · gerade Linien · unter der Tinte zeichnen</td></tr><tr><td>4</td><td><strong>Klebeband</strong></td><td><code>4</code></td><td>✔</td><td>5 Muster (einfarbig, Streifen, Punkte, Karo, gerissen) · Farben · Breite · Deckkraft</td></tr><tr><td>5</td><td><strong>Formen</strong></td><td><code>5</code> <code>S</code></td><td>—</td><td>Füllung + Füllfarbe · Linienstil (durchgezogen, gestrichelt, gepunktet) · 3 Stärken · Farben · Ecken abrunden</td></tr><tr><td>6</td><td><strong>Lasso</strong></td><td><code>6</code> <code>L</code></td><td>✔</td><td>Freihand/Rechteck · fünf Filter (Handschrift, Bilder, Text, Formen, Elemente)</td></tr><tr><td>7</td><td><strong>Text</strong></td><td><code>7</code> <code>T</code></td><td>—</td><td>Schriftart · Größen-Stepper · <strong>B</strong> <em>I</em> U S̶ · Farbe · Ausrichtung · Zeilenabstand · Feldstil · Anheften</td></tr><tr><td>8</td><td><strong>Elemente</strong></td><td><code>8</code></td><td>—</td><td>36 Sticker, Schnellauswahl und Größe</td></tr><tr><td>9</td><td><strong>Bild &amp; Kamera</strong></td><td><code>9</code></td><td>—</td><td>öffnet direkt die Auswahl (Foto/Datei)</td></tr><tr><td>10</td><td><strong>Lineal</strong></td><td><code>0</code></td><td>Umschalter</td><td>Lineal/Winkelmesser · Winkel · Einrasten — ändert das aktive Werkzeug nicht</td></tr><tr><td>11</td><td><strong>Laserpointer</strong></td><td><code>\</code></td><td>✔</td><td>Farben · Spur: verblassend, bleibend, nur Punkt</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:820px"><thead><tr><th scope="col"><span class="th-t">#</span></th><th scope="col"><span class="th-t">Werkzeug</span></th><th scope="col"><span class="th-t">Taste</span></th><th scope="col"><span class="th-t">Klebt</span></th><th scope="col"><span class="th-t">Optionen im Werkzeugmenü</span></th></tr></thead><tbody><tr><td>1</td><td><strong>Stift</strong></td><td><code>1</code> <code>P</code></td><td>✔</td><td>Stiftart (Füller, Kugelschreiber, Pinsel, Bleistift) · 3 Stärken · 3 Farben + Farbwähler · Druckempfindlichkeit, Glättung, gerade Linien</td></tr><tr><td>2</td><td><strong>Radierer</strong></td><td><code>2</code> <code>E</code></td><td>✔</td><td>Typ (Präzision, Standard, Strich) · 3 Größen · nur Textmarker · Bilder löschbar · Board leeren</td></tr><tr><td>3</td><td><strong>Textmarker</strong></td><td><code>3</code> <code>H</code></td><td>✔</td><td>3 Stärken · 3 Farben · gerade Linien · unter der Tinte zeichnen</td></tr><tr><td>4</td><td><strong>Klebeband</strong></td><td><code>4</code></td><td>✔</td><td>5 Muster (einfarbig, Streifen, Punkte, Karo, gerissen) · Farben · Breite · Deckkraft</td></tr><tr><td>5</td><td><strong>Formen</strong></td><td><code>5</code> <code>S</code></td><td>—</td><td>Füllung + Füllfarbe · Linienstil (durchgezogen, gestrichelt, gepunktet) · 3 Stärken · Farben · Ecken abrunden</td></tr><tr><td>6</td><td><strong>Lasso</strong></td><td><code>6</code> <code>L</code></td><td>✔</td><td>Freihand/Rechteck · fünf Filter (Handschrift, Bilder, Text, Formen, Elemente)</td></tr><tr><td>7</td><td><strong>Text</strong></td><td><code>7</code> <code>T</code></td><td>—</td><td>Schriftart · Größen-Stepper · <strong>B</strong> <em>I</em> U S̶ · Farbe · Ausrichtung · Zeilenabstand · Feldstil · Anheften</td></tr><tr><td>8</td><td><strong>Elemente</strong></td><td><code>8</code></td><td>—</td><td>36 Sticker, Schnellauswahl und Größe</td></tr><tr><td>9</td><td><strong>Bild &amp; Kamera</strong></td><td><code>9</code></td><td>—</td><td>öffnet direkt die Auswahl (Foto/Datei)</td></tr><tr><td>10</td><td><strong>Lineal</strong></td><td><code>0</code></td><td>Umschalter</td><td>Lineal/Winkelmesser · Winkel · Einrasten — ändert das aktive Werkzeug nicht</td></tr><tr><td>11</td><td><strong>Laserpointer</strong></td><td><code>\</code></td><td>✔</td><td>Farben · Spur: verblassend, bleibend, nur Punkt</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Ein zweiter Tipp auf das aktive Werkzeug klappt sein Menü ein und wieder aus.</p>
 <h2 id="zeichen-engine"><span class="h-t">Zeichen-Engine</span><a class="anchor" href="#zeichen-engine" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <ul><li><strong>Unendliche Fläche</strong> mit Kamera (<code>screen = welt · zoom + versatz</code>), Zoom von 10 % bis 1600 %, Zoomen um den Cursor.</li><li><strong>Variable Strichbreite</strong>: Stiftdruck (<code>PointerEvent.pressure</code>) bei echten Stiften, sonst aus der Zeichengeschwindigkeit abgeleitet — schnell wird dünn. Die Kontur wird als gefülltes Polygon mit runden Kappen tesselliert; der Bleistift bekommt zusätzlich ein deterministisches Korn.</li><li><strong>Stift schlägt Finger</strong>: Sobald ein echter Stift benutzt wurde, verschiebt der Finger nur noch die Fläche (Handballenerkennung mit 700-ms-Nachlauf). Das Radiererende des Stifts schaltet vorübergehend auf den Radierer.</li><li><code>getCoalescedEvents()</code> holt alle Zwischenpunkte, damit schnelle Striche nicht eckig werden.</li><li><strong>Formerkennung</strong> (<code>js/shapes.js</code>): resampeln → Kreisfit, Ellipsenfit über die Kovarianz-Hauptachsen, Eckenerkennung über die Krümmung. Erkennt Linie, Pfeil, Rechteck, Quadrat, Kreis, Ellipse, Dreieck, Raute, Fünf-/Sechseck und Bogen; bei zu geringer Sicherheit bleibt der Freihandzug stehen.</li><li><strong>Radierer</strong>: Punkt-gegen-Polylinie mit Breite; der Standardtyp zerlegt den Strich in die Teile außerhalb des Kreises, der Strichtyp entfernt ihn ganz.</li><li><strong>Lasso</strong>: Ray-Casting, Auswahlkriterium wie in GoodNotes — ein Strich gilt als ausgewählt, wenn mindestens 60 % seiner Punkte im Polygon liegen.</li><li><strong>Rendering</strong> in drei Ebenen: Papier, ein zwischengespeichertes Offscreen-Bild aller festgeschriebenen Objekte, darüber der laufende Strich. Während des Zeichnens wird der Cache nur geblittet.</li><li><strong>Textmarker</strong> zeichnet mit <code>multiply</code> und 40 % Deckkraft in einem Pfad — Selbstüberschneidungen dunkeln dadurch nicht nach.</li></ul>
 <h2 id="bedienung"><span class="h-t">Bedienung</span><a class="anchor" href="#bedienung" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
-<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col">Kürzel</th><th scope="col">Wirkung</th></tr></thead><tbody><tr><td><code>1</code>–<code>0</code>, <code>\</code></td><td>Werkzeug wählen</td></tr><tr><td><code>⌘Z</code> / <code>⇧⌘Z</code></td><td>Rückgängig / Wiederholen</td></tr><tr><td>Leertaste + Ziehen</td><td>Fläche verschieben</td></tr><tr><td>Scrollen / <code>⌘</code>+Scrollen</td><td>Verschieben / Zoomen</td></tr><tr><td>Zwei Finger</td><td>Verschieben und Zoomen</td></tr><tr><td><code>F</code></td><td>Alles einpassen</td></tr><tr><td><code>⌘0</code> <code>⌘+</code> <code>⌘−</code></td><td>Zoom 100 % / hinein / heraus</td></tr><tr><td><code>⌘A</code> <code>⌘C</code> <code>⌘X</code> <code>⌘V</code> <code>⌘D</code></td><td>Auswählen, Kopieren, Ausschneiden, Einfügen, Duplizieren</td></tr><tr><td><code>⌫</code></td><td>Auswahl löschen</td></tr><tr><td><code>⌘F</code> <code>⌘\</code> <code>⇧⌘R</code> <code>⌘E</code></td><td>Suchen · Seitenleiste · Lesemodus · PNG-Export</td></tr><tr><td>Umschalt beim Ziehen</td><td>Winkel rasten (Formen, Klebeband)</td></tr><tr><td>Am Strichende kurz halten</td><td>Strich begradigen</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col"><span class="th-t">Kürzel</span></th><th scope="col"><span class="th-t">Wirkung</span></th></tr></thead><tbody><tr><td><code>1</code>–<code>0</code>, <code>\</code></td><td>Werkzeug wählen</td></tr><tr><td><code>⌘Z</code> / <code>⇧⌘Z</code></td><td>Rückgängig / Wiederholen</td></tr><tr><td>Leertaste + Ziehen</td><td>Fläche verschieben</td></tr><tr><td>Scrollen / <code>⌘</code>+Scrollen</td><td>Verschieben / Zoomen</td></tr><tr><td>Zwei Finger</td><td>Verschieben und Zoomen</td></tr><tr><td><code>F</code></td><td>Alles einpassen</td></tr><tr><td><code>⌘0</code> <code>⌘+</code> <code>⌘−</code></td><td>Zoom 100 % / hinein / heraus</td></tr><tr><td><code>⌘A</code> <code>⌘C</code> <code>⌘X</code> <code>⌘V</code> <code>⌘D</code></td><td>Auswählen, Kopieren, Ausschneiden, Einfügen, Duplizieren</td></tr><tr><td><code>⌫</code></td><td>Auswahl löschen</td></tr><tr><td><code>⌘F</code> <code>⌘\</code> <code>⇧⌘R</code> <code>⌘E</code></td><td>Suchen · Seitenleiste · Lesemodus · PNG-Export</td></tr><tr><td>Umschalt beim Ziehen</td><td>Winkel rasten (Formen, Klebeband)</td></tr><tr><td>Am Strichende kurz halten</td><td>Strich begradigen</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Bilder lassen sich auf die Fläche ziehen oder mit <code>⌘V</code> einfügen. Der Stand wird laufend im <code>localStorage</code> gesichert und beim nächsten Öffnen wiederhergestellt — mit allen Boards, Inhalten, Kameraposition und Design.</p>
 <h2 id="wie-originalgetreu-ist-das"><span class="h-t">Wie originalgetreu ist das?</span><a class="anchor" href="#wie-originalgetreu-ist-das" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p>Die Oberfläche folgt einer recherchierten Spezifikation der GoodNotes-Whiteboard- Ansicht: Aufbau der drei Leisten, Reihenfolge und Optionen der Werkzeuge, Design-Tokens (Akzentfarbe <code>#00A99D</code> bzw. <code>#1FC7BA</code> im dunklen Design, iOS- Grautöne, Maße, Radien, Schatten, Typografie) und die Popover-Struktur.</p>
@@ -626,7 +673,13 @@ js/  icons.js  geometry.js  shapes.js  model.js  renderer.js
   var boxes = [].slice.call(document.querySelectorAll('.tablebox'));
 
   /* Vordere Spalten festhalten, solange seitwaerts gescrollt wird.
-     Gemessen wird vor dem Kleben — sticky aendert die Breiten nicht. */
+     Gemessen wird vor dem Kleben — sticky aendert die Breiten nicht.
+     Die 45-%-Grenze gilt ab der ERSTEN Spalte. Frueher war sie an
+     i > 0 gebunden; dadurch stand die erste Spalte immer fest, auch
+     wenn sie allein 79 % der sichtbaren Breite frass und zum Lesen
+     nur ein Streifen uebrig blieb. Passt die erste Spalte nicht in
+     die Grenze, klebt gar nichts — dann ist Scrollen ohne Anker
+     immer noch besser als eine Tabelle, die man nicht lesen kann. */
   function klebSpalten(b, mehr){
     var t = b.querySelector('table');
     if (!t || !t.tHead) return;
@@ -638,18 +691,22 @@ js/  icons.js  geometry.js  shapes.js  model.js  renderer.js
         z[c].style.left = '';
       }
     }
+    b.style.setProperty('--klebw','0px');
     if (!mehr) return;
     var kopf = t.tHead.rows[0].cells;
     var grenze = b.clientWidth * 0.45, summe = 0, links = [], n = 0;
     for (var i = 0; i < kopf.length - 1 && i < 2; i++){
       var w = kopf[i].getBoundingClientRect().width;
-      if (i > 0 && summe + w > grenze) break;
+      if (summe + w > grenze) break;
       links.push(summe); summe += w; n = i + 1;
     }
     /* Bliebe nur eine schmale Zaehlspalte stehen, sagt sie nichts —
        dann lieber gar nichts festhalten und die Breite dem Inhalt
        geben. Genau das passiert auf dem Telefon. */
     if (n === 1 && summe < 64) n = 0;
+    /* Breite des festgehaltenen Blocks: daran haengen die Namen der
+       Spalten, die gerade darunter durchlaufen (siehe --klebw im CSS). */
+    b.style.setProperty('--klebw', (n ? summe : 0) + 'px');
     for (var r2 = 0; r2 < zeilen.length; r2++){
       var z2 = zeilen[r2].cells;
       for (var c2 = 0; c2 < n && c2 < z2.length; c2++){

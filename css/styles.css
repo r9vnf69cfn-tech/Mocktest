@@ -101,9 +101,11 @@
   --t-panel: 300ms;
 }
 
-/* Ohne gestempeltes Design gilt die Einstellung des Betrachters. Die App
- * stempelt beim Start selbst (app.js: preferredTheme), dieser Block trägt die
- * Zeit davor — sonst blitzt beim Öffnen kurz das helle Design auf.
+/* Ohne gestempeltes Design gilt die Einstellung des Betrachters.
+ * Gestempelt wird nur eine gespeicherte Wahl, und zwar im Kopf von index.html,
+ * bevor irgendetwas gezeichnet ist. Ohne gespeicherte Wahl bleibt das
+ * Wurzelelement bis zum Start von app.js ungestempelt — diesen Augenblick trägt
+ * dieser Block, sonst blitzte beim Öffnen das helle Design auf.
  * Wortgleich zum Block darunter: CSS kann eine Media-Bedingung und einen
  * Attribut-Zustand nicht in derselben Regel führen. Änderungen in beiden. */
 @media (prefers-color-scheme: dark) {

@@ -21,6 +21,8 @@
      Tertiaertext ink-3 auf --paper            4,97:1
      Aktiver Schalter accent-on auf --accent   17,77:1
      Schalter ink-2 auf --fill ueber --ground  4,90:1
+     Verweisstrich ink-3 auf --paper           4,97:1
+     Verweisstrich ink-3 auf Code-Feld         4,79:1
 
   Dunkel:
      Fliesstext  ink-1 auf --paper             15,86:1
@@ -34,6 +36,8 @@
      Tertiaertext ink-3 auf --paper            5,11:1
      Aktiver Schalter accent-on auf --accent   17,27:1
      Schalter ink-2 auf --fill ueber --ground  6,82:1
+     Verweisstrich ink-3 auf --paper           5,11:1
+     Verweisstrich ink-3 auf Code-Feld         4,70:1
 
   Fliesstext und Tabellenzellen liegen in beiden Modi weit ueber 4,5:1.
   Die schwaechsten Werte sind Sekundaer- und Tertiaertext; auch die
@@ -69,12 +73,16 @@
      ~69 Zeichen. Die Einheit ch skaliert mit der Systemschrift, die
      Zeichenzahl bleibt damit auch bei anderer Schrift stabil. */
   --measure:52ch;
-  /* Blattbreite. Ohne Verzeichnis haengt sie an der Lesebreite: Blatt =
-     Satzspiegel + 44 px Blattrand links/rechts + 24 px Seitenrand
-     links/rechts + 82 px Zugabe, die Tabellen und Code nutzen. Sonst
-     stuende zwischen dem Zeilenende und der Blattkante leeres Papier —
-     genau das passierte vorher zwischen 1040 und 1099 px. Erst wenn das
-     Verzeichnis die linke Spalte fuellt, waechst das Blatt auf 1040 px. */
+  /* Blattbreite. Sie haengt an der Lesebreite: Blatt = Satzspiegel +
+     44 px Blattrand links/rechts + 24 px Seitenrand links/rechts +
+     82 px Zugabe, die Tabellen und Code nutzen. Sonst stuende zwischen
+     dem Zeilenende und der Blattkante leeres Papier.
+     Kommt das Verzeichnis dazu, waechst das Blatt um genau dessen
+     Spalte (--toc + --gap = 288 px) — die Textspalte bleibt dabei auf
+     den Pixel gleich breit (gemessen: 732 px mit und ohne Verzeichnis).
+     Vorher sprang sie an der Grenze von 732 auf 704 px zurueck. */
+  --toc:240px;
+  --gap:48px;
   --sheet:calc(var(--measure) + 218px);
   --bar:56px;
 }
@@ -129,8 +137,20 @@ body{
 /* Kein scroll-behavior:smooth: das 01-Dokument ist ueber 80 000 px hoch,
    ein Sprung ans Ende wuerde sekundenlang durch leere Flaechen animieren. */
 ::selection{ background:var(--fill-2); }
-a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--line-2); }
+/* Ein Verweis darf sich nicht allein durch die Farbe zeigen — er hat
+   ja dieselbe. Also traegt er die Unterstreichung, und die muss man
+   sehen: --line-2 (.18) ergab auf Papier 1,5:1, eine Haarlinie, die
+   neben einem bloss genannten Pfad nicht auffiel. --ink-3 misst
+   4,76:1 hell und 4,56:1 dunkel. */
+a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--ink-3); }
 a:hover{ text-decoration-color:currentColor; }
+/* Steht der Verweistext in einem Code-Feld — bei Pfaden die Regel —,
+   deckt dessen Flaeche die Unterstreichung des <a> zu: das Feld ist
+   22 px hoch, die Zeile des <a> nur 20. Dann unterstreicht das Feld
+   selbst; sonst waere ein anklickbarer Pfad von einem nur genannten
+   nicht zu unterscheiden. */
+a code{ text-decoration:underline; text-decoration-color:var(--ink-3); text-underline-offset:2px; }
+a:hover code{ text-decoration-color:currentColor; }
 :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
 
 /* ── Kopfleiste: Zurueck + Umschalter ───────────────────────────── */
@@ -170,14 +190,20 @@ a:hover{ text-decoration-color:currentColor; }
 
 /* ── Seitenraster ───────────────────────────────────────────────── */
 .page{ max-width:var(--sheet); margin:0 auto; padding:0 24px 120px; }
-@media (min-width:1100px){
-  :root{ --sheet:1040px; }
-  .page{ display:grid; grid-template-columns:240px minmax(0,1fr); gap:48px; align-items:start; }
+/* Die Grenze ist das Blatt selbst: 1068 px = Blatt ohne Verzeichnis
+   (780) + Verzeichnisspalte (240) + Rinne (48). Sobald das Fenster das
+   breitere Blatt traegt, erscheint das Verzeichnis — kein Streifen
+   dazwischen, in dem das Fenster schon breit genug waere und trotzdem
+   nichts passiert. Frueher lag die Grenze bei 1100 px, das Blatt aber
+   bei 1040 px: die 60 px dazwischen blieben ungenutzt. */
+@media (min-width:1068px){
+  :root{ --sheet:calc(var(--measure) + 218px + var(--toc) + var(--gap)); }
+  .page{ display:grid; grid-template-columns:var(--toc) minmax(0,1fr); gap:var(--gap); align-items:start; }
 }
 
 /* ── Inhaltsverzeichnis, breit ──────────────────────────────────── */
 .toc{ display:none; }
-@media (min-width:1100px){
+@media (min-width:1068px){
   .toc{
     display:block; position:sticky; top:calc(var(--bar) + 24px);
     max-height:calc(100vh - var(--bar) - 48px); overflow-y:auto;
@@ -203,7 +229,7 @@ a:hover{ text-decoration-color:currentColor; }
 .toc-narrow{
   margin:0 0 32px; background:var(--paper); border:1px solid var(--line); border-radius:14px;
 }
-@media (min-width:1100px){ .toc-narrow{ display:none; } }
+@media (min-width:1068px){ .toc-narrow{ display:none; } }
 .toc-narrow > summary{
   cursor:pointer; list-style:none;
   display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -264,6 +290,12 @@ a:hover{ text-decoration-color:currentColor; }
 .doc h3::before{ content:counter(sec,decimal-leading-zero) "." counter(sub); }
 .doc h4{ margin:32px 0 12px; font:600 15px/20px var(--sans); color:var(--ink-2); }
 .doc h2:first-child,.doc h3:first-child{ margin-top:32px; }
+/* Die Linie der H2 trennt zwei Abschnitte voneinander. Steht die erste
+   H2 am Blattanfang — auf das-ist-die-app.html steht kein Vorspann
+   davor —, trennte sie den Blattrand von der Ueberschrift: ein Strich
+   ueber nichts. Am Blattanfang faellt sie deshalb weg; die Nummer ueber
+   der Ueberschrift kennzeichnet den Abschnitt dort allein. */
+.doc > h2:first-child{ border-top:0; padding-top:0; }
 .doc h2,.doc h3,.doc h4{ scroll-margin-top:calc(var(--bar) + 20px); }
 
 .anchor{
@@ -364,7 +396,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
 }
 /* Tabellen duerfen breiter sein als der Fliesstext und greifen dafuer
    in den Blattrand. */
-@media (min-width:1100px){
+@media (min-width:1068px){
   .doc > .tablewrap{ margin-left:-28px; margin-right:-28px; width:calc(100% + 56px); }
 }
 .tablebox table{
@@ -419,6 +451,20 @@ h2 code,h3 code,th code{ font-size:.9em; }
 /* Die Kante zeigt sich erst, wenn wirklich etwas dahinter liegt. */
 .tablewrap.is-ab .tablebox .kleb-letzte{ box-shadow:1px 0 0 var(--line-2); }
 
+/* Spaltennamen sind kurz, ihre Zellen sind so breit wie der laengste
+   Inhalt darunter. Beim Scrollen nach rechts verschwand der Name daher
+   als Erstes unter den festgehaltenen Spalten, waehrend vom Inhalt noch
+   ein Rest herausragte — ein Wortfetzen ohne Ueberschrift. Der Name
+   klebt jetzt am rechten Rand des festgehaltenen Blocks (--klebw, vom
+   Skript gesetzt) und wandert nur so weit mit, wie seine Zelle reicht.
+   Ist die Spalte ganz durchgelaufen, geht der Name mit ihr. */
+.tablebox th > .th-t{
+  display:inline-block; max-width:100%;
+  position:sticky; left:var(--klebw,0px);
+}
+/* Die festgehaltenen Spalten stehen ohnehin still. */
+.tablebox th.kleb > .th-t{ position:static; }
+
 /* ── Fuss ───────────────────────────────────────────────────────── */
 /* Am Ende eines langen Dokuments ist die Kopfleiste zehntausende Pixel
    entfernt. Der Fuss verspricht deshalb nicht den Weg zurueck, er ist
@@ -428,7 +474,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
   font:400 13px/16px var(--sans); color:var(--ink-3);
 }
 .colophon a{ color:var(--ink-1); }
-@media (min-width:1100px){ .colophon{ padding-left:312px; } }
+@media (min-width:1068px){ .colophon{ padding-left:calc(var(--toc) + var(--gap) + 24px); } }
 
 /* ── Druck ──────────────────────────────────────────────────────── */
 @media print{
@@ -468,6 +514,7 @@ h2 code,h3 code,th code{ font-size:.9em; }
   /* Auf Papier scrollt nichts, also klebt auch nichts. */
   .tablebox td.kleb,.tablebox th.kleb{ position:static; box-shadow:none; background:none; }
   .tablebox th.kleb{ background:#F2F2F2; }
+  .tablebox th > .th-t{ position:static; }
   tr,thead,blockquote,pre,li{ break-inside:avoid; page-break-inside:avoid; }
   a{ color:#000000; text-decoration:none; }
   .colophon{ padding:0; }
@@ -505,31 +552,31 @@ h2 code,h3 code,th code{ font-size:.9em; }
 <p>Die Beispielwelt aller Mockups ist deshalb konkret: Emil, Biologie im dritten Semester, Notizbuch „Zellbiologie“, Abgabe bei Prof. Wendt am Freitag.</p>
 <h2 id="der-eine-grund-zu-wechseln"><span class="h-t">Der eine Grund zu wechseln</span><a class="anchor" href="#der-eine-grund-zu-wechseln" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p><strong>Der Weg zwischen den Werkzeugen entfällt.</strong> Heute kostet dieselbe Arbeit fünf Apps und drei Exporte: In Bear steht die Notiz, in Anki liegen die Karten, in Things die Abgabe — und keine dieser Apps weiß von den anderen. Hier ist die Kette ein Objekt: Die Notiz weiß, dass aus ihr zwölf Karten wurden, die Karte weiß, aus welchem Absatz sie stammt, und der Tageseinstieg erzählt beides in einer Zeile.</p>
-<p>Kein Konkurrent kann das. RemNote kommt am nächsten, bezahlt es aber mit einer Lernkurve, die Rezensenten regelmäßig als Haupthürde nennen (siehe <code>konkurrenz-anatomie.html</code>, Kapitel Lernkarten).</p>
+<p>Kein Konkurrent kann das. RemNote kommt am nächsten, bezahlt es aber mit einer Lernkurve, die Rezensenten regelmäßig als Haupthürde nennen (siehe <a href="konkurrenz-anatomie.html"><code>konkurrenz-anatomie.html</code></a>, Kapitel Lernkarten).</p>
 <h2 id="wie-sie-aussieht-und-warum"><span class="h-t">Wie sie aussieht — und warum</span><a class="anchor" href="#wie-sie-aussieht-und-warum" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <h3 id="das-prinzip-in-einem-satz"><span class="h-t">Das Prinzip in einem Satz</span><a class="anchor" href="#das-prinzip-in-einem-satz" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <blockquote><p><strong>Die App ist Papier und Grau; die einzige Farbe, die zählt, hat der Nutzer hineingebracht — und jede Spur, die seine Arbeit zwischen den Modulen hinterlässt, bleibt sichtbar.</strong></p></blockquote>
 <p>Daraus folgt alles Weitere: das Farbsystem, die Zurückhaltung der Oberfläche, die Herkunfts-Chips, die Ketten-Karte.</p>
 <h3 id="farbe"><span class="h-t">Farbe</span><a class="anchor" href="#farbe" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <p>Ein einziger Akzent, <strong>Ink</strong>: fast-schwarz (<code>#16181C</code>) im hellen, fast-weiß (<code>#F2F3F5</code>) im dunklen Modus. Er hat genau drei Aufgaben — aktiver Zustand, primäre Aktion, Auswahl. Nichts sonst ist eingefärbt.</p>
-<p>Die fünf Modul-Farben erscheinen ausschließlich als <strong>6-pt-Punkte</strong> neben einem Wort und als Akzent auf Notizbuch-Covern. Sie färben nie eine Fläche, keinen Text und keinen Knopf; die Einstellungen erklären das dem Nutzer sogar wörtlich (<code>app-next/settings.html</code>). Rot bleibt dem Löschen und der Deadline vorbehalten, Grün dem Erfolg.</p>
+<p>Die fünf Modul-Farben erscheinen ausschließlich als <strong>6-pt-Punkte</strong> neben einem Wort und als Akzent auf Notizbuch-Covern. Sie färben nie eine Fläche, keinen Text und keinen Knopf; die Einstellungen erklären das dem Nutzer sogar wörtlich (<a href="../mockups/app-next/settings.html"><code>app-next/settings.html</code></a>). Rot bleibt dem Löschen und der Deadline vorbehalten, Grün dem Erfolg.</p>
 <p>Warum so streng: Sechs Module mit sechs Hausfarben ergeben ein Sammelsurium, in dem der Nutzer die Farbe der App liest statt seiner eigenen Inhalte. Bear (ein Akzent) und Things (ein Akzent) sind die beiden ADA-Gewinner im Feld — Todoist mit vier Prioritätsfarben ist die App, bei der man am längsten sucht, was gemeint ist.</p>
 <p><strong>Jeder Wert ist gerechnet, nicht geschätzt</strong> (<code>shared/system.css</code>, §1): Fließtext 17,8:1 auf Papier, Sekundärtext 5,3:1, Tertiärtext 4,8:1, Text auf Akzentfläche 17,8:1. Zwei Modul-Punkte erreichen im hellen Modus nur 2,95:1 bzw. 2,83:1 — deshalb stehen Punkte <strong>nie allein</strong>, sondern immer neben ihrem Wort, und für den Fall, dass die Farbe doch einmal ein Icon trägt, gibt es abgedunkelte Varianten über 3:1.</p>
 <h3 id="typografie"><span class="h-t">Typografie</span><a class="anchor" href="#typografie" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <p>Fünf Größen, zwei Gewichte, feste Rollen:</p>
-<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col">Rolle</th><th scope="col">Größe</th><th scope="col">Gewicht</th><th scope="col">Wofür</th></tr></thead><tbody><tr><td>Titel</td><td>28/34</td><td>600</td><td>Screen-Titel, Begrüßung</td></tr><tr><td>Sektion</td><td>20/26</td><td>600</td><td>Sektionsköpfe, Karten- und Eintragstitel</td></tr><tr><td>Text</td><td>17/23</td><td>400</td><td>Fließtext, Listenzeile — die Arbeitsgröße</td></tr><tr><td>Sekundär</td><td>15/20</td><td>400</td><td>Untertitel, Metadaten, Vorschauzeilen</td></tr><tr><td>Marke</td><td>13/16</td><td>600</td><td>Chips, Zähler, Eyebrows</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Rolle</span></th><th scope="col"><span class="th-t">Größe</span></th><th scope="col"><span class="th-t">Gewicht</span></th><th scope="col"><span class="th-t">Wofür</span></th></tr></thead><tbody><tr><td>Titel</td><td>28/34</td><td>600</td><td>Screen-Titel, Begrüßung</td></tr><tr><td>Sektion</td><td>20/26</td><td>600</td><td>Sektionsköpfe, Karten- und Eintragstitel</td></tr><tr><td>Text</td><td>17/23</td><td>400</td><td>Fließtext, Listenzeile — die Arbeitsgröße</td></tr><tr><td>Sekundär</td><td>15/20</td><td>400</td><td>Untertitel, Metadaten, Vorschauzeilen</td></tr><tr><td>Marke</td><td>13/16</td><td>600</td><td>Chips, Zähler, Eyebrows</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <p>Genau <strong>eine</strong> begründete Ausnahme: Die Tab-Beschriftung auf dem iPhone läuft mit 11 pt (iOS-Standard). Bei 13 pt kollidieren „Bibliothek“ und „Aufgaben“ auf 393 pt Breite — überlappender Text wiegt schwerer als eine sechste Stufe an einer Stelle.</p>
-<p><strong>Serif ist keine sechste Größe, sondern eine Regel:</strong> Die Oberfläche spricht Sans, was der Nutzer geschrieben hat, darf Serif. Sichtbar im Notiz-Editor (<code>app-next/note-editor.html</code>), im Journal-Eintrag (<code>journal-entry.html</code>) und auf der Antwortseite der Lernkarte (<code>review-session.html</code>). Der Bruch markiert eine echte Grenze: hier Werkzeug, dort Inhalt.</p>
+<p><strong>Serif ist keine sechste Größe, sondern eine Regel:</strong> Die Oberfläche spricht Sans, was der Nutzer geschrieben hat, darf Serif. Sichtbar im Notiz-Editor (<a href="../mockups/app-next/note-editor.html"><code>app-next/note-editor.html</code></a>), im Journal-Eintrag (<a href="../mockups/app-next/journal-entry.html"><code>journal-entry.html</code></a>) und auf der Antwortseite der Lernkarte (<a href="../mockups/app-next/review-session.html"><code>review-session.html</code></a>). Der Bruch markiert eine echte Grenze: hier Werkzeug, dort Inhalt.</p>
 <h3 id="raster-und-dichte"><span class="h-t">Raster und Dichte</span><a class="anchor" href="#raster-und-dichte" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
-<p><strong>iPad</strong> (1194 × 834): Sidebar 320 pt, Inhalt mit 24 pt Rand, wo sinnvoll zweispaltig — links die Arbeit, rechts der Kontext. Diese Teilung trägt <code>today.html</code>, <code>tasks.html</code>, <code>journal-home.html</code> und <code>flashcards-home.html</code>.</p>
+<p><strong>iPad</strong> (1194 × 834): Sidebar 320 pt, Inhalt mit 24 pt Rand, wo sinnvoll zweispaltig — links die Arbeit, rechts der Kontext. Diese Teilung trägt <a href="../mockups/app-next/today.html"><code>today.html</code></a>, <a href="../mockups/app-next/tasks.html"><code>tasks.html</code></a>, <a href="../mockups/app-next/journal-home.html"><code>journal-home.html</code></a> und <a href="../mockups/app-next/flashcards-home.html"><code>flashcards-home.html</code></a>.</p>
 <p><strong>iPhone</strong> (393 × 852): 20 pt Rand, Tab-Bar statt Sidebar, dieselben Abschnitte gestapelt. Wichtigste Regel: Was man häufig tut, liegt im unteren Drittel — Schnellerfassung, primäre Knöpfe, die Bewertungsknöpfe der Lernsitzung als 2×2-Raster.</p>
 <p>Die Dichte ist <strong>arbeitsteilig</strong>, nicht gleichmäßig — die Lehre aus Bear: Ruhe beim Schreiben, Dichte beim Verwalten. Der Editor trägt nur Text; die Aufgabenliste trägt Zeilen; die Bibliothek trägt Cover.</p>
 <h3 id="zustaende-ohne-farbe"><span class="h-t">Zustände ohne Farbe</span><a class="anchor" href="#zustaende-ohne-farbe" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <p>Jeder Zustand hat zwei Merkmale, keiner hängt an Farbe allein:</p>
-<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col">Zustand</th><th scope="col">Merkmale</th></tr></thead><tbody><tr><td>aktiv</td><td>getönte Fläche + Schriftgewicht + Ink-Balken links</td></tr><tr><td>ausgewählt</td><td>getönte Fläche + 1,5-pt-Ring</td></tr><tr><td>deaktiviert</td><td>Deckkraft 38 % + fehlende Fläche</td></tr><tr><td>Deadline</td><td>rotes Wort + Flaggen-Symbol + Restzeit</td></tr><tr><td>Fehler</td><td>Randlinie + Symbol + Klartext, was zu tun ist</td></tr><tr><td>Laden</td><td>Skelettfläche an der Stelle des Inhalts, nie ein Spinner ohne Kontext</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col"><span class="th-t">Zustand</span></th><th scope="col"><span class="th-t">Merkmale</span></th></tr></thead><tbody><tr><td>aktiv</td><td>getönte Fläche + Schriftgewicht + Ink-Balken links</td></tr><tr><td>ausgewählt</td><td>getönte Fläche + 1,5-pt-Ring</td></tr><tr><td>deaktiviert</td><td>Deckkraft 38 % + fehlende Fläche</td></tr><tr><td>Deadline</td><td>rotes Wort + Flaggen-Symbol + Restzeit</td></tr><tr><td>Fehler</td><td>Randlinie + Symbol + Klartext, was zu tun ist</td></tr><tr><td>Laden</td><td>Skelettfläche an der Stelle des Inhalts, nie ein Spinner ohne Kontext</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <h3 id="bewegung"><span class="h-t">Bewegung</span><a class="anchor" href="#bewegung" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <p>Vier Übergänge, jeder mit einer Aufgabe:</p>
-<ul><li><strong>Öffnen</strong> (260 ms): Karte wächst aus ihrer Position. Das Detail einer Aufgabe klappt <em>in</em> der Liste auf, statt einen Screen zu schieben (<code>task-detail.html</code>) — von Things 3.</li><li><strong>Modulwechsel</strong> (180 ms): nur Überblendung. Ein Wechsel ist kein Ereignis.</li><li><strong>Bestätigen</strong> (120 ms): Die Checkbox zieht ihren Ring zusammen, während der Haken wächst. Auf <code>today.html</code> und <code>tasks.html</code> ist dieser Moment <strong>eingefroren sichtbar</strong>.</li><li><strong>Übergabe</strong> (420 ms) — die Signature: Die Auswahl faltet sich zu einer kleinen Karte, fliegt zum Ziel und landet dort als Chip. In <code>note-editor.html</code> steht sie mitten im Flug, mit Spur und dem Umriss am Ausgangsort.</li></ul>
+<ul><li><strong>Öffnen</strong> (260 ms): Karte wächst aus ihrer Position. Das Detail einer Aufgabe klappt <em>in</em> der Liste auf, statt einen Screen zu schieben (<a href="../mockups/app-next/task-detail.html"><code>task-detail.html</code></a>) — von Things 3.</li><li><strong>Modulwechsel</strong> (180 ms): nur Überblendung. Ein Wechsel ist kein Ereignis.</li><li><strong>Bestätigen</strong> (120 ms): Die Checkbox zieht ihren Ring zusammen, während der Haken wächst. Auf <a href="../mockups/app-next/today.html"><code>today.html</code></a> und <a href="../mockups/app-next/tasks.html"><code>tasks.html</code></a> ist dieser Moment <strong>eingefroren sichtbar</strong>.</li><li><strong>Übergabe</strong> (420 ms) — die Signature: Die Auswahl faltet sich zu einer kleinen Karte, fliegt zum Ziel und landet dort als Chip. In <a href="../mockups/app-next/note-editor.html"><code>note-editor.html</code></a> steht sie mitten im Flug, mit Spur und dem Umriss am Ausgangsort.</li></ul>
 <h2 id="wie-sie-sich-anfuehlt"><span class="h-t">Wie sie sich anfühlt</span><a class="anchor" href="#wie-sie-sich-anfuehlt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p><strong>Die Übergabe.</strong> Ein Satz in der Notiz ist markiert, darüber steht eine Leiste — dieselbe, egal ob die Auswahl Handschrift, Text oder Objekte sind. Ein Tipp auf „Lückentext-Karte“, und die Karte faltet sich aus dem Satz heraus, fliegt in die rechte Spalte und der Zähler dort springt von 11 auf 12.</p>
 <p><strong>Die Kette am Morgen.</strong> Der Tageseinstieg begrüßt nicht mit einer Kachelwand, sondern erzählt: „Zellbiologie“ → 12 Karten → 8 heute fällig, ca. 4 Minuten. Jede Station ist anspringbar, und am Ende steht der Knopf, der die vier Minuten sofort einlöst.</p>
@@ -540,12 +587,12 @@ h2 code,h3 code,th code{ font-size:.9em; }
 <ul><li><strong>Kein Team-Werkzeug.</strong> Es gibt Teilen, aber keine Kommentarfäden, keine Zuweisungen, keine Rollen. Wer zu fünft an einem Dokument arbeitet, ist hier falsch.</li><li><strong>Keine zweite Notion.</strong> Keine Datenbanken, keine Formeln, keine frei konfigurierbaren Ansichten. Die App hat eine Meinung, wie die fünf Module zusammenhängen — genau das ist ihr Wert.</li><li><strong>Kein Belohnungssystem.</strong> Es gibt eine Serie, aber keine Punkte, keine Ränge, keine Vergleiche mit anderen. Und die Serie ist abschaltbar: Eine App darf niemanden dafür bestrafen, dass er sie diese Woche nur für Aufgaben braucht — der Fehler, den Apple Journal bis heute nicht behebt.</li><li><strong>Kein Theme-Baukasten.</strong> Zwei Modi, beide fertig gestaltet. Bear hat 28 Themes; das ist Personalisierung als Ersatz für Entscheidung.</li><li><strong>Kein Marktplatz.</strong> Die Bibliothek ist der Ort für die eigenen Dokumente, nicht für Vorlagenwerbung.</li></ul>
 <h2 id="award-bilanz"><span class="h-t">Award-Bilanz</span><a class="anchor" href="#award-bilanz" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
 <p>Bewertung des vorliegenden Entwurfs gegen die fünf ADA-Kategorien. Skala: <strong>1 = preiswürdig … 5 = disqualifizierend</strong>.</p>
-<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col">Kategorie</th><th scope="col">Note</th><th scope="col">Begründung</th></tr></thead><tbody><tr><td><strong>Inklusion</strong></td><td><strong>2</strong></td><td>Alle Kontraste sind gerechnet und dokumentiert, jeder Zustand trägt zwei Merkmale, Dynamic Type ist in zwei Stufen durchgezeichnet, 44-pt-Ziele durchgehend. Ein eigener Schirm zeigt sechs leere Zustände, die alle den nächsten Schritt benennen statt ihn zu verstecken. Zur 1 fehlt die geprüfte VoiceOver-Reihenfolge: Ein Mockup kann Vorlesereihenfolge und Rotor-Struktur behaupten, aber nicht beweisen.</td></tr><tr><td><strong>Delight &amp; Fun</strong></td><td><strong>2</strong></td><td>Vier Momente sind als eingefrorene Zwischenzustände wirklich sichtbar — die fliegende Karte, die Checkbox im Umlegen, die Karte im Flip, der Schalter zwischen den Positionen. Zur 1 fehlt die Bewegung selbst: In statischen Screens bleibt die Signature-Animation eine Behauptung.</td></tr><tr><td><strong>Interaktion</strong></td><td><strong>2</strong></td><td>Der nächste Schritt ist überall benannt und beziffert („Lernen · ca. 4 Minuten“), das Detail klappt in der Liste auf statt zu navigieren, dieselbe Aufgabe kostet auf dem iPhone nicht mehr Taps. Abzug für das Lineal- und Zoom-Verhalten im Canvas, das nur beschrieben, nicht durchgespielt ist.</td></tr><tr><td><strong>Visuals &amp; Grafik</strong></td><td><strong>1–2</strong></td><td>Ein Raster, eine Typo-Skala, eine Materialsprache über 18 Screens hinweg, ein einziger Akzent, alle Werte in einer gemeinsamen Datei. Das ist die stärkste Kategorie des Entwurfs. Der halbe Punkt Abzug geht an die Notizbuch-Cover: Sie sind aus Mustern gebaut, weil kein Bildmaterial vorlag.</td></tr><tr><td><strong>Innovation</strong></td><td><strong>1</strong></td><td>Die Kette ist keine Fußnote, sondern trägt den Einstiegsscreen, den Editor, die Lernsitzung und den Graphen. Sie ist überall dieselbe Leiste, hinterlässt überall denselben Herkunfts-Chip, und keiner der 18 untersuchten Konkurrenten hat sie.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Kategorie</span></th><th scope="col"><span class="th-t">Note</span></th><th scope="col"><span class="th-t">Begründung</span></th></tr></thead><tbody><tr><td><strong>Inklusion</strong></td><td><strong>2</strong></td><td>Alle Kontraste sind gerechnet und dokumentiert, jeder Zustand trägt zwei Merkmale, Dynamic Type ist in zwei Stufen durchgezeichnet, 44-pt-Ziele durchgehend. Ein eigener Schirm zeigt sechs leere Zustände, die alle den nächsten Schritt benennen statt ihn zu verstecken. Zur 1 fehlt die geprüfte VoiceOver-Reihenfolge: Ein Mockup kann Vorlesereihenfolge und Rotor-Struktur behaupten, aber nicht beweisen.</td></tr><tr><td><strong>Delight &amp; Fun</strong></td><td><strong>2</strong></td><td>Vier Momente sind als eingefrorene Zwischenzustände wirklich sichtbar — die fliegende Karte, die Checkbox im Umlegen, die Karte im Flip, der Schalter zwischen den Positionen. Zur 1 fehlt die Bewegung selbst: In statischen Screens bleibt die Signature-Animation eine Behauptung.</td></tr><tr><td><strong>Interaktion</strong></td><td><strong>2</strong></td><td>Der nächste Schritt ist überall benannt und beziffert („Lernen · ca. 4 Minuten“), das Detail klappt in der Liste auf statt zu navigieren, dieselbe Aufgabe kostet auf dem iPhone nicht mehr Taps. Abzug für das Lineal- und Zoom-Verhalten im Canvas, das nur beschrieben, nicht durchgespielt ist.</td></tr><tr><td><strong>Visuals &amp; Grafik</strong></td><td><strong>1–2</strong></td><td>Ein Raster, eine Typo-Skala, eine Materialsprache über 18 Screens hinweg, ein einziger Akzent, alle Werte in einer gemeinsamen Datei. Das ist die stärkste Kategorie des Entwurfs. Der halbe Punkt Abzug geht an die Notizbuch-Cover: Sie sind aus Mustern gebaut, weil kein Bildmaterial vorlag.</td></tr><tr><td><strong>Innovation</strong></td><td><strong>1</strong></td><td>Die Kette ist keine Fußnote, sondern trägt den Einstiegsscreen, den Editor, die Lernsitzung und den Graphen. Sie ist überall dieselbe Leiste, hinterlässt überall denselben Herkunfts-Chip, und keiner der 18 untersuchten Konkurrenten hat sie.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
 <h3 id="die-eine-sache-die-noch-fehlt"><span class="h-t">Die eine Sache, die noch fehlt</span><a class="anchor" href="#die-eine-sache-die-noch-fehlt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
 <p><strong>Bewegung, die man sehen kann.</strong> Alles andere ist da — aber die Jury sitzt vor einem laufenden Gerät, nicht vor einem PNG. Die Übergabe ist der Moment, an dem sich diese App von jeder anderen unterscheidet, und in einem statischen Screen bleibt sie ein Standbild mit Spur.</p>
 <p>Was fehlt, ist ein <strong>lauffähiger Prototyp genau dieser 420 ms</strong>: der markierte Satz, der sich zur Karte faltet, an der Übergabe-Leiste abhebt, in die Seitenspalte fliegt und den Zähler dort umspringen lässt. Das Canvas-Mockup in diesem Repo zeigt, dass so etwas als echte Engine baubar ist. Solange dieser eine Übergang nur behauptet ist, hält die Jury nicht inne — mit ihm wird er die Stelle, die man einem Freund zeigt.</p>
 <h2 id="verweise"><span class="h-t">Verweise</span><a class="anchor" href="#verweise" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
-<ul><li>Alle Mockups: <code>mockups/index.html</code></li><li>Der Entwurf: <code>mockups/app-next/</code> — dreizehn Screens, je hell/dunkel und iPad/iPhone</li><li>Kontaktbögen: <code>mockups/_renders/kontaktbogen-*.png</code> — alle Screens auf je einem Blatt</li><li>Vorstufe: <code>mockups/best-of/</code> — sechs Bereiche, je drei Vorbilder zusammengeführt</li><li>Gestaltungssystem: <code>mockups/shared/system.css</code> — Tokens, Skala, Kontrastwerte</li><li>Konkurrenz-Anatomie: <code>docs/konkurrenz-anatomie.html</code> — 18 Apps zerlegt</li><li>Canvas: <code>index.html</code> im Repo-Stamm — lauffähig, mit echter Zeichen-Engine</li></ul>
+<ul><li>Alle Mockups: <a href="../mockups/index.html"><code>mockups/index.html</code></a></li><li>Der Entwurf: <a href="../mockups/app-next/"><code>mockups/app-next/</code></a> — dreizehn Screens, je hell/dunkel und iPad/iPhone</li><li>Kontaktbögen: <code>mockups/_renders/kontaktbogen-*.png</code> — alle Screens auf je einem Blatt</li><li>Vorstufe: <a href="../mockups/best-of/"><code>mockups/best-of/</code></a> — sechs Bereiche, je drei Vorbilder zusammengeführt</li><li>Gestaltungssystem: <a href="../mockups/shared/system.css"><code>mockups/shared/system.css</code></a> — Tokens, Skala, Kontrastwerte</li><li>Konkurrenz-Anatomie: <a href="konkurrenz-anatomie.html"><code>docs/konkurrenz-anatomie.html</code></a> — 18 Apps zerlegt</li><li>Canvas: <code>index.html</code> im Repo-Stamm — lauffähig, mit echter Zeichen-Engine</li></ul>
     </article>
   </main>
 </div>
@@ -649,7 +696,13 @@ h2 code,h3 code,th code{ font-size:.9em; }
   var boxes = [].slice.call(document.querySelectorAll('.tablebox'));
 
   /* Vordere Spalten festhalten, solange seitwaerts gescrollt wird.
-     Gemessen wird vor dem Kleben — sticky aendert die Breiten nicht. */
+     Gemessen wird vor dem Kleben — sticky aendert die Breiten nicht.
+     Die 45-%-Grenze gilt ab der ERSTEN Spalte. Frueher war sie an
+     i > 0 gebunden; dadurch stand die erste Spalte immer fest, auch
+     wenn sie allein 79 % der sichtbaren Breite frass und zum Lesen
+     nur ein Streifen uebrig blieb. Passt die erste Spalte nicht in
+     die Grenze, klebt gar nichts — dann ist Scrollen ohne Anker
+     immer noch besser als eine Tabelle, die man nicht lesen kann. */
   function klebSpalten(b, mehr){
     var t = b.querySelector('table');
     if (!t || !t.tHead) return;
@@ -661,18 +714,22 @@ h2 code,h3 code,th code{ font-size:.9em; }
         z[c].style.left = '';
       }
     }
+    b.style.setProperty('--klebw','0px');
     if (!mehr) return;
     var kopf = t.tHead.rows[0].cells;
     var grenze = b.clientWidth * 0.45, summe = 0, links = [], n = 0;
     for (var i = 0; i < kopf.length - 1 && i < 2; i++){
       var w = kopf[i].getBoundingClientRect().width;
-      if (i > 0 && summe + w > grenze) break;
+      if (summe + w > grenze) break;
       links.push(summe); summe += w; n = i + 1;
     }
     /* Bliebe nur eine schmale Zaehlspalte stehen, sagt sie nichts —
        dann lieber gar nichts festhalten und die Breite dem Inhalt
        geben. Genau das passiert auf dem Telefon. */
     if (n === 1 && summe < 64) n = 0;
+    /* Breite des festgehaltenen Blocks: daran haengen die Namen der
+       Spalten, die gerade darunter durchlaufen (siehe --klebw im CSS). */
+    b.style.setProperty('--klebw', (n ? summe : 0) + 'px');
     for (var r2 = 0; r2 < zeilen.length; r2++){
       var z2 = zeilen[r2].cells;
       for (var c2 = 0; c2 < n && c2 < z2.length; c2++){

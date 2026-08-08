@@ -30,7 +30,11 @@
       this.toolMenu = new GN.ToolMenu(this);
 
       GN.hydrateIcons(document);
-      this.applyTheme(readStored('gn-theme') || preferredTheme());
+      // Gespeicherte Wahl zuerst, sonst das System. Beides ohne zu speichern:
+      // gespeichert wird nur, was jemand im Menü selbst umlegt — sonst brennt
+      // sich der Systemzustand des ersten Besuchs als feste Wahl ein.
+      this.applyTheme(readStored('gn-theme') || preferredTheme(), false);
+      this.watchSystemTheme();
       this.startClock();
 
       this.ws.on((reason) => this.onDocChanged(reason));
@@ -755,6 +759,9 @@
               this.board.paper = id;
               this.ws.emit('paper');
               this.renderer.invalidate();
+              // Mit dem Blatt wechselt auch, wie Tinte dargestellt wird — die
+              // Farbfelder im Werkzeugmenü zeigen es mit.
+              this.toolMenu.render();
               pop.close();
             },
           }, [el('i', { dataset: { paper: id } }), el('span', { text: label })])
@@ -1007,14 +1014,31 @@
 
     /* ── Design & Hinweise ────────────────────────────────────────────── */
 
-    applyTheme(theme) {
+    /**
+     * Setzt das Design. `persist` unterscheidet die eigene Wahl von der
+     * bloßen Übernahme des Systems: nur eine eigene Wahl wird gespeichert und
+     * schlägt danach das System — in beide Richtungen.
+     */
+    applyTheme(theme, persist = true) {
       document.documentElement.dataset.theme = theme;
       GN.render.clearVarCache();
       this.renderer.invalidate();
       this.chrome.renderMinimap();
+      this.toolMenu.render();
+      if (!persist) return;
       try {
         localStorage.setItem('gn-theme', theme);
       } catch (err) { /* egal */ }
+    }
+
+    /** Ohne eigene Wahl folgt die App dem System auch später noch. */
+    watchSystemTheme() {
+      const mq = global.matchMedia && global.matchMedia('(prefers-color-scheme: dark)');
+      if (!mq || !mq.addEventListener) return;
+      mq.addEventListener('change', (e) => {
+        if (readStored('gn-theme')) return;
+        this.applyTheme(e.matches ? 'dark' : 'light', false);
+      });
     }
 
     startClock() {
@@ -1162,10 +1186,11 @@
     return String(s).toLowerCase().replace(/[^a-z0-9äöüß]+/gi, '-').replace(/^-|-$/g, '') || 'whiteboard';
   }
 
-  /** Ohne gespeicherte Wahl folgt das Design dem System des Betrachters. */
+  /** Das Design des Systems. Der Stempel am Wurzelelement wird bewusst NICHT
+   *  gelesen: er stammt aus dem Kopf von index.html und trägt genau das, was in
+   *  readStored('gn-theme') steht — ihn hier noch einmal zu befragen, hieße das
+   *  System nie zu fragen. */
   function preferredTheme() {
-    const stamped = document.documentElement.getAttribute('data-theme');
-    if (stamped === 'dark' || stamped === 'light') return stamped;
     return global.matchMedia && global.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
