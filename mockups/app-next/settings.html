@@ -48,7 +48,7 @@ BEWUSST NICHT ÜBERNOMMEN
 DAS BESONDERE AN DIESEM SCHIRM
 Einstellungen zeigen bei fast allen Apps Schalter ohne Folgen. Hier steht neben
 jedem Regler seine Wirkung: Die Schriftgröße erscheint dreimal als echte Zeile
-(„Mitochondrium") in genau den Stufen der Typo-Skala. „Zeitangaben relativ"
+(„Mitochondrium", auf dem iPhone „Osmose") in genau den Stufen der Skala. „Zeitangaben relativ"
 zeigt das Ergebnis mit („vor 18 Minuten" statt „09:23"). „Bewegung reduzieren"
 sagt, was mit der Übergabe zwischen Modulen passiert — der Signatur-Animation
 dieser App. Und die Modul-Farben werden nicht angeboten, sondern erklärt: fünf
@@ -152,7 +152,7 @@ Skala selbst, keine Simulation.
               <button class="navitem is-active"><span class="ico" data-ico="sun"></span><span class="t-body">Darstellung</span></button>
               <button class="navitem"><span class="ico" data-ico="cloud"></span><span class="t-body">Sync</span><span class="navitem__count" style="color:var(--danger);display:flex;align-items:center"><span class="ico" data-ico="alert" style="width:17px;height:17px"></span></span></button>
               <button class="navitem"><span class="ico" data-ico="bolt"></span><span class="t-body">Benachrichtigungen</span></button>
-              <button class="navitem"><span class="ico" data-ico="lock"></span><span class="t-body">Datenschutz &amp; Sperre</span></button>
+              <button class="navitem" style="height:auto; min-height:40px; padding:5px 10px"><span class="ico" data-ico="lock"></span><span class="t-body">Datenschutz &amp; Sperre</span></button>
               <button class="navitem"><span class="ico" data-ico="box"></span><span class="t-body">Speicher</span><span class="navitem__count t-label num">4,2 GB</span></button>
               <button class="navitem"><span class="ico" data-ico="share"></span><span class="t-body">Export &amp; Backup</span></button>
               <button class="navitem"><span class="ico" data-ico="star"></span><span class="t-body">Abo</span><span class="navitem__count t-label">Uni</span></button>
@@ -161,6 +161,8 @@ Skala selbst, keine Simulation.
                 <div class="sidebar__grouptitle t-label">MEHR</div>
                 <button class="navitem"><span class="ico" data-ico="grid"></span><span class="t-body">Tastaturkürzel</span></button>
                 <button class="navitem"><span class="ico" data-ico="info"></span><span class="t-body">Was ist neu</span></button>
+                <button class="navitem"><span class="ico" data-ico="heart"></span><span class="t-body">Hilfe &amp; Feedback</span></button>
+                <button class="navitem"><span class="ico" data-ico="quote"></span><span class="t-body">Rechtliches</span></button>
               </div>
 
               <!-- Geräte — füllt den Fuß der Spalte und erklärt den Sync-Fehler -->
@@ -188,11 +190,11 @@ Skala selbst, keine Simulation.
 
             <!-- ── Bereich „Darstellung" ── -->
             <div class="content">
-              <div class="scroll" style="padding:14px 24px 16px; display:flex; flex-direction:column; gap:12px">
+              <div class="scroll" style="padding:12px 24px 14px; display:flex; flex-direction:column; gap:12px">
 
                 <!-- ══ Design: drei echte Mini-Screens ══ -->
                 <section>
-                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:9px">
+                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:6px">
                     <span class="t-section">Darstellung</span>
                     <span class="t-sub c-3">Folgt dem System — wechselt heute um 16:38 auf Dunkel</span>
                   </div>
@@ -200,7 +202,7 @@ Skala selbst, keine Simulation.
 
                     <!-- Hell -->
                     <button style="text-align:left; padding:6px; border-radius:12px; background:var(--paper); box-shadow:var(--sh-card)">
-                      <div style="position:relative; height:76px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
+                      <div style="position:relative; height:70px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
                         <div style="position:absolute; inset:0; display:flex; background:#F2F2F4">
                           <div style="width:31%; background:#EDEDEF; border-right:1px solid rgba(22,24,28,.10); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
                             <div style="height:5px;width:74%;border-radius:3px;background:rgba(22,24,28,.58)"></div>
@@ -226,7 +228,7 @@ Skala selbst, keine Simulation.
 
                     <!-- Dunkel -->
                     <button style="text-align:left; padding:6px; border-radius:12px; background:var(--paper); box-shadow:var(--sh-card)">
-                      <div style="position:relative; height:76px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
+                      <div style="position:relative; height:70px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
                         <div style="position:absolute; inset:0; display:flex; background:#0E0F11">
                           <div style="width:31%; background:#131518; border-right:1px solid rgba(242,243,245,.12); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
                             <div style="height:5px;width:74%;border-radius:3px;background:rgba(242,243,245,.62)"></div>
@@ -253,7 +255,7 @@ Skala selbst, keine Simulation.
                     <!-- Automatisch — ausgewählt: Fläche + Ring + Häkchen.
                          Die Kachel zeigt die Überblendung eingefroren. -->
                     <button style="text-align:left; padding:6px; border-radius:12px; background:var(--accent-soft); box-shadow:inset 0 0 0 2px var(--accent-ring)">
-                      <div style="position:relative; height:76px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
+                      <div style="position:relative; height:70px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
                         <!-- untere Ebene: HELL -->
                         <div style="position:absolute; inset:0; display:flex; background:#F2F2F4">
                           <div style="width:31%; background:#EDEDEF; border-right:1px solid rgba(22,24,28,.10); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
@@ -316,7 +318,7 @@ Skala selbst, keine Simulation.
                       <div class="t-label c-3">SCHRIFTGRÖSSE</div>
 
                       <!-- Regler — Knopf angehoben, Wertblase: er wird gerade gezogen -->
-                      <div style="display:flex; align-items:center; gap:12px; margin:28px 0 10px">
+                      <div style="display:flex; align-items:center; gap:12px; margin:26px 0 6px">
                         <span class="t-label c-3">A</span>
                         <div style="position:relative; flex:1; height:26px; display:flex; align-items:center">
                           <div style="position:absolute; left:0; right:0; height:4px; border-radius:2px; background:var(--fill-2)"></div>
@@ -338,7 +340,7 @@ Skala selbst, keine Simulation.
                         <span class="t-label c-3" style="width:62px; flex:none">Klein</span>
                         <span class="t-sub clamp-1">Mitochondrium</span>
                       </div>
-                      <div style="display:flex; align-items:baseline; gap:10px; padding:3px 8px; margin:5px -8px; border-radius:8px; background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                      <div style="display:flex; align-items:baseline; gap:10px; padding:3px 8px; margin:4px -8px; border-radius:8px; background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
                         <span class="t-label c-1" style="width:62px; flex:none">Standard</span>
                         <span class="t-body is-strong clamp-1">Mitochondrium</span>
                       </div>
@@ -358,7 +360,7 @@ Skala selbst, keine Simulation.
                         <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--cards"></span><span class="t-sub">Lernkarten</span></span>
                         <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--journal"></span><span class="t-sub">Journal</span></span>
                       </div>
-                      <p class="t-sub c-2" style="margin:10px 0 0">Sie markieren nur die Herkunft — 6 pt, immer neben dem Wort, nie als Fläche.</p>
+                      <p class="t-sub c-2" style="margin:10px 0 0">6 pt, immer neben dem Wort — nie als Fläche, nie als Text.</p>
                     </section>
                   </div>
 
@@ -386,12 +388,12 @@ Skala selbst, keine Simulation.
                           <div class="t-sub is-strong" style="margin-top:5px">Punkte</div>
                         </div>
                       </div>
-                      <p class="t-sub c-2" style="margin:10px 0 0">Neue Notizen in „Zellbiologie" starten damit. Pro Notizbuch änderbar.</p>
+                      <p class="t-sub c-2" style="margin:10px 0 0">Gilt für neue Notizen. Pro Notizbuch änderbar.</p>
                     </section>
 
                     <!-- Schalter -->
                     <section class="card" style="padding:4px 14px">
-                      <div class="row" style="padding:7px 0">
+                      <div class="row" style="padding:5px 0">
                         <div class="row__main">
                           <span class="t-body">Bewegung reduzieren</span>
                           <span class="t-sub c-3 clamp-1">Übergaben blenden über</span>
@@ -401,19 +403,19 @@ Skala selbst, keine Simulation.
                           <span style="position:absolute;top:1px;left:13px;width:29px;height:29px;border-radius:50%;background:var(--paper);box-shadow:0 2px 7px rgba(22,24,28,.32), inset 0 0 0 .5px var(--line)"></span>
                         </span>
                       </div>
-                      <div class="row" style="padding:7px 0">
+                      <div class="row" style="padding:5px 0">
                         <div class="row__main">
                           <span class="t-body">Fett gedruckter Text</span>
-                          <span class="t-sub c-3 clamp-1">Nutzt das schwerere Gewicht</span>
+                          <span class="t-sub c-3 clamp-1">Mehr Gewicht im Fließtext</span>
                         </div>
                         <span style="width:51px;height:31px;border-radius:var(--r-pill);flex:none;position:relative;background:var(--fill-3)">
                           <span style="position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:var(--paper);box-shadow:0 1px 3px rgba(22,24,28,.26), inset 0 0 0 .5px var(--line)"></span>
                         </span>
                       </div>
-                      <div class="row" style="padding:7px 0">
+                      <div class="row" style="padding:5px 0">
                         <div class="row__main">
                           <span class="t-body">Zeitangaben relativ</span>
-                          <span class="t-sub c-3 clamp-1">„vor 18 Minuten" statt „09:23"</span>
+                          <span class="t-sub c-3 clamp-1">„vor 18 Min." statt „09:23"</span>
                         </div>
                         <span style="width:51px;height:31px;border-radius:var(--r-pill);flex:none;position:relative;background:var(--accent)">
                           <span style="position:absolute;top:2px;left:22px;width:27px;height:27px;border-radius:50%;background:var(--accent-on);box-shadow:0 1px 3px rgba(22,24,28,.26)"></span>
@@ -424,32 +426,32 @@ Skala selbst, keine Simulation.
                 </div>
 
                 <!-- ══ Sync-Fehler ══ -->
-                <div class="notice notice--error" style="align-items:center">
+                <div class="notice notice--error" style="align-items:center; padding:10px 14px">
                   <span class="ico" data-ico="alert"></span>
                   <div class="notice__text" style="flex:1; min-width:0">
-                    <div class="t-body is-strong">Letzte Synchronisierung fehlgeschlagen — Verbindung prüfen</div>
-                    <div class="t-sub c-2 clamp-1">Zuletzt erfolgreich gestern 22:14 · 3 Änderungen warten</div>
+                    <div class="t-body is-strong">Letzte Synchronisierung fehlgeschlagen</div>
+                    <div class="t-sub c-2 clamp-1">Verbindung prüfen · 3 Änderungen warten</div>
                   </div>
                   <button class="btn btn--sm" style="flex:none">Erneut versuchen</button>
                 </div>
 
                 <!-- ══ Speicher ══ -->
                 <section class="card" style="padding:12px 14px">
-                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:9px">
+                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:7px">
                     <span class="t-label c-3" style="flex:1">SPEICHER</span>
                     <span class="t-sub c-3 num">4,2 GB belegt · 128 GB im Gerät</span>
                   </div>
                   <div class="bar" style="height:10px; display:flex; gap:0">
                     <span style="width:45%; height:100%; background:var(--ink-1)"></span>
-                    <span style="width:33%; height:100%; background:var(--ink-2)"></span>
-                    <span style="width:14%; height:100%; background:var(--ink-4)"></span>
-                    <span style="width:8%;  height:100%; background:var(--fill-3)"></span>
+                    <span style="width:33%; height:100%; background:var(--ink-1); opacity:.62"></span>
+                    <span style="width:14%; height:100%; background:var(--ink-1); opacity:.38"></span>
+                    <span style="width:8%;  height:100%; background:var(--ink-1); opacity:.22"></span>
                   </div>
-                  <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; margin-top:9px">
+                  <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; margin-top:7px">
                     <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1">Notizen</span><span class="t-label num">1,9 GB</span></span>
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-2);flex:none"></span><span class="t-sub c-2" style="flex:1">Fotos</span><span class="t-label num">1,4 GB</span></span>
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-4);flex:none"></span><span class="t-sub c-2" style="flex:1">Audio</span><span class="t-label num">0,6 GB</span></span>
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--fill-3);flex:none"></span><span class="t-sub c-2" style="flex:1">Lernkarten</span><span class="t-label num">0,3 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.62;flex:none"></span><span class="t-sub c-2" style="flex:1">Fotos</span><span class="t-label num">1,4 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.38;flex:none"></span><span class="t-sub c-2" style="flex:1">Audio</span><span class="t-label num">0,6 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.22;flex:none"></span><span class="t-sub c-2" style="flex:1">Karten</span><span class="t-label num">0,3 GB</span></span>
                   </div>
                 </section>
 
@@ -480,11 +482,11 @@ Skala selbst, keine Simulation.
         <div class="scroll" style="padding:10px 20px 12px; display:flex; flex-direction:column; gap:10px">
 
           <!-- Fehlerzustand als Banner ganz oben -->
-          <div class="notice notice--error" style="align-items:center; padding:9px 12px">
+          <div class="notice notice--error" style="align-items:center; padding:8px 12px">
             <span class="ico" data-ico="alert" style="width:20px;height:20px"></span>
             <div class="notice__text" style="flex:1; min-width:0">
               <div class="t-sub is-strong clamp-1">Sync fehlgeschlagen</div>
-              <div class="t-sub c-2 clamp-1">Verbindung prüfen · 3 warten</div>
+              <div class="t-sub c-2 clamp-1">Verbindung prüfen</div>
             </div>
             <button class="btn btn--sm" style="flex:none; height:30px; padding:0 11px">Erneut</button>
           </div>
@@ -496,7 +498,7 @@ Skala selbst, keine Simulation.
 
               <!-- Hell -->
               <button style="text-align:left; padding:5px; border-radius:11px; background:var(--paper); box-shadow:var(--sh-card)">
-                <div style="position:relative; height:58px; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16); background:#F2F2F4">
+                <div style="position:relative; height:50px; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16); background:#F2F2F4">
                   <div style="position:absolute; inset:0; padding:6px 6px 0; display:flex; flex-direction:column; gap:4px">
                     <div style="height:5px;width:56%;border-radius:3px;background:#16181C"></div>
                     <div style="height:14px;border-radius:4px;background:#FFFFFF;box-shadow:0 1px 2px rgba(22,24,28,.16)"></div>
@@ -514,7 +516,7 @@ Skala selbst, keine Simulation.
 
               <!-- Dunkel -->
               <button style="text-align:left; padding:5px; border-radius:11px; background:var(--paper); box-shadow:var(--sh-card)">
-                <div style="position:relative; height:58px; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16); background:#0E0F11">
+                <div style="position:relative; height:50px; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16); background:#0E0F11">
                   <div style="position:absolute; inset:0; padding:6px 6px 0; display:flex; flex-direction:column; gap:4px">
                     <div style="height:5px;width:56%;border-radius:3px;background:#F2F3F5"></div>
                     <div style="height:14px;border-radius:4px;background:#17191C;box-shadow:inset 0 0 0 1px rgba(242,243,245,.10)"></div>
@@ -532,7 +534,7 @@ Skala selbst, keine Simulation.
 
               <!-- Automatisch — ausgewählt, Überblendung eingefroren -->
               <button style="text-align:left; padding:5px; border-radius:11px; background:var(--accent-soft); box-shadow:inset 0 0 0 2px var(--accent-ring)">
-                <div style="position:relative; height:58px; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16); background:#F2F2F4">
+                <div style="position:relative; height:50px; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16); background:#F2F2F4">
                   <div style="position:absolute; inset:0; padding:6px 6px 0; display:flex; flex-direction:column; gap:4px">
                     <div style="height:5px;width:56%;border-radius:3px;background:#16181C"></div>
                     <div style="height:14px;border-radius:4px;background:#FFFFFF;box-shadow:0 1px 2px rgba(22,24,28,.16)"></div>
@@ -565,7 +567,7 @@ Skala selbst, keine Simulation.
           <!-- Schriftgröße -->
           <section class="card" style="padding:11px 14px 12px">
             <div class="t-label c-3">SCHRIFTGRÖSSE</div>
-            <div style="display:flex; align-items:center; gap:10px; margin:26px 0 10px">
+            <div style="display:flex; align-items:center; gap:10px; margin:26px 0 8px">
               <span class="t-label c-3">A</span>
               <div style="position:relative; flex:1; height:26px; display:flex; align-items:center">
                 <div style="position:absolute; left:0; right:0; height:4px; border-radius:2px; background:var(--fill-2)"></div>
@@ -608,7 +610,7 @@ Skala selbst, keine Simulation.
                 <span class="ico" data-ico="chevR" style="width:16px;height:16px"></span>
               </div>
             </div>
-            <div class="row" style="padding:7px 0">
+            <div class="row" style="padding:5px 0">
               <div class="row__main">
                 <span class="t-body">Modul-Farben</span>
                 <span style="display:flex; flex-wrap:wrap; gap:3px 11px; margin-top:3px">
@@ -621,7 +623,11 @@ Skala selbst, keine Simulation.
               </div>
               <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
             </div>
-            <div class="row" style="padding:6px 0">
+          </section>
+
+          <!-- Schalter -->
+          <section class="card" style="padding:2px 14px">
+            <div class="row" style="padding:5px 0">
               <div class="row__main">
                 <span class="t-body">Bewegung reduzieren</span>
                 <span class="t-sub c-3 clamp-1">Übergaben blenden über</span>
@@ -631,13 +637,13 @@ Skala selbst, keine Simulation.
                 <span style="position:absolute;top:1px;left:13px;width:29px;height:29px;border-radius:50%;background:var(--paper);box-shadow:0 2px 7px rgba(22,24,28,.32), inset 0 0 0 .5px var(--line)"></span>
               </span>
             </div>
-            <div class="row" style="padding:6px 0; min-height:46px">
+            <div class="row" style="padding:5px 0; min-height:46px">
               <div class="row__main"><span class="t-body">Fett gedruckter Text</span></div>
               <span style="width:51px;height:31px;border-radius:var(--r-pill);flex:none;position:relative;background:var(--fill-3)">
                 <span style="position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:var(--paper);box-shadow:0 1px 3px rgba(22,24,28,.26), inset 0 0 0 .5px var(--line)"></span>
               </span>
             </div>
-            <div class="row" style="padding:6px 0">
+            <div class="row" style="padding:5px 0">
               <div class="row__main">
                 <span class="t-body">Zeitangaben relativ</span>
                 <span class="t-sub c-3 clamp-1">„vor 18 Minuten" statt „09:23"</span>
@@ -648,23 +654,23 @@ Skala selbst, keine Simulation.
             </div>
           </section>
 
-          <!-- Speicher -->
-          <section class="card" style="padding:11px 14px 12px">
+          <!-- Speicher — beginnt unterhalb der Falz; die Liste scrollt weiter -->
+          <section class="card" style="margin-top:14px; padding:11px 14px 12px">
             <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px">
               <span class="t-label c-3" style="flex:1">SPEICHER</span>
               <span class="t-sub c-3 num">4,2 von 128 GB</span>
             </div>
             <div class="bar" style="height:10px; display:flex; gap:0">
               <span style="width:45%; height:100%; background:var(--ink-1)"></span>
-              <span style="width:33%; height:100%; background:var(--ink-2)"></span>
-              <span style="width:14%; height:100%; background:var(--ink-4)"></span>
-              <span style="width:8%;  height:100%; background:var(--fill-3)"></span>
+              <span style="width:33%; height:100%; background:var(--ink-1); opacity:.62"></span>
+              <span style="width:14%; height:100%; background:var(--ink-1); opacity:.38"></span>
+              <span style="width:8%;  height:100%; background:var(--ink-1); opacity:.22"></span>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px 14px; margin-top:8px">
               <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1">Notizen</span><span class="t-label num">1,9 GB</span></span>
-              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-2);flex:none"></span><span class="t-sub c-2" style="flex:1">Fotos</span><span class="t-label num">1,4 GB</span></span>
-              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-4);flex:none"></span><span class="t-sub c-2" style="flex:1">Audio</span><span class="t-label num">0,6 GB</span></span>
-              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--fill-3);flex:none"></span><span class="t-sub c-2" style="flex:1">Lernkarten</span><span class="t-label num">0,3 GB</span></span>
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.62;flex:none"></span><span class="t-sub c-2" style="flex:1">Fotos</span><span class="t-label num">1,4 GB</span></span>
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.38;flex:none"></span><span class="t-sub c-2" style="flex:1">Audio</span><span class="t-label num">0,6 GB</span></span>
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.22;flex:none"></span><span class="t-sub c-2" style="flex:1">Karten</span><span class="t-label num">0,3 GB</span></span>
             </div>
           </section>
 
@@ -739,9 +745,10 @@ Skala selbst, keine Simulation.
     <tr><td>gefüllt</td><td>Der gezeigte Zustand: Design „Automatisch", Schrift „Standard", Papier „Punkte", drei Schalter, 4,2 GB belegt.</td></tr>
     <tr><td>aktiv</td><td>„Einstellungen" in der App-Sidebar und „Darstellung" in der Bereichsliste: Fläche + Gewicht + Ink-Balken links — drei Merkmale, keine Farbe.</td></tr>
     <tr><td>ausgewählt</td><td>Design-Kachel „Automatisch" und Papier „Punkte": getönte Fläche + 2-pt-Ring + Häkchen bzw. Gewicht.</td></tr>
-    <tr><td>Fehler</td><td><strong>Sync:</strong> <code>.notice--error</code> — „Letzte Synchronisierung fehlgeschlagen — Verbindung prüfen", mit dem Zeitpunkt des letzten Erfolgs, den drei wartenden Änderungen und dem Knopf „Erneut versuchen". Derselbe Fehler ist an drei Stellen sichtbar: im Banner, als rotes Zeichen neben „Sync" in der Bereichsliste und als „wartet" in der Geräteliste — so findet man ihn auch, wenn man von woanders kommt.</td></tr>
+    <tr><td>Fehler</td><td><strong>Sync:</strong> <code>.notice--error</code> — „Letzte Synchronisierung fehlgeschlagen", darunter „Verbindung prüfen · 3 Änderungen warten" und rechts der Knopf „Erneut versuchen". Der Satz steht bewusst auf zwei Zeilen: „Synchronisierung" ist so lang, dass eine einzige Zeile dreizeilig umbrechen würde. Derselbe Fehler ist an drei Stellen sichtbar — im Banner, als rotes Zeichen neben „Sync" in der Bereichsliste und als „wartet" in der Geräteliste. So findet man ihn auch, wenn man von woanders kommt.</td></tr>
     <tr><td>Zwischenzustand</td><td><strong>Der Schalter „Bewegung reduzieren" steht mitten im Umlegen</strong> — die Spur ist zu 56 % gefüllt, der Knopf sitzt zwischen den Positionen, um ihn liegt der Druck-Ring. Zweiter Zwischenzustand: Der Schriftgrößen-Regler wird gerade gezogen — der Knopf ist angehoben (Schatten + Ring), darüber steht die Wertblase „Standard". Dritter: Die Kachel „Automatisch" zeigt die Überblendung zwischen Hell und Dunkel eingefroren, mit hellem Grat an der Naht.</td></tr>
     <tr><td>nicht gewählt</td><td>Die Vorschauzeile „Groß" liegt auf 42 % Deckkraft und trägt keine Fläche — die beiden Merkmale für „aus".</td></tr>
+    <tr><td>scrollt weiter</td><td>Auf dem iPhone endet der sichtbare Bereich sauber unter der Schalter-Gruppe. „Speicher" und die übrigen Bereiche (Sync, Benachrichtigungen, Datenschutz &amp; Sperre, Export &amp; Backup, Abo) stehen darunter in derselben Liste — auf dem iPad sind sie gleichzeitig sichtbar, weil die Fläche es hergibt. Beide Geräte erlauben dieselbe Aufgabe, das iPhone kostet keinen zusätzlichen Tipp.</td></tr>
   </table>
 
   <h3>Warum award-würdig</h3>
