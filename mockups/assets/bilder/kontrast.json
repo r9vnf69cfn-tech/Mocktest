@@ -1,0 +1,462 @@
+[
+  {
+    "name": "Notizbuch-Titel hell · faser-alabaster",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 14.793657247970357,
+    "ohneMin": 14.410939678711411,
+    "mit": 14.793657247970357,
+    "mitMin": 14.410939678711411,
+    "mittel": 15.446421350895825
+  },
+  {
+    "name": "Notizbuch-Titel hell · faser-hanf",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 11.115266925331607,
+    "ohneMin": 10.669946258976845,
+    "mit": 11.115266925331607,
+    "mitMin": 10.669946258976845,
+    "mittel": 11.91098174204408
+  },
+  {
+    "name": "Notizbuch-Titel hell · leinen-nebel",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 11.581598359407243,
+    "ohneMin": 11.237532360899449,
+    "mit": 11.581598359407243,
+    "mitMin": 11.237532360899449,
+    "mittel": 12.36348794226074
+  },
+  {
+    "name": "Notizbuch-Titel hell · leinen-sand",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 9.481017915757151,
+    "ohneMin": 9.178508997276905,
+    "mit": 9.481017915757151,
+    "mitMin": 9.178508997276905,
+    "mittel": 10.158280006177813
+  },
+  {
+    "name": "Notizbuch-Titel hell · kraft-natur",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 6.089086760735999,
+    "ohneMin": 5.615090645218194,
+    "mit": 6.089086760735999,
+    "mitMin": 5.615090645218194,
+    "mittel": 6.746682380964694
+  },
+  {
+    "name": "Notizbuch-Titel hell · kraft-graubraun",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 5.513025129283667,
+    "ohneMin": 5.146789377367254,
+    "mit": 5.513025129283667,
+    "mitMin": 5.146789377367254,
+    "mittel": 6.126206831137485
+  },
+  {
+    "name": "Notizbuch-Titel hell · marmor-schiefer",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 7.6844534158894335,
+    "ohneMin": 7.308120720842782,
+    "mit": 7.6844534158894335,
+    "mitMin": 7.308120720842782,
+    "mittel": 11.696557256824459
+  },
+  {
+    "name": "Notizbuch-Titel hell · marmor-tinte",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 5.506708862974608,
+    "ohneMin": 5.205807606408939,
+    "mit": 5.506708862974608,
+    "mitMin": 5.205807606408939,
+    "mittel": 9.268646414100516
+  },
+  {
+    "name": "Notizbuch-Titel hell · buetten-elfenbein",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 14.70103104298461,
+    "ohneMin": 14.301457040364841,
+    "mit": 14.70103104298461,
+    "mitMin": 14.301457040364841,
+    "mittel": 15.583435807589312
+  },
+  {
+    "name": "Notizbuch-Titel hell · buetten-taupe",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 7.8666162113691795,
+    "ohneMin": 7.392309156182535,
+    "mit": 7.8666162113691795,
+    "mitMin": 7.392309156182535,
+    "mittel": 8.519008912127996
+  },
+  {
+    "name": "Notizbuch-Titel hell · millimeter-blass",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 12.899195369739722,
+    "ohneMin": 11.672822316922106,
+    "mit": 12.899195369739722,
+    "mitMin": 11.672822316922106,
+    "mittel": 15.761334110073015
+  },
+  {
+    "name": "Notizbuch-Titel hell · millimeter-stein",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 9.04473988723624,
+    "ohneMin": 6.899990631656256,
+    "mit": 9.04473988723624,
+    "mitMin": 6.899990631656256,
+    "mittel": 12.661393419752326
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · faser-alabaster",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 14.793657247970357,
+    "ohneMin": 14.410939678711411,
+    "mit": 14.793657247970357,
+    "mitMin": 14.410939678711411,
+    "mittel": 15.446421350895825
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · faser-hanf",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 11.115266925331607,
+    "ohneMin": 10.669946258976845,
+    "mit": 11.115266925331607,
+    "mitMin": 10.669946258976845,
+    "mittel": 11.91098174204408
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · leinen-nebel",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 11.581598359407243,
+    "ohneMin": 11.237532360899449,
+    "mit": 11.581598359407243,
+    "mitMin": 11.237532360899449,
+    "mittel": 12.36348794226074
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · leinen-sand",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 9.481017915757151,
+    "ohneMin": 9.178508997276905,
+    "mit": 9.481017915757151,
+    "mitMin": 9.178508997276905,
+    "mittel": 10.158280006177813
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · kraft-natur",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 6.089086760735999,
+    "ohneMin": 5.615090645218194,
+    "mit": 6.089086760735999,
+    "mitMin": 5.615090645218194,
+    "mittel": 6.746682380964694
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · kraft-graubraun",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 5.513025129283667,
+    "ohneMin": 5.146789377367254,
+    "mit": 5.513025129283667,
+    "mitMin": 5.146789377367254,
+    "mittel": 6.126206831137485
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · marmor-schiefer",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 7.6844534158894335,
+    "ohneMin": 7.23516584013578,
+    "mit": 7.6844534158894335,
+    "mitMin": 7.23516584013578,
+    "mittel": 11.697886253368294
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · marmor-tinte",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 5.506708862974608,
+    "ohneMin": 5.205807606408939,
+    "mit": 5.506708862974608,
+    "mitMin": 5.205807606408939,
+    "mittel": 9.277436490208974
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · buetten-elfenbein",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 14.70103104298461,
+    "ohneMin": 14.433890471411944,
+    "mit": 14.70103104298461,
+    "mitMin": 14.433890471411944,
+    "mittel": 15.577130119719481
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · buetten-taupe",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 7.8023843432500675,
+    "ohneMin": 7.423389259861828,
+    "mit": 7.8023843432500675,
+    "mitMin": 7.423389259861828,
+    "mittel": 8.520178696278474
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · millimeter-blass",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 13.274145298279494,
+    "ohneMin": 12.016804137777996,
+    "mit": 13.274145298279494,
+    "mitMin": 12.016804137777996,
+    "mittel": 15.788041053648257
+  },
+  {
+    "name": "Notizbuch-Titel dunkel · millimeter-stein",
+    "farbe": "#16181C",
+    "schwelle": 4.5,
+    "ohne": 9.452968210258941,
+    "ohneMin": 7.2368137527951975,
+    "mit": 9.452968210258941,
+    "mitMin": 7.2368137527951975,
+    "mittel": 12.697317282861308
+  },
+  {
+    "name": "Datumsmarke auf Foto · hell",
+    "farbe": "#FFFFFF",
+    "schwelle": 4.5,
+    "ohne": 1.001829292613866,
+    "ohneMin": 1,
+    "mit": 6.606130903361335,
+    "mitMin": 5.841123061351405,
+    "mittel": 9.769109546030238
+  },
+  {
+    "name": "Datumsmarke auf Foto · dunkel",
+    "farbe": "#FFFFFF",
+    "schwelle": 4.5,
+    "ohne": 1.001829292613866,
+    "ohneMin": 1,
+    "mit": 6.611977975676112,
+    "mitMin": 5.841123061351405,
+    "mittel": 9.769116457860182
+  },
+  {
+    "name": "Datumsmarke auf sehr buntem Foto · hell",
+    "farbe": "#FFFFFF",
+    "schwelle": 4.5,
+    "ohne": 1.7859532082047074,
+    "ohneMin": 1.2188110221054531,
+    "mit": 9.727128856795757,
+    "mitMin": 7.6269393358640185,
+    "mittel": 16.28515664839517
+  },
+  {
+    "name": "Datumsmarke auf sehr dunklem Foto · hell",
+    "farbe": "#FFFFFF",
+    "schwelle": 4.5,
+    "ohne": 1.2958176203305265,
+    "ohneMin": 1.230126933957477,
+    "mit": 7.936377011459323,
+    "mitMin": 7.0987749819387265,
+    "mittel": 17.76301909136415
+  },
+  {
+    "name": "Datumsmarke auf sehr buntem Foto · dunkel",
+    "farbe": "#FFFFFF",
+    "schwelle": 4.5,
+    "ohne": 1.7859532082047074,
+    "ohneMin": 1.2188110221054531,
+    "mit": 9.727128856795757,
+    "mitMin": 7.6269393358640185,
+    "mittel": 16.28515664839517
+  },
+  {
+    "name": "Datumsmarke auf sehr dunklem Foto · dunkel",
+    "farbe": "#FFFFFF",
+    "schwelle": 4.5,
+    "ohne": 1.2958176203305265,
+    "ohneMin": 1.230126933957477,
+    "mit": 7.936377011459323,
+    "mitMin": 7.0987749819387265,
+    "mittel": 17.76301909136415
+  },
+  {
+    "name": "Kachel-Beschriftung gel · hell",
+    "farbe": "#5C5E62",
+    "schwelle": 4.5,
+    "ohne": 5.81053735045972,
+    "ohneMin": 5.81053735045972,
+    "mit": 5.81053735045972,
+    "mitMin": 5.81053735045972,
+    "mittel": 5.810537350459581
+  },
+  {
+    "name": "Kachel-Marke gel · hell",
+    "farbe": "#5C5E62",
+    "schwelle": 4.5,
+    "ohne": 5.81053735045972,
+    "ohneMin": 5.81053735045972,
+    "mit": 5.81053735045972,
+    "mitMin": 5.81053735045972,
+    "mittel": 5.810537350459623
+  },
+  {
+    "name": "Kachel-Beschriftung pipette · hell",
+    "farbe": "#5C5E62",
+    "schwelle": 4.5,
+    "ohne": 5.81053735045972,
+    "ohneMin": 5.81053735045972,
+    "mit": 5.81053735045972,
+    "mitMin": 5.81053735045972,
+    "mittel": 5.8105373504596525
+  },
+  {
+    "name": "Kachel-Marke pipette · hell",
+    "farbe": "#5C5E62",
+    "schwelle": 4.5,
+    "ohne": 5.81053735045972,
+    "ohneMin": 5.81053735045972,
+    "mit": 5.81053735045972,
+    "mitMin": 5.81053735045972,
+    "mittel": 5.810537350459623
+  },
+  {
+    "name": "Kachel-Beschriftung tafel · hell",
+    "farbe": "#5C5E62",
+    "schwelle": 4.5,
+    "ohne": 5.81053735045972,
+    "ohneMin": 5.81053735045972,
+    "mit": 5.81053735045972,
+    "mitMin": 5.81053735045972,
+    "mittel": 5.8105373504596995
+  },
+  {
+    "name": "Kachel-Marke tafel · hell",
+    "farbe": "#5C5E62",
+    "schwelle": 4.5,
+    "ohne": 5.81053735045972,
+    "ohneMin": 5.81053735045972,
+    "mit": 5.81053735045972,
+    "mitMin": 5.81053735045972,
+    "mittel": 5.810537350459623
+  },
+  {
+    "name": "Kachel-Beschriftung notizseite · hell",
+    "farbe": "#5C5E62",
+    "schwelle": 4.5,
+    "ohne": 5.81053735045972,
+    "ohneMin": 5.81053735045972,
+    "mit": 5.81053735045972,
+    "mitMin": 5.81053735045972,
+    "mittel": 5.81053735045966
+  },
+  {
+    "name": "Kachel-Marke notizseite · hell",
+    "farbe": "#5C5E62",
+    "schwelle": 4.5,
+    "ohne": 5.81053735045972,
+    "ohneMin": 5.81053735045972,
+    "mit": 5.81053735045972,
+    "mitMin": 5.81053735045972,
+    "mittel": 5.810537350459617
+  },
+  {
+    "name": "Kachel-Beschriftung gel · dunkel",
+    "farbe": "#9FA1A4",
+    "schwelle": 4.5,
+    "ohne": 7.404099262721351,
+    "ohneMin": 7.404099262721351,
+    "mit": 7.404099262721351,
+    "mitMin": 7.404099262721351,
+    "mittel": 7.4040992627214655
+  },
+  {
+    "name": "Kachel-Marke gel · dunkel",
+    "farbe": "#9FA1A4",
+    "schwelle": 4.5,
+    "ohne": 7.404099262721351,
+    "ohneMin": 7.404099262721351,
+    "mit": 7.404099262721351,
+    "mitMin": 7.404099262721351,
+    "mittel": 7.404099262721438
+  },
+  {
+    "name": "Kachel-Beschriftung pipette · dunkel",
+    "farbe": "#9FA1A4",
+    "schwelle": 4.5,
+    "ohne": 7.404099262721351,
+    "ohneMin": 7.404099262721351,
+    "mit": 7.404099262721351,
+    "mitMin": 7.404099262721351,
+    "mittel": 7.404099262721469
+  },
+  {
+    "name": "Kachel-Marke pipette · dunkel",
+    "farbe": "#9FA1A4",
+    "schwelle": 4.5,
+    "ohne": 7.404099262721351,
+    "ohneMin": 7.404099262721351,
+    "mit": 7.404099262721351,
+    "mitMin": 7.404099262721351,
+    "mittel": 7.404099262721438
+  },
+  {
+    "name": "Kachel-Beschriftung tafel · dunkel",
+    "farbe": "#9FA1A4",
+    "schwelle": 4.5,
+    "ohne": 7.404099262721351,
+    "ohneMin": 7.404099262721351,
+    "mit": 7.404099262721351,
+    "mitMin": 7.404099262721351,
+    "mittel": 7.404099262721471
+  },
+  {
+    "name": "Kachel-Marke tafel · dunkel",
+    "farbe": "#9FA1A4",
+    "schwelle": 4.5,
+    "ohne": 7.404099262721351,
+    "ohneMin": 7.404099262721351,
+    "mit": 7.404099262721351,
+    "mitMin": 7.404099262721351,
+    "mittel": 7.404099262721438
+  },
+  {
+    "name": "Kachel-Beschriftung notizseite · dunkel",
+    "farbe": "#9FA1A4",
+    "schwelle": 4.5,
+    "ohne": 7.404099262721351,
+    "ohneMin": 7.404099262721351,
+    "mit": 7.404099262721351,
+    "mitMin": 7.404099262721351,
+    "mittel": 7.404099262721469
+  },
+  {
+    "name": "Kachel-Marke notizseite · dunkel",
+    "farbe": "#9FA1A4",
+    "schwelle": 4.5,
+    "ohne": 7.404099262721351,
+    "ohneMin": 7.404099262721351,
+    "mit": 7.404099262721351,
+    "mitMin": 7.404099262721351,
+    "mittel": 7.4040992627214415
+  }
+]
