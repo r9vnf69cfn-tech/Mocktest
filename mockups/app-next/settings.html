@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Einstellungen — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Einstellungen
+
+ÜBERNOMMEN
+· Apple Einstellungen (iPadOS) — die zweispaltige Teilung: links die Liste der
+  Bereiche, rechts der ausgewählte Bereich als Ganzes, ohne Zwischenschritt.
+  Übernommen, weil Emil auf dem iPad sehen will, WO er ist, während er etwas
+  ändert. Bewertung: die beste Struktur, die es für Einstellungen gibt — und
+  der Grund, warum niemand sie neu erfinden muss.
+· Apple Einstellungen (iOS) — die gruppierte Liste mit dem Wert rechts in der
+  Zeile („Papier & Raster · Punkte"). Übernommen auf dem iPhone, weil man den
+  aktuellen Stand lesen kann, ohne zu tippen. Bewertung: stark unterschätzt.
+· Things 3 — die Design-Auswahl als echter Mini-Screen statt als Farbfläche.
+  Übernommen und weitergedreht: Things zeigt drei Farbflächen mit Häkchen, hier
+  ist jede Kachel ein maßstäbliches Abbild DIESER App — auf dem iPad mit
+  Sidebar und zwei Karten, auf dem iPhone mit Tab-Bar. Bewertung: die stärkste
+  Einzelidee auf diesem Schirm. Wer „Dunkel" wählt, hat es vorher gesehen.
+· Bear — die Themenauswahl als sichtbare Reihe statt als Aufklappmenü.
+  Übernommen; Bear verschweigt allerdings, WAS die Wahl bewirkt. Hier steht die
+  Folge daneben: „Folgt dem System — wechselt heute um 16:38 auf Dunkel."
+· Apple Einstellungen — der Speicherbalken mit gestapelten Anteilen. Übernommen,
+  aber in Ink-Abstufungen statt in fünf Buntfarben, und jede Zahl steht neben
+  ihrem Wort. Bewertung: die Form war immer richtig, die Farbe nie.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Bears und Ulysses' Themen-Store mit zwei Dutzend Buntthemen — die App ist
+  Papier und Grau; alle Farbe gehört dem, was Emil schreibt. Drei Designs
+  beantworten eine Frage (hell, dunkel, System), zwanzig fragen nach Geschmack.
+· Notions Einstellungs-Modal über dem Inhalt — es verdeckt genau das, was man
+  gerade beurteilen will. Hier bleibt der Schirm ein Schirm.
+· Die 40-zeilige Ein-Ebene-Liste von Obsidian und Craft — das ist keine
+  Struktur, das ist eine Reihenfolge.
+· Byte-Genauigkeit im Speicher („4.237.881.344 Bytes") — Emil entscheidet nicht
+  in Bytes, sondern in „reicht das noch".
+· Ein Fortschrittsrad für die Synchronisierung. Ein Fehlschlag wird hier
+  benannt, nicht animiert.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Einstellungen zeigen bei fast allen Apps Schalter ohne Folgen. Hier steht neben
+jedem Regler seine Wirkung: Die Schriftgröße erscheint dreimal als echte Zeile
+(„Mitochondrium") in genau den Stufen der Typo-Skala. „Zeitangaben relativ"
+zeigt das Ergebnis mit („vor 18 Minuten" statt „09:23"). „Bewegung reduzieren"
+sagt, was mit der Übergabe zwischen Modulen passiert — der Signatur-Animation
+dieser App. Und die Modul-Farben werden nicht angeboten, sondern erklärt: fünf
+6-pt-Punkte, die nur Herkunft markieren und nie eine Fläche färben.
+
+ADA-KATEGORIE: Inklusion (Dynamic Type, Bewegung reduzieren, Fettschrift und
+gerechnete Kontraste sind nicht das Kleingedruckte, sondern der Schirm) und
+Visuals (die Design-Kacheln sind maßstäbliche Abbilder statt Farbmuster).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Titel/Fließtext  ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Sekundärtext     ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
+  Metadaten        ink-3 auf Grund     4,8:1   (hell) ·  4,9:1 (dunkel)
+  Schalter an      accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Fehler rot       danger auf Grund    5,2:1   (hell) ·  6,3:1 (dunkel)
+  Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
+  Die Design-Kacheln tragen bewusst feste Hex-Werte: Sie bilden das jeweils
+  ANDERE Design ab und dürfen deshalb nicht mit dem aktuellen Theme wandern.
+  Es sind exakt die Token-Werte aus §1 (#F2F2F4/#FFFFFF/#16181C gegen
+  #0E0F11/#17191C/#F2F3F5), keine erfundenen Farben.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Die Vorschauzeilen der
+Schriftgröße nutzen genau diese Skala (15 · 17 · 20) — die Vorschau ist die
+Skala selbst, keine Simulation.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Einstellungen</h1>
+  <p>Der Schirm, an dem die meisten Apps nachlassen. Hier steht neben jedem Regler seine Folge: Die Design-Kacheln sind maßstäbliche Mini-Screens dieser App, die Schriftgrößen sind echte Zeilen — und die fehlgeschlagene Synchronisierung wird benannt statt versteckt.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Sidebar + Bereichsliste + Bereich</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- App-Sidebar — identisch zu Today, nur „Einstellungen" ist aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem is-active"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar">
+            <div class="t-title">Einstellungen</div>
+            <div class="navbar__spacer"></div>
+            <div class="field" style="width:250px">
+              <span class="ico" data-ico="search"></span>
+              <span class="field__ph t-sub">In Einstellungen suchen</span>
+            </div>
+          </div>
+
+          <div style="flex:1 1 auto; display:flex; min-height:0">
+
+            <!-- ── Bereichsliste (zweite, schmale Spalte) ── -->
+            <aside class="sidebar" style="width:236px; background:var(--paper); backdrop-filter:none">
+
+              <div style="display:flex; align-items:center; gap:10px; padding:10px 10px 12px">
+                <span class="t-body is-strong" style="width:36px;height:36px;border-radius:50%;background:var(--fill-2);display:flex;align-items:center;justify-content:center;flex:none">E</span>
+                <span style="display:flex;flex-direction:column;min-width:0">
+                  <span class="t-body is-strong">Emil</span>
+                  <span class="t-sub c-3 clamp-1">iCloud · 3 Geräte</span>
+                </span>
+              </div>
+
+              <div class="sidebar__grouptitle t-label">BEREICHE</div>
+              <button class="navitem is-active"><span class="ico" data-ico="sun"></span><span class="t-body">Darstellung</span></button>
+              <button class="navitem"><span class="ico" data-ico="cloud"></span><span class="t-body">Sync</span><span class="navitem__count" style="color:var(--danger);display:flex;align-items:center"><span class="ico" data-ico="alert" style="width:17px;height:17px"></span></span></button>
+              <button class="navitem"><span class="ico" data-ico="bolt"></span><span class="t-body">Benachrichtigungen</span></button>
+              <button class="navitem"><span class="ico" data-ico="lock"></span><span class="t-body">Datenschutz &amp; Sperre</span></button>
+              <button class="navitem"><span class="ico" data-ico="box"></span><span class="t-body">Speicher</span><span class="navitem__count t-label num">4,2 GB</span></button>
+              <button class="navitem"><span class="ico" data-ico="share"></span><span class="t-body">Export &amp; Backup</span></button>
+              <button class="navitem"><span class="ico" data-ico="star"></span><span class="t-body">Abo</span><span class="navitem__count t-label">Uni</span></button>
+
+              <div class="sidebar__group">
+                <div class="sidebar__grouptitle t-label">MEHR</div>
+                <button class="navitem"><span class="ico" data-ico="grid"></span><span class="t-body">Tastaturkürzel</span></button>
+                <button class="navitem"><span class="ico" data-ico="info"></span><span class="t-body">Was ist neu</span></button>
+              </div>
+
+              <!-- Geräte — füllt den Fuß der Spalte und erklärt den Sync-Fehler -->
+              <div style="margin-top:auto; padding-top:12px">
+                <div class="card card--flat" style="padding:12px">
+                  <div class="t-label c-3" style="margin-bottom:8px">GERÄTE</div>
+                  <div style="display:flex;flex-direction:column;gap:8px">
+                    <div style="display:flex;align-items:baseline;gap:8px">
+                      <span class="t-sub is-strong" style="flex:1;min-width:0">iPad 11″</span>
+                      <span class="t-label" style="color:var(--danger)">wartet</span>
+                    </div>
+                    <div style="display:flex;align-items:baseline;gap:8px">
+                      <span class="t-sub" style="flex:1;min-width:0">iPhone 15</span>
+                      <span class="t-label c-3 num">22:14</span>
+                    </div>
+                    <div style="display:flex;align-items:baseline;gap:8px">
+                      <span class="t-sub" style="flex:1;min-width:0">MacBook Air</span>
+                      <span class="t-label c-3 num">21:50</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="t-sub c-3 num" style="padding:9px 10px 0">Version 1.0 (240)</div>
+              </div>
+            </aside>
+
+            <!-- ── Bereich „Darstellung" ── -->
+            <div class="content">
+              <div class="scroll" style="padding:14px 24px 16px; display:flex; flex-direction:column; gap:12px">
+
+                <!-- ══ Design: drei echte Mini-Screens ══ -->
+                <section>
+                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:9px">
+                    <span class="t-section">Darstellung</span>
+                    <span class="t-sub c-3">Folgt dem System — wechselt heute um 16:38 auf Dunkel</span>
+                  </div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px">
+
+                    <!-- Hell -->
+                    <button style="text-align:left; padding:6px; border-radius:12px; background:var(--paper); box-shadow:var(--sh-card)">
+                      <div style="position:relative; height:76px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
+                        <div style="position:absolute; inset:0; display:flex; background:#F2F2F4">
+                          <div style="width:31%; background:#EDEDEF; border-right:1px solid rgba(22,24,28,.10); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
+                            <div style="height:5px;width:74%;border-radius:3px;background:rgba(22,24,28,.58)"></div>
+                            <div style="height:4px;width:58%;border-radius:2px;background:rgba(22,24,28,.24)"></div>
+                            <div style="height:10px;border-radius:4px;background:rgba(22,24,28,.12)"></div>
+                            <div style="height:4px;width:64%;border-radius:2px;background:rgba(22,24,28,.24)"></div>
+                          </div>
+                          <div style="flex:1; padding:7px 7px 0; display:flex; flex-direction:column; gap:6px">
+                            <div style="height:6px;width:58%;border-radius:3px;background:#16181C"></div>
+                            <div style="height:22px;border-radius:5px;background:#FFFFFF;box-shadow:0 1px 3px rgba(22,24,28,.16);padding:5px;display:flex;flex-direction:column;gap:4px">
+                              <div style="height:4px;width:72%;border-radius:2px;background:rgba(22,24,28,.44)"></div>
+                              <div style="height:3px;width:46%;border-radius:2px;background:rgba(22,24,28,.20)"></div>
+                            </div>
+                            <div style="height:22px;border-radius:5px;background:#FFFFFF;box-shadow:0 1px 3px rgba(22,24,28,.16);padding:5px;display:flex;flex-direction:column;gap:4px">
+                              <div style="height:4px;width:60%;border-radius:2px;background:rgba(22,24,28,.44)"></div>
+                              <div style="height:3px;width:38%;border-radius:2px;background:rgba(22,24,28,.20)"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div style="padding:7px 3px 1px"><span class="t-sub">Hell</span></div>
+                    </button>
+
+                    <!-- Dunkel -->
+                    <button style="text-align:left; padding:6px; border-radius:12px; background:var(--paper); box-shadow:var(--sh-card)">
+                      <div style="position:relative; height:76px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
+                        <div style="position:absolute; inset:0; display:flex; background:#0E0F11">
+                          <div style="width:31%; background:#131518; border-right:1px solid rgba(242,243,245,.12); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
+                            <div style="height:5px;width:74%;border-radius:3px;background:rgba(242,243,245,.62)"></div>
+                            <div style="height:4px;width:58%;border-radius:2px;background:rgba(242,243,245,.26)"></div>
+                            <div style="height:10px;border-radius:4px;background:rgba(242,243,245,.14)"></div>
+                            <div style="height:4px;width:64%;border-radius:2px;background:rgba(242,243,245,.26)"></div>
+                          </div>
+                          <div style="flex:1; padding:7px 7px 0; display:flex; flex-direction:column; gap:6px">
+                            <div style="height:6px;width:58%;border-radius:3px;background:#F2F3F5"></div>
+                            <div style="height:22px;border-radius:5px;background:#17191C;box-shadow:inset 0 0 0 1px rgba(242,243,245,.10);padding:5px;display:flex;flex-direction:column;gap:4px">
+                              <div style="height:4px;width:72%;border-radius:2px;background:rgba(242,243,245,.50)"></div>
+                              <div style="height:3px;width:46%;border-radius:2px;background:rgba(242,243,245,.24)"></div>
+                            </div>
+                            <div style="height:22px;border-radius:5px;background:#17191C;box-shadow:inset 0 0 0 1px rgba(242,243,245,.10);padding:5px;display:flex;flex-direction:column;gap:4px">
+                              <div style="height:4px;width:60%;border-radius:2px;background:rgba(242,243,245,.50)"></div>
+                              <div style="height:3px;width:38%;border-radius:2px;background:rgba(242,243,245,.24)"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div style="padding:7px 3px 1px"><span class="t-sub">Dunkel</span></div>
+                    </button>
+
+                    <!-- Automatisch — ausgewählt: Fläche + Ring + Häkchen.
+                         Die Kachel zeigt die Überblendung eingefroren. -->
+                    <button style="text-align:left; padding:6px; border-radius:12px; background:var(--accent-soft); box-shadow:inset 0 0 0 2px var(--accent-ring)">
+                      <div style="position:relative; height:76px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
+                        <!-- untere Ebene: HELL -->
+                        <div style="position:absolute; inset:0; display:flex; background:#F2F2F4">
+                          <div style="width:31%; background:#EDEDEF; border-right:1px solid rgba(22,24,28,.10); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
+                            <div style="height:5px;width:74%;border-radius:3px;background:rgba(22,24,28,.58)"></div>
+                            <div style="height:4px;width:58%;border-radius:2px;background:rgba(22,24,28,.24)"></div>
+                            <div style="height:10px;border-radius:4px;background:rgba(22,24,28,.12)"></div>
+                            <div style="height:4px;width:64%;border-radius:2px;background:rgba(22,24,28,.24)"></div>
+                          </div>
+                          <div style="flex:1; padding:7px 7px 0; display:flex; flex-direction:column; gap:6px">
+                            <div style="height:6px;width:58%;border-radius:3px;background:#16181C"></div>
+                            <div style="height:22px;border-radius:5px;background:#FFFFFF;box-shadow:0 1px 3px rgba(22,24,28,.16);padding:5px;display:flex;flex-direction:column;gap:4px">
+                              <div style="height:4px;width:72%;border-radius:2px;background:rgba(22,24,28,.44)"></div>
+                              <div style="height:3px;width:46%;border-radius:2px;background:rgba(22,24,28,.20)"></div>
+                            </div>
+                            <div style="height:22px;border-radius:5px;background:#FFFFFF;box-shadow:0 1px 3px rgba(22,24,28,.16);padding:5px;display:flex;flex-direction:column;gap:4px">
+                              <div style="height:4px;width:60%;border-radius:2px;background:rgba(22,24,28,.44)"></div>
+                              <div style="height:3px;width:38%;border-radius:2px;background:rgba(22,24,28,.20)"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- heller Grat an der Naht der laufenden Überblendung -->
+                        <div style="position:absolute; inset:0; background:#F2F3F5; clip-path:polygon(57% 0, 100% 0, 100% 100%, 35% 100%)"></div>
+                        <!-- obere Ebene: DUNKEL, diagonal beschnitten -->
+                        <div style="position:absolute; inset:0; display:flex; background:#0E0F11; clip-path:polygon(58% 0, 100% 0, 100% 100%, 36% 100%)">
+                          <div style="width:31%; background:#131518; border-right:1px solid rgba(242,243,245,.12); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
+                            <div style="height:5px;width:74%;border-radius:3px;background:rgba(242,243,245,.62)"></div>
+                            <div style="height:4px;width:58%;border-radius:2px;background:rgba(242,243,245,.26)"></div>
+                            <div style="height:10px;border-radius:4px;background:rgba(242,243,245,.14)"></div>
+                            <div style="height:4px;width:64%;border-radius:2px;background:rgba(242,243,245,.26)"></div>
+                          </div>
+                          <div style="flex:1; padding:7px 7px 0; display:flex; flex-direction:column; gap:6px">
+                            <div style="height:6px;width:58%;border-radius:3px;background:#F2F3F5"></div>
+                            <div style="height:22px;border-radius:5px;background:#17191C;box-shadow:inset 0 0 0 1px rgba(242,243,245,.10);padding:5px;display:flex;flex-direction:column;gap:4px">
+                              <div style="height:4px;width:72%;border-radius:2px;background:rgba(242,243,245,.50)"></div>
+                              <div style="height:3px;width:46%;border-radius:2px;background:rgba(242,243,245,.24)"></div>
+                            </div>
+                            <div style="height:22px;border-radius:5px;background:#17191C;box-shadow:inset 0 0 0 1px rgba(242,243,245,.10);padding:5px;display:flex;flex-direction:column;gap:4px">
+                              <div style="height:4px;width:60%;border-radius:2px;background:rgba(242,243,245,.50)"></div>
+                              <div style="height:3px;width:38%;border-radius:2px;background:rgba(242,243,245,.24)"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:6px; padding:7px 3px 1px">
+                        <span class="t-sub is-strong">Automatisch</span>
+                        <div style="flex:1"></div>
+                        <span class="ico" data-ico="check" style="width:16px;height:16px; color:var(--ink-1)"></span>
+                      </div>
+                    </button>
+                  </div>
+                </section>
+
+                <!-- ══ Zwei Spalten ══ -->
+                <div style="display:grid; grid-template-columns:1fr 292px; gap:12px; align-items:start">
+
+                  <div style="display:flex; flex-direction:column; gap:12px">
+
+                    <!-- Schriftgröße -->
+                    <section class="card" style="padding:12px 14px">
+                      <div class="t-label c-3">SCHRIFTGRÖSSE</div>
+
+                      <!-- Regler — Knopf angehoben, Wertblase: er wird gerade gezogen -->
+                      <div style="display:flex; align-items:center; gap:12px; margin:28px 0 10px">
+                        <span class="t-label c-3">A</span>
+                        <div style="position:relative; flex:1; height:26px; display:flex; align-items:center">
+                          <div style="position:absolute; left:0; right:0; height:4px; border-radius:2px; background:var(--fill-2)"></div>
+                          <div style="position:absolute; left:0; width:50%; height:4px; border-radius:2px; background:var(--accent)"></div>
+                          <div style="position:absolute; left:0; right:0; display:flex; justify-content:space-between; align-items:center">
+                            <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                            <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                            <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                            <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                            <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                          </div>
+                          <div style="position:absolute; left:50%; transform:translateX(-50%); width:26px; height:26px; border-radius:50%; background:var(--paper); box-shadow:0 2px 8px rgba(22,24,28,.30), 0 0 0 6px var(--accent-soft), inset 0 0 0 .5px var(--line)"></div>
+                          <div class="t-label" style="position:absolute; left:50%; transform:translateX(-50%); top:-26px; padding:3px 9px; border-radius:var(--r-pill); background:var(--accent); color:var(--accent-on); white-space:nowrap">Standard</div>
+                        </div>
+                        <span class="t-section">A</span>
+                      </div>
+
+                      <div style="display:flex; align-items:baseline; gap:10px">
+                        <span class="t-label c-3" style="width:62px; flex:none">Klein</span>
+                        <span class="t-sub clamp-1">Mitochondrium</span>
+                      </div>
+                      <div style="display:flex; align-items:baseline; gap:10px; padding:3px 8px; margin:5px -8px; border-radius:8px; background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                        <span class="t-label c-1" style="width:62px; flex:none">Standard</span>
+                        <span class="t-body is-strong clamp-1">Mitochondrium</span>
+                      </div>
+                      <div style="display:flex; align-items:baseline; gap:10px">
+                        <span class="t-label c-3" style="width:62px; flex:none">Groß</span>
+                        <span class="t-section clamp-1" style="opacity:.42">Mitochondrium</span>
+                      </div>
+                    </section>
+
+                    <!-- Modul-Farben -->
+                    <section class="card" style="padding:12px 14px">
+                      <div class="t-label c-3" style="margin-bottom:10px">MODUL-FARBEN</div>
+                      <div style="display:grid; grid-template-columns:1fr 1fr; gap:7px 12px">
+                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--canvas"></span><span class="t-sub">Canvas</span></span>
+                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--tasks"></span><span class="t-sub">Aufgaben</span></span>
+                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--notes"></span><span class="t-sub">Notizen</span></span>
+                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--cards"></span><span class="t-sub">Lernkarten</span></span>
+                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--journal"></span><span class="t-sub">Journal</span></span>
+                      </div>
+                      <p class="t-sub c-2" style="margin:10px 0 0">Sie markieren nur die Herkunft — 6 pt, immer neben dem Wort, nie als Fläche.</p>
+                    </section>
+                  </div>
+
+                  <div style="display:flex; flex-direction:column; gap:12px">
+
+                    <!-- Papier & Raster -->
+                    <section class="card" style="padding:12px 14px">
+                      <div class="t-label c-3" style="margin-bottom:10px">PAPIER &amp; RASTER</div>
+                      <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px">
+                        <div>
+                          <div style="height:42px; border-radius:7px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line-2)"></div>
+                          <div class="t-sub c-3" style="margin-top:5px">Blanko</div>
+                        </div>
+                        <div>
+                          <div style="height:42px; border-radius:7px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line-2); background-image:repeating-linear-gradient(to bottom, transparent 0 7px, var(--line-2) 7px 8px)"></div>
+                          <div class="t-sub c-3" style="margin-top:5px">Liniert</div>
+                        </div>
+                        <div>
+                          <div style="height:42px; border-radius:7px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line-2); background-image:repeating-linear-gradient(to bottom, transparent 0 7px, var(--line) 7px 8px), repeating-linear-gradient(to right, transparent 0 7px, var(--line) 7px 8px)"></div>
+                          <div class="t-sub c-3" style="margin-top:5px">Kariert</div>
+                        </div>
+                        <!-- ausgewählt = Fläche + Ring + Gewicht -->
+                        <div>
+                          <div style="height:42px; border-radius:7px; background:var(--accent-soft); box-shadow:inset 0 0 0 2px var(--accent-ring); background-image:radial-gradient(var(--ink-4) 1.1px, transparent 1.2px); background-size:8px 8px; background-position:4px 4px"></div>
+                          <div class="t-sub is-strong" style="margin-top:5px">Punkte</div>
+                        </div>
+                      </div>
+                      <p class="t-sub c-2" style="margin:10px 0 0">Neue Notizen in „Zellbiologie" starten damit. Pro Notizbuch änderbar.</p>
+                    </section>
+
+                    <!-- Schalter -->
+                    <section class="card" style="padding:4px 14px">
+                      <div class="row" style="padding:7px 0">
+                        <div class="row__main">
+                          <span class="t-body">Bewegung reduzieren</span>
+                          <span class="t-sub c-3 clamp-1">Übergaben blenden über</span>
+                        </div>
+                        <!-- Zwischenzustand: der Schalter ist mitten im Umlegen -->
+                        <span style="width:51px;height:31px;border-radius:var(--r-pill);flex:none;position:relative;background:linear-gradient(90deg, var(--accent) 0 56%, var(--fill-3) 56%); box-shadow:0 0 0 5px var(--accent-soft)">
+                          <span style="position:absolute;top:1px;left:13px;width:29px;height:29px;border-radius:50%;background:var(--paper);box-shadow:0 2px 7px rgba(22,24,28,.32), inset 0 0 0 .5px var(--line)"></span>
+                        </span>
+                      </div>
+                      <div class="row" style="padding:7px 0">
+                        <div class="row__main">
+                          <span class="t-body">Fett gedruckter Text</span>
+                          <span class="t-sub c-3 clamp-1">Nutzt das schwerere Gewicht</span>
+                        </div>
+                        <span style="width:51px;height:31px;border-radius:var(--r-pill);flex:none;position:relative;background:var(--fill-3)">
+                          <span style="position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:var(--paper);box-shadow:0 1px 3px rgba(22,24,28,.26), inset 0 0 0 .5px var(--line)"></span>
+                        </span>
+                      </div>
+                      <div class="row" style="padding:7px 0">
+                        <div class="row__main">
+                          <span class="t-body">Zeitangaben relativ</span>
+                          <span class="t-sub c-3 clamp-1">„vor 18 Minuten" statt „09:23"</span>
+                        </div>
+                        <span style="width:51px;height:31px;border-radius:var(--r-pill);flex:none;position:relative;background:var(--accent)">
+                          <span style="position:absolute;top:2px;left:22px;width:27px;height:27px;border-radius:50%;background:var(--accent-on);box-shadow:0 1px 3px rgba(22,24,28,.26)"></span>
+                        </span>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+
+                <!-- ══ Sync-Fehler ══ -->
+                <div class="notice notice--error" style="align-items:center">
+                  <span class="ico" data-ico="alert"></span>
+                  <div class="notice__text" style="flex:1; min-width:0">
+                    <div class="t-body is-strong">Letzte Synchronisierung fehlgeschlagen — Verbindung prüfen</div>
+                    <div class="t-sub c-2 clamp-1">Zuletzt erfolgreich gestern 22:14 · 3 Änderungen warten</div>
+                  </div>
+                  <button class="btn btn--sm" style="flex:none">Erneut versuchen</button>
+                </div>
+
+                <!-- ══ Speicher ══ -->
+                <section class="card" style="padding:12px 14px">
+                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:9px">
+                    <span class="t-label c-3" style="flex:1">SPEICHER</span>
+                    <span class="t-sub c-3 num">4,2 GB belegt · 128 GB im Gerät</span>
+                  </div>
+                  <div class="bar" style="height:10px; display:flex; gap:0">
+                    <span style="width:45%; height:100%; background:var(--ink-1)"></span>
+                    <span style="width:33%; height:100%; background:var(--ink-2)"></span>
+                    <span style="width:14%; height:100%; background:var(--ink-4)"></span>
+                    <span style="width:8%;  height:100%; background:var(--fill-3)"></span>
+                  </div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; margin-top:9px">
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1">Notizen</span><span class="t-label num">1,9 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-2);flex:none"></span><span class="t-sub c-2" style="flex:1">Fotos</span><span class="t-label num">1,4 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-4);flex:none"></span><span class="t-sub c-2" style="flex:1">Audio</span><span class="t-label num">0,6 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--fill-3);flex:none"></span><span class="t-sub c-2" style="flex:1">Lernkarten</span><span class="t-label num">0,3 GB</span></span>
+                  </div>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · gruppierte Liste, Fehler als Banner oben</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <div class="t-title">Einstellungen</div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+        </div>
+
+        <div class="scroll" style="padding:10px 20px 12px; display:flex; flex-direction:column; gap:10px">
+
+          <!-- Fehlerzustand als Banner ganz oben -->
+          <div class="notice notice--error" style="align-items:center; padding:9px 12px">
+            <span class="ico" data-ico="alert" style="width:20px;height:20px"></span>
+            <div class="notice__text" style="flex:1; min-width:0">
+              <div class="t-sub is-strong clamp-1">Sync fehlgeschlagen</div>
+              <div class="t-sub c-2 clamp-1">Verbindung prüfen · 3 warten</div>
+            </div>
+            <button class="btn btn--sm" style="flex:none; height:30px; padding:0 11px">Erneut</button>
+          </div>
+
+          <!-- Design als Reihe -->
+          <section>
+            <div class="divider" style="margin:0 0 7px"><span class="t-label c-3">DESIGN</span></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px">
+
+              <!-- Hell -->
+              <button style="text-align:left; padding:5px; border-radius:11px; background:var(--paper); box-shadow:var(--sh-card)">
+                <div style="position:relative; height:58px; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16); background:#F2F2F4">
+                  <div style="position:absolute; inset:0; padding:6px 6px 0; display:flex; flex-direction:column; gap:4px">
+                    <div style="height:5px;width:56%;border-radius:3px;background:#16181C"></div>
+                    <div style="height:14px;border-radius:4px;background:#FFFFFF;box-shadow:0 1px 2px rgba(22,24,28,.16)"></div>
+                    <div style="height:14px;border-radius:4px;background:#FFFFFF;box-shadow:0 1px 2px rgba(22,24,28,.16)"></div>
+                  </div>
+                  <div style="position:absolute; left:0; right:0; bottom:0; height:10px; background:#EDEDEF; border-top:1px solid rgba(22,24,28,.10); display:flex; align-items:center; justify-content:space-around; padding:0 4px">
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(22,24,28,.62)"></span>
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(22,24,28,.24)"></span>
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(22,24,28,.24)"></span>
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(22,24,28,.24)"></span>
+                  </div>
+                </div>
+                <div class="t-sub c-3" style="padding:6px 2px 0">Hell</div>
+              </button>
+
+              <!-- Dunkel -->
+              <button style="text-align:left; padding:5px; border-radius:11px; background:var(--paper); box-shadow:var(--sh-card)">
+                <div style="position:relative; height:58px; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16); background:#0E0F11">
+                  <div style="position:absolute; inset:0; padding:6px 6px 0; display:flex; flex-direction:column; gap:4px">
+                    <div style="height:5px;width:56%;border-radius:3px;background:#F2F3F5"></div>
+                    <div style="height:14px;border-radius:4px;background:#17191C;box-shadow:inset 0 0 0 1px rgba(242,243,245,.10)"></div>
+                    <div style="height:14px;border-radius:4px;background:#17191C;box-shadow:inset 0 0 0 1px rgba(242,243,245,.10)"></div>
+                  </div>
+                  <div style="position:absolute; left:0; right:0; bottom:0; height:10px; background:#131518; border-top:1px solid rgba(242,243,245,.12); display:flex; align-items:center; justify-content:space-around; padding:0 4px">
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(242,243,245,.66)"></span>
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(242,243,245,.26)"></span>
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(242,243,245,.26)"></span>
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(242,243,245,.26)"></span>
+                  </div>
+                </div>
+                <div class="t-sub c-3" style="padding:6px 2px 0">Dunkel</div>
+              </button>
+
+              <!-- Automatisch — ausgewählt, Überblendung eingefroren -->
+              <button style="text-align:left; padding:5px; border-radius:11px; background:var(--accent-soft); box-shadow:inset 0 0 0 2px var(--accent-ring)">
+                <div style="position:relative; height:58px; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16); background:#F2F2F4">
+                  <div style="position:absolute; inset:0; padding:6px 6px 0; display:flex; flex-direction:column; gap:4px">
+                    <div style="height:5px;width:56%;border-radius:3px;background:#16181C"></div>
+                    <div style="height:14px;border-radius:4px;background:#FFFFFF;box-shadow:0 1px 2px rgba(22,24,28,.16)"></div>
+                    <div style="height:14px;border-radius:4px;background:#FFFFFF;box-shadow:0 1px 2px rgba(22,24,28,.16)"></div>
+                  </div>
+                  <div style="position:absolute; left:0; right:0; bottom:0; height:10px; background:#EDEDEF; border-top:1px solid rgba(22,24,28,.10); display:flex; align-items:center; justify-content:space-around; padding:0 4px">
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(22,24,28,.62)"></span>
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(22,24,28,.24)"></span>
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(22,24,28,.24)"></span>
+                    <span style="width:4px;height:4px;border-radius:1px;background:rgba(22,24,28,.24)"></span>
+                  </div>
+                  <div style="position:absolute; inset:0; background:#F2F3F5; clip-path:polygon(56% 0, 100% 0, 100% 100%, 32% 100%)"></div>
+                  <div style="position:absolute; inset:0; background:#0E0F11; clip-path:polygon(58% 0, 100% 0, 100% 100%, 34% 100%)"></div>
+                  <div style="position:absolute; inset:0; clip-path:polygon(58% 0, 100% 0, 100% 100%, 34% 100%); padding:6px 6px 0; display:flex; flex-direction:column; gap:4px">
+                    <div style="height:5px;width:56%;border-radius:3px;background:#F2F3F5"></div>
+                    <div style="height:14px;border-radius:4px;background:#17191C;box-shadow:inset 0 0 0 1px rgba(242,243,245,.10)"></div>
+                    <div style="height:14px;border-radius:4px;background:#17191C;box-shadow:inset 0 0 0 1px rgba(242,243,245,.10)"></div>
+                  </div>
+                  <div style="position:absolute; left:0; right:0; bottom:0; height:10px; clip-path:polygon(58% 0, 100% 0, 100% 100%, 34% 100%); background:#131518; border-top:1px solid rgba(242,243,245,.12)"></div>
+                </div>
+                <div style="display:flex; align-items:center; gap:4px; padding:6px 2px 0">
+                  <span class="t-sub is-strong">Auto</span>
+                  <div style="flex:1"></div>
+                  <span class="ico" data-ico="check" style="width:15px;height:15px; color:var(--ink-1)"></span>
+                </div>
+              </button>
+            </div>
+          </section>
+
+          <!-- Schriftgröße -->
+          <section class="card" style="padding:11px 14px 12px">
+            <div class="t-label c-3">SCHRIFTGRÖSSE</div>
+            <div style="display:flex; align-items:center; gap:10px; margin:26px 0 10px">
+              <span class="t-label c-3">A</span>
+              <div style="position:relative; flex:1; height:26px; display:flex; align-items:center">
+                <div style="position:absolute; left:0; right:0; height:4px; border-radius:2px; background:var(--fill-2)"></div>
+                <div style="position:absolute; left:0; width:50%; height:4px; border-radius:2px; background:var(--accent)"></div>
+                <div style="position:absolute; left:0; right:0; display:flex; justify-content:space-between; align-items:center">
+                  <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                  <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                  <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                  <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                  <span style="width:2px;height:9px;border-radius:1px;background:var(--line-2)"></span>
+                </div>
+                <div style="position:absolute; left:50%; transform:translateX(-50%); width:26px; height:26px; border-radius:50%; background:var(--paper); box-shadow:0 2px 8px rgba(22,24,28,.30), 0 0 0 6px var(--accent-soft), inset 0 0 0 .5px var(--line)"></div>
+                <div class="t-label" style="position:absolute; left:50%; transform:translateX(-50%); top:-26px; padding:3px 9px; border-radius:var(--r-pill); background:var(--accent); color:var(--accent-on); white-space:nowrap">Standard</div>
+              </div>
+              <span class="t-section">A</span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; align-items:end">
+              <div>
+                <div class="t-label c-3" style="margin-bottom:2px">Klein</div>
+                <div class="t-sub clamp-1">Osmose</div>
+              </div>
+              <div style="padding:2px 8px; margin:-2px -2px; border-radius:8px; background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                <div class="t-label c-1" style="margin-bottom:2px">Standard</div>
+                <div class="t-body is-strong clamp-1">Osmose</div>
+              </div>
+              <div>
+                <div class="t-label c-3" style="margin-bottom:2px">Groß</div>
+                <div class="t-section clamp-1" style="opacity:.42">Osmose</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Gruppierte Liste: Papier, Modul-Farben, Schalter -->
+          <section class="card" style="padding:2px 14px">
+            <div class="row" style="padding:6px 0">
+              <div class="row__main"><span class="t-body">Papier &amp; Raster</span></div>
+              <div class="row__meta">
+                <span style="width:26px;height:20px;border-radius:5px;background:var(--paper-2);box-shadow:inset 0 0 0 1px var(--line-2);background-image:radial-gradient(var(--ink-4) 1px, transparent 1.1px);background-size:7px 7px;background-position:3px 3px"></span>
+                <span class="t-sub c-3">Punkte</span>
+                <span class="ico" data-ico="chevR" style="width:16px;height:16px"></span>
+              </div>
+            </div>
+            <div class="row" style="padding:7px 0">
+              <div class="row__main">
+                <span class="t-body">Modul-Farben</span>
+                <span style="display:flex; flex-wrap:wrap; gap:3px 11px; margin-top:3px">
+                  <span style="display:flex;align-items:center;gap:6px"><span class="dot dot--canvas"></span><span class="t-sub c-3">Canvas</span></span>
+                  <span style="display:flex;align-items:center;gap:6px"><span class="dot dot--notes"></span><span class="t-sub c-3">Notizen</span></span>
+                  <span style="display:flex;align-items:center;gap:6px"><span class="dot dot--journal"></span><span class="t-sub c-3">Journal</span></span>
+                  <span style="display:flex;align-items:center;gap:6px"><span class="dot dot--tasks"></span><span class="t-sub c-3">Aufgaben</span></span>
+                  <span style="display:flex;align-items:center;gap:6px"><span class="dot dot--cards"></span><span class="t-sub c-3">Lernkarten</span></span>
+                </span>
+              </div>
+              <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+            </div>
+            <div class="row" style="padding:6px 0">
+              <div class="row__main">
+                <span class="t-body">Bewegung reduzieren</span>
+                <span class="t-sub c-3 clamp-1">Übergaben blenden über</span>
+              </div>
+              <!-- Zwischenzustand: Schalter mitten im Umlegen -->
+              <span style="width:51px;height:31px;border-radius:var(--r-pill);flex:none;position:relative;background:linear-gradient(90deg, var(--accent) 0 56%, var(--fill-3) 56%); box-shadow:0 0 0 5px var(--accent-soft)">
+                <span style="position:absolute;top:1px;left:13px;width:29px;height:29px;border-radius:50%;background:var(--paper);box-shadow:0 2px 7px rgba(22,24,28,.32), inset 0 0 0 .5px var(--line)"></span>
+              </span>
+            </div>
+            <div class="row" style="padding:6px 0; min-height:46px">
+              <div class="row__main"><span class="t-body">Fett gedruckter Text</span></div>
+              <span style="width:51px;height:31px;border-radius:var(--r-pill);flex:none;position:relative;background:var(--fill-3)">
+                <span style="position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:var(--paper);box-shadow:0 1px 3px rgba(22,24,28,.26), inset 0 0 0 .5px var(--line)"></span>
+              </span>
+            </div>
+            <div class="row" style="padding:6px 0">
+              <div class="row__main">
+                <span class="t-body">Zeitangaben relativ</span>
+                <span class="t-sub c-3 clamp-1">„vor 18 Minuten" statt „09:23"</span>
+              </div>
+              <span style="width:51px;height:31px;border-radius:var(--r-pill);flex:none;position:relative;background:var(--accent)">
+                <span style="position:absolute;top:2px;left:22px;width:27px;height:27px;border-radius:50%;background:var(--accent-on);box-shadow:0 1px 3px rgba(22,24,28,.26)"></span>
+              </span>
+            </div>
+          </section>
+
+          <!-- Speicher -->
+          <section class="card" style="padding:11px 14px 12px">
+            <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px">
+              <span class="t-label c-3" style="flex:1">SPEICHER</span>
+              <span class="t-sub c-3 num">4,2 von 128 GB</span>
+            </div>
+            <div class="bar" style="height:10px; display:flex; gap:0">
+              <span style="width:45%; height:100%; background:var(--ink-1)"></span>
+              <span style="width:33%; height:100%; background:var(--ink-2)"></span>
+              <span style="width:14%; height:100%; background:var(--ink-4)"></span>
+              <span style="width:8%;  height:100%; background:var(--fill-3)"></span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px 14px; margin-top:8px">
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1">Notizen</span><span class="t-label num">1,9 GB</span></span>
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-2);flex:none"></span><span class="t-sub c-2" style="flex:1">Fotos</span><span class="t-label num">1,4 GB</span></span>
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-4);flex:none"></span><span class="t-sub c-2" style="flex:1">Audio</span><span class="t-label num">0,6 GB</span></span>
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--fill-3);flex:none"></span><span class="t-sub c-2" style="flex:1">Lernkarten</span><span class="t-label num">0,3 GB</span></span>
+            </div>
+          </section>
+
+          <!-- Die übrigen Bereiche — identisch zur Bereichsliste des iPad -->
+          <section class="card" style="padding:2px 14px">
+            <div class="row" style="padding:5px 0">
+              <span class="ico c-2" data-ico="cloud"></span>
+              <div class="row__main"><span class="t-body">Sync</span></div>
+              <div class="row__meta"><span class="t-sub" style="color:var(--danger)">Fehler</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+            </div>
+            <div class="row" style="padding:5px 0">
+              <span class="ico c-2" data-ico="bolt"></span>
+              <div class="row__main"><span class="t-body">Benachrichtigungen</span></div>
+              <div class="row__meta"><span class="t-sub c-3">3 aktiv</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+            </div>
+            <div class="row" style="padding:5px 0">
+              <span class="ico c-2" data-ico="lock"></span>
+              <div class="row__main"><span class="t-body">Datenschutz &amp; Sperre</span></div>
+              <div class="row__meta"><span class="t-sub c-3">Face ID</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+            </div>
+            <div class="row" style="padding:5px 0">
+              <span class="ico c-2" data-ico="share"></span>
+              <div class="row__main"><span class="t-body">Export &amp; Backup</span></div>
+              <div class="row__meta"><span class="t-sub c-3">Wöchentlich</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+            </div>
+            <div class="row" style="padding:5px 0">
+              <span class="ico c-2" data-ico="star"></span>
+              <div class="row__main"><span class="t-body">Abo</span></div>
+              <div class="row__meta"><span class="t-sub c-3">Uni · bis 30.09.</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+            </div>
+          </section>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Einstellungen — Steckbrief</h2>
+  <p>Drei Spalten auf dem iPad: App-Navigation, Einstellungs-Bereiche, gewählter Bereich. Jeder Regler steht neben seiner Folge — die Schriftgröße als drei echte Zeilen der Typo-Skala, das Design als drei maßstäbliche Mini-Screens dieser App.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Apple Einstellungen (iPadOS)</td><td>Zweispaltig: Bereichsliste links, Bereich rechts, kein Zwischenschritt. Hier als zweite, schmale Spalte neben der App-Sidebar. <strong>Bewertung:</strong> unschlagbar für Orientierung — man sieht beim Ändern, wo man ist.</td></tr>
+    <tr><td>Apple Einstellungen (iOS)</td><td>Gruppierte Liste mit dem Wert rechts in der Zeile („Papier &amp; Raster · Punkte"). Hier auf dem iPhone. <strong>Bewertung:</strong> lesbar ohne Tippen — die am meisten unterschätzte Idee in iOS.</td></tr>
+    <tr><td>Things 3</td><td>Design-Vorschau als Mini-Screen statt als Farbfläche. Hier weitergedreht: Die Kachel bildet DIESE App ab — auf dem iPad mit Sidebar und zwei Karten, auf dem iPhone mit Tab-Bar. <strong>Bewertung:</strong> die stärkste Einzelidee auf diesem Schirm.</td></tr>
+    <tr><td>Bear</td><td>Themenauswahl als sichtbare Reihe statt als Aufklappmenü. Übernommen — aber mit der Folge daneben („wechselt heute um 16:38 auf Dunkel"), die Bear verschweigt.</td></tr>
+    <tr><td>Apple Speicher</td><td>Gestapelter Balken mit Anteilen. Übernommen in Ink-Abstufungen statt in fünf Buntfarben; jede Zahl steht neben ihrem Wort.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Themen-Stores mit zwei Dutzend Buntthemen</strong> (Bear, Ulysses) — die App ist Papier und Grau. Drei Designs beantworten eine Frage; zwanzig fragen nach Geschmack.</li>
+    <li><strong>Das Einstellungs-Modal über dem Inhalt</strong> (Notion) — es verdeckt genau das, was man beurteilen will.</li>
+    <li><strong>Die 40-zeilige Ein-Ebene-Liste</strong> (Obsidian, Craft) — das ist keine Struktur, das ist eine Reihenfolge.</li>
+    <li><strong>Byte-genaue Speicherangaben</strong> — Emil entscheidet nicht in Bytes, sondern in „reicht das noch".</li>
+    <li><strong>Ein Fortschrittsrad für die Synchronisierung</strong> — ein Fehlschlag wird benannt, nicht animiert.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: Design „Automatisch", Schrift „Standard", Papier „Punkte", drei Schalter, 4,2 GB belegt.</td></tr>
+    <tr><td>aktiv</td><td>„Einstellungen" in der App-Sidebar und „Darstellung" in der Bereichsliste: Fläche + Gewicht + Ink-Balken links — drei Merkmale, keine Farbe.</td></tr>
+    <tr><td>ausgewählt</td><td>Design-Kachel „Automatisch" und Papier „Punkte": getönte Fläche + 2-pt-Ring + Häkchen bzw. Gewicht.</td></tr>
+    <tr><td>Fehler</td><td><strong>Sync:</strong> <code>.notice--error</code> — „Letzte Synchronisierung fehlgeschlagen — Verbindung prüfen", mit dem Zeitpunkt des letzten Erfolgs, den drei wartenden Änderungen und dem Knopf „Erneut versuchen". Derselbe Fehler ist an drei Stellen sichtbar: im Banner, als rotes Zeichen neben „Sync" in der Bereichsliste und als „wartet" in der Geräteliste — so findet man ihn auch, wenn man von woanders kommt.</td></tr>
+    <tr><td>Zwischenzustand</td><td><strong>Der Schalter „Bewegung reduzieren" steht mitten im Umlegen</strong> — die Spur ist zu 56 % gefüllt, der Knopf sitzt zwischen den Positionen, um ihn liegt der Druck-Ring. Zweiter Zwischenzustand: Der Schriftgrößen-Regler wird gerade gezogen — der Knopf ist angehoben (Schatten + Ring), darüber steht die Wertblase „Standard". Dritter: Die Kachel „Automatisch" zeigt die Überblendung zwischen Hell und Dunkel eingefroren, mit hellem Grat an der Naht.</td></tr>
+    <tr><td>nicht gewählt</td><td>Die Vorschauzeile „Groß" liegt auf 42 % Deckkraft und trägt keine Fläche — die beiden Merkmale für „aus".</td></tr>
+  </table>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Inklusion:</strong> Was sonst im Kleingedruckten steht, ist hier der Schirm — Dynamic Type mit echter Vorschau in der Skala der App, „Bewegung reduzieren" mit der konkreten Folge für die Signatur-Animation, Fettschrift, und Modul-Farben, die als reines Zusatzmerkmal erklärt statt als Bedeutungsträger verkauft werden. <strong>Visuals:</strong> Die drei Design-Kacheln sind keine Farbmuster, sondern maßstäbliche Abbilder derselben App — auf dem iPad mit Sidebar und zwei Karten, auf dem iPhone mit Tab-Bar. Die Kachel „Automatisch" zeigt beide Designs zugleich, diagonal getrennt: Sie erklärt sich selbst, ohne einen Satz zu brauchen.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe. <strong>Aktiv</strong> = Fläche + Gewicht + Ink-Balken (Navigation). <strong>Ausgewählt</strong> = Fläche + Ring (+ Häkchen bei den Design-Kacheln, + Gewicht bei „Punkte"). <strong>Schalter an</strong> = gefüllte Spur + Knopf rechts. <strong>Schalter aus</strong> = graue Spur + Knopf links. <strong>Nicht gewählt</strong> = Deckkraft + fehlende Fläche. <strong>Fehler</strong> = rotes Wort + Zeichen + Randlinie + Knopf mit Ausweg. Modul-Punkte sind 6 pt und stehen nie ohne ihr Wort; die Speicher-Anteile sind Ink-Abstufungen, keine Modul-Farben — sonst wäre Farbe eine Fläche.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>
