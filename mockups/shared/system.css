@@ -322,6 +322,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* Ohne das stauchen Flex-Kinder ihren Inhalt, statt unten aus dem Bild zu
    laufen — Karten würden dann leer wirken, obwohl sie Inhalt haben. */
 .scroll > * { flex-shrink: 0; }
+/* Dieselbe Falle als Grid-Kind: Eine Karte mit `overflow:hidden`, deren
+   Inhalt ein Flex-Container mit `flex:1 1 0` ist, kann auf Höhe 0
+   zusammenfallen und wirkt dann leer. Die Mindesthöhe verhindert das. */
+.scroll > .card { min-height: fit-content; }
 
 /* ── 5. Bausteine ─────────────────────────────────────────────────────── */
 

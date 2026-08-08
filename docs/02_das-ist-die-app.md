@@ -114,7 +114,7 @@ Bewertung des vorliegenden Entwurfs gegen die fünf ADA-Kategorien. Skala: **1 =
 
 | Kategorie | Note | Begründung |
 |---|---|---|
-| **Inklusion** | **2** | Alle Kontraste sind gerechnet und dokumentiert, jeder Zustand trägt zwei Merkmale, Dynamic Type ist in zwei Stufen durchgezeichnet, 44-pt-Ziele durchgehend. Zur 1 fehlt die geprüfte VoiceOver-Reihenfolge: Ein Mockup kann Vorlesereihenfolge und Rotor-Struktur behaupten, aber nicht beweisen. |
+| **Inklusion** | **2** | Alle Kontraste sind gerechnet und dokumentiert, jeder Zustand trägt zwei Merkmale, Dynamic Type ist in zwei Stufen durchgezeichnet, 44-pt-Ziele durchgehend. Ein eigener Schirm zeigt sechs leere Zustände, die alle den nächsten Schritt benennen statt ihn zu verstecken. Zur 1 fehlt die geprüfte VoiceOver-Reihenfolge: Ein Mockup kann Vorlesereihenfolge und Rotor-Struktur behaupten, aber nicht beweisen. |
 | **Delight & Fun** | **2** | Vier Momente sind als eingefrorene Zwischenzustände wirklich sichtbar — die fliegende Karte, die Checkbox im Umlegen, die Karte im Flip, der Schalter zwischen den Positionen. Zur 1 fehlt die Bewegung selbst: In statischen Screens bleibt die Signature-Animation eine Behauptung. |
 | **Interaktion** | **2** | Der nächste Schritt ist überall benannt und beziffert („Lernen · ca. 4 Minuten"), das Detail klappt in der Liste auf statt zu navigieren, dieselbe Aufgabe kostet auf dem iPhone nicht mehr Taps. Abzug für das Lineal- und Zoom-Verhalten im Canvas, das nur beschrieben, nicht durchgespielt ist. |
 | **Visuals & Grafik** | **1–2** | Ein Raster, eine Typo-Skala, eine Materialsprache über 18 Screens hinweg, ein einziger Akzent, alle Werte in einer gemeinsamen Datei. Das ist die stärkste Kategorie des Entwurfs. Der halbe Punkt Abzug geht an die Notizbuch-Cover: Sie sind aus Mustern gebaut, weil kein Bildmaterial vorlag. |
@@ -131,7 +131,8 @@ Was fehlt, ist ein **lauffähiger Prototyp genau dieser 420 ms**: der markierte 
 ## Verweise
 
 - Alle Mockups: `mockups/index.html`
-- Der Entwurf: `mockups/app-next/` — zwölf Screens, je hell/dunkel und iPad/iPhone
+- Der Entwurf: `mockups/app-next/` — dreizehn Screens, je hell/dunkel und iPad/iPhone
+- Kontaktbögen: `mockups/_renders/kontaktbogen-*.png` — alle Screens auf je einem Blatt
 - Vorstufe: `mockups/best-of/` — sechs Bereiche, je drei Vorbilder zusammengeführt
 - Gestaltungssystem: `mockups/shared/system.css` — Tokens, Skala, Kontrastwerte
 - Konkurrenz-Anatomie: `docs/01_konkurrenz-anatomie.md` — 18 Apps zerlegt
