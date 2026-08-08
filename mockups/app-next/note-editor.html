@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notiz-Editor — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Notiz-Editor
+
+ÜBERNOMMEN
+· Bear (Ruhe): Ein Editor ohne Werkzeugleiste über dem Text. Die Fläche ist
+  Papier, die Bedienung sitzt am Rand — Rückkehr-Leiste links, Info rechts,
+  Blockleiste unten. Übernommen als Grundhaltung des ganzen Schirms.
+  BEWERTUNG: Bear ist der ruhigste Texteditor auf iOS, und das ist keine
+  Geschmacksfrage, sondern eine Leistung: er hat genau einen Akzent. Schwach ist
+  Bear beim Anschluss — was aus einer Notiz wird, endet dort in einer Datei.
+  Hier trägt derselbe ruhige Text die Übergabe-Leiste.
+· Bear (Markdown-Live): Die Auszeichnung bleibt sichtbar, statt beim Tippen zu
+  verschwinden. Übernommen als blasse „##"-Marke in der linken Rinne neben der
+  Überschrift und als sichtbare Klammern um [[Osmose]].
+  BEWERTUNG: stark, weil der Nutzer nie raten muss, in welchem Modus er ist.
+  Wir setzen die Marken aber in die Rinne, nicht in den Satz — Bear schiebt den
+  Text beim Ein- und Ausblenden um zwei Zeichen, das ruckelt.
+· Craft (Blöcke mit Drag-Handles): Jeder Block ist ein greifbares Ding, der
+  Griff sitzt links außerhalb der Textspalte. Übernommen als Rinne von 40 pt,
+  die den Griff des angefassten Blocks und die Einklapp-Pfeile trägt.
+  BEWERTUNG: gut, weil die Reihenfolge ohne Menü änderbar wird. Craft zeigt
+  Griff, Plus und Menü gleichzeitig an jedem Block und macht den Rand unruhig —
+  hier trägt genau ein Block den Griff, nämlich der, an dem gearbeitet wird.
+· Apple Notes (Checklisten): Ein Kreis, ein Tap, Text bleibt Text — die Liste
+  ist ein Block im Fließtext, kein Aufgabenmodul. Übernommen inklusive
+  Durchstreichung nach dem Haken.
+  BEWERTUNG: richtig gelöst. Apple Notes verliert die Liste danach aber im
+  Notiztext; hier bietet dieselbe Zeile über die Übergabe-Leiste an, eine echte
+  Aufgabe daraus zu machen — mit Herkunfts-Chip, ohne Kopieren.
+· Obsidian (Backlinks): Rückverweise als eigene Spalte statt als Fußnote.
+  Übernommen als „Backlinks 3" im Info-Panel.
+  BEWERTUNG: inhaltlich stark, gestalterisch dort ein Datenbank-Fenster. Hier
+  drei Zeilen mit Namen — mehr braucht ein Student nicht.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Notions Block-Menü mit sechs Symbolen an jeder Zeile — der Rand flimmert beim
+  Lesen. Es gibt hier einen Griff am angefassten Block und den Slash-Befehl.
+· Craft-Cover in Vollfarbe und Farbverläufe pro Notiz — Farbe gehört dem Nutzer.
+  Der Cover-Streifen ist Papier und Grau, 36 pt hoch, und trägt nur den Bereich.
+· Bears Tag-Farben und Evernotes Formatierungsleiste über der Tastatur mit
+  Schriftgrößen — fünf Größen sind gesetzt, der Nutzer wählt keine sechste.
+· Apple Notes' „Schnellnotiz"-Ecke und die Handschrift-Werkzeuge im Textmodus —
+  das ist der Canvas, nicht der Notiz-Editor.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Der markierte Satz ist gleichzeitig Text und Rohstoff. Über der Auswahl steht
+dieselbe Übergabe-Leiste wie in der Notizen-Liste, im Canvas und im Journal —
+gleiche Reihenfolge, gleiche Wörter, gleiche Höhe — und ihr erster Knopf heißt
+„Lückentext-Karte", weil genau dieser Satz eine gute Karte ergibt. Rechts im
+Panel steht in derselben Sekunde, was daraus schon geworden ist: 12 Karten,
+1 Aufgabe. Der Schirm zeigt den Vorgang eingefroren: die Karte fliegt gerade
+vom Satz zum Zähler, die Ausgangsstelle bleibt als Umriss stehen.
+Kein Konkurrent kann das, weil keiner Notiz, Karte und Aufgabe im selben
+Datenmodell hat — bei allen anderen ist es Kopieren, Exportieren, App-Wechsel.
+
+ADA-KATEGORIE: Delight (die fliegende Karte mit Spur und stehengebliebenem
+Umriss — der einzige Moment, in dem sich die App bewegt) und Innovation (aus
+markiertem Fließtext wird ohne Umweg eine Lückentext-Karte).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Notiztext        ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Metazeile        ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
+  Panel-Text       ink-3 auf paper-2   4,8:1   (hell) ·  4,9:1 (dunkel)
+  Codeblock        ink-2 auf fill      5,3:1   (hell) ·  7,1:1 (dunkel)
+  Übergabe-Ziel    accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Auswahlfläche    accent-soft + accent-ring 1,5 pt — Fläche UND Ring, der Text
+                   darin bleibt ink-1 und verliert keinen Kontrast.
+  Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort
+  („12 Karten", „1 Aufgabe", „Lückentext-Karte").
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+Der Textkörper läuft in Serif — was der Nutzer geschrieben hat, ist Serif;
+die Oberfläche bleibt Sans. Der Codeblock nutzt var(--mono) auf t-sub-Größe;
+eine Klasse .mono gibt es in system.css nicht, deshalb inline ausgezeichnet.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Notiz-Editor</h1>
+  <p>Die Notiz „Zellbiologie" in voller Breite. Ein Satz ist markiert, darüber steht die Übergabe-Leiste — und die erste Karte ist schon unterwegs zum Zähler im Info-Panel, während die Ausgangsstelle als Umriss stehen bleibt.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Sidebar eingeklappt (Fokus) · Info-Panel 280 pt</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+
+        <!-- Rückkehr-Leiste: die Sidebar aus today.html, eingeklappt auf 68 pt.
+             Gleiche Reihenfolge, gleiche Symbole, nur ohne Beschriftung.
+             Modul-Dots entfallen hier bewusst — ein Dot ohne Wort ist verboten. -->
+        <aside class="sidebar" style="width:68px; padding:8px 12px 12px; align-items:center">
+          <button class="iconbtn" style="width:44px;height:44px; margin-bottom:4px" title="Seitenleiste einblenden"><span class="ico" data-ico="chevR"></span></button>
+
+          <button class="iconbtn" style="width:44px;height:44px" title="Heute"><span class="ico" data-ico="today"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Bibliothek"><span class="ico" data-ico="library"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Eingang"><span class="ico" data-ico="inbox"></span></button>
+
+          <div style="width:28px; height:1px; background:var(--line); margin:8px 0"></div>
+
+          <button class="iconbtn" style="width:44px;height:44px" title="Canvas"><span class="ico" data-ico="canvas"></span></button>
+          <!-- aktiv = Fläche + Ink + Balken (drei Merkmale, keine Farbe) -->
+          <button class="iconbtn is-active" style="width:44px;height:44px; position:relative" title="Notizen">
+            <span style="position:absolute; left:-9px; top:9px; bottom:9px; width:3px; border-radius:0 2px 2px 0; background:var(--accent)"></span>
+            <span class="ico" data-ico="notes"></span>
+          </button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Journal"><span class="ico" data-ico="journal"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Aufgaben"><span class="ico" data-ico="tasks"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Lernkarten"><span class="ico" data-ico="cards"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Graph"><span class="ico" data-ico="graph"></span></button>
+
+          <div style="margin-top:auto">
+            <button class="iconbtn" style="width:44px;height:44px" title="Einstellungen"><span class="ico" data-ico="settings"></span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+
+          <div class="navbar">
+            <button class="iconbtn"><span class="ico" data-ico="chevL"></span></button>
+            <span class="origin"><span class="dot dot--notes"></span>Notizen</span>
+            <span class="t-sub c-3">Biologie · Semester 3</span>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="undo"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="star"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="share"></span></button>
+            <button class="iconbtn is-active"><span class="ico" data-ico="info"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+          </div>
+
+          <!-- Editor + Info-Panel -->
+          <div style="flex:1 1 auto; display:flex; min-height:0">
+
+            <!-- ── Editor ────────────────────────────────────────────── -->
+            <div class="content" style="background:var(--paper)">
+              <div class="scroll" style="padding:0">
+
+                <!-- Cover-Streifen: Papier und Grau, liniert wie Kollegblock -->
+                <div style="height:36px; position:relative;
+                     background:
+                       linear-gradient(180deg, var(--fill-2), transparent),
+                       repeating-linear-gradient(180deg, transparent 0 11px, var(--line) 11px 12px);
+                     border-bottom:1px solid var(--line)">
+                  <span class="chip" style="position:absolute; left:24px; bottom:-13px; background:var(--paper); box-shadow:0 0 0 1px var(--line)">
+                    <span class="ico" data-ico="folder" style="width:14px;height:14px"></span>Biologie
+                  </span>
+                  <span class="t-label c-3" style="position:absolute; right:24px; top:10px">Vorlesung 6 · Prof. Wendt</span>
+                </div>
+
+                <!-- Notizkopf -->
+                <div style="max-width:700px; margin:0 auto; padding:20px 10px 0">
+                  <div style="padding-left:40px">
+                    <div class="t-title">Zellbiologie</div>
+                    <div style="display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap">
+                      <span class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#uni/bio</span>
+                      <span class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#labor</span>
+                      <span class="chip chip--ghost"><span class="ico" data-ico="plus" style="width:13px;height:13px"></span>Tag</span>
+                      <div style="flex:1 1 auto"></div>
+                      <span class="t-sub c-2">Zuletzt bearbeitet gestern 16:20 · <span class="num">14 Absätze</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Notizkörper: Rinne 34 pt + Textspalte -->
+                <div style="max-width:700px; margin:0 auto; padding:12px 10px 6px">
+
+                  <!-- Überschrift mit Einklapp-Pfeil, Markdown-Marke in der Rinne -->
+                  <div style="display:flex; align-items:flex-start; margin-bottom:6px">
+                    <div style="width:40px; height:26px; flex:none; position:relative">
+                      <button class="ico c-3" data-ico="chevD" style="width:15px;height:15px; position:absolute; left:0; top:6px"></button>
+                      <span class="t-sub c-3" style="font-family:var(--mono); position:absolute; left:19px; top:3px">##</span>
+                    </div>
+                    <div class="t-section" style="flex:1 1 auto">Membran und Transport</div>
+                  </div>
+
+                  <!-- Fließtext in Serif, mit Wiki-Link -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none"></div>
+                    <p class="t-body serif" style="margin:0; flex:1 1 auto">Die Zellmembran ist <span class="is-strong">selektiv permeabel</span>: kleine unpolare Moleküle passieren frei, Ionen brauchen Kanäle. Für Wasser gilt der Sonderfall <a href="#" style="color:var(--ink-1); font-weight:600; text-decoration:none; box-shadow:inset 0 -1.5px 0 var(--line-2)"><span class="c-3" style="font-weight:400">[[</span>Osmose<span class="c-3" style="font-weight:400">]]</span></a>.</p>
+                  </div>
+
+                  <!-- ══ Der Signature-Moment: markierter Satz + Übergabe-Leiste ══ -->
+                  <div style="display:flex; margin-top:46px; margin-bottom:10px; position:relative">
+                    <!-- Drag-Handle (Craft): nur am angefassten Block -->
+                    <div style="width:40px; flex:none; display:flex; align-items:flex-start; padding-top:6px">
+                      <span style="display:grid; grid-template-columns:2px 2px; gap:3px; opacity:.5">
+                        <i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i><i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i>
+                        <i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i><i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i>
+                        <i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i><i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i>
+                      </span>
+                    </div>
+
+                    <!-- Übergabe-Leiste, schwebt über der Auswahl -->
+                    <div class="handoff" style="position:absolute; left:40px; top:-46px; z-index:40">
+                      <span class="handoff__from t-label"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
+                      <button class="handoff__btn is-primary"><span class="dot dot--cards"></span>Lückentext-Karte</button>
+                      <button class="handoff__btn"><span class="dot dot--cards"></span>Frage/Antwort</button>
+                      <button class="handoff__btn"><span class="dot dot--tasks"></span>Aufgabe</button>
+                      <button class="handoff__btn"><span class="ico" data-ico="more" style="width:16px;height:16px"></span></button>
+                    </div>
+
+                    <p class="t-body serif" style="margin:0; flex:1 1 auto">Merksatz: <span id="ipad-sel" style="background:var(--accent-soft); border-radius:5px; padding:1px 3px; -webkit-box-decoration-break:clone; box-decoration-break:clone"><span style="display:inline-block; width:2px; height:18px; background:var(--accent); vertical-align:-4px; position:relative"><i style="position:absolute; left:-3px; top:-7px; width:8px; height:8px; border-radius:50%; background:var(--accent)"></i></span> Osmose ist die Diffusion von Wasser durch eine semipermeable Membran. <span style="display:inline-block; width:2px; height:18px; background:var(--accent); vertical-align:-4px; position:relative"><i style="position:absolute; left:-3px; bottom:-7px; width:8px; height:8px; border-radius:50%; background:var(--accent)"></i></span></span></p>
+                  </div>
+
+                  <!-- Checkliste (Apple Notes) -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none"></div>
+                    <div style="flex:1 1 auto">
+                      <div style="display:flex; align-items:center; gap:10px; min-height:29px">
+                        <span class="check is-done"></span>
+                        <span class="t-body serif c-3" style="text-decoration:line-through">Abbildung 4.2 aus der Vorlesung ergänzen</span>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:10px; min-height:29px">
+                        <span class="check"></span>
+                        <span class="t-body serif">Jana nach dem Messprotokoll vom Dienstag fragen</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Callout -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none"></div>
+                    <div class="notice" style="flex:1 1 auto; padding:10px 14px">
+                      <span class="ico c-2" data-ico="info" style="width:19px;height:19px; margin-top:1px"></span>
+                      <div>
+                        <div class="t-label c-3" style="margin-bottom:1px">MERKEN</div>
+                        <div class="t-body serif">Wasser wandert dorthin, wo die Teilchenkonzentration höher ist.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Zitat mit linkem Balken -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none; display:flex; justify-content:flex-end; padding-right:8px; padding-top:2px">
+                      <span class="ico c-3" data-ico="quote" style="width:15px;height:15px"></span>
+                    </div>
+                    <div style="flex:1 1 auto; border-left:3px solid var(--line-2); padding-left:14px">
+                      <p class="t-body serif c-2" style="margin:0">„Die Zelle ist die kleinste Einheit, die alle Merkmale des Lebendigen erfüllt."</p>
+                      <div class="t-sub c-3" style="margin-top:1px">Vorlesung 6, Prof. Wendt</div>
+                    </div>
+                  </div>
+
+                  <!-- Codeblock: var(--mono) auf t-sub-Größe, Syntax in Grautönen -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none; display:flex; justify-content:flex-end; padding-right:8px; padding-top:4px">
+                      <span class="t-label c-3" style="font-family:var(--mono)">&lt;/&gt;</span>
+                    </div>
+                    <div style="flex:1 1 auto; background:var(--fill); border-radius:10px; box-shadow:inset 0 0 0 1px var(--line); padding:8px 14px">
+                      <div class="t-sub c-3" style="font-family:var(--mono); letter-spacing:0"># Zellen pro mL — Neubauer, Verdünnung 1:2</div>
+                      <div class="t-sub c-1" style="font-family:var(--mono); letter-spacing:0"><span class="c-2">n</span> <span class="c-3">=</span> (<span class="is-strong">312</span> <span class="c-3">/</span> <span class="is-strong">4</span>) <span class="c-3">*</span> <span class="is-strong">10^4</span> <span class="c-3">*</span> <span class="is-strong">2</span>&nbsp;&nbsp;<span class="c-3"># = 1,56e6</span></div>
+                    </div>
+                  </div>
+
+                  <!-- Tabelle -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none; display:flex; justify-content:flex-end; padding-right:8px; padding-top:4px">
+                      <span class="ico c-3" data-ico="grid" style="width:15px;height:15px"></span>
+                    </div>
+                    <table style="flex:1 1 auto; border-collapse:collapse; width:100%">
+                      <tr>
+                        <td class="t-label c-3" style="padding:3px 12px 3px 0; border-bottom:1px solid var(--line-2); width:44%">ORGANELL</td>
+                        <td class="t-label c-3" style="padding:3px 0; border-bottom:1px solid var(--line-2)">AUFGABE</td>
+                      </tr>
+                      <tr>
+                        <td class="t-body serif" style="padding:3px 12px 3px 0; border-bottom:1px solid var(--line)">Mitochondrium</td>
+                        <td class="t-body serif c-2" style="padding:3px 0; border-bottom:1px solid var(--line)">Energie als ATP</td>
+                      </tr>
+                      <tr>
+                        <td class="t-body serif" style="padding:3px 12px 3px 0; border-bottom:1px solid var(--line)">Golgi-Apparat</td>
+                        <td class="t-body serif c-2" style="padding:3px 0; border-bottom:1px solid var(--line)">Sortieren und Verpacken</td>
+                      </tr>
+                      <tr>
+                        <td class="t-body serif" style="padding:3px 12px 3px 0">Endoplasmatisches Retikulum</td>
+                        <td class="t-body serif c-2" style="padding:3px 0">Synthese und Transport</td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <!-- Eingeklappte Überschrift: der halb geöffnete Zustand -->
+                  <div style="display:flex; align-items:center; margin-top:10px">
+                    <div style="width:40px; height:26px; flex:none; position:relative">
+                      <button class="ico c-3" data-ico="chevR" style="width:15px;height:15px; position:absolute; left:0; top:6px"></button>
+                      <span class="t-sub c-3" style="font-family:var(--mono); position:absolute; left:19px; top:3px">##</span>
+                    </div>
+                    <div class="t-section c-2" style="flex:1 1 auto">Organellen im Überblick</div>
+                    <span class="chip"><span class="num">4</span>&nbsp;Blöcke ausgeblendet</span>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Blockleiste unten -->
+              <div style="flex:none; display:flex; align-items:center; gap:2px; padding:5px 16px; border-top:1px solid var(--line); background:var(--chrome); backdrop-filter:blur(24px)">
+                <span class="t-label c-3" style="margin-right:8px">BLOCK</span>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="t-label">H1</span></button>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="doc"></span></button>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="check"></span></button>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="info"></span></button>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="quote"></span></button>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="t-label" style="font-family:var(--mono)">&lt;/&gt;</span></button>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="grid"></span></button>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="photo"></span></button>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="link"></span></button>
+                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="mic"></span></button>
+                <div style="flex:1 1 auto"></div>
+                <span class="t-sub c-3" style="margin-right:10px">Alles gesichert · 9:39</span>
+                <span class="chip chip--ghost"><span style="font-family:var(--mono)">/</span> für Blöcke</span>
+              </div>
+            </div>
+
+            <!-- ── Info-Panel (280 pt) ───────────────────────────────── -->
+            <aside style="width:280px; flex:none; border-left:1px solid var(--line); background:var(--paper-2); display:flex; flex-direction:column; min-height:0">
+              <div class="scroll" style="padding:14px 16px 16px; display:flex; flex-direction:column; gap:13px">
+
+                <div class="segmented" style="width:100%">
+                  <button class="is-on" style="flex:1 1 0">Übersicht</button>
+                  <button style="flex:1 1 0">Verlauf</button>
+                </div>
+
+                <!-- Inhaltsverzeichnis -->
+                <section>
+                  <div class="t-label c-3" style="margin-bottom:6px">INHALT</div>
+                  <div style="display:flex; flex-direction:column">
+                    <button style="display:flex; align-items:center; height:27px; padding:0 8px; border-radius:7px; text-align:left"><span class="t-sub c-2 clamp-1">Aufbau der Zelle</span></button>
+                    <!-- aktiv = Fläche + Gewicht + Balken -->
+                    <button style="display:flex; align-items:center; height:27px; padding:0 8px; border-radius:7px; text-align:left; background:var(--accent-soft); position:relative">
+                      <span style="position:absolute; left:0; top:5px; bottom:5px; width:2.5px; border-radius:0 2px 2px 0; background:var(--accent)"></span>
+                      <span class="t-sub is-strong clamp-1">Membran und Transport</span>
+                    </button>
+                    <button style="display:flex; align-items:center; height:25px; padding:0 8px 0 20px; border-radius:7px; text-align:left"><span class="t-sub c-3 clamp-1">Osmose</span></button>
+                    <button style="display:flex; align-items:center; height:27px; padding:0 8px; border-radius:7px; text-align:left"><span class="t-sub c-2 clamp-1">Organellen im Überblick</span></button>
+                    <button style="display:flex; align-items:center; height:27px; padding:0 8px; border-radius:7px; text-align:left"><span class="t-sub c-2 clamp-1">Fragen an Prof. Wendt</span></button>
+                  </div>
+                </section>
+
+                <!-- Backlinks -->
+                <section>
+                  <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:6px">
+                    <span class="t-label c-3">BACKLINKS</span><span class="t-label c-3 num">3</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column">
+                    <button style="display:flex; align-items:center; gap:9px; height:31px; padding:0 8px; border-radius:7px; text-align:left">
+                      <span class="dot dot--notes"></span><span class="t-sub c-1 clamp-1" style="flex:1 1 auto">Laborjournal · 12. Nov</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
+                    </button>
+                    <button style="display:flex; align-items:center; gap:9px; height:31px; padding:0 8px; border-radius:7px; text-align:left">
+                      <span class="dot dot--notes"></span><span class="t-sub c-1 clamp-1" style="flex:1 1 auto">Semesterplanung</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
+                    </button>
+                    <button style="display:flex; align-items:center; gap:9px; height:31px; padding:0 8px; border-radius:7px; text-align:left">
+                      <span class="dot dot--journal"></span><span class="t-sub c-1 clamp-1" style="flex:1 1 auto">Erster Tag im Labor</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
+                    </button>
+                  </div>
+                </section>
+
+                <!-- Daraus entstanden — Ziel der fliegenden Karte -->
+                <section>
+                  <div class="t-label c-3" style="margin-bottom:6px">DARAUS ENTSTANDEN</div>
+                  <div class="card card--flat" style="padding:4px; background:var(--paper)">
+                    <!-- Empfangender Zustand: Fläche + Ring + „+1" -->
+                    <div id="ipad-target" style="display:flex; align-items:center; gap:10px; padding:8px; border-radius:9px; background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                      <span class="dot dot--cards"></span>
+                      <div style="flex:1 1 auto; min-width:0">
+                        <div class="t-body"><span class="num is-strong">12</span> Karten</div>
+                        <div class="t-sub c-3"><span class="num">8</span> heute fällig</div>
+                      </div>
+                      <span class="chip chip--solid num">+1</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px; padding:8px; border-radius:9px">
+                      <span class="dot dot--tasks"></span>
+                      <div style="flex:1 1 auto; min-width:0">
+                        <div class="t-body"><span class="num is-strong">1</span> Aufgabe</div>
+                        <div class="t-sub c-3 clamp-1">Laborprotokoll Zellkultur</div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Verwandte Notizen -->
+                <section>
+                  <div class="t-label c-3" style="margin-bottom:6px">VERWANDTE NOTIZEN</div>
+                  <div style="display:flex; flex-wrap:wrap; gap:6px">
+                    <span class="chip"><span class="ico" data-ico="link" style="width:13px;height:13px"></span>Osmose</span>
+                    <span class="chip">Zellmembran</span>
+                    <span class="chip">Golgi-Apparat</span>
+                  </div>
+                </section>
+
+                <!-- Statistik -->
+                <section>
+                  <div class="t-label c-3" style="margin-bottom:8px">STATISTIK</div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 8px">
+                    <span class="count"><span class="count__n num">1.284</span><span class="count__w t-sub">Wörter</span></span>
+                    <span class="count"><span class="count__n num">6</span><span class="count__w t-sub">Min. lesen</span></span>
+                    <span class="count"><span class="count__n num">14</span><span class="count__w t-sub">Absätze</span></span>
+                    <span class="count"><span class="count__n num">7</span><span class="count__w t-sub">Links</span></span>
+                  </div>
+                </section>
+
+                
+              </div>
+            </aside>
+          </div>
+        </main>
+      </div>
+
+      <!-- ══ Zwischenzustand: die Karte fliegt (t ≈ 150 ms von 420 ms) ══
+           Liegt als Kind von .screen über beiden Spalten, weil sie die
+           Spaltengrenze überquert — .content und .scroll schneiden ab.
+           Koordinaten sind am gerenderten Bild ausgemessen. -->
+      <div class="flight__ghost" id="fl-ghost" style="left:0; top:0; width:10px; height:10px"></div>
+      <div class="flight__trail" id="fl-trail" style="left:0; top:0; width:10px; height:10px"></div>
+      <div class="flight" id="fl-card" style="left:0; top:0; width:216px">
+        <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px">
+          <span class="dot dot--cards"></span><span class="t-label c-3">LÜCKENTEXT-KARTE</span>
+        </div>
+        <div class="t-sub serif clamp-2">Diffusion von Wasser durch eine <span style="display:inline-block; width:48px; border-bottom:1.5px solid var(--ink-2); vertical-align:-2px"></span> Membran.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Editor im Vollbild, Übergabe über der Tastaturzone</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content" style="background:var(--paper)">
+        <div class="navbar" style="padding-left:6px">
+          <button class="iconbtn"><span class="ico" data-ico="chevL"></span></button>
+          <span class="origin"><span class="dot dot--notes"></span>Notizen</span>
+          <div class="navbar__spacer"></div>
+          <!-- Info-Panel auf dem iPhone: ein Knopf in der Navigationsleiste -->
+          <button class="iconbtn"><span class="ico" data-ico="info"></span></button>
+          <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+        </div>
+
+        <div class="scroll" style="padding:0; position:relative">
+
+          <!-- Cover -->
+          <div style="height:30px; position:relative;
+               background:
+                 linear-gradient(180deg, var(--fill-2), transparent),
+                 repeating-linear-gradient(180deg, transparent 0 11px, var(--line) 11px 12px);
+               border-bottom:1px solid var(--line)">
+            <span class="t-label c-3" style="position:absolute; right:20px; top:8px">Vorlesung 6</span>
+            <span class="chip" style="position:absolute; left:20px; bottom:-13px; background:var(--paper); box-shadow:0 0 0 1px var(--line)">
+              <span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Biologie
+            </span>
+          </div>
+
+          <div style="padding:22px 20px 0">
+            <div class="t-title">Zellbiologie</div>
+            <div style="display:flex; align-items:center; gap:6px; margin-top:8px">
+              <span class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#uni/bio</span>
+              <span class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#labor</span>
+              <span class="chip chip--ghost"><span class="ico" data-ico="plus" style="width:13px;height:13px"></span></span>
+              <div style="flex:1 1 auto"></div>
+              <span class="chip chip--ghost"><span class="num">3</span>&nbsp;Backlinks</span>
+            </div>
+            <div class="t-sub c-2" style="margin-top:6px">Gestern 16:20 · <span class="num">14 Absätze</span> · <span class="num">1.284</span> Wörter</div>
+          </div>
+
+          <div style="padding:12px 20px 0">
+
+            <!-- Überschrift mit Einklapp-Pfeil -->
+            <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px">
+              <button class="ico c-3" data-ico="chevD" style="width:15px;height:15px"></button>
+              <span class="t-sub c-3" style="font-family:var(--mono)">##</span>
+              <div class="t-section" style="flex:1 1 auto">Membran und Transport</div>
+            </div>
+
+            <p class="t-body serif" style="margin:0 0 8px">Die Zellmembran ist <span class="is-strong">selektiv permeabel</span>: kleine unpolare Moleküle passieren frei, Ionen brauchen Kanäle. Für Wasser gilt der Sonderfall <a href="#" style="color:var(--ink-1); font-weight:600; text-decoration:none; box-shadow:inset 0 -1.5px 0 var(--line-2)"><span class="c-3" style="font-weight:400">[[</span>Osmose<span class="c-3" style="font-weight:400">]]</span></a>.</p>
+
+            <!-- Dieselbe markierte Stelle -->
+            <p class="t-body serif" style="margin:0 0 8px">Merksatz: <span style="background:var(--accent-soft); box-shadow:0 0 0 1.5px var(--accent-ring); border-radius:5px; padding:1px 3px; -webkit-box-decoration-break:clone; box-decoration-break:clone"><span style="display:inline-block; width:2px; height:18px; background:var(--accent); vertical-align:-4px; position:relative"><i style="position:absolute; left:-3px; top:-7px; width:8px; height:8px; border-radius:50%; background:var(--accent)"></i></span> Osmose ist die Diffusion von Wasser durch eine semipermeable Membran. <span style="display:inline-block; width:2px; height:18px; background:var(--accent); vertical-align:-4px; position:relative"><i style="position:absolute; left:-3px; bottom:-7px; width:8px; height:8px; border-radius:50%; background:var(--accent)"></i></span></span></p>
+
+            <!-- Checkliste, zweiter Haken mitten in der Animation -->
+            <div style="margin-bottom:8px">
+              <div style="display:flex; align-items:center; gap:10px; min-height:31px">
+                <span class="check is-done"></span>
+                <span class="t-body serif c-3" style="text-decoration:line-through">Abbildung 4.2 ergänzen</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; min-height:31px">
+                <span class="check is-checking"></span>
+                <span class="t-body serif">Jana nach dem Messprotokoll fragen</span>
+              </div>
+            </div>
+
+            <!-- Callout -->
+            <div class="notice" style="margin-bottom:8px; padding:10px 14px">
+              <span class="ico c-2" data-ico="info" style="width:19px;height:19px; margin-top:1px"></span>
+              <div>
+                <div class="t-label c-3" style="margin-bottom:1px">MERKEN</div>
+                <div class="t-body serif">Wasser wandert dorthin, wo die Konzentration höher ist.</div>
+              </div>
+            </div>
+
+            <!-- Zitat -->
+            <div style="display:flex; gap:8px; margin-bottom:8px">
+              <span class="ico c-3" data-ico="quote" style="width:15px;height:15px; margin-top:3px"></span>
+              <div style="flex:1 1 auto; border-left:3px solid var(--line-2); padding-left:12px">
+                <p class="t-body serif c-2" style="margin:0">„Die Zelle ist die kleinste Einheit, die alle Merkmale des Lebendigen erfüllt."</p>
+                <div class="t-sub c-3" style="margin-top:1px">Vorlesung 6, Prof. Wendt</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Übergabe-Leiste: schwebt über der Tastaturzone, im Bild verankert -->
+          <div class="handoff" style="position:absolute; left:10px; right:10px; bottom:10px; z-index:40; display:flex">
+            <span class="handoff__from t-label" style="padding:0 8px 0 6px"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
+            <button class="handoff__btn is-primary" style="flex:1 1 auto"><span class="dot dot--cards"></span>Lückentext-Karte</button>
+            <button class="handoff__btn" style="padding:0 8px"><span class="ico" data-ico="more" style="width:16px;height:16px"></span></button>
+          </div>
+        </div>
+
+        <!-- Blockleiste = Zubehörleiste über der Tastatur -->
+        <div style="flex:none; display:flex; align-items:center; gap:2px; padding:4px 10px; border-top:1px solid var(--line); background:var(--chrome); backdrop-filter:blur(24px)">
+          <button class="iconbtn" style="width:36px;height:36px"><span class="t-label">H1</span></button>
+          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="check"></span></button>
+          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="info"></span></button>
+          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="quote"></span></button>
+          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="photo"></span></button>
+          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="link"></span></button>
+          <div style="flex:1 1 auto"></div>
+          <span class="chip chip--ghost"><span style="font-family:var(--mono)">/</span> für Blöcke</span>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Notiz-Editor — Steckbrief</h2>
+  <p>Der Screen, an dem sich Ruhe beweist: eine Textspalte auf Papier, die Bedienung an den Rändern. Der markierte Satz ist zugleich Text und Rohstoff — die Übergabe-Leiste bietet „Lückentext-Karte" an, und die erste Karte ist bereits unterwegs.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Bear — Ruhe</td><td><strong>Übernommen:</strong> keine Werkzeugleiste über dem Text, ein einziger Akzent, Papierfläche bis an den Rand. <strong>Bewertung:</strong> der ruhigste Texteditor auf iOS — aber Bear endet beim Export. Hier trägt derselbe ruhige Text die Übergabe.</td></tr>
+    <tr><td>Bear — Markdown-Live</td><td><strong>Übernommen:</strong> sichtbare Auszeichnung („##" neben der Überschrift, Klammern um [[Osmose]]). <strong>Bewertung:</strong> stark, weil man nie im falschen Modus tippt. Anders als Bear stehen die Marken in der 40-pt-Rinne, damit der Satz beim Ein- und Ausblenden nicht springt.</td></tr>
+    <tr><td>Craft — Blöcke</td><td><strong>Übernommen:</strong> Drag-Handle links außerhalb der Textspalte, Blöcke als greifbare Dinge. <strong>Bewertung:</strong> gut für die Reihenfolge, aber Craft zeigt Griff, Plus und Menü an jedem Block. Hier trägt genau ein Block den Griff — der angefasste.</td></tr>
+    <tr><td>Apple Notes — Checklisten</td><td><strong>Übernommen:</strong> Kreis, Tap, Durchstreichung; die Liste bleibt ein Block im Fließtext. <strong>Bewertung:</strong> richtig gelöst und unverändert übernommen. Ergänzt um das, was Apple Notes fehlt: aus der Zeile wird über die Übergabe-Leiste eine echte Aufgabe mit Herkunfts-Chip.</td></tr>
+    <tr><td>Obsidian — Backlinks</td><td><strong>Übernommen:</strong> Rückverweise als eigene Spalte. <strong>Bewertung:</strong> inhaltlich stark, gestalterisch dort ein Datenbank-Fenster. Hier drei Zeilen mit Namen im Info-Panel.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li>Notions Block-Menü mit sechs Symbolen an jeder Zeile — der Rand flimmert beim Lesen. Hier: ein Griff am angefassten Block plus der Slash-Befehl.</li>
+    <li>Craft-Cover in Vollfarbe und Verläufe pro Notiz — Farbe gehört dem Nutzer. Der Cover-Streifen ist 36 pt hoch, Papier und Grau, und trägt nur den Bereich „Biologie".</li>
+    <li>Formatierungsleisten mit Schriftgrößen (Evernote, Apple Notes) — fünf Größen sind gesetzt, der Nutzer wählt keine sechste.</li>
+    <li>Bears Tag-Farben — die Tags tragen Ink und ein Tag-Symbol.</li>
+    <li>Handschrift-Werkzeuge im Textmodus — das ist der Canvas, nicht der Editor.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: neun Blöcke, zwei Tags, 1.284 Wörter, drei Backlinks.</td></tr>
+    <tr><td>ausgewählt</td><td>Der Merksatz: Ink-Fläche (accent-soft) <em>plus</em> Ring (accent-ring, 1,5 pt) <em>plus</em> die beiden Greifpunkte — drei Merkmale, keines davon Farbe.</td></tr>
+    <tr><td>aktiv</td><td>Notizen in der Rückkehr-Leiste (Fläche + Ink + Balken), „Info" in der Navigationsleiste (Fläche + Ink), „Membran und Transport" im Inhaltsverzeichnis (Fläche + Gewicht + Balken), „Übersicht" im Segment (Fläche + Ink).</td></tr>
+    <tr><td>Zwischenzustand</td><td><strong>Die Übergabe läuft.</strong> Bei t ≈ 150 ms von 420 ms: <strong>.flight</strong> — die Lückentext-Karte, gekippt und verkleinert, unterwegs zum Zähler; <strong>.flight__trail</strong> — die Spur dahinter; <strong>.flight__ghost</strong> — der Umriss an der Ausgangsstelle, damit klar bleibt, woher die Karte kommt. Am Ziel steht der Zähler „12 Karten" auf getönter Fläche mit Ring und trägt „+1". Auf dem iPhone zusätzlich der zweite Haken mitten in der Erledigen-Animation.</td></tr>
+    <tr><td>halb geöffnet</td><td>Die Überschrift „Organellen im Überblick" ist eingeklappt: Pfeil nach rechts <em>plus</em> Chip „4 Blöcke ausgeblendet" — man sieht, wie viel dahinter liegt, ohne es aufzuklappen.</td></tr>
+    <tr><td>erledigt</td><td>Der erste Checklistenpunkt: gefüllter Haken <em>plus</em> Durchstreichung <em>plus</em> Text auf ink-3.</td></tr>
+    <tr><td>leer</td><td>Eine neue Notiz zeigt Titelzeile, blinkenden Cursor und in der Rinne den Hinweis „/ für Blöcke" — kein Bild, kein Assistent.</td></tr>
+  </table>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Delight:</strong> Die App bewegt sich an genau einer Stelle — wenn aus Text Wissen wird. Die Karte hebt vom Satz ab, zieht eine Spur und landet im Zähler; der Umriss bleibt eine halbe Sekunde stehen, damit die Herkunft sichtbar ist. Es gibt keine zweite Animation auf diesem Schirm, deshalb wirkt diese.</p>
+  <p><strong>Innovation:</strong> Ein markierter Satz wird ohne Dialog, ohne Export und ohne App-Wechsel zur Lückentext-Karte — und die Notiz weiß danach, dass sie 13 Karten hat. Bear, Craft und Apple Notes können den Satz nur kopieren.</p>
+  <p><strong>Inklusion:</strong> Der Textkörper ist Serif auf 17 pt und läuft auf 700 pt Spaltenbreite (etwa 70 Zeichen). Bei „Aa groß" wächst er auf 21 pt, ohne dass Rinne oder Info-Panel den Satz stauchen. Kein Zustand hängt an Farbe, jedes Rand-Symbol trägt eine Beschriftung für VoiceOver, und die Blockleiste hat 38-pt-Ziele im 44-pt-Raster.</p>
+
+  <h3>Gleiche Aufgabe auf beiden Geräten</h3>
+  <p>Markieren → „Lückentext-Karte" tippen. Das sind auf dem iPad wie auf dem iPhone <strong>zwei Taps</strong>. Auf dem iPhone schwebt die Leiste nicht über der Auswahl, sondern über der Zubehörleiste der Tastatur — dort, wo der Daumen ohnehin ist. Die selteneren Ziele (Frage/Antwort, Aufgabe) liegen hinter „⋯", der primäre Weg bleibt gleich lang. Das Info-Panel ist auf dem iPhone ein Knopf in der Navigationsleiste, der dieselben fünf Abschnitte als Blatt zeigt; die Zahl der Backlinks steht zusätzlich als Chip im Notizkopf, damit sie nicht erst durch einen Tap sichtbar wird.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Auswahl = Fläche + Ring + Greifpunkte. Aktiv = Fläche + Gewicht + Balken. Erledigt = Haken + Durchstreichung. Eingeklappt = Pfeilrichtung + Zähler-Chip. Empfangendes Ziel = Fläche + Ring + „+1". Deaktiviert käme als Deckkraft + fehlende Fläche. Modul-Dots sind 6 pt und stehen nie allein — in der eingeklappten Leiste gibt es deshalb keine Dots, sondern nur Symbole mit Beschriftung; die Dots erscheinen erst dort, wo ein Wort danebensteht („Notizen", „12 Karten", „1 Aufgabe", „Lückentext-Karte").</p>
+
+  <h3>Inline gestylt, weil system.css es nicht kennt</h3>
+  <ul>
+    <li><strong>Rinne (40 pt)</strong> für Drag-Handle, Einklapp-Pfeil und Markdown-Marke — reine Layout-Maße, kein neues Bauteil.</li>
+    <li><strong>Codeblock:</strong> <code>font-family: var(--mono)</code> auf <code>.t-sub</code>; eine Klasse <code>.mono</code> gibt es nicht. Fläche <code>--fill</code>, Innenlinie <code>--line</code>.</li>
+    <li><strong>Zitatbalken:</strong> <code>border-left: 3px solid var(--line-2)</code>.</li>
+    <li><strong>Auswahlfläche und Greifpunkte:</strong> <code>--accent-soft</code>, <code>--accent-ring</code>, <code>--accent</code>.</li>
+    <li><strong>Cover-Streifen:</strong> zwei Verläufe aus <code>--fill-2</code> und <code>--line</code>, keine Modul-Farbe als Fläche.</li>
+    <li><strong>Flug-Koordinaten:</strong> <code>.flight</code>, <code>.flight__trail</code> und <code>.flight__ghost</code> liegen als Kinder von <code>.screen</code> über beiden Spalten, weil <code>.content</code> und <code>.scroll</code> sonst abschneiden. Auf dem iPad liefert <code>.flight__ghost</code> zugleich den Ring der Auswahl — er sitzt deckungsgleich auf dem markierten Satz, weil genau dort die Karte abgehoben ist. Auf dem iPhone, wo nichts fliegt, trägt die Auswahl den Ring selbst.</li>
+  </ul>
+</div>
+
+<script src="../shared/mock.js"></script>
+<script>
+/* Setzt die drei Flug-Elemente exakt auf gemessene Punkte des Layouts:
+   Ausgangsstelle = der markierte Satz, Ziel = der Karten-Zähler im Panel.
+   Damit stimmt der Zwischenzustand auch dann, wenn sich der Textumbruch
+   durch eine andere Schriftgröße verschiebt. Nicht Teil des Entwurfs —
+   im Produkt macht das der Animator. */
+(function () {
+  function place() {
+    var screen = document.querySelector('.screen--ipad');
+    var sel = document.getElementById('ipad-sel');
+    var tgt = document.getElementById('ipad-target');
+    if (!screen || !sel || !tgt) return;
+    var S = screen.getBoundingClientRect();
+    var A = sel.getBoundingClientRect();          // Ausgangsstelle
+    var B = tgt.getBoundingClientRect();          // Ziel
+
+    var ghost = document.getElementById('fl-ghost');
+    ghost.style.left = (A.left - S.left - 2) + 'px';
+    ghost.style.top = (A.top - S.top - 3) + 'px';
+    ghost.style.width = (A.width + 4) + 'px';
+    ghost.style.height = (A.height + 6) + 'px';
+
+    // Die Karte hat den Satz gerade verlassen und steht kurz vor dem Ziel:
+    // rechts in der freien Rinne der Textspalte, oberhalb des Zählers.
+    var card = document.getElementById('fl-card');
+    var cw = 216, ch = card.offsetHeight || 74;
+    var cx = (B.left - S.left) - cw / 2 - 16;
+    var cy = (A.bottom - S.top) + 56;
+    card.style.left = Math.round(cx - cw / 2) + 'px';
+    card.style.top = Math.round(cy - ch / 2) + 'px';
+
+    // Spur: setzt am Ende des markierten Satzes an und endet unter der Karte
+    var x0 = A.right - S.left - 130, y0 = A.bottom - S.top - 8;
+    var trail = document.getElementById('fl-trail');
+    var mx = (x0 + cx) / 2, my = (y0 + cy) / 2;
+    var len = Math.hypot(cx - x0, cy - y0);
+    var ang = Math.atan2(cy - y0, cx - x0) * 180 / Math.PI;
+    trail.style.width = Math.round(len) + 'px';
+    trail.style.height = '18px';
+    trail.style.left = Math.round(mx - len / 2) + 'px';
+    trail.style.top = Math.round(my - 9) + 'px';
+    trail.style.transform = 'rotate(' + ang.toFixed(2) + 'deg)';
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', place);
+  else place();
+  window.addEventListener('resize', place);
+  new MutationObserver(place).observe(document.documentElement, { attributes: true, attributeFilter: ['data-type', 'data-theme'] });
+})();
+</script>
+</body>
+</html>

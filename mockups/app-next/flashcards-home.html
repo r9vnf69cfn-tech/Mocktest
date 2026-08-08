@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lernkarten-Start — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Lernkarten-Start
+
+ÜBERNOMMEN
+· Anki — die drei Zähler pro Deck (Neu · Zu wiederholen · Gelernt). Übernommen,
+  weil sie die einzige ehrliche Antwort auf „Wie lang wird das jetzt?" sind:
+  Emil sieht vor dem Tippen, woraus die Sitzung besteht. Bewertung: die stärkste
+  Einzelidee im ganzen Lernkarten-Feld — und der Grund, warum Anki-Nutzer nicht
+  wechseln. Hier aber ohne Ankis drei Buntfarben (blau/rot/grün): die Zahl trägt
+  das Gewicht, das Wort die Bedeutung.
+· Anki / FSRS — Scheduler-Transparenz. Übernommen und zu Ende gedacht: Ankis
+  „desired retention" liegt vier Ebenen tief in den Deck-Optionen und wird ohne
+  Folgenabschätzung eingestellt. Hier steht „Ziel-Erinnerungsrate" als Regler
+  auf dem Startschirm, mit dem Satz, was 90 % gegenüber 85 % konkret kostet
+  (17 statt 12 Karten am Tag). Bewertung: die beste Idee, die am schlechtesten
+  präsentierte — genau die Lücke, in die dieser Entwurf stößt.
+· Quizlet — die Deck-Karte mit Titel, Umfang und Fortschrittsbalken, groß genug
+  zum Danebentippen. Übernommen als Kartenraster mit feinem Balken und der Zeile
+  „4 von 12 sitzen". Bewertung: Quizlet macht das Deck greifbar wie ein
+  Gegenstand; das ist richtig. Der Balken bleibt hier 4 pt fein, weil er Kontext
+  ist, nicht die Hauptsache.
+· RemNote — Karten entstehen im Notizfluss, nicht in einem Karteikasten-Modus.
+  Übernommen als Herkunfts-Chip auf dem Deck („aus „Zellbiologie"") und als
+  leerer Zustand, der auf denselben Weg zeigt: „markiere Text in einer Notiz".
+  Bewertung: konzeptionell die reifste der drei Vorlagen — RemNote versteckt es
+  nur hinter einer Lernkurve. Hier ist die Herkunft ein Chip, kein Konzept.
+· GitHubs Beitragsraster (als Form, nicht als Vorbild) — 12 Wochen als
+  Punktraster. Übernommen für die Form, verworfen für die Farbe: die Dichte
+  läuft über Ink-Deckkraft, nicht über Grün, und unter dem Raster steht die
+  Zahl. Wer keine Sättigungsunterschiede sieht, liest trotzdem „859".
+
+BEWUSST NICHT ÜBERNOMMEN
+· Ankis Buntkodierung der drei Zähler (blau/rot/grün). Drei Buntfarben für drei
+  Zahlen, die schon durch Zahl und Wort unterschieden sind — doppelt gemoppelt
+  und für Farbfehlsichtige wertlos.
+· Ankis vier Antwortknöpfe samt Intervall-Vorschau auf dem Startschirm. Der
+  Scheduler gehört in die Sitzung, nicht in die Übersicht.
+· Quizlets Spielmodi (Match, Gravity, Blast), Punktestände und Bestenlisten —
+  Fremdmotivation, die vom Stoff wegführt. Die Serie bleibt, weil sie nur eine
+  Tatsache berichtet, und sie belohnt nichts.
+· Quizlets bunte Deck-Cover und Deck-Illustrationen — Modul-Farben treten hier
+  nie als Fläche auf.
+· Duolingos Streak-Erpressung („Deine Serie ist in Gefahr!") — die Serie steht
+  hier als Zahl da und macht keinen Lärm.
+· RemNotes Doppelklammer-Syntax auf der Oberfläche — Syntax ist kein Entwurf.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Zwei Dinge, die keine der Vorlagen zusammen hat:
+1. Der Planer ist bedienbar, nicht nur transparent. Die Ziel-Erinnerungsrate
+   liegt als Regler neben der Prognose — Emil verschiebt sie und sieht in
+   derselben Spalte, was morgen daraus wird. Anki zeigt die Zahl, Quizlet
+   verschweigt sie; hier hat sie eine Folge, die man ansieht.
+2. Ein Deck weiß, woher es kommt. „Zellbiologie" trägt den Herkunfts-Chip zur
+   Notiz, und das leere Deck erklärt den Weg dorthin, statt zu einem
+   Karten-Editor zu schicken. Ein Deck ist hier nie ein Stapel ohne Vorgeschichte.
+
+ADA-KATEGORIE: Inklusion (die Heatmap trägt keine Buntfarbe — Dichte über
+Ink-Deckkraft plus Zahl darunter; jeder Zustand hat zwei Merkmale) und
+Innovation (der Scheduler wird zum bedienbaren Regler mit sichtbarer Folge).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Titel/Fließtext  ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Sekundärtext     ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
+  Metadaten        ink-3 auf Grund     4,8:1   (hell) ·  4,9:1 (dunkel)
+  CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Heatmap-Punkte sind ink-1 mit .07/.24/.44/.66/.88 Deckkraft — Dekoration,
+  nie Textträger; die Aussage steht als Zahl daneben (859 · 50 aktive Tage).
+  Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+Alle Sonderformen (Punktraster, Regler-Knopf, Prognose-Balken) sind inline
+gesetzt — system.css bleibt unangetastet.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Lernkarten-Start</h1>
+  <p>Der Einstieg ins Lernen. Links die Decks mit den drei Zählern, die sagen, woraus die Sitzung besteht — rechts die zwölf Wochen dahinter, die Serie und der Regler, der den Planer bedienbar macht statt ihn nur zu erklären.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Sidebar, Deck-Liste und Planer-Spalte</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar — auf allen Schirmen gleich, hier ist „Lernkarten" aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem is-active"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar">
+            <div>
+              <div class="t-title">Lernkarten</div>
+            </div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="plus"></span></button>
+            <button class="btn btn--primary btn--sm">
+              <span class="ico" data-ico="play" style="width:16px;height:16px"></span>Alle lernen
+              <span class="num" style="opacity:.68">· 23</span>
+            </button>
+          </div>
+
+          <div class="scroll" style="display:flex; flex-direction:column; gap:12px; padding-bottom:12px">
+
+            <p class="t-body c-2" style="margin:0">
+              Donnerstag, 13. November — <strong class="c-1">23 Karten</strong> fällig: 8 neue, 15 Wiederholungen, rund 11 Minuten.
+            </p>
+
+            <div style="display:grid; grid-template-columns: minmax(0,1fr) 304px; gap:18px; align-items:start">
+
+              <!-- ══ Linke Spalte: die Decks ══ -->
+              <div style="display:flex; flex-direction:column; gap:10px; min-width:0">
+
+                <div style="display:flex; align-items:center; gap:12px">
+                  <div class="divider" style="flex:1 1 auto; margin:0"><span class="t-label c-3">DECKS</span><span class="t-label c-3 num">4</span></div>
+                  <div class="segmented">
+                    <button class="is-on">Fällig zuerst</button>
+                    <button>A–Z</button>
+                  </div>
+                </div>
+
+                <!-- Deck 1 — aus einer Notiz entstanden, halb aufgeklappt (Zwischenzustand) -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:10px">
+                    <div class="card__title" style="display:flex; align-items:center; gap:8px">
+                      <span class="t-section" style="white-space:nowrap">Zellbiologie</span>
+                      <span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
+                    </div>
+                    <span class="chip chip--solid num">8 heute fällig</span>
+                  </div>
+
+                  <div style="display:flex; align-items:center; gap:0">
+                    <span class="count"><span class="count__n num">4</span><span class="count__w t-sub">Neu</span></span>
+                    <span class="t-sub c-3" style="margin:0 12px">·</span>
+                    <span class="count"><span class="count__n num">4</span><span class="count__w t-sub">Zu wiederholen</span></span>
+                    <span class="t-sub c-3" style="margin:0 12px">·</span>
+                    <span class="count"><span class="count__n num">4</span><span class="count__w t-sub">Gelernt</span></span>
+                    <div style="flex:1 1 auto"></div>
+                    <button class="btn btn--primary btn--sm"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>Lernen</button>
+                  </div>
+
+                  <div style="display:flex; align-items:center; gap:10px; margin-top:12px">
+                    <div class="bar" style="flex:1 1 auto; height:4px"><div class="bar__fill" style="width:33%"></div></div>
+                    <span class="t-label c-3 num">4 von 12 sitzen</span>
+                  </div>
+
+                  <!-- Zwischenzustand: die Vorschau klappt gerade auf. Der Deckel ist
+                       auf halber Höhe stehen geblieben, die dritte Karte läuft noch
+                       in die Blende, der Pfeil steht auf halbem Weg. -->
+                  <div style="margin-top:10px; padding-top:8px; border-top:1px solid var(--line)">
+                    <div style="display:flex; align-items:center; gap:6px; margin-bottom:4px">
+                      <span class="ico c-3" data-ico="chevD" style="width:15px;height:15px"></span>
+                      <span class="t-label c-3">NÄCHSTE KARTEN</span>
+                      <div style="flex:1 1 auto"></div>
+                      <span class="t-label c-3">Rückseite verdeckt</span>
+                    </div>
+                    <div style="position:relative; height:58px; overflow:hidden">
+                      <div style="background:var(--paper-2); border-radius:9px; box-shadow:inset 0 0 0 1px var(--line); padding:6px 11px; margin-bottom:6px; display:flex; align-items:baseline; gap:10px">
+                        <span class="t-body is-strong">Mitochondrium</span>
+                        <span class="t-sub c-3 clamp-1">Aufgabe der inneren Membran?</span>
+                      </div>
+                      <div style="background:var(--paper-2); border-radius:9px; box-shadow:inset 0 0 0 1px var(--line); padding:6px 11px; margin-bottom:6px; display:flex; align-items:baseline; gap:10px">
+                        <span class="t-body is-strong">Golgi-Apparat</span>
+                        <span class="t-sub c-3 clamp-1">Was passiert im cis-Netz?</span>
+                      </div>
+                      <div style="background:var(--paper-2); border-radius:9px; box-shadow:inset 0 0 0 1px var(--line); padding:6px 11px; display:flex; align-items:baseline; gap:10px">
+                        <span class="t-body is-strong">Endoplasmatisches Retikulum</span>
+                        <span class="t-sub c-3 clamp-1">Rau gegen glatt</span>
+                      </div>
+                      <div style="position:absolute; left:0; right:0; bottom:0; height:14px; background:linear-gradient(to bottom, transparent, var(--paper))"></div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Deck 2 -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:10px">
+                    <div class="card__title" style="display:flex; align-items:center; gap:8px">
+                      <span class="t-section" style="white-space:nowrap">Anatomie Grundlagen</span>
+                    </div>
+                    <span class="chip num">12 heute fällig</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0">
+                    <span class="count"><span class="count__n num">4</span><span class="count__w t-sub">Neu</span></span>
+                    <span class="t-sub c-3" style="margin:0 12px">·</span>
+                    <span class="count"><span class="count__n num">8</span><span class="count__w t-sub">Zu wiederholen</span></span>
+                    <span class="t-sub c-3" style="margin:0 12px">·</span>
+                    <span class="count"><span class="count__n num">52</span><span class="count__w t-sub">Gelernt</span></span>
+                    <div style="flex:1 1 auto"></div>
+                    <button class="btn btn--sm"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>Lernen</button>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:10px; margin-top:12px">
+                    <span class="chip chip--ghost"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>wöchentlich</span>
+                    <div class="bar" style="flex:1 1 auto; height:4px"><div class="bar__fill" style="width:81%"></div></div>
+                    <span class="t-label c-3 num">52 von 64 sitzen</span>
+                  </div>
+                </section>
+
+                <!-- Deck 3 — „0 Neu" deaktiviert: Deckkraft + fehlende Fläche -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:10px">
+                    <div class="card__title" style="display:flex; align-items:center; gap:8px">
+                      <span class="t-section" style="white-space:nowrap">Statistik-Formeln</span>
+                      <span class="chip chip--ghost">Analysis II</span>
+                    </div>
+                    <span class="chip num">3 heute fällig</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:0">
+                    <span class="count is-off"><span class="count__n num">0</span><span class="count__w t-sub">Neu</span></span>
+                    <span class="t-sub c-3" style="margin:0 12px">·</span>
+                    <span class="count"><span class="count__n num">3</span><span class="count__w t-sub">Zu wiederholen</span></span>
+                    <span class="t-sub c-3" style="margin:0 12px">·</span>
+                    <span class="count"><span class="count__n num">28</span><span class="count__w t-sub">Gelernt</span></span>
+                    <div style="flex:1 1 auto"></div>
+                    <button class="btn btn--sm"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>Lernen</button>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:10px; margin-top:12px">
+                    <div class="bar" style="flex:1 1 auto; height:4px"><div class="bar__fill" style="width:90%"></div></div>
+                    <span class="t-label c-3 num">28 von 31 sitzen</span>
+                  </div>
+                </section>
+
+                <!-- Deck 4 — leer. Der leere Zustand steht IN der Karte. -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:0">
+                    <div class="card__title" style="display:flex; align-items:center; gap:8px">
+                      <span class="t-section" style="white-space:nowrap">Lesenotizen Soziologie</span>
+                    </div>
+                    <span class="t-label c-3 num">0 Karten</span>
+                    <button class="btn btn--sm btn--quiet is-disabled">Lernen</button>
+                  </div>
+                  <div class="empty" style="flex-direction:row; align-items:center; text-align:left; padding:6px 0 0; gap:14px">
+                    <div class="empty__art" style="width:42px; height:42px; border-radius:13px">
+                      <span class="ico" data-ico="cards" style="width:24px;height:24px"></span>
+                    </div>
+                    <div style="flex:1 1 auto; min-width:0">
+                      <div class="empty__title t-body is-strong">Noch keine Karten — markiere Text in einer Notiz</div>
+                      <div class="empty__text t-sub" style="max-width:none">Drei Stellen sind dort schon markiert.</div>
+                    </div>
+                    <button class="btn btn--sm"><span class="ico" data-ico="notes" style="width:16px;height:16px"></span>Notiz öffnen</button>
+                  </div>
+                </section>
+
+              </div>
+
+              <!-- ══ Rechte Spalte: der Planer ══ -->
+              <div style="display:flex; flex-direction:column; gap:10px; min-width:0">
+
+                <!-- 12 Wochen — Punktraster ohne Buntton -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:6px">
+                    <span class="t-label c-3">12 WOCHEN</span>
+                    <div style="flex:1 1 auto"></div>
+                    <span class="t-label c-3 num">50 aktive Tage</span>
+                  </div>
+
+                  <div style="display:grid; grid-template-columns:24px repeat(12, 13px); gap:4px; margin-bottom:4px">
+                    <span></span>
+                    <span class="t-label c-3" style="grid-column:3 / span 4; line-height:14px">Sep</span>
+                    <span class="t-label c-3" style="grid-column:7 / span 4; line-height:14px">Okt</span>
+                    <span class="t-label c-3" style="grid-column:11 / span 3; line-height:14px">Nov</span>
+                  </div>
+
+                  <div style="display:flex; gap:4px">
+                    <div style="display:grid; grid-template-rows:repeat(7, 13px); gap:4px; width:24px">
+                      <span class="t-label c-3" style="line-height:13px">Mo</span>
+                      <span></span>
+                      <span class="t-label c-3" style="line-height:13px">Mi</span>
+                      <span></span>
+                      <span class="t-label c-3" style="line-height:13px">Fr</span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                    <!-- 12 Spalten × 7 Zeilen. Dichte = Deckkraft von Ink, nie ein Buntton. -->
+                    <div style="display:grid; grid-auto-flow:column; grid-template-rows:repeat(7, 13px); grid-auto-columns:13px; gap:4px">
+                      <!-- W1 · 25. Aug -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+                      <!-- W2 -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+                      <!-- W3 -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+                      <!-- W4 -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+                      <!-- W5 -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i>
+                      <!-- W6 · Okt -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+                      <!-- W7 -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i>
+                      <!-- W8 · Semesterbeginn 13. Okt -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i>
+                      <!-- W9 -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i>
+                      <!-- W10 · die Serie reißt am Sa, 1. Nov -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i>
+                      <!-- W11 -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.88"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.88"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i>
+                      <!-- W12 · laufende Woche. Do = heute, wächst gerade. Fr–So liegen noch vor uns. -->
+                      <i style="border-radius:50%;background:var(--ink-1);opacity:.88"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.88"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.30;box-shadow:0 0 0 3px var(--accent-soft)"></i><i style="border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i><i style="border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i><i style="border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; align-items:center; gap:8px; margin-top:10px">
+                    <span class="count"><span class="count__n num">859</span><span class="count__w t-sub">Wiederholungen</span></span>
+                    <div style="flex:1 1 auto"></div>
+                    <span class="t-label c-3 num">0</span>
+                    <span style="display:flex; gap:4px; align-items:center">
+                      <i style="width:9px;height:9px;border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+                      <i style="width:9px;height:9px;border-radius:50%;background:var(--ink-1);opacity:.24"></i>
+                      <i style="width:9px;height:9px;border-radius:50%;background:var(--ink-1);opacity:.44"></i>
+                      <i style="width:9px;height:9px;border-radius:50%;background:var(--ink-1);opacity:.66"></i>
+                      <i style="width:9px;height:9px;border-radius:50%;background:var(--ink-1);opacity:.88"></i>
+                    </span>
+                    <span class="t-label c-3 num">50+</span>
+                  </div>
+                </section>
+
+                <!-- Serie -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:8px">
+                    <span class="t-label c-3">SERIE</span>
+                    <div style="flex:1 1 auto"></div>
+                    <span class="t-label c-3">seit So, 2. Nov</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:10px">
+                    <span class="ico" data-ico="flame" style="width:20px;height:20px; color:var(--ink-2)"></span>
+                    <span class="count"><span class="count__n num">12</span><span class="count__w t-sub">Tage in Folge</span></span>
+                  </div>
+                  <p class="t-sub c-3" style="margin:8px 0 0">Längste Serie: 34 Tage.</p>
+                </section>
+
+                <!-- Ziel-Erinnerungsrate — der Planer als Regler, angefasst -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:10px">
+                    <span class="t-label c-3">ZIEL-ERINNERUNGSRATE</span>
+                    <div style="flex:1 1 auto"></div>
+                    <span class="t-section num">90 %</span>
+                  </div>
+                  <div style="position:relative; padding:10px 0">
+                    <div class="bar" style="height:6px"><div class="bar__fill" style="width:74%"></div></div>
+                    <!-- Knopf mit Halo = wird gerade gezogen (Fläche + Ring + Halo) -->
+                    <span style="position:absolute; left:74%; top:50%; transform:translate(-50%,-50%); width:22px; height:22px; border-radius:50%; background:var(--paper); box-shadow:var(--sh-card), 0 0 0 1.5px var(--accent-ring), 0 0 0 7px var(--accent-soft)"></span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between">
+                    <span class="t-label c-3 num">70 %</span>
+                    <span class="t-label c-3 num">97 %</span>
+                  </div>
+                  <p class="t-sub c-2" style="margin:8px 0 0">Wie viel du beim Wiedersehen noch wissen sollst. Bei 90 % rund 17 Karten am Tag, bei 85 % nur 12.</p>
+                </section>
+
+                <!-- Prognose -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:6px">
+                    <span class="t-label c-3">PROGNOSE</span>
+                    <div style="flex:1 1 auto"></div>
+                    <span class="t-label c-3">7 Tage</span>
+                  </div>
+                  <div class="t-body">Morgen: <span class="is-strong num">ca. 17 Karten</span></div>
+                  <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; margin-top:12px">
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+                      <div style="width:22px; height:38px; display:flex; align-items:flex-end">
+                        <div style="width:100%; height:81%; border-radius:3px; background:var(--accent)"></div>
+                      </div>
+                      <span class="t-label c-1">Fr</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+                      <div style="width:22px; height:38px; display:flex; align-items:flex-end">
+                        <div style="width:100%; height:57%; border-radius:3px; background:var(--fill-3)"></div>
+                      </div>
+                      <span class="t-label c-3">Sa</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+                      <div style="width:22px; height:38px; display:flex; align-items:flex-end">
+                        <div style="width:100%; height:43%; border-radius:3px; background:var(--fill-3)"></div>
+                      </div>
+                      <span class="t-label c-3">So</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+                      <div style="width:22px; height:38px; display:flex; align-items:flex-end">
+                        <div style="width:100%; height:100%; border-radius:3px; background:var(--fill-3)"></div>
+                      </div>
+                      <span class="t-label c-3">Mo</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+                      <div style="width:22px; height:38px; display:flex; align-items:flex-end">
+                        <div style="width:100%; height:67%; border-radius:3px; background:var(--fill-3)"></div>
+                      </div>
+                      <span class="t-label c-3">Di</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+                      <div style="width:22px; height:38px; display:flex; align-items:flex-end">
+                        <div style="width:100%; height:52%; border-radius:3px; background:var(--fill-3)"></div>
+                      </div>
+                      <span class="t-label c-3">Mi</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px">
+                      <div style="width:22px; height:38px; display:flex; align-items:flex-end">
+                        <div style="width:100%; height:76%; border-radius:3px; background:var(--fill-3)"></div>
+                      </div>
+                      <span class="t-label c-3">Do</span>
+                    </div>
+                  </div>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Decks gestapelt, Band und CTA in der Daumenzone</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <div>
+            <div class="t-title">Lernen</div>
+            <div class="t-sub c-3">Do, 13. Nov · 23 fällig · ca. 11 Min.</div>
+          </div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column; gap:8px; padding-bottom:9px">
+
+          <!-- Deck 1 — trägt seine Herkunft, wie auf dem iPad -->
+          <section class="card" style="padding:12px 14px">
+            <div style="display:flex; align-items:center; gap:8px">
+              <span class="t-body is-strong" style="flex:1 1 auto; min-width:0; white-space:nowrap">Zellbiologie</span>
+              <span class="chip chip--solid num">8 fällig</span>
+              <!-- Zwischenzustand: der Finger liegt gerade auf dem Knopf -->
+              <button class="btn btn--primary btn--sm" style="box-shadow:0 0 0 6px var(--accent-soft); transform:scale(.97)"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>Lernen</button>
+            </div>
+            <div style="margin-top:6px"><span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie"</span></div>
+            <div style="display:flex; align-items:center; gap:14px; margin-top:8px">
+              <span class="count"><span class="count__n num">4</span><span class="count__w t-sub">Neu</span></span>
+              <span class="count"><span class="count__n num">4</span><span class="count__w t-sub">Zu wiederholen</span></span>
+              <span class="count"><span class="count__n num">4</span><span class="count__w t-sub">Gelernt</span></span>
+            </div>
+            <div class="bar" style="height:4px; margin-top:8px"><div class="bar__fill" style="width:33%"></div></div>
+          </section>
+
+          <!-- Deck 2 -->
+          <section class="card" style="padding:12px 14px">
+            <div style="display:flex; align-items:center; gap:8px">
+              <span class="t-body is-strong" style="flex:1 1 auto; min-width:0; white-space:nowrap">Anatomie Grundlagen</span>
+              <button class="btn btn--sm"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>Lernen</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:14px; margin-top:8px">
+              <span class="count"><span class="count__n num">4</span><span class="count__w t-sub">Neu</span></span>
+              <span class="count"><span class="count__n num">8</span><span class="count__w t-sub">Zu wiederholen</span></span>
+              <span class="count"><span class="count__n num">52</span><span class="count__w t-sub">Gelernt</span></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:8px">
+              <div class="bar" style="flex:1 1 auto; height:4px"><div class="bar__fill" style="width:81%"></div></div>
+              <span class="t-label c-3 num">12 heute fällig</span>
+            </div>
+          </section>
+
+          <!-- Deck 3 -->
+          <section class="card" style="padding:12px 14px">
+            <div style="display:flex; align-items:center; gap:8px">
+              <span class="t-body is-strong" style="flex:1 1 auto; min-width:0; white-space:nowrap">Statistik-Formeln</span>
+              <button class="btn btn--sm"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>Lernen</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:14px; margin-top:8px">
+              <span class="count is-off"><span class="count__n num">0</span><span class="count__w t-sub">Neu</span></span>
+              <span class="count"><span class="count__n num">3</span><span class="count__w t-sub">Zu wiederholen</span></span>
+              <span class="count"><span class="count__n num">28</span><span class="count__w t-sub">Gelernt</span></span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:8px">
+              <div class="bar" style="flex:1 1 auto; height:4px"><div class="bar__fill" style="width:90%"></div></div>
+              <span class="t-label c-3 num">3 heute fällig</span>
+            </div>
+          </section>
+
+          <!-- Deck 4 — leer -->
+          <section class="card" style="padding:12px 14px">
+            <div style="display:flex; align-items:center; gap:8px">
+              <span class="t-body is-strong" style="flex:1 1 auto; min-width:0; white-space:nowrap">Lesenotizen Soziologie</span>
+              <span class="t-label c-3 num">0 Karten</span>
+            </div>
+            <div class="empty" style="flex-direction:row; align-items:center; text-align:left; padding:10px 0 0; gap:12px">
+              <div class="empty__art" style="width:40px; height:40px; border-radius:12px">
+                <span class="ico" data-ico="cards" style="width:20px;height:20px"></span>
+              </div>
+              <div style="flex:1 1 auto; min-width:0">
+                <div class="empty__title t-sub is-strong">Noch keine Karten</div>
+                <div class="empty__text t-sub" style="max-width:none">Markiere Text in einer Notiz.</div>
+              </div>
+              <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Daumenzone: das Band der letzten 12 Wochen, darunter der breite CTA -->
+        <div style="flex:none; padding:10px 20px 10px; border-top:1px solid var(--line); background:var(--chrome); backdrop-filter:blur(24px) saturate(180%)">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px">
+            <div style="display:grid; grid-auto-flow:column; grid-template-rows:repeat(7, 6px); grid-auto-columns:6px; gap:2px; flex:none">
+              <!-- W1 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+              <!-- W2 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+              <!-- W3 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+              <!-- W4 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+              <!-- W5 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i>
+              <!-- W6 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i>
+              <!-- W7 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i>
+              <!-- W8 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i>
+              <!-- W9 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i>
+              <!-- W10 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.24"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.07"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i>
+              <!-- W11 -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.88"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.88"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.44"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i>
+              <!-- W12 · heute wächst gerade -->
+              <i style="border-radius:50%;background:var(--ink-1);opacity:.88"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.66"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.88"></i><i style="border-radius:50%;background:var(--ink-1);opacity:.30;box-shadow:0 0 0 2px var(--accent-soft)"></i><i style="border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i><i style="border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i><i style="border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i>
+            </div>
+            <div style="flex:1 1 auto; min-width:0">
+              <div class="t-label c-3">12 WOCHEN</div>
+              <div style="display:flex; align-items:center; gap:8px; margin-top:2px">
+                <span class="ico" data-ico="flame" style="width:16px;height:16px; color:var(--ink-2)"></span>
+                <span class="t-body is-strong num">12 Tage in Folge</span>
+              </div>
+              <div class="t-sub c-3 num">859 Wiederholungen</div>
+            </div>
+          </div>
+          <button class="btn btn--primary" style="width:100%">
+            <span class="ico" data-ico="play" style="width:18px;height:18px"></span>Alle lernen
+            <span class="num" style="opacity:.68">· 23</span>
+          </button>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Lernkarten-Start — Steckbrief</h2>
+  <p>Der Schirm beantwortet drei Fragen, bevor Emil etwas antippt: Woraus besteht die Sitzung (drei Zähler)? Woher kommt dieses Deck (Herkunfts-Chip)? Und was macht der Planer daraus (Regler, Prognose, zwölf Wochen)?</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Anki — drei Zähler</td><td>Neu · Zu wiederholen · Gelernt, pro Deck sichtbar. <strong>Bewertung: die stärkste Einzelidee des Feldes</strong> — sie beantwortet „wie lang wird das?" vor dem Start. Übernommen ohne Ankis drei Buntfarben: Zahl trägt Gewicht, Wort trägt Bedeutung.</td></tr>
+    <tr><td>Anki / FSRS — Scheduler-Transparenz</td><td>Ankis „desired retention" ist die beste Idee mit der schlechtesten Darbietung: vier Ebenen tief, ohne Folgenabschätzung. Hier als „Ziel-Erinnerungsrate" auf dem Startschirm, mit der Folge im selben Satz (90 % → ca. 17 Karten am Tag, 85 % → 12) und der Prognose direkt darunter.</td></tr>
+    <tr><td>Quizlet — Deck-Karten</td><td>Das Deck als greifbarer Gegenstand mit Titel, Umfang und Fortschritt. Übernommen; der Balken bleibt 4 pt fein und trägt die Zeile „4 von 12 sitzen", weil ein Balken ohne Zahl nichts behauptet. <strong>Bewertung: richtig gedacht, aber bei Quizlet unter Spielmodi begraben.</strong></td></tr>
+    <tr><td>RemNote — Herkunft</td><td>Karten entstehen im Notizfluss. Übernommen als Herkunfts-Chip „aus „Zellbiologie"" auf dem Deck und als leerer Zustand, der auf denselben Weg zeigt. <strong>Bewertung: konzeptionell die reifste Vorlage</strong>, nur hinter einer Lernkurve versteckt — hier ist es ein Chip, kein Konzept.</td></tr>
+    <tr><td>GitHub — Beitragsraster</td><td>Nur die Form übernommen. Die Dichte läuft über Ink-Deckkraft (.07 → .88), nicht über einen Grünverlauf, und unter dem Raster steht die Zahl (859 · 50 aktive Tage).</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Ankis Farbkodierung der Zähler</strong> (blau/rot/grün) — drei Buntfarben für drei Zahlen, die Zahl und Wort schon unterscheiden. Für Farbfehlsichtige wertlos.</li>
+    <li><strong>Ankis vier Antwortknöpfe mit Intervall-Vorschau</strong> auf dem Startschirm — der Scheduler gehört in die Sitzung, nicht in die Übersicht.</li>
+    <li><strong>Quizlets Spielmodi, Punkte und Bestenlisten</strong> — Fremdmotivation, die vom Stoff wegführt.</li>
+    <li><strong>Quizlets bunte Deck-Cover</strong> — Modul-Farben treten hier nie als Fläche auf, nur als 6-pt-Dot neben ihrem Wort.</li>
+    <li><strong>Duolingos Serien-Erpressung</strong> — die Serie berichtet eine Tatsache und macht keinen Lärm; sie belohnt nichts und droht nicht.</li>
+    <li><strong>RemNotes Doppelklammer-Syntax</strong> auf der Oberfläche — Syntax ist kein Entwurf.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Drei Decks mit Zahlen: 8 + 12 + 3 = 23 fällige Karten, dieselbe 23 wie in der Sidebar, im CTA und auf Today. Die drei Zähler eines Decks addieren sich auf seinen Umfang (4+4+4 = 12, 4+8+52 = 64, 0+3+28 = 31).</td></tr>
+    <tr><td>leer</td><td>„Lesenotizen Soziologie" trägt den leeren Zustand <em>in</em> der Karte, nicht auf einem eigenen Schirm: „Noch keine Karten — markiere Text in einer Notiz", dazu der Weg dorthin („Notiz öffnen"). Kein Karten-Editor, weil Karten hier nicht im Editor entstehen.</td></tr>
+    <tr><td>aktiv</td><td>Sidebar „Lernkarten": Fläche + Gewicht + Ink-Balken links. iPhone-Tab „Lernen": Ink + Gewicht. Segment „Fällig zuerst": Papierfläche + Ink + Schatten.</td></tr>
+    <tr><td>deaktiviert</td><td>„0 Neu" bei Statistik-Formeln und der „Lernen"-Knopf des leeren Decks: Deckkraft .38 <em>plus</em> fehlende Fläche (btn--quiet). Nie nur ausgegraut.</td></tr>
+    <tr><td>Zwischenzustand</td><td><strong>Vier eingefrorene Momente.</strong> (1) Die Kartenvorschau von „Zellbiologie" klappt gerade auf: die erste Karte steht schon, die zweite läuft noch in die Blende, die dritte ist noch nicht da. Der Deckel ist auf halber Höhe stehen geblieben. (2) Der Punkt für heute in der 12-Wochen-Matrix ist erst zu einem Drittel gefüllt und trägt den wachsenden Ring — der Tag ist angefangen, nicht fertig. (3) Der Regler-Knopf trägt den Halo des Fingers: er wird in diesem Moment gezogen. (4) Auf dem iPhone liegt der Finger auf „Lernen" — der Knopf trägt den Druck-Halo und ist minimal gestaucht.</td></tr>
+  </table>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Inklusion:</strong> Die zwölf Wochen kommen ohne einen einzigen Buntton aus. Die Dichte läuft über Ink-Deckkraft, die Legende steht daneben, und die Aussage steht zusätzlich als Zahl da — wer keine Sättigungsunterschiede unterscheidet, verliert nichts. Dasselbe gilt für die drei Zähler: Zahl, Wort und Position tragen sie, nicht Farbe.</p>
+  <p><strong>Innovation:</strong> Der Planer ist bedienbar statt nur transparent. Die Ziel-Erinnerungsrate liegt als Regler neben ihrer eigenen Folge — Prognose und Tagespensum stehen in derselben Spalte und ändern sich mit. Und ein Deck kennt seine Herkunft: der Chip führt zurück in die Notiz, aus der die Karten kamen.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe. Aktiv = Fläche + Gewicht (+ Balken). Ausgewählt = Fläche + Ring. Deaktiviert = Deckkraft + fehlende Fläche. Fällig heute = Wort + Ink-Fläche im Chip. Kommende Tage in der Matrix = leerer Kreis + Umriss, gelernte Tage = gefüllte Fläche. Der Herkunfts-Chip trägt Dot <em>und</em> Wort — der 6-pt-Dot steht nirgends allein.</p>
+
+  <h3>Inline gesetzt (system.css blieb unangetastet)</h3>
+  <p>Punktraster der zwölf Wochen (Grid mit 13-pt- bzw. 6-pt-Kreisen, Deckkraft .07/.24/.44/.66/.88), der Regler-Knopf (Papierkreis mit Ring und Halo), die Prognose-Balken, die Blende über der halb aufgeklappten Vorschau und die Aktionsleiste des iPhones (Band plus breiter Knopf über der Tab-Bar). Alles über <span class="num">style</span>-Attribute, keine neue Klasse, keine neue Schriftgröße.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

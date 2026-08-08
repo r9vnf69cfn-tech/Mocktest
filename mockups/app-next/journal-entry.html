@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journal-Eintrag — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Journal-Eintrag
+
+ÜBERNOMMEN
+· Day One (Foto, Wetter und Ort werden automatisch mitgeschrieben):
+  Übernommen als Kontext-Spalte rechts — Ort mit kleiner Karte, 8 °C bedeckt,
+  Aufnahmezeit der Fotos. Bewertung: sehr stark, weil der Nutzer nichts tippt
+  und der Eintrag später trotzdem auffindbar ist. Anders als Day One steht der
+  Kontext neben dem Text, nicht darüber: Beim Öffnen liest man zuerst den
+  eigenen Satz, nicht das Wetter.
+· Day One (Serif-Fließtext): Übernommen und zur Regel gemacht — die Oberfläche
+  spricht Sans, was Emil geschrieben hat, steht in Serif. Bewertung: der
+  einzige Grund, warum ein Journal sich anders anfühlt als eine Notiz-App.
+· Day One (Foto-Streifen im Eintrag): Übernommen mit unterschiedlichen
+  Seitenverhältnissen statt Quadratraster. Bewertung: gut — ein Quadratraster
+  macht aus Erinnerungen einen Instagram-Feed.
+· Journey (Stimmung und Energie am Eintrag): Übernommen als fünfstufige
+  Ink-Balken mit ausgeschriebenem Wort und als Regler mit Zahl. Bewertung: die
+  Idee ist richtig, die Ausführung bei Journey nicht — dort sind es bunte
+  Emojis. Hier trägt die Form die Information, nicht die Farbe.
+· Apple Journal (Ruhe): Übernommen als Seitenaufbau — keine Werkzeugleiste über
+  dem Text, keine Formatierungsknöpfe, kein Zähler. Bewertung: sehr stark.
+  Alles, was nicht Text ist, liegt rechts oder unten.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Day Ones Karten-Vollbild mit Satellitenbild und Pin-Animation — es zieht die
+  Aufmerksamkeit vom Text weg. Hier ist die Karte 76 pt hoch und grau.
+· Journeys Emoji-Stimmung und der farbige Verlauf — ohne Farbe nicht lesbar,
+  und Farbe gehört in dieser App dem Nutzer.
+· Apple Journals Vorschlags-Strom aus Musik, Fotos und Orten unter dem Eintrag:
+  Er verwandelt das Tagebuch in einen Feed.
+· Day Ones „Aktivität"-Block (Schritte, Herzfrequenz, Wetterverlauf) — Daten,
+  die niemand später sucht.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Der Eintrag weiß, woher er kommt und was er ausgelöst hat. Unten steht die
+Kette: „aus ‚Zellbiologie‘" (Notiz) → dieser Eintrag → „Laborprotokoll Zellkultur
+schreiben" (Aufgabe). Kein Journal kann das, weil keines die Notiz und die
+Aufgabe im selben Datenmodell hält. Und: die Sprachnotiz aus dem Labor läuft
+gerade — die Wellenform ist bis zur Abspielposition in Ink gefüllt, der Rest
+liegt grau.
+
+ADA-KATEGORIE: Delight (die laufende Sprachnotiz und die halb aufgeklappte
+Kontext-Leiste auf dem iPhone sind zwei eingefrorene Zwischenzustände) und
+Inklusion (Stimmung und Energie sind Ink-Balken mit Wort und Zahl — lesbar in
+Graustufen, bei Farbfehlsichtigkeit und in der großen Schriftstufe).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Titel/Fließtext  ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Sekundärtext     ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
+  Metadaten        ink-3 auf Grund     4,8:1   (hell) ·  4,9:1 (dunkel)
+  CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Wellenform, Stimmungs- und Energiebalken sind ink-1 auf fill-3 — Länge, Höhe
+  und Anzahl tragen die Information, nicht die Farbe.
+  Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+Serif nur im Eintragstext — dort, wo Emil selbst geschrieben hat.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Journal-Eintrag</h1>
+  <p>Ein einzelner Eintrag. Links steht, was Emil geschrieben hat — Datum, Titel, Text in Serif, drei Fotos und die Sprachnotiz aus dem Labor, die gerade läuft. Rechts steht, was die App dazu weiß: Stimmung, Energie, Ort und Wetter. Unten steht, woher der Eintrag kam und was aus ihm wurde.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Eintrag links, Kontext rechts</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar — identisch zu „Today“, nur „Journal“ ist aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem is-active"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar">
+            <button class="iconbtn"><span class="ico" data-ico="chevL"></span></button>
+            <span class="t-body">Journal</span>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="chevL"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="chevR"></span></button>
+            <button class="iconbtn is-active"><span class="ico" data-ico="star"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="share"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+            <button class="btn btn--sm"><span class="ico" data-ico="edit" style="width:16px;height:16px"></span>Bearbeiten</button>
+          </div>
+
+          <div class="scroll" style="display:flex; flex-direction:column">
+            <div style="display:grid; grid-template-columns: 1fr 296px; gap:22px; align-items:start">
+
+              <!-- ═══ Der Eintrag ═══ -->
+              <article style="display:flex; flex-direction:column; min-width:0">
+
+                <div style="display:flex; align-items:center; gap:8px">
+                  <span class="dot dot--journal"></span>
+                  <span class="t-label c-3">JOURNAL</span>
+                  <span class="t-label c-3">·</span>
+                  <span class="t-label c-3 num">EINTRAG 34 VON 41</span>
+                </div>
+
+                <h1 class="t-title" style="margin:8px 0 0">Mittwoch, 12. November</h1>
+                <h2 class="t-section c-2" style="margin:6px 0 0">Laborgruppe hat es endlich verstanden</h2>
+
+                <div class="serif" style="margin-top:14px">
+                  <p class="t-body serif" style="margin:0">Die Woche war voll, aber heute hat die Laborgruppe mich getragen — Jana und Milan haben das Protokoll auseinandergenommen.</p>
+                  <p class="t-body serif" style="margin:12px 0 0">Kurz vor fünf erklärte ich die Färbung noch einmal von vorn, und Jana hat den Satz vor mir zu Ende gebracht. Milan malte die Skizze frei an die Tafel.</p>
+                  <p class="t-body serif" style="margin:12px 0 0">Prof. Wendt kam vorbei und korrigierte nichts. Auf dem Rückweg über den Campus war ich zum ersten Mal seit September ruhig.</p>
+                </div>
+
+                <!-- Foto-Streifen: Papier und Grau, drei Seitenverhältnisse -->
+                <div style="display:flex; align-items:center; gap:8px; margin-top:20px">
+                  <span class="ico c-3" data-ico="photo" style="width:15px;height:15px"></span>
+                  <span class="t-label c-3">DREI FOTOS · 21:48</span>
+                  <div style="flex:1"></div>
+                  <span class="t-label c-3">Automatisch zugeordnet</span>
+                </div>
+                <div style="display:flex; gap:8px; margin-top:8px; height:132px">
+                  <div style="flex:1.7; border-radius:10px; position:relative; overflow:hidden; background:
+                      linear-gradient(160deg, var(--fill-3), var(--fill)),
+                      repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px)">
+                    <span class="chip" style="position:absolute; left:8px; bottom:8px; background:var(--paper)">Färbung, dritter Versuch</span>
+                  </div>
+                  <div style="flex:0.85; border-radius:10px; background:
+                      linear-gradient(20deg, var(--fill-2), var(--fill)),
+                      repeating-linear-gradient(0deg, var(--fill-2) 0 3px, transparent 3px 11px)"></div>
+                  <div style="flex:1.15; border-radius:10px; background:
+                      linear-gradient(120deg, var(--fill-3), var(--fill-2)),
+                      radial-gradient(circle at 36% 40%, var(--fill) 0 26px, transparent 26px)"></div>
+                </div>
+
+                <!-- Sprachnotiz — läuft gerade (Zwischenzustand) -->
+                <div class="card card--flat" style="margin-top:16px; padding:12px 14px; display:flex; align-items:center; gap:14px">
+                  <button style="width:44px; height:44px; flex:none; border-radius:50%; background:var(--accent); box-shadow:0 0 0 6px var(--accent-soft); display:flex; align-items:center; justify-content:center; gap:4px">
+                    <i style="width:3.5px; height:15px; border-radius:1px; background:var(--accent-on)"></i>
+                    <i style="width:3.5px; height:15px; border-radius:1px; background:var(--accent-on)"></i>
+                  </button>
+                  <div style="flex:1 1 auto; min-width:0">
+                    <div style="display:flex; align-items:center; gap:7px; margin-bottom:9px; white-space:nowrap">
+                      <span class="ico c-3" data-ico="mic" style="width:14px;height:14px"></span>
+                      <span class="t-label c-2">Sprachnotiz aus dem Labor</span>
+                      <span class="t-label c-3">· spielt</span>
+                      <div style="flex:1"></div>
+                      <span class="t-label c-3 num">0:47 / 1:24</span>
+                    </div>
+                    <div style="position:relative; display:flex; align-items:center; gap:2px; height:30px">
+                      <i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:27px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:23px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:26px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:26px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:16px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:13px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:23px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:27px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:6px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:7px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:27px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:24px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:25px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:16px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:28px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--fill-3)"></i>
+                      <span style="position:absolute; left:56%; top:-4px; bottom:-4px; width:2px; border-radius:1px; background:var(--ink-1)"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Der Fluss: Herkunft und Folge -->
+                <div class="divider" style="margin:20px 0 8px"><span class="t-label c-3">VERBUNDEN</span></div>
+                <div class="card" style="padding:0; overflow:hidden">
+                  <div class="chain">
+                    <button class="chain__link" style="text-align:left; flex:0.78">
+                      <span class="chain__eyebrow t-label">ENTSTANDEN AUS</span>
+                      <span style="margin:2px 0 2px"><span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie“</span></span>
+                      <span class="t-sub c-3">Notiz · 12. Nov, 16:20</span>
+                    </button>
+                    <button class="chain__link" style="text-align:left; flex:1.22">
+                      <span class="chain__eyebrow t-label">DARAUS ENTSTANDEN</span>
+                      <span style="margin:2px 0 2px"><span class="chip"><span class="dot dot--tasks"></span>Laborprotokoll Zellkultur schreiben</span></span>
+                      <span class="t-sub c-3">Aufgabe · offen · Biologie</span>
+                    </button>
+                  </div>
+                </div>
+              </article>
+
+              <!-- ═══ Kontext-Spalte ═══ -->
+              <aside style="display:flex; flex-direction:column; gap:12px">
+
+                <!-- Stimmung und Energie -->
+                <section class="card" style="padding:13px 16px 13px">
+                  <div style="display:flex; align-items:center; gap:8px">
+                    <span class="t-label c-3">STIMMUNG</span>
+                    <div style="flex:1"></div>
+                    <span class="t-label c-3 num">3 von 5</span>
+                  </div>
+                  <div style="display:flex; gap:5px; margin-top:9px">
+                    <div style="flex:1; height:54px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; padding-bottom:6px">
+                      <i style="width:8px; height:7px; border-radius:2px; background:var(--ink-4)"></i>
+                      <span class="t-label c-3 num">1</span>
+                    </div>
+                    <div style="flex:1; height:54px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; padding-bottom:6px">
+                      <i style="width:8px; height:12px; border-radius:2px; background:var(--ink-4)"></i>
+                      <span class="t-label c-3 num">2</span>
+                    </div>
+                    <div style="flex:1; height:54px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; padding-bottom:6px; background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                      <i style="width:8px; height:18px; border-radius:2px; background:var(--ink-1)"></i>
+                      <span class="t-label num">3</span>
+                    </div>
+                    <div style="flex:1; height:54px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; padding-bottom:6px">
+                      <i style="width:8px; height:24px; border-radius:2px; background:var(--ink-4)"></i>
+                      <span class="t-label c-3 num">4</span>
+                    </div>
+                    <div style="flex:1; height:54px; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; padding-bottom:6px">
+                      <i style="width:8px; height:30px; border-radius:2px; background:var(--ink-4)"></i>
+                      <span class="t-label c-3 num">5</span>
+                    </div>
+                  </div>
+                  <div style="display:flex; align-items:baseline; gap:8px; margin-top:8px">
+                    <span class="t-body is-strong">Ausgeglichen</span>
+                    <span class="t-sub c-3">gewählt</span>
+                  </div>
+
+                  <div style="margin-top:12px; padding-top:12px; border-top:1px solid var(--line)">
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-label c-3">ENERGIE</span>
+                      <div style="flex:1"></div>
+                      <span class="t-label c-3 num">4 von 5</span>
+                    </div>
+                    <div style="position:relative; height:24px; display:flex; align-items:center; margin-top:8px">
+                      <div class="bar" style="flex:1 1 auto; height:8px"><div class="bar__fill" style="width:75%"></div></div>
+                      <span style="position:absolute; left:75%; top:50%; transform:translate(-50%,-50%); width:24px; height:24px; border-radius:50%; background:var(--paper); box-shadow:var(--sh-card), inset 0 0 0 1.5px var(--line-2)"></span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-top:4px">
+                      <span class="t-label c-3 num">1</span>
+                      <span class="t-label c-3 num">2</span>
+                      <span class="t-label c-3 num">3</span>
+                      <span class="t-label num">4</span>
+                      <span class="t-label c-3 num">5</span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Ort und Wetter -->
+                <section class="card" style="padding:0; overflow:hidden">
+                  <div style="padding:12px 16px 8px; display:flex; align-items:center; gap:8px">
+                    <span class="t-label c-3">ORT UND WETTER</span>
+                    <div style="flex:1"></div>
+                    <span class="t-label c-3">automatisch</span>
+                  </div>
+                  <!-- Karte als Papier und Grau: Blöcke in Füllgrau, Straßen bleiben Papier -->
+                  <div style="height:76px; position:relative; overflow:hidden; background:var(--paper-2)">
+                    <div style="position:absolute; left:12px;  top:6px;  width:70px; height:24px; border-radius:2px; background:var(--fill-2)"></div>
+                    <div style="position:absolute; left:90px;  top:6px;  width:44px; height:24px; border-radius:2px; background:var(--fill-2)"></div>
+                    <div style="position:absolute; left:12px;  top:38px; width:44px; height:32px; border-radius:2px; background:var(--fill-2)"></div>
+                    <div style="position:absolute; left:64px;  top:38px; width:70px; height:32px; border-radius:2px; background:var(--fill-3)"></div>
+                    <div style="position:absolute; left:166px; top:6px;  width:52px; height:24px; border-radius:2px; background:var(--fill-2)"></div>
+                    <div style="position:absolute; left:226px; top:6px;  width:62px; height:24px; border-radius:2px; background:var(--fill-2)"></div>
+                    <div style="position:absolute; left:166px; top:38px; width:62px; height:32px; border-radius:2px; background:var(--fill-2)"></div>
+                    <div style="position:absolute; left:236px; top:38px; width:52px; height:32px; border-radius:2px; background:var(--fill-2)"></div>
+                    <div style="position:absolute; left:0; right:0; top:32px; height:4px; background:var(--fill)"></div>
+                    <div style="position:absolute; top:0; bottom:0; left:142px; width:4px; background:var(--fill)"></div>
+                    <span style="position:absolute; left:144px; top:34px; transform:translate(-50%,-50%); width:30px; height:30px; border-radius:50%; background:var(--paper); box-shadow:var(--sh-card); display:flex; align-items:center; justify-content:center">
+                      <span class="ico" data-ico="location" style="width:17px;height:17px; color:var(--ink-1)"></span>
+                    </span>
+                  </div>
+                  <div style="padding:11px 16px 12px; display:flex; flex-direction:column; gap:9px">
+                    <div style="display:flex; align-items:flex-start; gap:10px">
+                      <span class="ico c-3" data-ico="location" style="width:17px;height:17px; margin-top:2px"></span>
+                      <div style="min-width:0">
+                        <div class="t-body clamp-1">Universität, Gebäude B</div>
+                        <div class="t-sub c-3 clamp-1">Praktikumslabor 2</div>
+                      </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px">
+                      <span class="ico c-3" data-ico="cloud" style="width:17px;height:17px"></span>
+                      <div class="t-body num">8 °C, bedeckt</div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Ablage -->
+                <section class="card" style="padding:12px 14px 13px">
+                  <div class="t-label c-3">KATEGORIEN</div>
+                  <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px">
+                    <span class="chip"><span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Biologie</span>
+                    <span class="chip"><span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Uni</span>
+                  </div>
+                  <div class="t-label c-3" style="margin-top:12px">TAGS</div>
+                  <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px">
+                    <span class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#uni/bio</span>
+                    <span class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#labor</span>
+                    <button class="chip chip--ghost"><span class="ico" data-ico="plus" style="width:13px;height:13px"></span>Tag</button>
+                  </div>
+                </section>
+
+                <!-- Zeiten -->
+                <section class="card" style="padding:11px 16px 12px; display:flex; flex-direction:column; gap:5px">
+                  <div style="display:flex; align-items:baseline; gap:10px">
+                    <span class="t-sub c-3" style="width:66px; flex:none">Erstellt</span>
+                    <span class="t-sub num">Mi, 12. Nov · 22:10</span>
+                  </div>
+                  <div style="display:flex; align-items:baseline; gap:10px">
+                    <span class="t-sub c-3" style="width:66px; flex:none">Geändert</span>
+                    <span class="t-sub num">heute · 9:28</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-top:2px">
+                    <span class="ico c-3" data-ico="cloud" style="width:14px;height:14px"></span>
+                    <span class="t-label c-3">In iCloud gesichert</span>
+                  </div>
+                </section>
+
+              </aside>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Eintrag im Vollbild, Kontext als Leiste</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <button class="iconbtn" style="margin-left:-10px"><span class="ico" data-ico="chevL"></span></button>
+          <span class="t-body">Journal</span>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn is-active"><span class="ico" data-ico="star"></span></button>
+          <button class="iconbtn" style="margin-right:-10px"><span class="ico" data-ico="more"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column">
+
+          <div style="display:flex; align-items:center; gap:8px">
+            <span class="dot dot--journal"></span>
+            <span class="t-label c-3">JOURNAL · MITTWOCH</span>
+            <div style="flex:1"></div>
+            <span class="t-label c-3 num">22:10</span>
+          </div>
+          <h1 class="t-title" style="margin:4px 0 0">12. November</h1>
+          <h2 class="t-section c-2" style="margin:4px 0 0">Laborgruppe hat es endlich verstanden</h2>
+
+          <div style="margin-top:9px">
+            <p class="t-body serif" style="margin:0">Die Woche war voll, aber heute hat die Laborgruppe mich getragen — Jana und Milan haben das Protokoll auseinandergenommen.</p>
+            <p class="t-body serif" style="margin:6px 0 0">Kurz vor fünf erklärte ich die Färbung noch einmal von vorn, und Jana hat den Satz vor mir zu Ende gebracht. Milan malte die Skizze frei an die Tafel.</p>
+            <p class="t-body serif" style="margin:6px 0 0">Prof. Wendt kam vorbei und korrigierte nichts. Auf dem Rückweg über den Campus war ich zum ersten Mal seit September ruhig.</p>
+          </div>
+
+          <!-- Fotos als Reihe -->
+          <div style="display:flex; gap:6px; margin-top:8px; height:46px">
+            <div style="flex:1.7; border-radius:9px; background:
+                linear-gradient(160deg, var(--fill-3), var(--fill)),
+                repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px)"></div>
+            <div style="flex:0.85; border-radius:9px; background:
+                linear-gradient(20deg, var(--fill-2), var(--fill)),
+                repeating-linear-gradient(0deg, var(--fill-2) 0 3px, transparent 3px 11px)"></div>
+            <div style="flex:1.15; border-radius:9px; background:
+                linear-gradient(120deg, var(--fill-3), var(--fill-2)),
+                radial-gradient(circle at 36% 40%, var(--fill) 0 18px, transparent 18px)"></div>
+          </div>
+
+          <!-- Sprachnotiz — läuft gerade -->
+          <div class="card card--flat" style="margin-top:9px; padding:7px 11px; display:flex; align-items:center; gap:10px">
+            <button style="width:36px; height:36px; flex:none; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px var(--accent-soft); display:flex; align-items:center; justify-content:center; gap:3.5px">
+              <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
+              <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
+            </button>
+            <div style="flex:1 1 auto; min-width:0">
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px; white-space:nowrap">
+                <span class="ico c-3" data-ico="mic" style="width:13px;height:13px"></span>
+                <span class="t-label c-2">Sprachnotiz · spielt</span>
+                <div style="flex:1"></div>
+                <span class="t-label c-3 num">0:47 / 1:24</span>
+              </div>
+              <div style="position:relative; display:flex; align-items:center; gap:2px; height:20px">
+                <i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:4px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:4px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:13px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:13px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:4px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--fill-3)"></i>
+                <span style="position:absolute; left:56%; top:-3px; bottom:-3px; width:2px; border-radius:1px; background:var(--ink-1)"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kontext-Leiste, halb aufgeklappt (Zwischenzustand) -->
+          <section class="card" style="margin-top:9px; padding:0; overflow:hidden">
+            <div style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--accent-soft); white-space:nowrap">
+              <span class="t-label">KONTEXT</span>
+              <div style="flex:1"></div>
+              <span class="t-label c-3">klappt auf …</span>
+              <span class="ico c-3" data-ico="chevD" style="width:16px;height:16px; transform:rotate(180deg)"></span>
+            </div>
+            <div style="height:80px; overflow:hidden; position:relative; padding:9px 12px 0">
+              <div style="display:flex; align-items:center; gap:8px; white-space:nowrap">
+                <span class="t-label c-3">STIMMUNG</span>
+                <div style="flex:1"></div>
+                <span class="t-label">Ausgeglichen</span>
+                <span class="t-label c-3 num">3 von 5</span>
+              </div>
+              <div style="display:flex; gap:5px; margin-top:7px">
+                <div style="flex:1; height:30px; border-radius:8px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px">
+                  <i style="width:7px; height:5px; border-radius:2px; background:var(--ink-4)"></i>
+                </div>
+                <div style="flex:1; height:30px; border-radius:8px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px">
+                  <i style="width:7px; height:9px; border-radius:2px; background:var(--ink-4)"></i>
+                </div>
+                <div style="flex:1; height:30px; border-radius:8px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px; background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                  <i style="width:7px; height:13px; border-radius:2px; background:var(--ink-1)"></i>
+                </div>
+                <div style="flex:1; height:30px; border-radius:8px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px">
+                  <i style="width:7px; height:17px; border-radius:2px; background:var(--ink-4)"></i>
+                </div>
+                <div style="flex:1; height:30px; border-radius:8px; display:flex; align-items:flex-end; justify-content:center; padding-bottom:7px">
+                  <i style="width:7px; height:21px; border-radius:2px; background:var(--ink-4)"></i>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; margin-top:11px; white-space:nowrap">
+                <span class="t-label c-3">ENERGIE</span>
+                <div style="flex:1"></div>
+                <span class="t-label c-3 num">4 von 5</span>
+              </div>
+              <div style="position:relative; height:22px; display:flex; align-items:center; margin-top:9px">
+                <div class="bar" style="flex:1 1 auto; height:8px"><div class="bar__fill" style="width:75%"></div></div>
+                <span style="position:absolute; left:75%; top:50%; transform:translate(-50%,-50%); width:22px; height:22px; border-radius:50%; background:var(--paper); box-shadow:var(--sh-card), inset 0 0 0 1.5px var(--line-2)"></span>
+              </div>
+              <div style="position:absolute; left:0; right:0; bottom:0; height:26px; background:linear-gradient(to bottom, transparent, var(--paper))"></div>
+            </div>
+          </section>
+
+          <!-- Der Fluss -->
+          <div style="display:flex; align-items:center; gap:6px; margin-top:9px; white-space:nowrap">
+            <span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie“</span>
+            <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
+            <span class="chip"><span class="dot dot--tasks"></span>Laborprotokoll</span>
+          </div>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Journal-Eintrag — Steckbrief</h2>
+  <p>Der emotionalste Schirm der App. Links steht ausschließlich, was Emil selbst gemacht hat: Datum, Titel, Text in Serif, drei Fotos, eine Sprachnotiz. Alles, was die App dazu weiß, steht rechts und stört nicht.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Day One — Foto, Wetter, Ort</td><td>Der Kontext wird automatisch mitgeschrieben. <strong>Sehr stark übernommen</strong>, aber verschoben: Bei Day One steht er über dem Text, hier daneben. Beim Öffnen liest man zuerst den eigenen Satz.</td></tr>
+    <tr><td>Day One — Serif-Fließtext</td><td>Übernommen und zur Systemregel gemacht: Die Oberfläche spricht Sans, was der Nutzer geschrieben hat, steht in Serif. Der einzige Grund, warum ein Journal sich anders anfühlt als eine Notiz-App.</td></tr>
+    <tr><td>Day One — Foto-Streifen</td><td>Übernommen mit drei echten Seitenverhältnissen statt Quadratraster. Ein Quadratraster macht aus Erinnerungen einen Feed.</td></tr>
+    <tr><td>Journey — Stimmung, Energie</td><td>Die Idee ist richtig, die Ausführung nicht: Journey nimmt bunte Emojis. Hier sind es fünf Ink-Balken mit Zahl und ausgeschriebenem Wort und ein Regler mit Skala.</td></tr>
+    <tr><td>Apple Journal — Ruhe</td><td>Keine Werkzeugleiste über dem Text, keine Formatierungsknöpfe, kein Wortzähler. Alles, was nicht Text ist, liegt rechts oder unten.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li>Day Ones Karten-Vollbild mit Satellitenbild — hier ist die Karte 76 pt hoch, grau und ohne Beschriftung. Sie beweist den Ort, sie erzählt ihn nicht.</li>
+    <li>Journeys Emoji-Stimmung und Farbverlauf — ohne Farbe nicht lesbar, und Farbe gehört dem Nutzer.</li>
+    <li>Apple Journals Vorschlags-Strom aus Musik, Fotos und Orten unter dem Eintrag — er macht aus dem Tagebuch einen Feed.</li>
+    <li>Day Ones „Aktivität"-Block (Schritte, Herzfrequenz, Wetterverlauf) — Daten, die niemand später sucht.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: Titel, drei Absätze, drei Fotos, eine Sprachnotiz, Stimmung 3, Energie 4, Ort und Wetter, zwei Kategorien, zwei Tags.</td></tr>
+    <tr><td>ausgewählt</td><td>Stimmungsstufe 3: getönte Fläche + Ring + Balken in Ink + Zahl in 600 + das Wort „Ausgeglichen". Energie 4: Füllung bis 75 % + Reglerknopf + „4" in 600 auf der Skala.</td></tr>
+    <tr><td>aktiv</td><td>„Journal" in der Sidebar (Fläche + Gewicht + Ink-Balken), „Bibliothek" in der Tab-Bar, der Stern in der Navigationsleiste (Fläche + Ink statt Grau).</td></tr>
+    <tr><td>Zwischenzustand 1</td><td><strong>Die Sprachnotiz läuft.</strong> Die Wellenform ist bis 0:47 in Ink gefüllt, dahinter grau; die Abspielposition steht als Ink-Strich im Bild; der Knopf zeigt Pause und trägt den weichen Ring, den auch die Checkbox in der Erledigen-Animation trägt.</td></tr>
+    <tr><td>Zwischenzustand 2</td><td><strong>Die Kontext-Leiste auf dem iPhone klappt gerade auf.</strong> Sie sagt es selbst („klappt auf …"), das Winkelzeichen zeigt schon nach oben, die Stimmung steht vollständig da — und „Energie · 4 von 5" verläuft am unteren Rand noch im Papier. Wer wartet, sieht auch Ort, Wetter und Tags.</td></tr>
+    <tr><td>leer</td><td>Ein Eintrag ohne Fotos, ohne Sprachnotiz und ohne Verknüpfung zeigt nur Datum, Titel und Text; die Kontext-Spalte behält Ort, Wetter und Zeiten, weil die automatisch anfallen. Es gibt keinen leeren Eintrag ohne Text — dann ist es ein Entwurf (siehe Journal-Home).</td></tr>
+  </table>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Delight:</strong> Der Eintrag steht nicht still. Die Sprachnotiz aus dem Labor läuft, während man liest — man hört den Nachmittag, von dem der Text handelt, und sieht die Position im Bild. <strong>Innovation:</strong> Unten steht die Kette, die kein Journal der Welt zeigen kann: Der Eintrag kam aus der Notiz „Zellbiologie" und hat die Aufgabe „Laborprotokoll Zellkultur schreiben" hinterlassen. <strong>Inklusion:</strong> Stimmung und Energie sind Balken, Zahl und Wort — sie funktionieren in Graustufen, bei jeder Farbfehlsichtigkeit und in der großen Schriftstufe.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe. Ausgewählt (Stimmung 3) = Fläche + Ring + Gewicht + Wort. Aktiv (Sidebar) = Fläche + Gewicht + Ink-Balken. Läuft (Sprachnotiz) = gefüllte Wellenform + Abspielstrich + Pause-Zeichen + Zeitangabe. Nicht gewählt (Stimmung 1, 2, 4, 5) = Deckkraft + fehlende Fläche. Modul-Dots sind 6 pt und stehen nie ohne ihr Wort — „Journal" in Kopfzeile und Sidebar, „Zellbiologie" im Herkunfts-Chip, „Laborprotokoll" im Aufgaben-Chip.</p>
+
+  <h3>Inline gestylt (nicht in system.css)</h3>
+  <p>Ohne system.css zu ändern, sind inline entstanden: die Wellenform aus 3-pt-Ink-Balken mit Abspielstrich, das Pause-Zeichen aus zwei Balken (es gibt kein Pause-Icon im Satz), die fünfstufige Stimmungsleiter, der Energie-Regler aus <code>.bar</code> plus Knopf, die graue Ortskarte und die drei Foto-Platzhalter aus Papier und Grau.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

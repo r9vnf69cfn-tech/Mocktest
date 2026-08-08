@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journal-Home — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Journal-Home
+
+ÜBERNOMMEN
+· Day One (Timeline mit Datum-Marke): Übernommen ist die Datum-Marke links vom
+  Eintrag — Tag groß, Monat klein — und die durchgehende Linie, die die Marken
+  verbindet. Bewertung: sehr stark, weil man beim Scrollen die Zeit sieht, ohne
+  eine einzige Überschrift zu lesen. Anders als Day One sitzt die Marke
+  außerhalb der Karte auf der Linie, damit die Karte selbst ruhig bleibt.
+· Day One (Rückblick „On this day"): Übernommen als „Vor einem Jahr"-Karte in
+  der Seitenspalte — dieselbe Karte wie auf „Today", damit der Rückblick überall
+  gleich aussieht. Bewertung: gut, aber nur als Angebot. Day One unterbricht
+  damit den Einstieg per Vollbild; das tun wir nicht.
+· Day One (Streak): Übernommen als Zahl mit Rekord und einer 12-Wochen-Reihe.
+  Bewertung: geteilt. Die Zahl motiviert, die Abzeichen-Sammlung von Day One
+  motiviert nicht — sie erzeugt Druck. Wir zeigen die Zahl und die Lücken,
+  aber keine Trophäen und keinen Verlust-Countdown.
+· Apple Journal (Impuls-Karten): Übernommen als genau eine Impuls-Karte mit
+  konkreter Frage in Serif — dieselbe Frage wie auf „Today", weil es derselbe
+  Tag ist. Bewertung: sehr gut gegen das leere Blatt. Nicht übernommen ist
+  Apples Vorschlags-Strom aus Fotos, Musik und Orten: das ist ein Feed, kein
+  Tagebuch.
+· Journey (Stimmungsverlauf): Übernommen als schlichte Linie über 14 Tage.
+  Bewertung: die Idee ist richtig, die Ausführung bei Journey nicht — dort ist
+  der Verlauf bunt und die Stimmung ein Emoji. Hier ist die Linie Ink, und die
+  Stimmung sind fünf Balken, die auch in Graustufen und für Farbfehlsichtige
+  lesbar bleiben.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Emoji-Stimmung und Farbskala (Journey, Daylio): Farbe gehört dem Nutzer. Eine
+  gelbe „gute Laune" wäre ohne Farbe nicht lesbar und würde die 6-pt-Modul-Dots
+  entwerten.
+· Apple Journals Vorschlags-Strom aus Fotos, Standort und Musik — er schreibt
+  den Eintrag vor, statt ihn zu ermöglichen.
+· Day Ones Abzeichen, Streak-Warnung und Jahresvideo — Druck statt Gewohnheit.
+· Wärmekarte mit Farbskala im Kalender: in Grau eine Matschfläche. Der Kalender
+  zeigt stattdessen eine Marke je Tag.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Der Eintrag von heute Morgen wird noch übertragen, während man ihn liest: Die
+Sprachnotiz aus dem Labor läuft als Text ein, der Rest steht als Skelett da,
+mit ehrlicher Restzeit statt eines Spinners. Kein anderes Journal zeigt einen
+Eintrag im Werden — sie zeigen entweder eine Audiodatei oder fertigen Text. Und
+weil dieselbe App die Notizbücher hält, trägt der Eintrag vom 10. November
+seinen Herkunfts-Chip „aus Laborjournal": Man sieht, dass er aus dem Praktikum
+stammt und nicht aus dem Nichts.
+
+ADA-KATEGORIE: Inklusion (Stimmung und Energie sind fünfstufige Ink-Balken mit
+ausgeschriebenem Wort — lesbar in Graustufen, bei Farbfehlsichtigkeit und in
+der großen Schriftstufe) und Delight (die laufende Übertragung und der halb
+gefüllte Punkt der laufenden Woche — zwei eingefrorene Zwischenzustände).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Titel/Fließtext  ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Sekundärtext     ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
+  Metadaten        ink-3 auf Grund     4,8:1   (hell) ·  4,9:1 (dunkel)
+  CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Stimmungs- und Energiebalken sind ink-1 auf fill-3 — Anzahl und Form tragen
+  die Information, nicht die Farbe.
+  Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+Serif nur dort, wo Emil selbst geschrieben hat — im Eintragstext, im Rückblick
+und in der Impulsfrage.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Journal-Home</h1>
+  <p>Der Einstieg ins Journal. Links läuft die Zeit als Timeline, rechts steht, was sie bedeutet: die Serie, die Woche, der Stimmungsverlauf und der Rückblick. Der Eintrag von heute Morgen wird gerade noch aus der Sprachnotiz übertragen.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Split View mit Sidebar</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar — identisch zu „Today", nur „Journal" ist aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem is-active"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar">
+            <span class="t-title">Journal</span>
+            <span class="dot dot--journal" style="align-self:center"></span>
+            <span class="t-sub c-3 num" style="align-self:center">128 Einträge</span>
+            <div class="navbar__spacer"></div>
+
+            <!-- Ansichts-Umschalter: aktiv = Fläche + Gewicht -->
+            <div class="segmented">
+              <button class="is-on">Timeline</button>
+              <button>Kalender</button>
+              <button>Medien</button>
+              <button>Karte</button>
+            </div>
+
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+            <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Eintrag</button>
+          </div>
+
+          <div class="scroll" style="display:flex; flex-direction:column">
+
+            <div style="display:grid; grid-template-columns: minmax(0,1fr) 284px; gap:16px; align-items:start">
+
+              <!-- ══ Timeline ══ -->
+              <div style="display:flex; flex-direction:column; gap:11px">
+
+                <!-- Eintrag 1 — heute, die Sprachnotiz läuft noch ein (Zwischenzustand) -->
+                <div style="display:flex; gap:14px">
+                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
+                    <span class="t-section num" style="line-height:24px">13</span>
+                    <span class="t-label c-3">Nov.</span>
+                    <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:8px"></div>
+                  </div>
+                  <article class="card" style="flex:1 1 auto; min-width:0; padding:13px">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
+                      <span class="t-label c-3">Donnerstag · 8:05</span>
+                      <div style="flex:1"></div>
+                      <span class="chip"><span class="ico" data-ico="mic" style="width:13px;height:13px"></span>2:03</span>
+                    </div>
+                    <div class="t-section">Vor dem Praktikum</div>
+                    <p class="t-body serif c-2 clamp-2" style="margin:4px 0 0">Die Kultur von Dienstag sieht gut aus — die Dichte stimmt, nichts trüb. Jana meint, wir können die Passage heute schon ansetzen, wenn Milan das Medium rechtzeitig …</p>
+
+                    <!-- laufende Übertragung: Fortschritt + Restzeit + Skelett für den Rest -->
+                    <div style="margin-top:9px; padding:8px 12px; border-radius:11px; background:var(--fill); display:flex; flex-direction:column; gap:6px">
+                      <div style="display:flex; align-items:center; gap:8px">
+                        <span class="ico c-2" data-ico="mic" style="width:16px;height:16px"></span>
+                        <span class="t-sub c-2" style="flex:1">Sprachnotiz wird übertragen</span>
+                        <span class="t-label c-3 num">1:14 von 2:03</span>
+                      </div>
+                      <div class="bar"><div class="bar__fill" style="width:61%"></div></div>
+                      <div class="skeleton" style="height:11px; width:74%"></div>
+                    </div>
+
+                    <!-- Fußzeile: Messwerte als Balken, Filter als Chips -->
+                    <div style="display:flex; align-items:center; column-gap:9px; row-gap:8px; margin-top:10px; flex-wrap:wrap">
+                      <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
+                        <span style="display:inline-flex; align-items:flex-end; gap:2px; height:12px">
+                          <i style="width:3px;height:4px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:6px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:8px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:10px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:12px;border-radius:1px;background:var(--fill-3)"></i>
+                        </span>Stimmung 4
+                      </span>
+                      <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
+                        <span style="display:inline-flex; gap:2px">
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
+                        </span>Energie 3
+                      </span>
+                      <span class="chip" style="padding:0 9px"><span class="ico" data-ico="location" style="width:13px;height:13px"></span>Labor 2</span>
+                      <span class="chip" style="padding:0 9px"><span class="ico" data-ico="cloud" style="width:13px;height:13px"></span>7 °C</span>
+                    </div>
+                  </article>
+                </div>
+
+                <!-- Eintrag 2 — gestern, Entwurf mit Foto-Streifen -->
+                <div style="display:flex; gap:14px">
+                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
+                    <span class="t-section num" style="line-height:24px">12</span>
+                    <span class="t-label c-3">Nov.</span>
+                    <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:8px"></div>
+                  </div>
+                  <article class="card" style="flex:1 1 auto; min-width:0; padding:13px">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
+                      <span class="t-label c-3">Mittwoch · 22:10</span>
+                      <div style="flex:1"></div>
+                      <span class="chip chip--ghost">Entwurf</span>
+                    </div>
+                    <div class="t-section c-2">Ohne Titel</div>
+                    <p class="t-body serif c-2 clamp-2" style="margin:4px 0 0">Die Woche war voll, aber die Laborgruppe hat mich getragen. Jana und Milan haben das Protokoll in zwei Stunden auseinandergenommen, und plötzlich ergab die Färbung …</p>
+
+                    <!-- Foto-Streifen: Papier und Grau, kein echtes Bild -->
+                    <div style="display:flex; gap:6px; margin-top:9px">
+                      <div style="flex:1; height:56px; border-radius:8px; background:
+                          linear-gradient(160deg, var(--fill-3), var(--fill)),
+                          repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px)"></div>
+                      <div style="flex:1; height:56px; border-radius:8px; background:
+                          linear-gradient(20deg, var(--fill-2), var(--fill)),
+                          repeating-linear-gradient(0deg, var(--fill-2) 0 3px, transparent 3px 10px)"></div>
+                      <div style="flex:1; height:56px; border-radius:8px; position:relative; background:
+                          linear-gradient(120deg, var(--fill-3), var(--fill-2)),
+                          radial-gradient(circle at 30% 40%, var(--fill) 0 12px, transparent 12px)">
+                        <span class="t-label c-2 num" style="position:absolute; right:6px; bottom:5px; padding:2px 6px; border-radius:6px; background:var(--paper)">+4</span>
+                      </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; column-gap:9px; row-gap:8px; margin-top:10px; flex-wrap:wrap">
+                      <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
+                        <span style="display:inline-flex; align-items:flex-end; gap:2px; height:12px">
+                          <i style="width:3px;height:4px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:6px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:8px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:10px;border-radius:1px;background:var(--fill-3)"></i>
+                          <i style="width:3px;height:12px;border-radius:1px;background:var(--fill-3)"></i>
+                        </span>Stimmung 3
+                      </span>
+                      <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
+                        <span style="display:inline-flex; gap:2px">
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
+                        </span>Energie 2
+                      </span>
+                      <span class="chip" style="padding:0 9px"><span class="ico" data-ico="location" style="width:13px;height:13px"></span>Wohnheim</span>
+                      <span class="chip" style="padding:0 9px"><span class="ico" data-ico="cloud" style="width:13px;height:13px"></span>4 °C</span>
+                    </div>
+                  </article>
+                </div>
+
+                <!-- Eintrag 3 — 10. Nov, mit Herkunfts-Chip statt Fotos -->
+                <div style="display:flex; gap:14px">
+                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
+                    <span class="t-section num" style="line-height:24px">10</span>
+                    <span class="t-label c-3">Nov.</span>
+                    <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:8px"></div>
+                  </div>
+                  <article class="card" style="flex:1 1 auto; min-width:0; padding:13px">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
+                      <span class="t-label c-3">Montag · 19:35</span>
+                      <div style="flex:1"></div>
+                      <span class="origin"><span class="dot dot--notes"></span>aus „Laborjournal"</span>
+                    </div>
+                    <div class="t-section">Zellkultur angesetzt</div>
+                    <p class="t-body serif c-2 clamp-2" style="margin:4px 0 0">Erste eigene Passage. Ich habe für das Zählen dreimal so lange gebraucht wie Milan und trotzdem war es der beste Nachmittag seit Semesterbeginn.</p>
+                    <div style="display:flex; align-items:center; column-gap:9px; row-gap:8px; margin-top:10px; flex-wrap:wrap">
+                      <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
+                        <span style="display:inline-flex; align-items:flex-end; gap:2px; height:12px">
+                          <i style="width:3px;height:4px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:6px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:8px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:10px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:3px;height:12px;border-radius:1px;background:var(--ink-1)"></i>
+                        </span>Stimmung 5
+                      </span>
+                      <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
+                        <span style="display:inline-flex; gap:2px">
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
+                        </span>Energie 4
+                      </span>
+                      <span class="chip" style="padding:0 9px"><span class="ico" data-ico="location" style="width:13px;height:13px"></span>Labor 2</span>
+                      <span class="chip" style="padding:0 9px"><span class="ico" data-ico="sun" style="width:13px;height:13px"></span>9 °C</span>
+                    </div>
+                  </article>
+                </div>
+
+                <button class="btn btn--sm btn--quiet" style="width:100%">
+                  <span class="ico" data-ico="chevD" style="width:16px;height:16px"></span>Ältere Einträge · Oktober
+                </button>
+
+              </div>
+
+              <!-- ══ Seitenspalte ══ -->
+              <div style="display:flex; flex-direction:column; gap:12px">
+
+                <!-- Serie -->
+                <section class="card" style="padding:13px">
+                  <div class="card__head" style="margin-bottom:8px">
+                    <span class="ico c-2" data-ico="flame" style="width:18px;height:18px"></span>
+                    <span class="t-label c-3 card__title">SCHREIB-SERIE</span>
+                    <span class="t-label c-3 num">Rekord 34</span>
+                  </div>
+                  <div class="count" style="margin-bottom:9px">
+                    <span class="count__n num">12</span><span class="count__w t-sub">Tage in Folge</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:4px; margin-bottom:7px">
+                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line-2)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line-2)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--line-2)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
+                    <i style="width:11px;height:11px;border-radius:50%;background:var(--ink-1)"></i>
+                    <!-- laufende Woche: halb gefüllt, weil erst Donnerstag ist -->
+                    <i style="width:11px;height:11px;border-radius:50%;background:linear-gradient(to top, var(--ink-1) 57%, transparent 57%); box-shadow:inset 0 0 0 1.5px var(--accent-ring)"></i>
+                  </div>
+                  <div class="t-label c-3">12 Wochen · halb = laufend</div>
+                </section>
+
+                <!-- Kalender-Ausschnitt: Vorschau auf den Tab „Kalender" -->
+                <section class="card" style="padding:13px">
+                  <div class="card__head" style="margin-bottom:9px">
+                    <span class="ico c-2" data-ico="calendar" style="width:18px;height:18px"></span>
+                    <span class="t-label c-3 card__title">DIESE WOCHE</span>
+                    <span class="t-label c-3">November</span>
+                  </div>
+                  <div style="display:flex; gap:4px">
+                    <div style="flex:1; border-radius:9px; padding:5px 0; background:var(--fill); display:flex; flex-direction:column; align-items:center; gap:3px">
+                      <span class="t-label c-3">Mo</span><span class="t-sub num">10</span>
+                      <i style="width:14px;height:3px;border-radius:2px;background:var(--ink-1)"></i>
+                    </div>
+                    <div style="flex:1; border-radius:9px; padding:5px 0; display:flex; flex-direction:column; align-items:center; gap:3px">
+                      <span class="t-label c-3">Di</span><span class="t-sub num">11</span>
+                      <i style="width:14px;height:3px;border-radius:2px;background:var(--fill-3)"></i>
+                    </div>
+                    <div style="flex:1; border-radius:9px; padding:5px 0; background:var(--fill); display:flex; flex-direction:column; align-items:center; gap:3px">
+                      <span class="t-label c-3">Mi</span><span class="t-sub num">12</span>
+                      <i style="width:14px;height:3px;border-radius:2px;background:var(--ink-1)"></i>
+                    </div>
+                    <!-- heute = Fläche + Ring -->
+                    <div style="flex:1; border-radius:9px; padding:5px 0; background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring); display:flex; flex-direction:column; align-items:center; gap:3px">
+                      <span class="t-label c-1">Do</span><span class="t-sub is-strong num">13</span>
+                      <i style="width:14px;height:3px;border-radius:2px;background:var(--ink-1)"></i>
+                    </div>
+                    <!-- kommende Tage = Deckkraft + keine Fläche -->
+                    <div class="is-off" style="flex:1; border-radius:9px; padding:5px 0; display:flex; flex-direction:column; align-items:center; gap:3px">
+                      <span class="t-label c-3">Fr</span><span class="t-sub num">14</span>
+                      <i style="width:14px;height:3px;border-radius:2px;background:var(--fill-3)"></i>
+                    </div>
+                    <div class="is-off" style="flex:1; border-radius:9px; padding:5px 0; display:flex; flex-direction:column; align-items:center; gap:3px">
+                      <span class="t-label c-3">Sa</span><span class="t-sub num">15</span>
+                      <i style="width:14px;height:3px;border-radius:2px;background:var(--fill-3)"></i>
+                    </div>
+                    <div class="is-off" style="flex:1; border-radius:9px; padding:5px 0; display:flex; flex-direction:column; align-items:center; gap:3px">
+                      <span class="t-label c-3">So</span><span class="t-sub num">16</span>
+                      <i style="width:14px;height:3px;border-radius:2px;background:var(--fill-3)"></i>
+                    </div>
+                  </div>
+                  <div class="t-label c-3" style="margin-top:8px">Der Tab „Kalender" zeigt den Monat.</div>
+                </section>
+
+                <!-- Stimmungsverlauf — Linie in Ink, kein Bunt -->
+                <section class="card" style="padding:13px">
+                  <div class="card__head" style="margin-bottom:6px">
+                    <span class="t-label c-3 card__title">STIMMUNGSVERLAUF</span>
+                    <span class="t-label c-3 num">14 Tage</span>
+                  </div>
+                  <svg viewBox="0 0 260 58" style="width:100%; height:58px; display:block" aria-hidden="true">
+                    <path d="M0 30 H260" style="stroke:var(--line); stroke-width:1"></path>
+                    <polygon points="6,30 24.8,30 43.5,19 62.3,41 81.1,30 99.9,19 118.6,19 137.4,30 156.2,41 174.9,30 193.7,19 212.5,19 231.2,30 250,19 250,58 6,58" style="fill:var(--fill)"></polygon>
+                    <polyline points="6,30 24.8,30 43.5,19 62.3,41 81.1,30 99.9,19 118.6,19 137.4,30 156.2,41 174.9,30 193.7,19 212.5,19 231.2,30 250,19" style="fill:none; stroke:var(--ink-1); stroke-width:1.8; stroke-linejoin:round; stroke-linecap:round"></polyline>
+                    <circle cx="250" cy="19" r="6" style="fill:none; stroke:var(--accent-ring); stroke-width:1.5"></circle>
+                    <circle cx="250" cy="19" r="3" style="fill:var(--ink-1)"></circle>
+                  </svg>
+                  <div style="display:flex; justify-content:space-between; margin-top:2px">
+                    <span class="t-label c-3">30. Okt</span>
+                    <span class="t-label c-3 num">Schnitt 3,3</span>
+                    <span class="t-label c-1 num">heute 4</span>
+                  </div>
+                </section>
+
+                <!-- Rückblick — dieselbe Karte wie auf „Today" -->
+                <section class="card" style="padding:0; overflow:hidden">
+                  <div style="height:48px; background:
+                      linear-gradient(160deg, var(--fill-3), var(--fill)),
+                      repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px);
+                      display:flex; align-items:center; padding:0 12px">
+                    <span class="chip" style="background:var(--paper)"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>Vor einem Jahr</span>
+                  </div>
+                  <div style="padding:8px 13px 10px">
+                    <div class="t-body is-strong clamp-1">Erster Tag im Labor</div>
+                    <div class="t-sub serif c-2 clamp-2">„Ich habe drei Stunden gebraucht, um die Pipette richtig zu halten."</div>
+                  </div>
+                </section>
+
+                <!-- Tagesimpuls — dieselbe Frage wie auf „Today", weil derselbe Tag -->
+                <section class="card" style="padding:13px">
+                  <div class="card__head" style="margin-bottom:7px">
+                    <span class="dot dot--journal"></span>
+                    <span class="t-label c-3 card__title">IMPULS FÜR HEUTE</span>
+                  </div>
+                  <p class="t-body serif" style="margin:0 0 10px">Was hat dich heute länger beschäftigt, als du erwartet hättest?</p>
+                  <button class="btn btn--sm" style="width:100%"><span class="ico" data-ico="edit" style="width:16px;height:16px"></span>Eintrag beginnen</button>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Tab-Bar, Aktionen im unteren Drittel</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content" style="position:relative">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <button class="iconbtn" style="width:30px; margin-left:-8px"><span class="ico" data-ico="chevL"></span></button>
+          <span class="t-title">Journal</span>
+          <span class="dot dot--journal" style="align-self:center"></span>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column; gap:12px">
+
+          <!-- Ansichts-Umschalter unter dem Titel -->
+          <div class="segmented" style="display:flex">
+            <button class="is-on" style="flex:1; padding:0 8px">Timeline</button>
+            <button style="flex:1; padding:0 8px">Kalender</button>
+            <button style="flex:1; padding:0 8px">Medien</button>
+            <button style="flex:1; padding:0 8px">Karte</button>
+          </div>
+
+          <!-- Serie als schmale Karte -->
+          <section class="card" style="padding:10px 14px; display:flex; align-items:center; gap:10px">
+            <span class="ico c-2" data-ico="flame" style="width:18px;height:18px"></span>
+            <div style="flex:1 1 auto; min-width:0">
+              <div class="t-body is-strong"><span class="num">12</span> Tage in Folge</div>
+              <div class="t-label c-3 num">Rekord 34</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:3px">
+              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line-2)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;background:var(--ink-1)"></i>
+              <i style="width:7px;height:7px;border-radius:50%;background:linear-gradient(to top, var(--ink-1) 57%, transparent 57%); box-shadow:inset 0 0 0 1px var(--accent-ring)"></i>
+            </div>
+          </section>
+
+          <!-- Impuls in einer Zeile — dieselbe Aufgabe, gleiche Tapzahl wie am iPad -->
+          <button class="card card--flat" style="width:100%; text-align:left; padding:9px 12px; display:flex; align-items:center; gap:10px">
+            <span class="dot dot--journal"></span>
+            <span style="flex:1 1 auto; min-width:0">
+              <span class="t-label c-3" style="display:block">IMPULS FÜR HEUTE</span>
+              <span class="t-sub serif c-1 clamp-1">Was hat dich heute länger beschäftigt, als du erwartet hättest?</span>
+            </span>
+            <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+          </button>
+
+          <!-- Timeline -->
+          <div style="display:flex; gap:10px">
+            <div style="width:34px; flex:none; display:flex; flex-direction:column; align-items:center">
+              <span class="t-section num" style="line-height:24px">13</span>
+              <span class="t-label c-3">Nov.</span>
+              <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:6px"></div>
+            </div>
+            <article class="card" style="flex:1 1 auto; min-width:0; padding:12px">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px">
+                <span class="t-label c-3">Heute · 8:05 · Labor 2</span>
+                <div style="flex:1"></div>
+                <span class="chip" style="height:22px"><span class="ico" data-ico="mic" style="width:13px;height:13px"></span>2:03</span>
+              </div>
+              <div class="t-section">Vor dem Praktikum</div>
+              <p class="t-sub serif c-2 clamp-2" style="margin:4px 0 0">Die Kultur von Dienstag sieht gut aus — die Dichte stimmt, nichts trüb. Jana meint, wir können die Passage heute schon ansetzen …</p>
+              <div style="margin-top:9px; padding:9px 10px; border-radius:10px; background:var(--fill); display:flex; flex-direction:column; gap:7px">
+                <div style="display:flex; align-items:center; gap:8px">
+                  <span class="ico c-2" data-ico="mic" style="width:15px;height:15px"></span>
+                  <span class="t-label c-2" style="flex:1">Sprachnotiz läuft ein</span>
+                  <span class="t-label c-3 num">1:14/2:03</span>
+                </div>
+                <div class="bar"><div class="bar__fill" style="width:61%"></div></div>
+                <div class="skeleton" style="height:11px; width:68%"></div>
+              </div>
+              <div style="display:flex; align-items:center; column-gap:14px; margin-top:10px">
+                <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
+                  <span style="display:inline-flex; align-items:flex-end; gap:2px; height:12px">
+                    <i style="width:3px;height:4px;border-radius:1px;background:var(--ink-1)"></i>
+                    <i style="width:3px;height:6px;border-radius:1px;background:var(--ink-1)"></i>
+                    <i style="width:3px;height:8px;border-radius:1px;background:var(--ink-1)"></i>
+                    <i style="width:3px;height:10px;border-radius:1px;background:var(--ink-1)"></i>
+                    <i style="width:3px;height:12px;border-radius:1px;background:var(--fill-3)"></i>
+                  </span>Stimmung 4
+                </span>
+                <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
+                  <span style="display:inline-flex; gap:2px">
+                    <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                    <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                    <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
+                    <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
+                    <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
+                  </span>Energie 3
+                </span>
+              </div>
+            </article>
+          </div>
+
+          <div style="display:flex; gap:10px">
+            <div style="width:34px; flex:none; display:flex; flex-direction:column; align-items:center">
+              <span class="t-section num" style="line-height:24px">12</span>
+              <span class="t-label c-3">Nov.</span>
+              <div style="flex:1 1 auto; width:1px; background:var(--line); margin-top:6px"></div>
+            </div>
+            <article class="card" style="flex:1 1 auto; min-width:0; padding:12px">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px">
+                <span class="t-label c-3">Gestern · 22:10</span>
+                <div style="flex:1"></div>
+                <span class="chip chip--ghost" style="height:22px">Entwurf</span>
+              </div>
+              <div class="t-section c-2">Ohne Titel</div>
+              <p class="t-sub serif c-2 clamp-2" style="margin:4px 0 0">Die Woche war voll, aber die Laborgruppe hat mich getragen. Jana und Milan haben das Protokoll in zwei Stunden auseinandergenommen …</p>
+              <div style="display:flex; gap:6px; margin-top:9px">
+                <div style="flex:1; height:54px; border-radius:8px; background:
+                    linear-gradient(160deg, var(--fill-3), var(--fill)),
+                    repeating-linear-gradient(45deg, var(--fill) 0 9px, transparent 9px 18px)"></div>
+                <div style="flex:1; height:54px; border-radius:8px; background:
+                    linear-gradient(20deg, var(--fill-2), var(--fill)),
+                    repeating-linear-gradient(0deg, var(--fill-2) 0 3px, transparent 3px 10px)"></div>
+                <div style="flex:1; height:54px; border-radius:8px; position:relative; background:
+                    linear-gradient(120deg, var(--fill-3), var(--fill-2)),
+                    radial-gradient(circle at 30% 40%, var(--fill) 0 12px, transparent 12px)">
+                  <span class="t-label c-2 num" style="position:absolute; right:5px; top:5px; padding:2px 6px; border-radius:6px; background:var(--paper)">+4</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+        </div>
+
+        <!-- schwebender „+": neuer Eintrag, ein Tap wie am iPad -->
+        <button class="btn btn--primary" style="position:absolute; right:18px; bottom:96px; width:56px; height:56px; padding:0; border-radius:var(--r-pill); box-shadow:var(--sh-float)">
+          <span class="ico" data-ico="plus" style="width:26px;height:26px"></span>
+        </button>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Journal-Home — Steckbrief</h2>
+  <p>Vier Ansichten auf dieselben Einträge: Timeline, Kalender, Medien, Karte. Der Schirm zeigt die Timeline — links die Einträge an der Zeitlinie, rechts das, was sie im Zusammenhang bedeuten. Geschriebenes steht in Serif, die Oberfläche spricht Sans.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Day One — Datum-Marke</td><td>Tag groß, Monat klein, links an einer durchgehenden Linie. <strong>Sehr stark:</strong> man liest die Zeit beim Scrollen, ohne eine Überschrift zu brauchen. Anders als Day One sitzt die Marke außerhalb der Karte, damit die Karte selbst ruhig bleibt.</td></tr>
+    <tr><td>Day One — Rückblick</td><td>„Vor einem Jahr" als Angebot in der Seitenspalte, dieselbe Karte wie auf „Today". <strong>Gut,</strong> aber nie als Vollbild-Unterbrechung wie im Original.</td></tr>
+    <tr><td>Day One — Streak</td><td>Zahl, Rekord und 12-Wochen-Reihe. <strong>Geteilt:</strong> Die Zahl trägt, die Abzeichen tragen nicht. Wir zeigen auch die Lücken — drei offene Punkte in zwölf Wochen — statt sie zu verstecken.</td></tr>
+    <tr><td>Apple Journal — Impuls</td><td>Eine konkrete Frage statt eines leeren Feldes, in Serif. <strong>Sehr gut</strong> gegen das leere Blatt. Es ist bewusst genau eine Frage, kein Vorschlags-Strom.</td></tr>
+    <tr><td>Journey — Stimmungsverlauf</td><td>Die Idee, Stimmung über Zeit zu zeigen. <strong>Richtig, Ausführung nicht:</strong> Journey macht daraus bunte Emojis. Hier ist die Linie Ink, die Stimmung ein fünfstufiger Balken.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li>Emoji-Stimmung und Farbskala (Journey, Daylio) — ohne Farbe nicht lesbar, und sie würden die 6-pt-Modul-Dots entwerten.</li>
+    <li>Apple Journals Vorschlags-Strom aus Fotos, Standort und Musik — er schreibt den Eintrag vor, statt ihn zu ermöglichen.</li>
+    <li>Day Ones Abzeichen, Streak-Warnung und Jahresvideo — Druck statt Gewohnheit.</li>
+    <li>Wärmekarte mit Farbskala im Kalender — in Grau eine Matschfläche. Stattdessen eine Marke je Tag.</li>
+    <li>Chips für Stimmung und Energie: Ort und Wetter sind Filter und deshalb Chips, Stimmung und Energie sind Messwerte und deshalb Balken ohne Fläche. Der Unterschied ist sichtbar, bevor man liest.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: drei Einträge in der Timeline, 12 Tage Serie, 14 Tage Stimmungsverlauf, ein Rückblick.</td></tr>
+    <tr><td>aktiv</td><td>„Journal" in der Sidebar (Fläche + Gewicht + Ink-Balken) und „Timeline" im Umschalter (Fläche + Gewicht). Auf dem iPhone ist „Bibliothek" der Tab, unter dem das Journal liegt — deshalb der Zurück-Pfeil im Kopf.</td></tr>
+    <tr><td>ausgewählt</td><td>Der heutige Tag im Wochenstreifen: getönte Fläche + Ring + kräftigere Ziffer.</td></tr>
+    <tr><td>Zwischenzustand</td><td>Der Eintrag von 8:05 wird gerade aus der Sprachnotiz übertragen: Fortschritt bei 1:14 von 2:03, der noch fehlende Text als Skelett. Zweiter, leiser Zwischenzustand: der letzte Punkt der Wochenreihe ist halb gefüllt, weil die Woche erst bis Donnerstag läuft.</td></tr>
+    <tr><td>deaktiviert</td><td>Freitag bis Sonntag im Wochenstreifen: geringere Deckkraft <em>und</em> keine Fläche — zwei Merkmale, weil diese Tage noch nicht stattgefunden haben.</td></tr>
+    <tr><td>leer</td><td>Ohne Einträge bleiben Impuls und Wochenstreifen stehen, die Timeline zeigt „Noch kein Eintrag. Der Impuls rechts ist ein Anfang." mit dem Knopf „Eintrag beginnen" — nie nur eine Illustration.</td></tr>
+  </table>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Inklusion:</strong> Stimmung und Energie sind fünfstufige Ink-Balken mit ausgeschriebenem Wort und Zahl („Stimmung 4"). Sie funktionieren in Graustufen, bei jeder Farbfehlsichtigkeit, im Dunkelmodus und in der großen Schriftstufe — dort wächst nur die Schrift, die Balken bleiben. Journale, die Stimmung als Emoji oder Farbfläche zeigen, verlieren genau hier ihre Aussage.</p>
+  <p><strong>Delight:</strong> Der Eintrag im Werden. Die Sprachnotiz aus dem Labor läuft als Text ein, während man die Timeline liest — mit ehrlicher Restzeit statt eines Spinners und einem Skelett, das die Zeile schon reserviert, in die der Satz gleich fällt.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe. Aktiv = Fläche + Gewicht (+ Balken in der Sidebar). Ausgewählt (heute im Wochenstreifen) = Fläche + Ring. Deaktiviert (kommende Tage) = Deckkraft + fehlende Fläche. Entwurf = Wort „Entwurf" + Rahmen-Chip + gedämpfter Titel. Stimmung und Energie = Anzahl gefüllter Balken + Zahl im Wort. Wetter = Symbol + Zahl. Modul-Dots sind 6 pt und stehen nie ohne ihr Wort — „Journal" im Titel und in der Sidebar, „Laborjournal" im Herkunfts-Chip.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

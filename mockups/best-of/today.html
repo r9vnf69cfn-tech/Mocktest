@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Today / Dashboard — Best of</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+BEST-OF — Today / Dashboard
+Vorbilder: Things 3 „Heute" · Apple Journal Startbildschirm · Notion Home
+
+WAS VON WEM
+
+· TAGESKOPF (Datum im Large Title, darunter EINE Caption-Zeile mit dem
+  Tagesstand) — Form von Things 3 (dort steht nur der Listentitel, keine
+  Begrüßung), Zeitbezug von Notion (das einzige, was Notions Begrüßung
+  richtig macht: sie markiert den Einstieg). Grund: Notions „Guten Morgen,
+  Emil" verbraucht auf dem iPhone bis zu einer halben Bildschirmhöhe und
+  trägt null Information. Das Datum trägt sie, in derselben Fläche.
+
+· DIE ZAHLEN IN GENAU EINER ZEILE („2 Termine · 5 Aufgaben · 1 offener
+  Entwurf") — von Apple Journal, aber als Auslassung übernommen: Journal
+  hält Streak, Eintragszahl und Statistik bewusst vom Startbildschirm fern
+  und legt sie eine Ebene tiefer. Hier bleiben nur beschreibende Zahlen im
+  13-pt-Grad. Kein Display-Zahlengrad auf diesem Schirm.
+
+· EINE GESCHLOSSENE HAUPTLISTE MIT DREI ZONEN (Termine → Aufgaben →
+  Heute Abend) — von Things 3. Grund: die Reihenfolge ist die Aussage.
+  Was fix ist, steht oben (mit Uhrzeit und 3-pt-Balken), was verhandelbar
+  ist, in der Mitte, was aufgeschoben ist, sinkt nach unten hinter einen
+  großen Abstand. Der Nutzer sieht die Restlänge des Tages räumlich —
+  ohne Prozentzahl, ohne Fortschrittsbalken.
+
+· NACKTE ZEILEN STATT KARTEN IN DER ARBEITSLISTE, gemeinsame Checkbox-
+  Kante links, keine Trennlinien, Gruppen nur über Abstand — von Things 3.
+  Die Zeilen sind deshalb einzeln umschlossen, damit die Systemhaarlinie
+  zwischen benachbarten .row nicht greift: Abstand trennt, keine Linie.
+
+· WEITERMACHEN-STREIFEN AUS MATERIAL — Idee von Apple Journal (die Karte
+  zeigt Rohmaterial und IST der Einstieg, nicht der Weg dorthin), Form von
+  Notion Home (konstant hoher Kachelstreifen 150 × 90, Icon oben links,
+  zweizeiliger Titel, 13-pt-Zeitstempel). iPhone: horizontal scrollend,
+  damit die Zone unabhängig von der Anzahl gleich hoch bleibt. iPad:
+  zweizeilig als rechte Materialspalte.
+
+· BILDKARTE MIT RANDLOSEM FOTO, TEXT MIT 16-pt-INNENABSTAND — von Apple
+  Journal. Der Rhythmus entsteht aus dem Wechsel gerahmter Text- und
+  randloser Bildflächen, nicht aus Linien.
+
+· ZWEI DICHTEN IN EINEM SCHIRM — von Apple Journal (lockerer Feed vs.
+  dichte Insights). Hier: Zeilendichte in der Arbeitsliste, Kartendichte
+  im Material. Der Bruch zwischen beiden ist das wichtigste
+  Gestaltungsmittel dieses Schirms; Notion beherrscht ihn nicht.
+
+· VIER TOP-LEVEL-ZIELE IN DER TAB-BAR — von Notion (Home/Chats/Meetings/
+  Inbox, Mai 2026), begrenzt auf vier. Auf dem iPad dieselbe Anatomie in
+  der Seitenleiste, keine neue.
+
+· SCHWEBENDE PRIMÄRAKTION, deren Ablageposition den Einfügeort bestimmt —
+  von Things 3 (Magic Plus). Einzige Primäraktion im Schirm.
+
+BEWUSST NICHT ÜBERNOMMEN
+
+· Notions Begrüßung im Display-Grad. Deutschsprachig wirkt „Guten Morgen,
+  Emil" in 28 pt anbiedernd — und informiert nicht.
+· Notions feste, nachweislich nicht sortierbare Widget-Reihenfolge. Das
+  „…" oben rechts blendet Zonen hier nicht nur aus, es sortiert sie.
+· Notions Learn- und Featured-Templates-Blöcke: Produktmarketing im
+  persönlichen Arbeitsbereich.
+· Journals Streak und die großen Zahlen. Serien bestrafen den Nutzer, der
+  die App diese Woche nur für Aufgaben braucht.
+· Journals „Places" als Top-Level-Ziel — verbraucht einen der wenigen
+  Navigationsplätze für den seltensten Zugang.
+· Things' vollständiges Fehlen von Zustandsinformation. Ohne die eine
+  Caption-Zeile hätte der Tag keinen Ort, an dem er zusammenläuft.
+· Things' Sidebar-Badges: graue Zahlen ohne Semantik, die „viel" sagen und
+  nie „überfällig". Deshalb steht in der Seitenleiste kein einziger Zähler.
+· Things' Liquid-Glass-Anpassungen von 3.22 — Plattform-Mode ohne
+  inhaltlichen Gewinn.
+
+DIE KOMBINATION
+Things hat einen Zeitbegriff, aber kein Material und keine Rückmeldung.
+Journal hat Material, aber keinen Tag. Notion hat weder das eine noch das
+andere, dafür die platzsparendste Form für „wohin ich zurückwill".
+Zusammengesetzt ergibt das einen Schirm mit genau zwei Aussagen: links
+„was heute noch vor dir liegt" als geschlossene Liste mit sichtbarem Ende,
+rechts „woran du zuletzt warst" als Material, das man anfassen kann. Alles
+andere — Zähler, Statistik, Serien, Vorlagen — ist weggelassen oder auf
+13 pt geschrumpft. Der Schirm zeigt drei Zonen ohne Scrollen und neun
+Zeilen; damit liegt er exakt auf der Informationsgrenze, die keines der
+drei Vorbilder trifft (Things bleibt darunter, Notion darüber).
+
+ADA-KATEGORIE: Interface Design — Hierarchie ohne Farbe, Dichte als
+Argument. Sekundär Interaktion: jede Materialkachel ist Anzeige und
+Startknopf in einem.
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Titel/Aufgabentext  ink-1 auf Papier   17,8:1 (hell) · 15,9:1 (dunkel)
+  Vorschautext        ink-2 auf Papier    5,3:1 (hell) ·  7,1:1 (dunkel)
+  Zeitstempel/Labels  ink-3 auf Grund     4,8:1 (hell) ·  4,9:1 (dunkel)
+  CTA-Text            accent-on auf Ink  17,8:1 (hell) · 17,3:1 (dunkel)
+  Deadline rot        danger auf Papier   5,2:1 (hell) ·  6,3:1 (dunkel)
+  Es kommt kein einziger Modul-Dot vor: dieser Schirm kennt nur seinen
+  eigenen Bereich. Der 3-pt-Balken der Termine ist Ink, nicht Kalenderfarbe.
+
+TYPO: Von den fünf Systemgrößen nutzt dieser Schirm nur vier —
+t-title (Tageskopf) · t-body (Arbeitsgröße: Aufgaben, Termine, Kachel-
+titel) · t-sub (Vorschau- und Ortszeilen) · t-label (Zonenköpfe,
+Zeitstempel, Tagesstand). t-section kommt nicht vor, weil auf diesem
+Schirm kein Zwischengrad gebraucht wird — das ist die Dreigrößen-Regel
+von Things, um die Vorschauzeile von Journal ergänzt. Zwei Gewichte.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Today / Dashboard — Best of</h1>
+  <p>Der Tageseinstieg als geschlossene Liste mit drei Zonen statt als Kachel-Dashboard: oben der Tageskopf mit einer einzigen beschreibenden Zeile, links die Arbeit in Zeilendichte, rechts das Material in Kartendichte — Things' Zeitbegriff, Journals Material, Notions Streifenform.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Seitenleiste + Inhalt in zwei Dichten</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Fr 8. Aug</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+
+        <!-- Seitenleiste: Bereichsnavigation, bewusst ohne Zähler -->
+        <aside class="sidebar">
+          <div class="sidebar__head" style="display:block; padding:6px 4px 12px">
+            <div class="t-body is-strong" style="margin-bottom:10px">Emil</div>
+            <div class="field"><span class="ico" data-ico="search"></span><span class="field__ph t-sub">Suchen</span></div>
+          </div>
+
+          <button class="navitem is-active"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="calendar"></span><span class="t-body">Kommende</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span></button>
+          <button class="navitem"><span class="ico" data-ico="box"></span><span class="t-body">Irgendwann</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Bereiche</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Laborgruppe</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Persönlich</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+
+          <!-- Tageskopf: Datum groß, Tagesstand klein. Keine Begrüßung. -->
+          <div class="navbar" style="align-items:flex-end; padding-top:12px; padding-bottom:12px">
+            <div>
+              <div class="t-title">Freitag, 8. August</div>
+              <div class="t-label c-3" style="margin-top:6px">2 Termine · 5 Aufgaben · 1 offener Entwurf</div>
+            </div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+          </div>
+
+          <div class="scroll" style="display:flex; flex-direction:column">
+
+            <div style="display:grid; grid-template-columns:500px 300px; gap:26px; align-items:start">
+
+              <!-- ── Links: EINE Liste, drei Zonen, Zeilendichte ── -->
+              <div>
+
+                <!-- Zone 1 — Termine: fix, mit Uhrzeit, 3-pt-Balken -->
+                <div class="t-label c-3" style="display:flex; align-items:center; gap:7px; padding:0 12px 8px">
+                  <span class="ico" data-ico="calendar" style="width:14px;height:14px"></span>Termine
+                </div>
+
+                <div>
+                  <div class="row" style="min-height:46px; padding:6px 12px; gap:10px">
+                    <span style="width:3px; height:28px; border-radius:2px; background:var(--ink-1); flex:none"></span>
+                    <span class="t-body num c-2" style="flex:none; width:108px">08:30–10:00</span>
+                    <div class="row__main"><span class="t-body row__title clamp-1">Vorlesung Zellbiologie</span></div>
+                    <div class="row__meta">
+                      <span class="t-sub c-3">Hörsaal 2</span>
+                      <span class="chip">läuft</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div class="row" style="min-height:46px; padding:6px 12px; gap:10px">
+                    <span style="width:3px; height:28px; border-radius:2px; box-shadow:inset 0 0 0 1.5px var(--line-2); flex:none"></span>
+                    <span class="t-body num c-2" style="flex:none; width:108px">14:00–17:30</span>
+                    <div class="row__main"><span class="t-body row__title clamp-1">Laborpraktikum 3</span></div>
+                    <div class="row__meta">
+                      <span class="t-sub c-3">Raum 1.14</span>
+                      <span class="chip chip--ghost">vorläufig</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Fehlerzustand: Randlinie + Symbol + Klartext -->
+                <div class="notice notice--error" style="margin:12px 0 0; align-items:center">
+                  <span class="ico" data-ico="alert" style="width:19px;height:19px"></span>
+                  <div style="flex:1 1 auto; min-width:0">
+                    <div class="notice__text t-sub is-strong clamp-1">Kalender „Uni Rostock" nicht erreichbar</div>
+                    <div class="notice__text t-sub c-2 clamp-1">Stand: gestern 21:40 · Termine können fehlen.</div>
+                  </div>
+                  <button class="btn btn--sm btn--quiet" style="flex:none; padding:0 8px">Erneut</button>
+                </div>
+
+                <!-- Zone 2 — Aufgaben: verhandelbar, gemeinsame Checkbox-Kante -->
+                <div class="t-label c-3" style="display:flex; align-items:center; gap:7px; padding:20px 12px 8px">
+                  <span class="ico" data-ico="check" style="width:14px;height:14px"></span>Aufgaben
+                </div>
+
+                <div>
+                  <div class="row" style="min-height:52px; padding:6px 12px">
+                    <span class="check"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Laborprotokoll Zellkultur</span>
+                      <span class="t-sub c-3 clamp-1">Biologie</span>
+                    </div>
+                    <div class="row__meta">
+                      <span class="chip chip--danger"><span class="ico" data-ico="flag" style="width:13px;height:13px"></span>heute 18:00</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div class="row is-selected" style="min-height:52px; padding:6px 12px">
+                    <span class="check"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Übungsblatt 5 abgeben</span>
+                      <span class="t-sub c-2 clamp-1">Ausgewählt · Return klappt sie hier auf</span>
+                    </div>
+                    <div class="row__meta"><span class="t-label c-3 num">0/3</span></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="row" style="min-height:52px; padding:6px 12px">
+                    <span class="check is-checking"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Präparate vorbereiten</span>
+                      <span class="t-sub c-3 clamp-1">Laborgruppe · für 14:00</span>
+                    </div>
+                    <div class="row__meta"><span class="t-label c-3">wird erledigt</span></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="row" style="min-height:52px; padding:6px 12px">
+                    <span class="check"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Rückmeldung an Prof. Wendt</span>
+                      <span class="t-sub c-3 clamp-1">Biologie · 2 Teilschritte</span>
+                    </div>
+                    <div class="row__meta"><span class="t-label c-3 num">0/2</span></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="row" style="min-height:52px; padding:6px 12px">
+                    <span class="check"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Bücher verlängern</span>
+                      <span class="t-sub c-3 clamp-1">Persönlich · wiederholt sich monatlich</span>
+                    </div>
+                    <div class="row__meta"><span class="ico" data-ico="location" style="width:16px;height:16px"></span></div>
+                  </div>
+                </div>
+
+                <!-- Zone 3 — Heute Abend: aufgeschoben, großer Abstand davor -->
+                <div class="t-label c-3" style="display:flex; align-items:center; gap:7px; padding:24px 12px 8px">
+                  <span class="ico" data-ico="moon" style="width:14px;height:14px"></span>Heute Abend
+                </div>
+
+                <div class="empty" style="flex-direction:row; align-items:center; text-align:left; padding:16px 20px; gap:16px">
+                  <div class="empty__art" style="width:54px; height:54px; border-radius:16px">
+                    <span class="ico" data-ico="moon" style="width:26px;height:26px"></span>
+                  </div>
+                  <div style="flex:1 1 auto; min-width:0">
+                    <div class="empty__title t-body is-strong">Der Abend ist frei</div>
+                    <div class="empty__text t-sub" style="max-width:none">Nichts aufgeschoben. Zieh eine Aufgabe hierher, wenn sie warten kann.</div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- ── Rechts: Material, Kartendichte ── -->
+              <div>
+
+                <div style="display:flex; align-items:center; gap:8px; padding:0 2px 10px">
+                  <span class="t-label c-3">Weitermachen</span>
+                  <div style="flex:1 1 auto"></div>
+                  <span class="t-label c-3 num">4</span>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:12px">
+
+                  <!-- Materialkarte 1: Bild randlos bis zur Kartenkante (Journal) -->
+                  <button class="card" style="padding:0; overflow:hidden; text-align:left; width:100%; display:block">
+                    <div style="height:112px;
+                        background:
+                          radial-gradient(56px 56px at 34% 42%, var(--fill-3), transparent 70%),
+                          radial-gradient(38px 38px at 68% 68%, var(--fill-2), transparent 70%),
+                          linear-gradient(150deg, var(--fill-2), var(--fill));
+                        display:flex; align-items:flex-end; padding:10px 12px">
+                      <span class="chip" style="background:var(--paper)"><span class="ico" data-ico="photo" style="width:14px;height:14px"></span>3 Aufnahmen</span>
+                    </div>
+                    <div style="padding:13px 16px 15px">
+                      <div class="t-body is-strong clamp-1">Präparat, Objektiv 40×</div>
+                      <div class="t-label c-3" style="margin-top:5px">heute 09:12 · Praktikumsraum</div>
+                    </div>
+                  </button>
+
+                  <!-- Materialkarte 2: echte Vorschau, keine Aufforderung -->
+                  <button class="card" style="text-align:left; width:100%; display:block; padding:14px 16px">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+                      <span class="ico c-3" data-ico="edit" style="width:15px;height:15px"></span>
+                      <span class="t-label c-3">Entwurf · gestern 16:20</span>
+                    </div>
+                    <div class="t-body is-strong clamp-2">Zellbiologie — Mitochondrien</div>
+                    <div class="t-sub c-2 clamp-2" style="margin-top:3px">„Die innere Membran ist stark gefaltet; die Cristae vergrößern die Fläche …"</div>
+                  </button>
+
+                  <!-- Materialkarte 3: gestern nicht beendet -->
+                  <button class="card" style="text-align:left; width:100%; display:block; padding:14px 16px">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+                      <span class="ico c-3" data-ico="undo" style="width:15px;height:15px"></span>
+                      <span class="t-label c-3">Gestern nicht beendet · 22:05</span>
+                    </div>
+                    <div class="t-body is-strong clamp-1">Mitschrift Analysis II</div>
+                    <div class="bar" style="margin-top:10px"><div class="bar__fill" style="width:43%"></div></div>
+                    <div class="t-label c-3" style="margin-top:7px">Seite 3 von 7 · 4. Vorlesung</div>
+                  </button>
+
+                  <!-- Materialkarte 4: Ladezustand — Skelett plus Wort -->
+                  <div class="card" style="padding:14px 16px">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px">
+                      <span class="ico c-3" data-ico="cloud" style="width:15px;height:15px"></span>
+                      <span class="t-label c-3">Fotos von heute werden geladen</span>
+                    </div>
+                    <div class="skeleton" style="height:14px; width:70%"></div>
+                    <div style="display:flex; gap:8px; margin-top:12px">
+                      <div class="skeleton" style="height:40px; width:40px; border-radius:10px"></div>
+                      <div class="skeleton" style="height:40px; width:40px; border-radius:10px"></div>
+                      <div class="skeleton" style="height:40px; flex:1 1 auto; border-radius:10px"></div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Schwebende Primäraktion (Things: Ablageposition = Einfügeort) -->
+      <button class="btn btn--primary"
+              style="position:absolute; right:34px; bottom:20px; width:56px; height:56px; padding:0; border-radius:999px; box-shadow:var(--sh-float)">
+        <span class="ico" data-ico="plus" style="width:24px;height:24px"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · drei Zonen ohne Scrollen</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+
+        <!-- Tageskopf -->
+        <div class="navbar" style="border:0; align-items:flex-end; padding-top:0; padding-bottom:8px">
+          <div>
+            <div class="t-title">Freitag, 8. August</div>
+            <div class="t-label c-3" style="margin-top:5px">2 Termine · 5 Aufgaben · 1 Entwurf</div>
+          </div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column; padding-top:4px">
+
+          <!-- Weitermachen: horizontaler Streifen, konstant hoch -->
+          <div class="t-label c-3" style="padding:0 2px 6px">Weitermachen</div>
+          <div style="display:flex; gap:10px; margin-right:calc(var(--pad-iphone) * -1); overflow:hidden">
+
+            <button class="card card--flat" style="flex:none; width:150px; height:90px; padding:8px 12px; text-align:left; display:block; overflow:hidden">
+              <span class="ico c-3" data-ico="photo" style="width:14px;height:14px; display:block"></span>
+              <div class="t-sub is-strong clamp-2" style="margin-top:3px; height:40px">Präparat, Objektiv 40×</div>
+              <div class="t-label c-3" style="margin-top:1px">heute 09:12</div>
+            </button>
+
+            <!-- Ladezustand steht an zweiter Stelle, damit er ohne Scrollen
+                 im Bild liegt: Skelettform plus das Wort „wird geladen". -->
+            <div class="card card--flat" style="flex:none; width:150px; height:90px; padding:8px 12px; overflow:hidden">
+              <span class="ico c-3" data-ico="cloud" style="width:14px;height:14px; display:block"></span>
+              <div style="height:40px; margin-top:3px">
+                <div class="skeleton" style="height:14px; width:86%"></div>
+                <div class="skeleton" style="height:14px; width:58%; margin-top:6px"></div>
+              </div>
+              <div class="t-label c-3" style="margin-top:1px">wird geladen</div>
+            </div>
+
+            <button class="card card--flat" style="flex:none; width:150px; height:90px; padding:8px 12px; text-align:left; display:block; overflow:hidden">
+              <span class="ico c-3" data-ico="edit" style="width:14px;height:14px; display:block"></span>
+              <div class="t-sub is-strong clamp-2" style="margin-top:3px; height:40px">Zellbiologie — Mitochondrien</div>
+              <div class="t-label c-3" style="margin-top:1px">gestern 16:20</div>
+            </button>
+
+            <button class="card card--flat" style="flex:none; width:150px; height:90px; padding:8px 12px; text-align:left; display:block; overflow:hidden">
+              <span class="ico c-3" data-ico="undo" style="width:14px;height:14px; display:block"></span>
+              <div class="t-sub is-strong clamp-2" style="margin-top:3px; height:40px">Mitschrift Analysis II</div>
+              <div class="t-label c-3" style="margin-top:1px">Seite 3 von 7</div>
+            </button>
+
+          </div>
+
+          <!-- Zone 1 — Termine -->
+          <div class="t-label c-3" style="display:flex; align-items:center; gap:7px; padding:14px 2px 6px">
+            <span class="ico" data-ico="calendar" style="width:14px;height:14px"></span>Termine
+          </div>
+
+          <div>
+            <div class="row" style="min-height:50px; padding:4px 8px; gap:10px">
+              <span style="width:3px; height:30px; border-radius:2px; background:var(--ink-1); flex:none"></span>
+              <span class="t-body num c-2" style="flex:none; width:52px">08:30</span>
+              <div class="row__main">
+                <span class="t-body row__title clamp-1">Vorlesung Zellbiologie</span>
+                <span class="t-sub c-3 clamp-1">Hörsaal 2 · bis 10:00</span>
+              </div>
+              <div class="row__meta"><span class="chip">läuft</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="row" style="min-height:50px; padding:4px 8px; gap:10px">
+              <span style="width:3px; height:30px; border-radius:2px; box-shadow:inset 0 0 0 1.5px var(--line-2); flex:none"></span>
+              <span class="t-body num c-2" style="flex:none; width:52px">14:00</span>
+              <div class="row__main">
+                <span class="t-body row__title clamp-1">Laborpraktikum 3</span>
+                <span class="t-sub c-3 clamp-1">Raum 1.14 · bis 17:30</span>
+              </div>
+              <div class="row__meta"><span class="chip chip--ghost">vorl.</span></div>
+            </div>
+          </div>
+
+          <!-- Zone 2 — Aufgaben -->
+          <div class="t-label c-3" style="display:flex; align-items:center; gap:7px; padding:14px 2px 6px">
+            <span class="ico" data-ico="check" style="width:14px;height:14px"></span>Aufgaben
+          </div>
+
+          <div>
+            <div class="row" style="min-height:44px; padding:4px 8px">
+              <span class="check"></span>
+              <div class="row__main"><span class="t-body row__title clamp-1">Laborprotokoll Zellkultur</span></div>
+              <div class="row__meta"><span class="chip chip--danger" style="height:24px"><span class="ico" data-ico="flag" style="width:12px;height:12px"></span>18:00</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="row is-selected" style="min-height:52px; padding:4px 8px">
+              <span class="check"></span>
+              <div class="row__main">
+                <span class="t-body row__title clamp-1">Übungsblatt 5 abgeben</span>
+                <span class="t-sub c-2 clamp-1">Ausgewählt · tippen klappt sie auf</span>
+              </div>
+              <div class="row__meta"><span class="t-label c-3 num">0/3</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="row" style="min-height:44px; padding:4px 8px">
+              <span class="check is-checking"></span>
+              <div class="row__main"><span class="t-body row__title clamp-1">Präparate vorbereiten</span></div>
+              <div class="row__meta"><span class="t-label c-3">wird erledigt</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="row" style="min-height:44px; padding:4px 8px">
+              <span class="check"></span>
+              <div class="row__main"><span class="t-body row__title clamp-1">Rückmeldung an Prof. Wendt</span></div>
+              <div class="row__meta"><span class="t-label c-3 num">0/2</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="row" style="min-height:44px; padding:4px 8px">
+              <span class="check"></span>
+              <div class="row__main"><span class="t-body row__title clamp-1">Bücher verlängern</span></div>
+              <div class="row__meta"><span class="ico" data-ico="location" style="width:16px;height:16px"></span></div>
+            </div>
+          </div>
+
+          <!-- Zone 3 — Heute Abend: leer und ehrlich leer -->
+          <div class="t-label c-3" style="display:flex; align-items:center; gap:7px; padding:20px 2px 6px">
+            <span class="ico" data-ico="moon" style="width:14px;height:14px"></span>Heute Abend
+          </div>
+
+          <div class="empty" style="flex-direction:row; align-items:center; text-align:left; padding:10px 12px; gap:12px">
+            <div class="empty__art" style="width:40px; height:40px; border-radius:13px">
+              <span class="ico" data-ico="moon" style="width:20px;height:20px"></span>
+            </div>
+            <div style="flex:1 1 auto; min-width:0">
+              <div class="empty__title t-sub is-strong">Der Abend ist frei</div>
+              <div class="empty__text t-sub clamp-1" style="max-width:none">Nichts aufgeschoben.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tab-Bar: höchstens vier Ziele -->
+        <nav class="tabbar">
+          <button class="tab is-active"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="inbox"></span><span class="t-label">Eingang</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+
+      <!-- Schwebende Primäraktion -->
+      <button class="btn btn--primary"
+              style="position:absolute; right:20px; bottom:98px; width:56px; height:56px; padding:0; border-radius:999px; box-shadow:var(--sh-float)">
+        <span class="ico" data-ico="plus" style="width:24px;height:24px"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Today / Dashboard — Steckbrief</h2>
+  <p>Ein Tageseinstieg, der einen Zeitbegriff hat. Der Schirm beantwortet zwei Fragen und keine dritte: <strong>Was liegt heute noch vor mir</strong> (linke Spalte, geschlossene Liste mit sichtbarem Ende) und <strong>woran war ich zuletzt</strong> (rechte Spalte, Material zum Anfassen). Alles Übrige — Statistik, Serien, Vorlagen, Begrüßung — ist weggelassen oder auf 13 pt geschrumpft.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Things 3 „Heute"</td><td>Die drei Zonen in fester Bedeutungsreihenfolge: Termine (fix, Uhrzeit, 3-pt-Balken) → Aufgaben (verhandelbar, gemeinsame Checkbox-Kante) → Heute Abend (aufgeschoben, Mond, großer Abstand davor). Dazu: nackte Zeilen statt Karten, keine Trennlinien, Gruppen nur über Abstand — und die schwebende Primäraktion, deren Ablageposition den Einfügeort bestimmt.</td></tr>
+    <tr><td>Apple Journal</td><td>Die „Weitermachen"-Karte zeigt Rohmaterial und ist zugleich der Einstieg — Foto randlos bis zur Kartenkante, Text mit 16 pt Innenabstand, echte zweizeilige Vorschau statt Aufforderung. Dazu die stärkste Entscheidung des Vorbilds als Auslassung: alle großen Zahlen liegen eine Ebene tiefer, nicht hier.</td></tr>
+    <tr><td>Notion Home</td><td>Die Form des Streifens: konstant hohe Kacheln (150 × 90), Icon oben links, zweizeiliger Titel, 13-pt-Zeitstempel, horizontal scrollend — die Zone bleibt gleich hoch, egal wie viel Material da ist. Dazu die Begrenzung auf vier Top-Level-Ziele in der Tab-Bar.</td></tr>
+    <tr><td>Kombination</td><td>Zwei Dichten in einem Schirm: Zeilendichte, wo gearbeitet wird, Kartendichte, wo Material liegt. Der Bruch dazwischen ersetzt jede Linie und jeden Rahmen. Auf dem iPad wird daraus die Zweispaltigkeit — die Liste behält mit 500 pt ihre Lesebreite, statt auf Tabletbreite auseinandergezogen zu werden.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Notions Begrüßung im Display-Grad</strong> — kostet bis zu einer halben ersten Bildschirmhöhe und trägt null Information. Ersetzt durch Datum plus eine beschreibende Caption-Zeile.</li>
+    <li><strong>Notions feste, nicht sortierbare Widget-Reihenfolge</strong> — das „…" oben rechts blendet Zonen hier nicht nur aus, es sortiert sie.</li>
+    <li><strong>Notions Learn- und Featured-Templates-Blöcke</strong> — Produktmarketing im persönlichen Arbeitsbereich.</li>
+    <li><strong>Journals Streak und Insights-Kacheln auf dem Einstieg</strong> — Serien bestrafen den Nutzer, der die App diese Woche nur für Aufgaben braucht.</li>
+    <li><strong>Journals „Places" als Top-Level-Ziel</strong> — verbraucht einen der vier Navigationsplätze für den seltensten Zugang.</li>
+    <li><strong>Things' Sidebar-Badges</strong> — graue Zahlen ohne Semantik. Deshalb steht in der Seitenleiste kein einziger Zähler; der einzige Zahlenort ist die Kopfzeile.</li>
+    <li><strong>Things' Schweigen über den Tagesstand</strong> — ohne die eine Caption-Zeile hätte der Tag keinen Ort, an dem er zusammenläuft.</li>
+    <li><strong>Kachel-Dashboard, Prozentbalken, Tagesfortschritt</strong> — die Restlänge des Tages steht räumlich in der Liste, nicht als Zahl.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Zwei Termine, fünf Aufgaben, vier Materialkarten. Die Kopfzeile beschreibt genau diesen Bestand: „2 Termine · 5 Aufgaben · 1 offener Entwurf".</td></tr>
+    <tr><td>leer</td><td>Zone „Heute Abend" zeigt <strong>.empty</strong> — Mond-Symbol, „Der Abend ist frei" und ein erster Schritt statt einer Illustration. Kein CTA, keine Werbung: die Botschaft ist „fertig", nicht „hier fehlt etwas".</td></tr>
+    <tr><td>aktiv/ausgewählt</td><td>Drei Orte, jeder über mehrere Merkmale: „Heute" in der Seitenleiste (Fläche + Gewicht + Ink-Balken links), „Heute" in der Tab-Bar (Ink + Gewicht + gefülltes Icon), die Aufgabe „Übungsblatt 5" als <strong>.row.is-selected</strong> (getönte Fläche + Ring + fettes Gewicht + erklärende Unterzeile).</td></tr>
+    <tr><td>Laden</td><td>Die vierte Materialkarte („Fotos von heute") zeigt Skelette plus das Wort „werden geladen" — nie ein Skelett ohne Kontext, nie ein Spinner.</td></tr>
+    <tr><td>Fehler</td><td><strong>.notice--error</strong> unter den Terminen: Randlinie + Warnsymbol + Klartext mit dem Stand des letzten Abgleichs, dazu „Erneut". Ein Kalender, der schweigt, ist schlimmer als einer, der sich beschwert — genau das lässt Notion bei „My Tasks" aus.</td></tr>
+    <tr><td>Zwischenzustand</td><td>Die dritte Aufgabe steht mitten in der Erledigen-Animation (<strong>.check.is-checking</strong>) und trägt zusätzlich das Wort „wird erledigt".</td></tr>
+  </table>
+
+  <h3>Warum die Kombination trägt</h3>
+  <p>Die drei Vorbilder scheitern an je einer Stelle, und zwar an verschiedenen. <strong>Things</strong> baut den besten Tag — eine Liste mit sichtbarem Ende, deren Reihenfolge die Aussage ist — sagt aber nirgends, wie der Tag steht, und kennt kein Material außer Aufgaben. <strong>Journal</strong> hat das beste Material — die Karte ist Anzeige und Einstieg zugleich, der leere Screen sieht aus wie der volle — aber keinen Tag: nur einen Feed, der rückwärts läuft. <strong>Notion</strong> hat weder Tag noch Material, dafür die einzige platzsparende Form für „wohin ich zurückwill", und verschenkt sie an eine Begrüßung, die darüber steht.</p>
+  <p>Zusammengesetzt hebt jedes Stück den Fehler des nächsten auf: Things' Zonenordnung gibt dem Material einen Zeitrahmen, Journals Materialkarten geben der Liste den Kaltstart, den Things nie löst, und Notions Streifenform hält die Materialzone konstant hoch, damit sie die Arbeitsliste nie nach unten drückt. Die eine Caption-Zeile im Kopf schließt Things' Rückmeldungslücke, ohne Journals Display-Zahlen und Serien zu importieren — sie ist der einzige Zahlenort im ganzen Schirm.</p>
+  <p><strong>Informationsgrenze:</strong> drei Zonen ohne Scrollen, neun Zeilen, vier Materialkarten. Vier der fünf Typo-Größen, zwei Gewichte, kein Modul-Dot, keine Buntfarbe außer Rot für die eine Deadline und den Fehler. Der Bruch zwischen Zeilendichte und Kartendichte ist das einzige starke Gestaltungsmittel — er macht auf einen Blick unterscheidbar, was Arbeit ist und was Erinnerung.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe allein. Aktiv in der Seitenleiste = Fläche + Gewicht + Balken. Ausgewählte Zeile = Fläche + Ring + Gewicht + Unterzeile. Deadline = rotes Wort + Flaggensymbol + Uhrzeit. Vorläufiger Termin = hohler Balken + Wort „vorläufig". Laufender Termin = massiver Balken + Chip „läuft". Laden = Skelettform + Wort. Fehler = Randlinie + Warnsymbol + Klartext. Leer = Symbol + Satz + nächster Schritt.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

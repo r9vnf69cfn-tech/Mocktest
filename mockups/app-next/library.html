@@ -139,7 +139,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
             <!-- ══ Abschnitt 1: Zuletzt geöffnet ══ -->
             <section style="position:relative">
-              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px">
                 <span class="t-label c-3">ZULETZT GEÖFFNET</span>
                 <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
                 <span class="t-label c-3">Synchron auf iPhone und iPad</span>
@@ -150,11 +150,11 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <!-- 1 · AUSGEWÄHLT + ANGEHOBEN: Fläche + Ring + Gewicht -->
                 <div style="width:168px; flex:none; position:relative">
                   <!-- Fläche der Auswahl -->
-                  <div style="position:absolute; left:-8px; right:-8px; top:-8px; bottom:-8px; border-radius:16px; background:var(--accent-soft)"></div>
+                  <div style="position:absolute; left:-7px; right:-7px; top:-6px; bottom:-8px; border-radius:15px; background:var(--accent-soft)"></div>
                   <!-- Sockel: die Stelle, aus der das Cover gerade angehoben wird -->
                   <div class="flight__ghost" style="left:0; top:0; width:168px; height:224px; border-radius:11px; background:var(--fill-2); box-shadow:inset 0 0 0 1.5px var(--accent-ring)"></div>
                   <!-- Cover, angehoben -->
-                  <div style="position:relative; width:168px; height:224px; border-radius:11px; overflow:hidden; background:var(--paper); transform:translateY(-14px); box-shadow:var(--sh-float), 0 0 0 3px var(--accent-ring)">
+                  <div style="position:relative; width:168px; height:224px; border-radius:11px; overflow:hidden; background:var(--paper); transform:translateY(-12px); box-shadow:var(--sh-float), 0 0 0 3px var(--accent-ring)">
                     <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 14px, var(--line) 14px 15px)"></div>
                     <div style="position:absolute; left:0; top:0; bottom:0; width:13px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
                     <div style="position:absolute; right:5px; top:8px; bottom:8px; width:4px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
@@ -234,8 +234,10 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
               </div>
 
-              <!-- Schwebendes Kontextmenü, aufgefahren aus dem angehobenen Cover -->
-              <div style="position:absolute; left:200px; top:307px; width:214px; z-index:70; padding:6px; border-radius:14px; background:var(--chrome); backdrop-filter:blur(28px) saturate(180%); box-shadow:var(--sh-float), inset 0 0 0 1px var(--line)">
+              <!-- Schwebendes Kontextmenü, aufgefahren aus dem angehobenen Cover.
+                   Es sitzt bündig unter der linken Kante seines Covers, damit der
+                   Bezug räumlich ist und nicht nur über die Kopfzeile behauptet wird. -->
+              <div style="position:absolute; left:24px; top:300px; width:214px; z-index:70; padding:6px; border-radius:14px; background:var(--paper); box-shadow:var(--sh-float), inset 0 0 0 1px var(--line)">
                 <div style="padding:4px 10px 7px; display:flex; align-items:center; gap:7px">
                   <span class="dot dot--notes"></span><span class="t-label c-3">Zellbiologie</span>
                 </div>
@@ -266,7 +268,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <span class="t-label c-3">Sichten, keine Schubladen</span>
               </div>
               <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:14px">
-                <button class="card card--flat" style="height:64px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                <button class="card card--flat" style="height:64px; padding:0 10px; display:flex; align-items:center; gap:8px; text-align:left">
                   <span class="ico c-2" data-ico="calendar" style="width:20px;height:20px"></span>
                   <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
                     <span class="t-body is-strong clamp-1">Diese Woche</span>
@@ -274,7 +276,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                   </span>
                   <span class="count__n num">7</span>
                 </button>
-                <button class="card card--flat" style="height:64px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                <button class="card card--flat" style="height:64px; padding:0 10px; display:flex; align-items:center; gap:8px; text-align:left">
                   <span class="ico c-2" data-ico="star" style="width:20px;height:20px"></span>
                   <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
                     <span class="t-body is-strong clamp-1">Markiert</span>
@@ -282,7 +284,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                   </span>
                   <span class="count__n num">4</span>
                 </button>
-                <button class="card card--flat" style="height:64px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                <button class="card card--flat" style="height:64px; padding:0 10px; display:flex; align-items:center; gap:8px; text-align:left">
                   <span class="ico c-2" data-ico="mic" style="width:20px;height:20px"></span>
                   <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
                     <span class="t-body is-strong clamp-1">Mit Audio</span>
@@ -290,7 +292,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                   </span>
                   <span class="count__n num">3</span>
                 </button>
-                <button class="card card--flat" style="height:64px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
+                <button class="card card--flat" style="height:64px; padding:0 10px; display:flex; align-items:center; gap:8px; text-align:left">
                   <span class="ico c-2" data-ico="share" style="width:20px;height:20px"></span>
                   <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
                     <span class="t-body is-strong clamp-1">Geteilt</span>
@@ -312,7 +314,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
               <div style="display:grid; grid-template-columns:repeat(5, 1fr); gap:19px">
 
                 <div>
-                  <div style="position:relative; height:192px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                  <div style="position:relative; height:188px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
                     <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 13px, var(--line) 13px 14px)"></div>
                     <div style="position:absolute; left:0; top:0; bottom:0; width:11px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
                     <div style="position:absolute; right:4px; top:7px; bottom:7px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
@@ -327,7 +329,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <div>
-                  <div class="skeleton" style="position:relative; height:192px; border-radius:10px; box-shadow:inset 0 0 0 1px var(--line); display:flex; align-items:center; justify-content:center">
+                  <div class="skeleton" style="position:relative; height:188px; border-radius:10px; box-shadow:inset 0 0 0 1px var(--line); display:flex; align-items:center; justify-content:center">
                     <span class="chip" style="background:var(--paper); color:var(--ink-2)">wird geladen</span>
                   </div>
                   <div style="margin-top:8px">
@@ -337,7 +339,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <div>
-                  <div style="position:relative; height:192px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                  <div style="position:relative; height:188px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
                     <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 14px, var(--line) 14px 15px), repeating-linear-gradient(to right, transparent 0 14px, var(--line) 14px 15px)"></div>
                     <div style="position:absolute; left:0; top:0; bottom:0; width:11px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
                     <div style="position:absolute; right:4px; top:7px; bottom:7px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
@@ -352,7 +354,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <div>
-                  <div style="position:relative; height:192px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                  <div style="position:relative; height:188px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
                     <div style="position:absolute; inset:0; background:radial-gradient(var(--line-2) 1px, transparent 1.3px); background-size:13px 13px"></div>
                     <div style="position:absolute; left:0; top:0; bottom:0; width:11px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
                     <div style="position:absolute; right:4px; top:7px; bottom:7px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
@@ -367,7 +369,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
 
                 <div>
-                  <div style="position:relative; height:192px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
+                  <div style="position:relative; height:188px; border-radius:10px; overflow:hidden; background:var(--paper); box-shadow:var(--sh-cover)">
                     <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 17px, var(--line) 17px 18px)"></div>
                     <div style="position:absolute; left:0; top:0; bottom:0; width:11px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
                     <div style="position:absolute; right:4px; top:7px; bottom:7px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
@@ -407,7 +409,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
         <div class="scroll" style="display:flex; flex-direction:column; gap:12px; padding:10px 20px 14px">
 
-          <p class="t-sub c-2" style="margin:0"><strong class="c-1 num">5 Notizbücher</strong> · zuletzt geändert vor 18 Minuten</p>
+          <p class="t-sub c-2" style="margin:0"><strong class="c-1 num">5 Notizbücher</strong> · zuletzt vor 18 Min.</p>
 
           <!-- Suchfeld oben + Umschalter -->
           <div style="display:flex; align-items:center; gap:8px">
@@ -417,7 +419,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
           <!-- Zuletzt geöffnet -->
           <section>
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px">
               <span class="t-label c-3">ZULETZT GEÖFFNET</span>
               <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
             </div>
@@ -425,9 +427,9 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
               <!-- ausgewählt + angehoben -->
               <div style="width:152px; flex:none; position:relative">
-                <div style="position:absolute; left:-7px; right:-7px; top:-7px; bottom:-7px; border-radius:15px; background:var(--accent-soft)"></div>
+                <div style="position:absolute; left:-7px; right:-7px; top:-6px; bottom:-8px; border-radius:15px; background:var(--accent-soft)"></div>
                 <div class="flight__ghost" style="left:0; top:0; width:152px; height:203px; border-radius:11px; background:var(--fill-2); box-shadow:inset 0 0 0 1.5px var(--accent-ring)"></div>
-                <div style="position:relative; width:152px; height:203px; border-radius:11px; overflow:hidden; background:var(--paper); transform:translateY(-13px); box-shadow:var(--sh-float), 0 0 0 3px var(--accent-ring)">
+                <div style="position:relative; width:152px; height:203px; border-radius:11px; overflow:hidden; background:var(--paper); transform:translateY(-11px); box-shadow:var(--sh-float), 0 0 0 3px var(--accent-ring)">
                   <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 13px, var(--line) 13px 14px)"></div>
                   <div style="position:absolute; left:0; top:0; bottom:0; width:12px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
                   <div style="position:absolute; right:4px; top:8px; bottom:8px; width:3px; background:repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 2px)"></div>
@@ -440,7 +442,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
                 <div style="position:relative; margin-top:10px">
                   <div class="t-body is-strong clamp-1">Zellbiologie</div>
-                  <div class="t-label c-3 clamp-1" style="margin-top:2px">34 Seiten · vor 18 Min.</div>
+                  <div class="t-label c-3 clamp-1" style="margin-top:2px">34 Seiten · heute</div>
                 </div>
               </div>
 
@@ -457,7 +459,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
               </div>
 
               <!-- angeschnitten -->
-              <div style="width:60px; flex:none; position:relative; overflow:hidden">
+              <div style="width:21px; flex:none; position:relative; overflow:hidden">
                 <div style="position:relative; width:152px; height:203px; border-radius:11px; overflow:hidden; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line)">
                   <div style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 14px, var(--line) 14px 15px), repeating-linear-gradient(to right, transparent 0 14px, var(--line) 14px 15px)"></div>
                   <div style="position:absolute; left:0; top:0; bottom:0; width:12px; background:linear-gradient(90deg, var(--fill-2), var(--fill) 60%, transparent); box-shadow:inset -1px 0 0 var(--line)"></div>
@@ -476,41 +478,25 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
               <span class="t-label c-3">SMART-ORDNER</span>
               <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
             </div>
-            <div style="display:flex; gap:12px">
-              <button class="card card--flat" style="width:164px; flex:none; height:56px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
-                <span class="ico c-2" data-ico="calendar" style="width:19px;height:19px"></span>
-                <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
-                  <span class="t-body is-strong clamp-1">Diese Woche</span>
-                  <span class="t-label c-3 clamp-1">seit Montag</span>
-                </span>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+              <button class="card card--flat" style="height:46px; padding:0 12px; display:flex; align-items:center; gap:7px; text-align:left">
+                <span class="t-body is-strong clamp-1" style="flex:1 1 auto; min-width:0">Diese Woche</span>
                 <span class="count__n num">7</span>
               </button>
-              <button class="card card--flat" style="width:164px; flex:none; height:56px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
-                <span class="ico c-2" data-ico="star" style="width:19px;height:19px"></span>
-                <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
-                  <span class="t-body is-strong clamp-1">Markiert</span>
-                  <span class="t-label c-3 clamp-1">mit Stern</span>
-                </span>
+              <button class="card card--flat" style="height:46px; padding:0 12px; display:flex; align-items:center; gap:7px; text-align:left">
+                <span class="t-body is-strong clamp-1" style="flex:1 1 auto; min-width:0">Markiert</span>
                 <span class="count__n num">4</span>
               </button>
-              <button class="card card--flat" style="width:164px; flex:none; height:56px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
-                <span class="ico c-2" data-ico="mic" style="width:19px;height:19px"></span>
-                <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
-                  <span class="t-body is-strong clamp-1">Mit Audio</span>
-                  <span class="t-label c-3 clamp-1">Aufnahmen</span>
-                </span>
+              <button class="card card--flat" style="height:46px; padding:0 12px; display:flex; align-items:center; gap:7px; text-align:left">
+                <span class="t-body is-strong clamp-1" style="flex:1 1 auto; min-width:0">Mit Audio</span>
                 <span class="count__n num">3</span>
               </button>
-              <button class="card card--flat" style="width:164px; flex:none; height:56px; padding:0 12px; display:flex; align-items:center; gap:10px; text-align:left">
-                <span class="ico c-2" data-ico="share" style="width:19px;height:19px"></span>
-                <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
-                  <span class="t-body is-strong clamp-1">Geteilt</span>
-                  <span class="t-label c-3 clamp-1">Jana, Milan</span>
-                </span>
+              <button class="card card--flat" style="height:46px; padding:0 12px; display:flex; align-items:center; gap:7px; text-align:left">
+                <span class="t-body is-strong clamp-1" style="flex:1 1 auto; min-width:0">Geteilt</span>
                 <span class="count__n num">2</span>
               </button>
             </div>
-          </section>
+            </section>
 
           <!-- Alle Notizbücher -->
           <section>
@@ -558,7 +544,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
       </div>
 
       <!-- Weiche Kante: das Raster laeuft unter der Tab-Bar weiter -->
-      <div style="position:absolute; left:0; right:0; bottom:83px; height:46px; z-index:30; pointer-events:none; background:linear-gradient(to bottom, transparent, var(--ground) 88%)"></div>
+      <div style="position:absolute; left:0; right:0; bottom:83px; height:64px; z-index:30; pointer-events:none; background:linear-gradient(to bottom, transparent, var(--ground) 78%)"></div>
 
       <!-- „+" schwebend, in Ein-Hand-Reichweite über der Tab-Bar -->
       <button class="btn btn--primary" style="position:absolute; right:20px; bottom:99px; z-index:50; width:56px; height:56px; padding:0; border-radius:50%; box-shadow:var(--sh-float)">
@@ -593,19 +579,19 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
     <tr><td>gefüllt</td><td>Fünf Notizbücher, vier Smart-Ordner, das Regal ist angeschnitten und geht rechts weiter.</td></tr>
     <tr><td>aktiv</td><td>„Bibliothek" in der Sidebar (Fläche + Gewicht + Ink-Balken), „Raster" im Umschalter (Fläche + Ink + Kante), „Bibliothek" in der Tab-Bar (Ink + Gewicht).</td></tr>
     <tr><td>ausgewählt</td><td>„Zellbiologie": getönte Fläche unter der ganzen Kachel <em>und</em> 3-pt-Ring um das Cover, dazu der Titel in 600 — drei Merkmale, keines davon Farbe.</td></tr>
-    <tr><td>Zwischenzustand</td><td>Das ausgewählte Cover ist gerade <strong>angehoben</strong>: der Sockel (Ring + Fläche, <span class="num">10</span> pt tiefer) liegt noch an der alten Stelle, das Cover schwebt darüber, und das Kontextmenü ist darunter aufgefahren. Zweiter laufender Vorgang: der Fortschrittsbalken auf „Semesterplanung" bei <span class="num">62 %</span>.</td></tr>
+    <tr><td>Zwischenzustand</td><td>Das ausgewählte Cover ist gerade <strong>angehoben</strong>: der Sockel (Ring + Fläche) liegt noch an der alten Stelle, <span class="num">12</span> pt tiefer, das Cover schwebt darüber, und das Kontextmenü ist darunter aufgefahren. Zweiter laufender Vorgang: der Fortschrittsbalken auf „Semesterplanung" bei <span class="num">62 %</span>.</td></tr>
     <tr><td>Laden</td><td>„Semesterplanung" lädt aus iCloud — Skelettfläche + das Wort „wird geladen" + Balken. Es erscheint an beiden Stellen als Skelett (Regal und Raster), weil es dasselbe Dokument ist; nur das große Cover trägt den Fortschritt.</td></tr>
     <tr><td>leer</td><td>Ohne Notizbücher zeigt die Bibliothek <code>.empty</code>: „Noch kein Notizbuch. Leg eins an — Papier wählst du beim Öffnen." mit dem Knopf „Neues Notizbuch".</td></tr>
   </table>
 
   <h3>Warum award-würdig</h3>
-  <p><strong>Visuals:</strong> Neun Cover, kein einziges Foto — und trotzdem ist jedes Buch unterscheidbar, weil Papierart (Linien, Karo, Punkte), Buchrücken und ein 6-pt-Dot zusammen eine Identität ergeben. Das ist die schwierige Variante von Cover-Design und die einzige, die im Dunkelmodus genauso funktioniert. <strong>Interaktion:</strong> Auswahl, schwebendes Menü und Ladefortschritt liegen gleichzeitig im Bild, ohne sich zu stören — das Menü verdeckt genau eine Smart-Ordner-Karte, weil es dort aufgeht, wo der Finger war, und nicht in einer Bildschirmecke.</p>
+  <p><strong>Visuals:</strong> Zehn Cover auf dem iPad, kein einziges Foto — und trotzdem ist jedes Buch unterscheidbar, weil Papierart (Linien, Karo, Punkte), Buchrücken, Schnittkante und ein 6-pt-Dot zusammen eine Identität ergeben. Das ist die schwierige Variante von Cover-Design und die einzige, die im Dunkelmodus unverändert funktioniert. <strong>Interaktion:</strong> Auswahl, schwebendes Menü und Ladefortschritt liegen gleichzeitig im Bild, ohne sich zu stören — das Menü geht dort auf, wo der Finger war, und verdeckt dabei genau eine Smart-Ordner-Karte („Markiert"); die Abschnittsköpfe und die übrigen drei Ordner bleiben lesbar.</p>
 
   <h3>Zwei-Merkmal-Regel</h3>
   <p>Ausgewählt = Fläche + Ring (+ Gewicht im Titel). Aktiv = Fläche + Gewicht + Balken (Sidebar) bzw. Fläche + Ink + Kante (Umschalter). Laden = Skelettfläche + das Wort „wird geladen" (+ Balken). Löschen = rotes Wort + Papierkorb-Symbol + eigene Gruppe unter dem Trenner. Modul-Dots sind 6 pt und stehen nie allein — auf jedem Etikett steht Dot + Modulwort.</p>
 
   <h3>iPhone gegenüber iPad</h3>
-  <p>Dieselben drei Abschnitte, gestapelt: Suchfeld und Umschalter in einer Zeile, das Regal waagerecht scrollbar, die Smart-Ordner als schmale Karten, darunter das zweispaltige Cover-Raster, das über die Bildkante weiterläuft. Der „+"-Knopf schwebt unten rechts über der Tab-Bar, in Daumenreichweite — auf dem iPad sitzt er als „Neu" in der Kopfzeile, weil dort zwei Hände am Gerät sind. Das Kontextmenü ist auf beiden Geräten dasselbe und über langes Drücken erreichbar; gezeigt wird es auf dem iPad, damit auf dem iPhone die Smart-Ordner sichtbar bleiben. Kein Weg kostet auf dem iPhone mehr Taps.</p>
+  <p>Dieselben drei Abschnitte, gestapelt: Suchfeld und Umschalter in einer Zeile, das Regal waagerecht scrollbar (das dritte Buch steht als Rücken am Rand), die Smart-Ordner als 2 × 2 — auf <span class="num">393</span> pt Breite trägt eine Karte entweder ein Symbol oder den vollen Namen, also behalten wir den Namen. Darunter das zweispaltige Cover-Raster, das mit einer weichen Kante unter der Tab-Bar weiterläuft. Der „+"-Knopf schwebt unten rechts über der Tab-Bar, in Daumenreichweite — auf dem iPad sitzt er als „Neu" in der Kopfzeile, weil dort zwei Hände am Gerät sind. Das Kontextmenü ist auf beiden Geräten dasselbe und über langes Drücken erreichbar; gezeigt wird es auf dem iPad, damit auf dem iPhone die Smart-Ordner sichtbar bleiben. Kein Weg kostet auf dem iPhone mehr Taps.</p>
 </div>
 
 <script src="../shared/mock.js"></script>

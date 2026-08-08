@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notizen — Best-of</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+BEST-OF NOTIZEN — Bear 2 · Craft · Apple Notes
+
+WAS VON WEM
+
+· Bear 2 — Die Textspalte als Konstante.
+  Der Editor bekommt eine fest gesetzte Maximalbreite und echten Leerraum
+  daneben; die Zeilenlänge ist eine Entscheidung des Systems, keine Folge der
+  Fensterbreite. Grund: Apple Notes beweist mit 900–1000 pt langen Zeilen auf
+  dem iPad das Gegenteil, Bear löst es als einziger sauber.
+
+· Bear 2 — Der hängende Syntaxmarker im linken Rand.
+  „#", „##", „–" stehen ausgegraut im Gutter, NICHT im Satz. Dadurch fluchtet
+  die linke Textkante von Überschrift, Absatz und Aufzählung, und die Struktur
+  liest man in einer schmalen Randspur mit. Grund: sichtbare Struktur zum
+  Preis von null Chrome im Text.
+
+· Bear 2 — Organisation im Fließtext.
+  #uni/biologie/zellbiologie ist ein getipptes Wort mitten im Satz, kein
+  Metadatenfeld. Der Tag-Baum links ist nur das gerenderte Abbild dessen, was
+  in den Texten steht. Grund: der Editor braucht keinen Eigenschaftenkopf.
+
+· Bear 2 (2.9) — Der Arbeitsbereich als globaler Kontextschalter.
+  Long-Press auf einen Tag reduziert die ganze App auf diesen Kontext; hier
+  sichtbar als Chip „Bereich #uni" über dem Baum. Grund: für eine
+  All-in-One-App der stärkste Kontextschalter im ganzen Feld.
+
+· Bear 2 — Das Info-Panel rechts (Inhaltsverzeichnis, Verbindungen, Tags,
+  Zahlen, Anhänge). Statt Bears Reitern stehen die Abschnitte gestapelt: bei
+  208 pt kostet ein Tab-Wechsel mehr, als er spart, und alle Inhalte sind kurz.
+  Grund: Zusatzinformation gehört neben den Text, nicht in ihn hinein.
+
+· Craft — Der Gutter als unsichtbare zweite Spalte.
+  30 pt links neben der Textspalte, im Ruhezustand leer. Bei Fokus erscheinen
+  dort ein 20×20 pt Griff und ein flächiges Zeilen-Highlight (Fill 5 %, kein
+  Rahmen) über die volle Blockbreite. Grund: Blockstruktur UND Editor-Ruhe
+  gleichzeitig — der Text wird nie von Rahmen unterbrochen.
+
+· Craft — Die getippte Grammatik „/" für Blöcke.
+  Popover am Cursor, in benannte Sektionen gruppiert, öffnet nach unten und
+  verdeckt den Cursor nie. Grund: die Aktion kommt zum Text, nicht der Text
+  zum Menü — die Gegenthese zu Apples „Aa"-Popover.
+
+· Craft — Backlinks als permanenter Abschnitt am Dokumentende.
+  Trennlinie, Überschrift „Erwähnt in", darunter Chips. Grund: Verbindungen
+  sind Inhalt, nicht Werkzeug.
+
+· Apple Notes — Der typ-agnostische Container.
+  Titel = erste Zeile, kein Titelfeld, kein Vorlagendialog. Im selben Dokument
+  stehen Fließtext, Aufzählung, Tag, Verknüpfung und eine abhakbare Aufgabe.
+  Grund: die Frage „wo gehört das hin?" verschwindet aus dem Erfassungsmoment.
+
+· Apple Notes — Smart Folders als gespeicherte Filter, aber mit eigenem
+  visuellem Register: eigener Sidebar-Abschnitt, eigenes Symbol (Filter statt
+  Ordner). Grund: Apple trennt sie nur durch ein Zahnrad — das ist der
+  deutlichste Systemfehler im ganzen Vergleich.
+
+· Apple Notes — Galerie als OPTIONALE Zweitansicht mit sichtbarem Umschalter
+  in der Listenkopfzeile, nicht als Standard.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Bears 28+ Themes und die TagCons — Personalisierung als Ersatz für
+  Entscheidung. Zwei Modi, eine Skala, eine Familie. Tags tragen hier kein
+  Icon und keine Farbe, sondern Gewicht plus Doppelkreuz.
+· Bears Schriftgröße/Zeilenhöhe/Zeilenbreite/Absatzabstand als Einstellungen —
+  wer den vertikalen Rhythmus beherrscht, liefert ihn, statt ihn zu delegieren.
+· Bears Backlinks hinter einer Wischgeste — sie stehen hier im Lesefluss.
+· Crafts Styling-Zoo: vier Schriftfamilien, Textfarben, Highlights,
+  Blockhintergründe, Focus-Blöcke, Cover Images, Kartenraster für Unterseiten.
+· Crafts Untertag-Sonderregel („der erste Schrägstrich zählt, weitere nicht").
+· Apples drei parallele Organisationsmodelle (Ordner + Tags + Smart Folders).
+  Hier gibt es EIN Modell: Tags. Die gespeicherten Filter sind sichtbar nur
+  Sicht auf dieselben Tags, keine zweite Ablage.
+· Apples fehlende maximale Zeilenlänge und das modale „Aa"-Popover.
+· Keine Ketten-Karte, keine Übergabe-Leiste, keine Herkunfts-Chips — dieses
+  Mockup zeigt den Bereich so, wie ihn die drei Vorbilder verstehen.
+
+DIE KOMBINATION
+Bear kann Ruhe, aber keine Blöcke. Craft kann Blöcke, verliert die Ruhe an
+sein Styling. Apple kann Erfassung, aber weder Zeilenlänge noch Verbindung.
+Die Mischung setzt Bears Randspur und Crafts Gutter in DENSELBEN 30-pt-Streifen:
+im Ruhezustand steht dort der ausgegraute Syntaxmarker, bei Fokus wird daraus
+der Griff. Damit kostet die Blockstruktur keinen einzigen Pixel zusätzliche
+Fläche — sie wohnt in der Spur, die Bear ohnehin freihält. Darüber liegt Apples
+typ-agnostischer Container, sodass Aufgabe, Tag und Verknüpfung im selben
+Dokument entstehen. Kein Original kann alle drei Dinge gleichzeitig.
+
+ADA-KATEGORIE: Interaktion (drei getippte Zeichen — „/", „#", „@" — ersetzen
+die gesamte Verwaltungs-UI) und Gestaltung (Textspalte und Randspur als
+gesetzte Konstanten statt als Einstellungen).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1.2/§1.3)
+  Fließtext/Titel   ink-1 auf Papier   17,8:1  (hell) · 15,9:1 (dunkel)
+  Vorschauzeilen    ink-2 auf Papier    5,3:1  (hell) ·  7,1:1 (dunkel)
+  Marker/Metadaten  ink-3 auf Grund     4,8:1  (hell) ·  4,9:1 (dunkel)
+  CTA-Text          accent-on auf Ink  17,8:1  (hell) · 17,3:1 (dunkel)
+  Sync-Fehler rot   danger auf Papier   5,19:1 (hell) ·  6,30:1 (dunkel)
+  Die hängenden Syntaxmarker laufen bewusst auf ink-3 (4,8:1), nicht auf
+  ink-4 — sie sind Zeichen, keine Dekoration, und müssen lesbar bleiben.
+  Der Modul-Dot Notizen erscheint genau einmal (Sidebar-Kopf) und nie ohne
+  das Wort daneben.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600).
+Im Dokument selbst bleibt die Skala flach — H1 20 pt, H2 17 pt Semibold,
+Fließtext 17 pt Regular. Faktor H1 zu Fließtext: 1,18. Die 28 pt kommen genau
+einmal vor, für die erste Zeile, die zugleich der Titel ist.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Notizen — Best-of aus Bear 2, Craft und Apple Notes</h1>
+  <p>Drei Spalten auf dem iPad: Tag-Baum, Notizliste, Editor — dazu das Info-Panel rechts. Die Organisation steht im Fließtext, die Blockstruktur wohnt in derselben 30-pt-Randspur wie der Syntaxmarker.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Tag-Baum 224 · Liste 272 · Editor 490 · Info 208</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+
+        <!-- ── Spalte 1: Tag-Baum ───────────────────────────────── -->
+        <aside class="sidebar" style="width:224px">
+          <div class="sidebar__head" style="padding:6px 10px 10px">
+            <span class="t-section" style="display:flex; align-items:center; gap:8px"><span class="dot dot--notes"></span>Notizen</span>
+            <span class="iconbtn" style="width:32px;height:32px"><span class="ico" data-ico="search" style="width:19px;height:19px"></span></span>
+          </div>
+
+          <!-- Bear 2.9: der Arbeitsbereich als globaler Kontext -->
+          <div style="padding:0 10px 12px">
+            <span class="chip chip--solid" style="width:100%; justify-content:space-between">
+              <span style="display:flex; align-items:center; gap:6px"><span class="ico" data-ico="layers" style="width:14px;height:14px"></span>Bereich #uni</span>
+              <span class="ico" data-ico="close" style="width:13px;height:13px"></span>
+            </span>
+          </div>
+
+          <button class="navitem" style="height:36px"><span class="ico" data-ico="doc" style="width:19px;height:19px"></span><span class="t-body">Alle Notizen</span><span class="navitem__count t-label num">214</span></button>
+          <button class="navitem" style="height:36px"><span class="ico" data-ico="clock" style="width:19px;height:19px"></span><span class="t-body">Zuletzt</span></button>
+          <button class="navitem" style="height:36px"><span class="ico" data-ico="inbox" style="width:19px;height:19px"></span><span class="t-body">Ohne Tag</span><span class="navitem__count t-label num">6</span></button>
+
+          <!-- Apples Smart Folders — aber mit eigenem Register -->
+          <div class="sidebar__group" style="margin-top:14px">
+            <div class="sidebar__grouptitle t-label">GESPEICHERTE FILTER</div>
+            <button class="navitem" style="height:36px"><span class="ico" data-ico="filter" style="width:19px;height:19px"></span><span class="t-body clamp-1">Diese Woche</span><span class="navitem__count t-label num">12</span></button>
+            <button class="navitem" style="height:36px"><span class="ico" data-ico="filter" style="width:19px;height:19px"></span><span class="t-body clamp-1">Prof. Wendt</span><span class="navitem__count t-label num">4</span></button>
+          </div>
+
+          <!-- Der Baum ist nur das Abbild der getippten Tags -->
+          <div class="sidebar__group" style="margin-top:14px">
+            <div class="sidebar__grouptitle t-label">TAGS</div>
+            <button class="navitem" style="height:36px"><span class="ico" data-ico="chevD" style="width:16px;height:16px"></span><span class="t-body">#uni</span><span class="navitem__count t-label num">96</span></button>
+            <button class="navitem" style="height:36px; padding-left:24px"><span class="ico" data-ico="chevD" style="width:16px;height:16px"></span><span class="t-body clamp-1">biologie</span><span class="navitem__count t-label num">41</span></button>
+            <button class="navitem is-active" style="height:36px; padding-left:44px"><span class="t-body clamp-1">zellbiologie</span><span class="navitem__count t-label num">18</span></button>
+            <button class="navitem" style="height:36px; padding-left:44px"><span class="t-body clamp-1">labor</span><span class="navitem__count t-label num">9</span></button>
+            <button class="navitem" style="height:36px; padding-left:24px"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span><span class="t-body clamp-1">analysis2</span><span class="navitem__count t-label num">23</span></button>
+            <button class="navitem" style="height:36px"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span><span class="t-body">#prüfung</span><span class="navitem__count t-label num">14</span></button>
+            <button class="navitem" style="height:36px"><span class="ico" data-ico="tag" style="width:16px;height:16px"></span><span class="t-body">#methoden</span><span class="navitem__count t-label num">11</span></button>
+            <button class="navitem" style="height:36px"><span class="ico" data-ico="tag" style="width:16px;height:16px"></span><span class="t-body">#lesen</span><span class="navitem__count t-label num">7</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:10px">
+            <button class="navitem" style="height:36px"><span class="ico" data-ico="trash" style="width:19px;height:19px"></span><span class="t-body c-2">Papierkorb</span></button>
+          </div>
+        </aside>
+
+        <!-- ── Spalte 2: Notizliste ─────────────────────────────── -->
+        <section style="width:272px; flex:none; display:flex; flex-direction:column; min-height:0; background:var(--paper-2); border-right:1px solid var(--line)">
+          <div class="navbar" style="padding:8px 10px 8px 14px; background:none; backdrop-filter:none">
+            <div style="min-width:0">
+              <div class="t-section clamp-1">zellbiologie</div>
+              <div class="t-label c-3 num">18 Notizen</div>
+            </div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="sort" style="width:19px;height:19px"></span></button>
+            <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="plus" style="width:20px;height:20px"></span></button>
+          </div>
+
+          <div class="scroll" style="padding:10px 10px 14px; display:flex; flex-direction:column; gap:10px">
+
+            <div class="field"><span class="ico" data-ico="search"></span><span class="field__ph t-sub">In 18 Notizen suchen</span></div>
+
+            <!-- Apples Galerieansicht — optional, mit sichtbarem Umschalter -->
+            <div class="segmented" style="width:100%">
+              <button class="is-on" style="flex:1"><span class="ico" data-ico="list" style="width:15px;height:15px; margin-right:5px"></span>Liste</button>
+              <button style="flex:1"><span class="ico" data-ico="grid" style="width:15px;height:15px; margin-right:5px"></span>Galerie</button>
+            </div>
+
+            <!-- Fehlerzustand: Farbe + Symbol + Randlinie -->
+            <div class="notice notice--error" style="padding:10px 12px">
+              <span class="ico" data-ico="alert" style="width:19px;height:19px; margin-top:1px"></span>
+              <div style="min-width:0">
+                <div class="notice__text t-sub is-strong">Nicht gesichert</div>
+                <div class="t-sub c-2" style="margin-top:1px">2 Notizen liegen lokal.</div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column">
+
+              <div class="row" style="align-items:flex-start; padding:10px 12px">
+                <div class="row__main">
+                  <div style="display:flex; align-items:center; gap:6px">
+                    <span class="ico c-3" data-ico="pin" style="width:14px;height:14px"></span>
+                    <span class="t-body row__title is-strong clamp-1">Prüfungsplan Biologie</span>
+                  </div>
+                  <span class="t-sub c-2 clamp-2">Termine, Themen und offene Kapitel bis zur Klausur am 12. Februar.</span>
+                  <span class="t-label c-3">angeheftet · Fr</span>
+                </div>
+              </div>
+
+              <!-- ausgewählt = Fläche + Ring + Gewicht -->
+              <div class="row is-selected" style="align-items:flex-start; padding:10px 12px">
+                <div class="row__main">
+                  <span class="t-body row__title clamp-1">Mitochondrien</span>
+                  <span class="t-sub c-2 clamp-2">Zwei Membranen, die innere zu Cristae gefaltet. Matrix mit eigener ringförmiger DNA.</span>
+                  <span class="t-label c-3" style="display:flex; align-items:center; gap:6px">
+                    11:24 · <span class="ico" data-ico="link" style="width:13px;height:13px"></span><span class="num">3</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="row" style="align-items:flex-start; padding:10px 12px">
+                <div class="row__main">
+                  <span class="t-body row__title clamp-1">Laborprotokoll Zellkultur</span>
+                  <span class="t-sub c-2 clamp-2">Passage 3, Konfluenz 80 %.</span>
+                  <span class="t-label c-3">gestern</span>
+                </div>
+              </div>
+
+              <div class="row" style="align-items:flex-start; padding:10px 12px">
+                <div class="row__main">
+                  <span class="t-body row__title clamp-1">Vorlesung 4 — Prof. Wendt</span>
+                  <span class="t-sub c-2 clamp-2">Atmungskette, ATP-Synthase.</span>
+                  <span class="t-label c-3">Di</span>
+                </div>
+              </div>
+
+              <div class="row" style="align-items:flex-start; padding:10px 12px">
+                <div class="row__main">
+                  <span class="t-body row__title clamp-1">Fragen an die Laborgruppe</span>
+                  <span class="t-sub c-2 clamp-2">Wer hat die Kalibrierkurve?</span>
+                  <span class="t-label c-3">Mo</span>
+                </div>
+              </div>
+
+              <!-- Ladezustand: Skelettform + Wort, nie ein Spinner allein -->
+              <div class="row" style="align-items:flex-start; padding:10px 12px; display:block">
+                <div class="skeleton" style="height:15px; width:74%; margin-bottom:8px"></div>
+                <div class="skeleton" style="height:12px; width:100%; margin-bottom:5px"></div>
+                <div class="skeleton" style="height:12px; width:56%"></div>
+              </div>
+              <div class="t-label c-3" style="padding:8px 12px 0">Ältere Notizen werden geladen …</div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Spalte 3: Editor ─────────────────────────────────── -->
+        <main class="content" style="background:var(--paper)">
+          <div class="navbar" style="padding:8px 12px 8px 16px">
+            <span class="t-label c-3 clamp-1">#uni/biologie/zellbiologie</span>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="share" style="width:20px;height:20px"></span></button>
+            <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="more" style="width:20px;height:20px"></span></button>
+            <button class="iconbtn is-active" style="width:38px;height:38px"><span class="ico" data-ico="info" style="width:20px;height:20px"></span></button>
+          </div>
+
+          <!-- Die Textspalte ist gesetzt: 30 pt Gutter + 426 pt Text.
+               Der Gutter trägt im Ruhezustand den Marker, bei Fokus den Griff. -->
+          <div class="scroll" style="padding:14px 24px 10px 10px; display:flex; flex-direction:column">
+
+            <!-- Titel = erste Zeile (Apple Notes), kein Titelfeld -->
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start">
+              <div></div>
+              <div>
+                <div class="t-title">Mitochondrien</div>
+                <div class="t-sub c-3" style="margin-top:2px">Vorlesung 4 · Prof. Wendt · heute 11:24</div>
+              </div>
+            </div>
+
+            <!-- H1 mit hängendem Marker -->
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:10px">
+              <div class="t-section c-3" style="text-align:right; padding-right:10px">#</div>
+              <div class="t-section">Aufbau</div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:7px">
+              <div></div>
+              <p class="t-body" style="margin:0">Zwei Membranen, die innere zu Cristae gefaltet.
+                <span class="is-strong" style="background:var(--accent-soft); border-radius:5px; padding:1px 4px"><span class="c-3" style="font-weight:400">#</span>zellbiologie</span></p>
+            </div>
+
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:12px">
+              <div class="t-section c-3" style="text-align:right; padding-right:10px">#</div>
+              <div class="t-section">Endosymbiontentheorie</div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:7px">
+              <div></div>
+              <p class="t-body" style="margin:0">Vorfahren waren
+                <span class="is-strong" style="box-shadow:inset 0 -1.5px 0 var(--line-2)"><span class="c-3" style="font-weight:400">@</span>Prokaryoten</span></p>
+            </div>
+
+            <!-- H2 — flache Skala: 17 pt Semibold, nicht 20 -->
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:10px">
+              <div class="t-body c-3" style="text-align:right; padding-right:10px; margin-left:-10px">##</div>
+              <div class="t-body is-strong">Belege</div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:6px">
+              <div class="t-body c-3" style="text-align:right; padding-right:10px">–</div>
+              <div class="t-body">Eigene ringförmige DNA (mtDNA)</div>
+            </div>
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:2px">
+              <div class="t-body c-3" style="text-align:right; padding-right:10px">–</div>
+              <div class="t-body">70-S-Ribosomen wie bei Bakterien</div>
+            </div>
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:2px">
+              <div class="t-body c-3" style="text-align:right; padding-right:10px">–</div>
+              <div class="t-body">Teilung unabhängig vom Zellzyklus</div>
+            </div>
+
+            <!-- Der fokussierte Block: Griff im Gutter + Fläche, kein Rahmen -->
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:10px; background:var(--fill); border-radius:9px; padding:8px 0">
+              <div style="display:flex; align-items:flex-start; justify-content:center; padding-top:1px">
+                <span class="ico" data-ico="grid" style="width:20px;height:20px; color:var(--ink-3)"></span>
+              </div>
+              <p class="t-body" style="margin:0; padding-right:10px">Wendt fragt in der Klausur Matrix / Intermembranraum.
+                <span class="is-strong" style="background:var(--accent-soft); border-radius:5px; padding:1px 4px"><span class="c-3" style="font-weight:400">#</span>prüfung</span></p>
+            </div>
+
+            <!-- Typ-agnostisch: die Aufgabe steht im selben Dokument -->
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:center; margin-top:8px">
+              <div style="display:flex; justify-content:flex-end; padding-right:6px"><span class="check"></span></div>
+              <div class="t-body">Abbildung 4.2 aus dem Skript abzeichnen</div>
+            </div>
+
+            <!-- Neuer leerer Block: die Grammatik steht im Platzhalter -->
+            <div style="position:relative; margin-top:10px; min-height:196px">
+              <div style="display:grid; grid-template-columns:30px 1fr; align-items:center">
+                <div></div>
+                <div style="display:flex; align-items:center; gap:2px">
+                  <span style="width:2px; height:21px; background:var(--accent); border-radius:1px"></span>
+                  <span class="t-body is-strong" style="margin-left:4px">/</span>
+                  <span class="t-sub c-3" style="margin-left:10px">„/" Blöcke · „#" Tags · „@" Verknüpfungen</span>
+                </div>
+              </div>
+
+              <!-- Crafts Slash-Popover: am Cursor, nach unten, nie verdeckend -->
+              <div style="position:absolute; left:30px; top:28px; width:246px; background:var(--paper); border-radius:12px; box-shadow:var(--sh-float), inset 0 0 0 1px var(--line); padding:5px; z-index:20">
+                <div class="t-label c-3" style="padding:2px 8px 1px">TEXT</div>
+                <div class="row" style="min-height:28px; padding:2px 8px; background:var(--accent-soft); gap:10px">
+                  <span class="ico" data-ico="quote" style="width:19px;height:19px; color:var(--ink-1)"></span>
+                  <span class="t-sub is-strong">Überschrift</span>
+                </div>
+                <div class="row" style="min-height:28px; padding:2px 8px; gap:10px">
+                  <span class="ico c-2" data-ico="list" style="width:19px;height:19px"></span>
+                  <span class="t-sub">Aufzählung</span>
+                </div>
+                <div class="row" style="min-height:28px; padding:2px 8px; gap:10px">
+                  <span class="ico c-2" data-ico="check" style="width:19px;height:19px"></span>
+                  <span class="t-sub">Aufgabe</span>
+                </div>
+                <div class="t-label c-3" style="padding:5px 8px 1px">EINBETTEN</div>
+                <div class="row" style="min-height:28px; padding:2px 8px; gap:10px">
+                  <span class="ico c-2" data-ico="link" style="width:19px;height:19px"></span>
+                  <span class="t-sub">Notiz verknüpfen</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Crafts Backlinks: im Lesefluss, nicht in der Schublade -->
+            <div style="display:grid; grid-template-columns:30px 1fr; align-items:start; margin-top:2px">
+              <div></div>
+              <div>
+                <div style="height:1px; background:var(--line); margin-bottom:10px"></div>
+                <div class="t-sub is-strong" style="margin-bottom:8px">Erwähnt in <span class="c-3 num" style="font-weight:400">3</span></div>
+                <div style="display:flex; flex-wrap:wrap; gap:6px">
+                  <span class="chip chip--ghost"><span class="ico" data-ico="link" style="width:13px;height:13px"></span>Prüfungsplan</span>
+                  <span class="chip chip--ghost"><span class="ico" data-ico="link" style="width:13px;height:13px"></span>Vorlesung 4</span>
+                  <span class="chip chip--ghost"><span class="ico" data-ico="link" style="width:13px;height:13px"></span>Laborprotokoll</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+        <!-- ── Spalte 4: Info-Panel ─────────────────────────────── -->
+        <aside style="width:208px; flex:none; display:flex; flex-direction:column; min-height:0; background:var(--paper-2); border-left:1px solid var(--line)">
+          <div class="navbar" style="padding:8px 6px 8px 14px; background:none; backdrop-filter:none">
+            <span class="t-section">Info</span>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="close" style="width:18px;height:18px"></span></button>
+          </div>
+
+          <div class="scroll" style="padding:12px 12px 16px; display:flex; flex-direction:column; gap:6px">
+
+            <div class="t-label c-3">INHALTSVERZEICHNIS</div>
+            <div style="display:flex; flex-direction:column; margin-top:2px">
+              <!-- aktiv = Fläche + Gewicht + Ink-Balken -->
+              <div class="navitem is-active" style="height:auto; min-height:32px; padding:5px 8px"><span class="t-sub">Aufbau</span></div>
+              <div class="navitem" style="height:auto; min-height:32px; padding:5px 8px"><span class="t-sub">Endosymbionten&shy;theorie</span></div>
+              <div class="navitem" style="height:auto; min-height:32px; padding:5px 8px 5px 20px"><span class="t-sub c-2">Belege</span></div>
+            </div>
+
+            <div style="height:1px; background:var(--line); margin:10px 0 8px"></div>
+
+            <div class="t-label c-3">VERBINDUNGEN</div>
+            <div style="display:flex; flex-direction:column; gap:7px; margin-top:4px">
+              <div style="display:flex; align-items:center; gap:8px">
+                <span class="ico c-3" data-ico="link" style="width:16px;height:16px"></span>
+                <span class="t-sub"><span class="is-strong num">3</span> erwähnen diese</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px">
+                <span class="ico c-3" data-ico="share" style="width:16px;height:16px"></span>
+                <span class="t-sub"><span class="is-strong num">2</span> verweist auf</span>
+              </div>
+            </div>
+
+            <div style="height:1px; background:var(--line); margin:10px 0 8px"></div>
+
+            <!-- Die Tags stehen im Text; das Panel zeigt sie nur gesammelt -->
+            <div class="t-label c-3">TAGS IM TEXT</div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px">
+              <span class="chip"><span class="c-3" style="font-weight:400">#</span>zellbiologie</span>
+              <span class="chip"><span class="c-3" style="font-weight:400">#</span>prüfung</span>
+            </div>
+
+            <div style="height:1px; background:var(--line); margin:10px 0 8px"></div>
+
+            <div class="t-label c-3">ZAHLEN</div>
+            <div style="display:flex; flex-direction:column; gap:5px; margin-top:4px">
+              <div class="t-sub c-2"><span class="c-1 is-strong num">412</span> Wörter</div>
+              <div class="t-sub c-2"><span class="c-1 is-strong num">14</span> Blöcke</div>
+              <div class="t-sub c-2"><span class="c-1 is-strong num">2</span> Minuten Lesezeit</div>
+            </div>
+
+            <div style="height:1px; background:var(--line); margin:10px 0 4px"></div>
+
+            <!-- leerer Zustand: nie nur Text, immer ein erster Schritt -->
+            <div class="t-label c-3">ANHÄNGE</div>
+            <div class="empty" style="padding:14px 0 6px; gap:10px">
+              <div class="empty__art" style="width:56px;height:56px; border-radius:16px"><span class="ico" data-ico="photo" style="width:26px;height:26px"></span></div>
+              <div class="empty__title t-sub is-strong">Noch keine Anhänge</div>
+              <button class="btn btn--sm" style="width:100%"><span class="ico" data-ico="plus" style="width:15px;height:15px"></span>Scan</button>
+            </div>
+
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Push-Navigation Tag → Liste → Editor</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content" style="background:var(--paper)">
+        <div class="navbar" style="padding:6px 8px 6px 6px">
+          <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="chevL" style="width:20px;height:20px"></span></button>
+          <span class="t-label c-3 clamp-1">zellbiologie</span>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="info" style="width:20px;height:20px"></span></button>
+          <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="more" style="width:20px;height:20px"></span></button>
+        </div>
+
+        <!-- Auf iPhone ist der Gutter 22 pt schmal und trägt nur den Marker.
+             Den Griff ersetzt Long-Press auf den Block. -->
+        <div class="scroll" style="padding:10px 18px 14px 10px; display:flex; flex-direction:column">
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start">
+            <div></div>
+            <div>
+              <div class="t-title">Mitochondrien</div>
+              <div class="t-sub c-3" style="margin-top:2px">Vorlesung 4 · Prof. Wendt · heute 11:24</div>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:16px">
+            <div class="t-section c-3" style="text-align:right; padding-right:7px">#</div>
+            <div class="t-section">Aufbau</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:6px">
+            <div></div>
+            <p class="t-body" style="margin:0">Zwei Membranen, die innere zu Cristae gefaltet.
+              <span class="is-strong" style="background:var(--accent-soft); border-radius:5px; padding:1px 4px"><span class="c-3" style="font-weight:400">#</span>zellbiologie</span></p>
+          </div>
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:16px">
+            <div class="t-section c-3" style="text-align:right; padding-right:7px">#</div>
+            <div class="t-section">Endosymbiontentheorie</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:6px">
+            <div></div>
+            <p class="t-body" style="margin:0">Vorfahren waren aufgenommene
+              <span class="is-strong" style="box-shadow:inset 0 -1.5px 0 var(--line-2)"><span class="c-3" style="font-weight:400">@</span>Prokaryoten</span></p>
+          </div>
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:12px">
+            <div class="t-body c-3" style="text-align:right; padding-right:8px; margin-left:-6px">##</div>
+            <div class="t-body is-strong">Belege</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:6px">
+            <div class="t-body c-3" style="text-align:right; padding-right:7px">–</div>
+            <div class="t-body">Eigene ringförmige DNA</div>
+          </div>
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:3px">
+            <div class="t-body c-3" style="text-align:right; padding-right:7px">–</div>
+            <div class="t-body">70-S-Ribosomen wie bei Bakterien</div>
+          </div>
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:3px">
+            <div class="t-body c-3" style="text-align:right; padding-right:7px">–</div>
+            <div class="t-body">Teilung unabhängig vom Zellzyklus</div>
+          </div>
+
+          <!-- ausgewählter Block ohne Griff: Fläche + Marker in der Spur -->
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:12px; background:var(--fill); border-radius:9px; padding:8px 0">
+            <div style="display:flex; justify-content:center; padding-top:2px">
+              <span class="ico" data-ico="grid" style="width:16px;height:16px; color:var(--ink-3)"></span>
+            </div>
+            <p class="t-body" style="margin:0; padding-right:10px">Wendt fragt in der Klausur Matrix / Intermembranraum.
+              <span class="is-strong" style="background:var(--accent-soft); border-radius:5px; padding:1px 4px"><span class="c-3" style="font-weight:400">#</span>prüfung</span></p>
+          </div>
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:center; margin-top:10px">
+            <div style="display:flex; justify-content:flex-end; padding-right:2px"><span class="check"></span></div>
+            <div class="t-body">Abbildung 4.2 abzeichnen</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:center; margin-top:10px">
+            <div></div>
+            <div style="display:flex; align-items:center">
+              <span style="width:2px; height:21px; background:var(--accent); border-radius:1px"></span>
+              <span class="t-sub c-3" style="margin-left:10px">„/" für Blöcke, „#" für Tags</span>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:22px 1fr; align-items:start; margin-top:14px">
+            <div></div>
+            <div>
+              <div style="height:1px; background:var(--line); margin-bottom:10px"></div>
+              <div class="t-sub is-strong" style="margin-bottom:8px">Erwähnt in <span class="c-3 num" style="font-weight:400">3</span></div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px">
+                <span class="chip chip--ghost"><span class="ico" data-ico="link" style="width:13px;height:13px"></span>Prüfungsplan</span>
+                <span class="chip chip--ghost"><span class="ico" data-ico="link" style="width:13px;height:13px"></span>Vorlesung 4</span>
+                <span class="chip chip--ghost"><span class="ico" data-ico="link" style="width:13px;height:13px"></span>Laborprotokoll</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="notes"></span><span class="t-label">Notizen</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Notizen — Steckbrief</h2>
+  <p>Bear kann Ruhe, Craft kann Blöcke, Apple kann Erfassung. Dieser Schirm setzt Bears ausgegraute Randspur und Crafts Blockgutter in denselben 30-pt-Streifen und legt Apples typ-agnostischen Container darüber.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Bear 2 — Textspalte</td><td>Feste maximale Zeilenlänge mit echtem Leerraum daneben. Hier: 30 pt Gutter plus 426 pt Text im Editor; die Breite ist gesetzt, nicht eingestellt.</td></tr>
+    <tr><td>Bear 2 — Randspur</td><td>„#", „##", „–" hängen ausgegraut im linken Rand. Alle Textkanten fluchten, die Struktur liest man in der Spur mit.</td></tr>
+    <tr><td>Bear 2 — Tags im Text</td><td>#zellbiologie und #prüfung sind getippte Wörter im Satz. Der Baum links ist nur ihr Abbild — kein Metadatenfeld, kein Picker.</td></tr>
+    <tr><td>Bear 2.9 — Arbeitsbereich</td><td>Der Chip „Arbeitsbereich #uni" über dem Baum: die App ist global auf einen Kontext reduziert, die Sidebar zeigt nur verwandte Tags.</td></tr>
+    <tr><td>Bear 2 — Info-Panel</td><td>Rechte Spalte mit Inhaltsverzeichnis, Verbindungen, Tags, Zahlen und Anhängen — gestapelt statt in Reitern. Die Backlinks bleiben trotzdem im Text.</td></tr>
+    <tr><td>Craft — Gutter</td><td>Bei Fokus wird aus der Randspur ein 20×20 pt Griff, und der Block bekommt ein flächiges Highlight (Fill 5 %) ohne Rahmen.</td></tr>
+    <tr><td>Craft — Slash-Popover</td><td>Am Cursor verankert, nach unten geöffnet, vier Zeilen in zwei benannten Sektionen, Icon 19 pt plus Label 15 pt. Verdeckt den Cursor nie.</td></tr>
+    <tr><td>Craft — Backlinks</td><td>„Erwähnt in 3" als permanenter Abschnitt am Dokumentende: Trennlinie, Überschrift, Chips.</td></tr>
+    <tr><td>Apple Notes — Container</td><td>Titel = erste Zeile, kein Titelfeld. Aufzählung, Tag, Verknüpfung und eine abhakbare Aufgabe stehen im selben Dokument.</td></tr>
+    <tr><td>Apple Notes — Filter</td><td>Gespeicherte Filter als eigener Sidebar-Abschnitt mit eigenem Symbol — nicht als Ordner mit Zahnrad getarnt.</td></tr>
+    <tr><td>Apple Notes — Galerie</td><td>Zweitansicht mit sichtbarem Umschalter in der Listenkopfzeile, Liste bleibt Standard.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Bears 28+ Themes und die TagCons.</strong> Personalisierung als Ersatz für Entscheidung — und bunte Tag-Icons bringen Rauschen genau in die Fläche, die stark war, weil sie still ist.</li>
+    <li><strong>Bears Typo-Einstellungen</strong> (Schriftgröße, Zeilenhöhe, Zeilenbreite, Absatzabstand). Wer den vertikalen Rhythmus beherrscht, liefert ihn.</li>
+    <li><strong>Bears Backlinks hinter der Wischgeste.</strong> Verbindungen sind Inhalt; sie stehen hier im Lesefluss und zusätzlich als Zahl im Panel.</li>
+    <li><strong>Crafts Styling-Ebene:</strong> vier Schriftfamilien, Textfarben, Highlights, Blockhintergründe, Cover Images, Kartenraster für Unterseiten.</li>
+    <li><strong>Crafts Untertag-Sonderregel</strong> („der erste Schrägstrich zählt, weitere nicht") — Implementierung, als Feature verkauft.</li>
+    <li><strong>Apples drei Organisationsmodelle</strong> nebeneinander. Hier gibt es nur Tags; die gespeicherten Filter sind sichtbar Sicht, nicht Ablage.</li>
+    <li><strong>Apples fehlende Maximalbreite</strong> und das modale „Aa"-Popover, das genau den Text verdeckt, den es formatiert.</li>
+    <li><strong>Modulübergreifendes:</strong> keine Ketten-Karte, keine Übergabe-Leiste, keine Herkunfts-Chips. Dieser Schirm kennt nur seinen eigenen Bereich.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Editor mit echtem Text: zwei Überschriften, drei Aufzählungspunkte, zwei Tags, eine Verknüpfung, eine Aufgabe, drei Backlinks. Liste mit fünf Notizen, Baum mit acht Tags.</td></tr>
+    <tr><td>aktiv / ausgewählt</td><td>Dreifach: „zellbiologie" im Baum (Fläche + Gewicht + Ink-Balken), „Zellorganellen" in der Liste (Fläche + Ring + Gewicht), „Liste" im Umschalter (Fläche + Gewicht). Im Panel ist der gelesene Abschnitt „Aufbau" aktiv markiert.</td></tr>
+    <tr><td>Fokus (Block)</td><td>Der Prüfungshinweis-Block trägt Griff im Gutter plus Flächen-Highlight — zwei Merkmale, kein Rahmen und keine Farbe.</td></tr>
+    <tr><td>Laden</td><td>Am Listenende drei Skelettbalken plus das Wort „Ältere Notizen werden geladen …" — Form und Wort, nie ein Spinner allein.</td></tr>
+    <tr><td>Fehler</td><td>„2 Notizen nicht gesichert" über der Liste: rote Schrift, Warnsymbol und Randlinie — drei Merkmale.</td></tr>
+    <tr><td>leer</td><td>Im Info-Panel der Abschnitt „Anhänge": Fläche, ein Satz und ein erster Schritt („Scan"), keine bloße Illustration.</td></tr>
+  </table>
+
+  <h3>Warum die Kombination trägt</h3>
+  <p>Die drei Vorbilder scheitern jeweils an dem, was ein anderes kann. Bears Editor ist der ruhigste, aber ein Absatz ist dort nicht adressierbar — kein Griff, keine Referenz, keine Verschiebung. Craft macht jeden Absatz zum Block, kauft das aber mit einer Dekorationsebene, die Dokumente untereinander uneinheitlich macht. Apple erfasst am schnellsten von allen und setzt den Text dafür über 900 pt breit, ohne Backlinks und ohne Tastatur-Grammatik.</p>
+  <p>Der entscheidende Kniff dieses Schirms ist, dass Bears Randspur und Crafts Gutter <strong>derselbe Streifen</strong> sind. Bear hält ihn ohnehin frei, damit die Textkanten fluchten; Craft braucht genau dort seinen Griff. Zusammengelegt kostet die vollständige Blockstruktur keinen einzigen zusätzlichen Pixel Fläche und keine einzige zusätzliche Linie im Text: Im Ruhezustand steht in der Spur ein ausgegrautes „#", bei Fokus ein Griff. Damit ist der Editor gleichzeitig so still wie Bear und so beweglich wie Craft.</p>
+  <p>Darüber liegt Apples Verzicht auf Typen: Der Prüfungshinweis, der Tag, die Verknüpfung und die abzuhakende Aufgabe stehen alle in derselben Notiz, die mit ihrer ersten Zeile begonnen hat. Und weil die Organisation getippt wird, braucht der Editor keine einzige Verwaltungsfläche — drei Zeichen („/", „#", „@") ersetzen Ordnerdialog, Tag-Picker und Link-Menü. Was übrig bleibt, ist die Textspalte selbst, in der Breite, die jemand entschieden hat.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe. Tag im Text = Gewicht + Doppelkreuz + 7-%-Tönung. Verknüpfung = Gewicht + Unterstreichung + @-Zeichen. Fokussierter Block = Fläche + Griff. Auswahl in der Liste = Fläche + Ring + Gewicht. Laden = Skelettform + Wort. Fehler = Farbe + Symbol + Randlinie. Der Modul-Dot Notizen erscheint genau einmal, im Sidebar-Kopf, und nie ohne das Wort daneben.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

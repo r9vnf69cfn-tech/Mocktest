@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockups — Übersicht</title>
+<link rel="stylesheet" href="shared/system.css">
+<style>
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 56px 30px 80px; }
+  .lead { max-width: 68ch; }
+  .lead p { font: 400 17px/25px var(--sans); color: var(--ink-2); margin: 0 0 12px; }
+  .lead strong { color: var(--ink-1); font-weight: 600; }
+
+  .sec { margin-top: 52px; }
+  .sec__head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .sec__head h2 { font: 600 20px/26px var(--sans); margin: 0; letter-spacing: -.015em; }
+  .sec__head span { font: 400 15px/20px var(--sans); color: var(--ink-3); }
+  .sec > p { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0 0 20px; max-width: 68ch; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 22px; }
+  .item { display: block; text-decoration: none; color: inherit; }
+  .item__shot {
+    display: block; width: 100%; aspect-ratio: 1194 / 834;
+    border-radius: var(--r-card); overflow: hidden;
+    background: var(--paper); box-shadow: var(--sh-card);
+    transition: transform var(--t-std) var(--ease-spring), box-shadow var(--t-std) var(--ease);
+  }
+  .item__shot img { width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; }
+  .item:hover .item__shot { transform: translateY(-3px); box-shadow: var(--sh-float); }
+  .item__title { font: 600 17px/23px var(--sans); margin: 12px 0 2px; }
+  .item__sub { font: 400 15px/20px var(--sans); color: var(--ink-3); }
+  .item__tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+
+  .doclist { display: flex; flex-direction: column; gap: 2px; }
+  .doclist a {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    border-radius: 11px; text-decoration: none; color: inherit;
+    background: var(--paper); box-shadow: 0 0 0 1px var(--line);
+  }
+  .doclist a:hover { background: var(--fill); }
+  .doclist .ico { color: var(--ink-3); }
+  .doclist b { font: 600 17px/23px var(--sans); }
+  .doclist span { font: 400 15px/20px var(--sans); color: var(--ink-3); }
+
+  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 18px; }
+  .legend > div { display: flex; align-items: flex-start; gap: 9px; }
+  .legend p { font: 400 15px/21px var(--sans); color: var(--ink-2); margin: 0; }
+  .legend b { color: var(--ink-1); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="lead">
+    <h1 class="t-title" style="margin:0 0 14px">Eine All-in-One-App für Studium und Alltag</h1>
+    <p><strong>Fünf Werkzeuge in einem Datenmodell.</strong> Der Kern ist nicht die Menge der Module, sondern dass Inhalte zwischen ihnen fließen: Ein markierter Satz in einer Vorlesungsnotiz wird zur Lernkarte, die morgen fällig ist — und behält den Weg dorthin sichtbar.</p>
+    <p>Die Oberfläche ist Papier und Grau. Der einzige Akzent ist Ink — fast-schwarz im hellen, fast-weiß im dunklen Modus — und er hat genau drei Aufgaben: aktiven Zustand, primäre Aktion, Auswahl zeigen. Alle Farbe, die man sonst sieht, gehört dem Nutzer: seine Tinte, seine Fotos, seine Cover.</p>
+  </div>
+
+  <div class="legend">
+    <div><span class="dot dot--canvas" style="margin-top:7px"></span><p><b>Canvas</b><br>Handschrift und Skizze</p></div>
+    <div><span class="dot dot--notes" style="margin-top:7px"></span><p><b>Notizen</b><br>Block-Editor mit Verlinkung</p></div>
+    <div><span class="dot dot--journal" style="margin-top:7px"></span><p><b>Journal</b><br>Einträge mit Kontext</p></div>
+    <div><span class="dot dot--tasks" style="margin-top:7px"></span><p><b>Aufgaben</b><br>Geplant und Deadline getrennt</p></div>
+    <div><span class="dot dot--cards" style="margin-top:7px"></span><p><b>Lernkarten</b><br>Wiederholung nach Termin</p></div>
+  </div>
+
+  <!-- ══ Der Entwurf ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Der Entwurf</h2><span>zwölf Screens · je hell und dunkel, je iPad und iPhone</span></div>
+    <p>Die verbindliche Zielfassung. Jeder Screen zeigt beide Größenklassen nebeneinander und lässt sich im Mockup zwischen hell und dunkel sowie zwischen zwei Dynamic-Type-Stufen umschalten.</p>
+    <div class="grid" id="gridNext"></div>
+  </section>
+
+  <!-- ══ Best-of ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Best-of der Konkurrenz</h2><span>sechs Bereiche · je drei Vorbilder zusammengeführt</span></div>
+    <p>Vorstufe des Entwurfs: Pro Bereich ist ein Screen gebaut, der die stärksten Strukturideen von drei bestehenden Apps kombiniert — noch ohne den modulübergreifenden Fluss, der die eigene App ausmacht. Diese Mockups zeigen, was der Stand der Technik hergibt.</p>
+    <div class="grid" id="gridBest"></div>
+  </section>
+
+  <!-- ══ Canvas ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Canvas</h2><span>bereits gebaut, mit funktionierender Zeichen-Engine</span></div>
+    <p>Das sechste Modul existiert als lauffähiges Mockup mit echter Engine: unendliche Fläche, elf Werkzeuge, Formerkennung, Lasso. Es ist die Referenz für die Materialsprache der übrigen Screens.</p>
+    <div class="doclist">
+      <a href="../index.html"><span class="ico" data-ico="canvas"></span><div><b>Canvas — Whiteboard</b><br><span>Zeichenfläche, Werkzeugleiste, Formerkennung</span></div></a>
+    </div>
+  </section>
+
+  <!-- ══ Dokumente ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Dokumente</h2></div>
+    <div class="doclist">
+      <a href="../docs/01_konkurrenz-anatomie.md"><span class="ico" data-ico="search"></span><div><b>Konkurrenz-Anatomie</b><br><span>18 Apps in sechs Bereichen strukturell zerlegt</span></div></a>
+      <a href="../docs/02_das-ist-die-app.md"><span class="ico" data-ico="info"></span><div><b>Das ist die App</b><br><span>Was sie ist, für wen, wie sie aussieht und warum — plus Award-Bilanz</span></div></a>
+    </div>
+  </section>
+</div>
+
+<script src="shared/mock.js"></script>
+<script>
+(function () {
+  const NEXT = [
+    ['today', 'Heute', 'Tageseinstieg mit der Ketten-Karte', ['Innovation', 'Interaktion']],
+    ['library', 'Bibliothek', 'Cover-Raster, Smart-Ordner, Kontextmenü', ['Visuals']],
+    ['notes-list', 'Notizen-Liste', 'Tag-Baum, Mehrfachauswahl, Übergabe', ['Innovation']],
+    ['note-editor', 'Notiz-Editor', 'Blöcke, Wiki-Links, Lückentext-Karte im Flug', ['Delight', 'Innovation']],
+    ['journal-home', 'Journal-Home', 'Timeline, Streak, Rückblick', ['Delight']],
+    ['journal-entry', 'Journal-Eintrag', 'Fotos, Audio, Stimmung und Energie', ['Delight', 'Inklusion']],
+    ['tasks', 'Aufgaben', 'Zonen, natürliche Sprache, Geplant vs. Deadline', ['Interaktion']],
+    ['task-detail', 'Aufgaben-Detail', 'Detail klappt in der Liste auf', ['Interaktion']],
+    ['flashcards-home', 'Lernkarten-Start', 'Decks, Zähler, Heatmap', ['Visuals']],
+    ['review-session', 'Review-Session', 'Karte im Flip, Termin im Knopf', ['Delight']],
+    ['graph', 'Graph', 'Alle Objekte als Netz', ['Innovation']],
+    ['settings', 'Einstellungen', 'Design-Vorschau, Speicher, Sync-Fehler', ['Inklusion']],
+  ];
+  const BEST = [
+    ['library', 'Bibliothek', 'GoodNotes 6 · Craft · Apple Notes'],
+    ['today', 'Today', 'Things 3 · Apple Journal · Notion'],
+    ['notes', 'Notizen', 'Bear 2 · Craft · Apple Notes'],
+    ['journal', 'Journal', 'Day One · Apple Journal · Journey'],
+    ['tasks', 'Aufgaben', 'Things 3 · Todoist · TickTick'],
+    ['flashcards', 'Lernkarten', 'Anki · Quizlet · RemNote'],
+  ];
+
+  const card = (href, shot, title, sub, tags) => {
+    const a = document.createElement('a');
+    a.className = 'item';
+    a.href = href;
+    a.innerHTML =
+      '<span class="item__shot"><img src="' + shot + '" alt="" loading="lazy"></span>' +
+      '<div class="item__title">' + title + '</div>' +
+      '<div class="item__sub">' + sub + '</div>' +
+      (tags ? '<div class="item__tags">' + tags.map(t => '<span class="chip">' + t + '</span>').join('') + '</div>' : '');
+    return a;
+  };
+
+  const gn = document.getElementById('gridNext');
+  NEXT.forEach(([f, t, s, tags]) =>
+    gn.appendChild(card('app-next/' + f + '.html', '_renders/app-next-' + f + '-ipad-hell.png', t, s, tags)));
+
+  const gb = document.getElementById('gridBest');
+  BEST.forEach(([f, t, s]) =>
+    gb.appendChild(card('best-of/' + f + '.html', '_renders/best-of-' + f + '-ipad-hell.png', t, s)));
+
+  // Vorschaubilder folgen dem Modus des Betrachters
+  const swap = () => {
+    const dark = document.documentElement.dataset.theme === 'dark';
+    document.querySelectorAll('.item__shot img').forEach((img) => {
+      img.src = img.src.replace(/-(hell|dunkel)\.png$/, dark ? '-dunkel.png' : '-hell.png');
+    });
+  };
+  new MutationObserver(swap).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>
+</body>
+</html>

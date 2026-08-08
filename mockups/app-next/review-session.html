@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review-Session — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Review-Session
+
+ÜBERNOMMEN
+· Anki — die vier Bewertungsstufen mit echter Intervall-Vorschau (Nochmal ·
+  Schwer · Gut · Leicht, jeweils mit dem Datum, das daraus folgt). Übernommen,
+  weil es die einzige Stelle in einer Lern-App ist, an der der Planer sich
+  erklärt, bevor man ihn bedient: Emil sieht vor dem Tippen, dass „Gut" die
+  Karte fünf Tage wegräumt und „Schwer" nur zwei. Bewertung: sachlich die
+  beste Lösung im Feld — aber bei Anki stehen die Intervalle als graue
+  Kleinschrift unter Knöpfen in vier Farben. Hier trägt jeder Knopf zwei
+  Zeilen (Wort + Folge), und die Empfehlung ist die Ink-Fläche, nicht Grün.
+· Quizlet — die Flip-Animation. Übernommen, weil das Umdrehen der einzige
+  Moment ist, in dem eine Lernkarte sich wie ein Gegenstand anfühlt; ohne ihn
+  ist die Sitzung ein Formular. Bewertung: Quizlet macht die Bewegung richtig,
+  hängt sie aber an eine Karte ohne Vorgeschichte und ohne Planer. Hier dreht
+  sich dasselbe Blatt — nur ist es aus einer Notiz entstanden und weiß, wann
+  es wiederkommt. Der Schirm zeigt die letzten Grad der Drehung.
+· RemNote — die Herkunft bleibt während des Lernens sichtbar. Übernommen als
+  Chip „aus „Zellbiologie"" unten auf dem Blatt, der zur Stelle in der Notiz
+  springt. Bewertung: konzeptionell die stärkste der drei Vorlagen — wer beim
+  dritten „Nochmal" merkt, dass er die Notiz nachlesen muss, soll nicht die
+  Sitzung verlassen müssen. RemNote versteckt das hinter Referenz-Syntax; hier
+  ist es ein Chip mit einem Ziel.
+· Notability / Freeform (als Gedanke, nicht als Oberfläche) — die Nebenfläche
+  zum Mitrechnen. Übernommen als eingelassenes Feld neben der Karte, in dem
+  Emil mit dem Pencil skizziert, während er antwortet. Bewertung: dass Lernen
+  und Kritzeln in getrennten Apps stattfinden, ist eine Zumutung des
+  Werkzeugkastens, keine des Stoffs.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Ankis vier Buntfarben für die vier Knöpfe (rot/grau/grün/blau). Die Stufen
+  sind durch Wort, Reihenfolge und Intervall schon dreifach unterschieden;
+  Farbe wäre das vierte Merkmal und für Farbfehlsichtige das einzige, das
+  fehlschlägt. Nur die Empfehlung trägt Fläche.
+· Ankis Statistik-Vorhang nach jeder Karte (Ease-Faktor, Lapses, Intervall in
+  Tagen als Rohwert). Der Planer erklärt sich hier in Alltagssprache und nur
+  dort, wo entschieden wird.
+· Quizlets Sterne, Punkte, Fortschritts-Feuerwerk und Sound am Sitzungsende —
+  Belohnung für Anwesenheit statt für Arbeit.
+· Der ganze App-Rahmen: In der Sitzung gibt es auf dem iPad keine Sidebar. Ein
+  Schirm, der zum Konzentrieren da ist, darf keine acht Absprünge anbieten.
+  Das X oben links führt zurück nach „Lernkarten" — ein Ziel, ein Weg.
+· Duolingos Herzen/Leben — künstliche Verknappung, die das Lernen unterbricht.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Die Karte ist ein Blatt Papier mit Vorgeschichte, und man sieht sie sich
+bewegen. Der Schirm ist im letzten Drittel der Drehung eingefroren: das Blatt
+steht noch schräg im Raum, der Stapel darunter liegt flach, der Schatten
+wandert mit. Gleichzeitig läuft neben der Karte die Zeichenfläche mit — die
+Skizze zum Endoplasmatischen Retikulum ist mitten im Strich, die Tinte am
+Ende der Linie noch nass. Zwei Bewegungen, ein Moment.
+Und: die vier Knöpfe sagen nicht „Gut", sondern „Gut — in 5 Tagen". Der
+Planer ist keine Blackbox, die man nachträglich in den Einstellungen sucht.
+
+ADA-KATEGORIE: Delight (die eingefrorene Drehung samt mitwanderndem Schatten
+und die nasse Tinte in der Nebenfläche) und Interaktion (jeder Bewertungsknopf
+zeigt seine Folge, bevor er gedrückt wird; die Herkunft ist ein Sprungziel
+mitten in der Sitzung).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Titel/Fließtext  ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Sekundärtext     ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
+  Metadaten        ink-3 auf Grund     4,8:1   (hell) ·  4,9:1 (dunkel)
+  CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Intervall im primären Knopf: accent-on bei 74 % Deckkraft auf Ink ≈ 11,4:1.
+  Die Handschrift in der Zeichenfläche ist ink-1 bei 78 % Deckkraft auf
+  paper-2 — Zeichnung, kein Textträger; die Aussage steht als Wort daneben.
+  Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+Alle Sonderformen (Perspektive und rotateY der Karte, Kartenstapel, gepunktete
+Zeichenfläche, Handschrift-Pfade, zweizeilige Knöpfe) sind inline gesetzt —
+system.css bleibt unangetastet.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Review-Session</h1>
+  <p>Die Lernsitzung. Ein Blatt in der Mitte, im letzten Drittel seiner Drehung erwischt — darunter vier Knöpfe, die nicht nur eine Bewertung annehmen, sondern vorher sagen, was daraus folgt.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Vollbild-Fokus, keine Sidebar</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <main class="content">
+
+          <!-- Schmale Leiste: Schließen · Fortschritt · Zurücknehmen · Einstellungen -->
+          <div class="navbar" style="padding:6px 20px">
+            <button class="iconbtn"><span class="ico" data-ico="close"></span></button>
+            <div class="navbar__spacer"></div>
+            <div style="width:520px; display:flex; flex-direction:column; gap:6px">
+              <div style="display:flex; align-items:baseline; gap:10px">
+                <span class="t-label c-1 num">7 von 23</span>
+                <span class="t-label c-3">Karten in dieser Sitzung</span>
+                <div style="flex:1"></div>
+                <span class="t-label c-3">noch ca. 8 Minuten</span>
+              </div>
+              <div class="bar" style="height:4px"><div class="bar__fill" style="width:26%"></div></div>
+            </div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="undo"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="settings"></span></button>
+          </div>
+
+          <div class="scroll" style="padding:14px 24px 16px; display:flex; flex-direction:column">
+            <div style="flex:1 1 auto; min-height:0; display:grid; grid-template-columns:1fr 366px; gap:22px">
+
+              <!-- ══ Linke Spalte: das Blatt und die Bewertung ══ -->
+              <div style="display:flex; flex-direction:column; gap:16px; min-width:0">
+
+                <!-- Kartenbühne — die Drehung ist eingefroren -->
+                <div style="flex:1 1 auto; min-height:0; display:flex; align-items:center; justify-content:center">
+                  <div style="position:relative; width:700px; height:410px; perspective:1700px; perspective-origin:54% 46%">
+
+                    <!-- der Stapel darunter: die nächsten Karten liegen flach -->
+                    <div style="position:absolute; left:44px; right:44px; top:32px; height:378px; border-radius:14px; background:var(--paper); box-shadow:var(--sh-card); opacity:.4"></div>
+                    <div style="position:absolute; left:24px; right:24px; top:17px; height:388px; border-radius:14px; background:var(--paper); box-shadow:var(--sh-card); opacity:.7"></div>
+
+                    <!-- Bodenschatten wandert mit der Drehung nach links -->
+                    <div style="position:absolute; left:-16px; right:70px; top:374px; height:26px; border-radius:50%; background:rgba(22,24,28,.16); filter:blur(14px)"></div>
+
+                    <!-- DAS BLATT: rotateY(18°) — die letzten Grad vor dem Einrasten -->
+                    <div class="card" style="position:absolute; left:0; top:0; width:700px; height:400px; padding:24px 32px 20px;
+                                             border-radius:16px; overflow:hidden;
+                                             transform:rotateY(18deg); transform-origin:50% 50%;
+                                             box-shadow:var(--sh-float), -26px 16px 46px rgba(22,24,28,.10);
+                                             display:flex; flex-direction:column">
+
+                      <!-- Lichtabfall auf der abgewandten (rechten) Hälfte — macht die Kippung lesbar -->
+                      <div style="position:absolute; right:0; top:0; bottom:0; width:46%; pointer-events:none;
+                                  background:linear-gradient(90deg, rgba(22,24,28,0), rgba(22,24,28,.09))"></div>
+
+                      <div style="position:relative; display:flex; align-items:center; gap:8px">
+                        <span class="dot dot--cards"></span>
+                        <span class="t-label c-3" style="white-space:nowrap">Lernkarte · Deck „Zellbiologie"</span>
+                        <div style="flex:1"></div>
+                        <span class="t-label c-3 num" style="white-space:nowrap">zuletzt vor 3 Tagen · 4 × richtig</span>
+                      </div>
+
+                      <div class="t-section" style="position:relative; margin-top:18px; max-width:56ch">
+                        Welche Funktion hat das Endoplasmatische Retikulum?
+                      </div>
+
+                      <!-- die Falzkante: hier ist das Blatt umgeschlagen -->
+                      <div style="position:relative; margin:16px 0 16px; height:1px; background:var(--line-2)"></div>
+
+                      <p class="t-body serif c-1" style="position:relative; margin:0; max-width:60ch">
+                        Das raue ER trägt Ribosomen auf seiner Membran und faltet die dort entstehenden Proteine, bevor sie zum Golgi-Apparat weiterwandern. Das glatte ER hat keine Ribosomen: es baut Lipide auf und hält den Calcium-Vorrat der Zelle bereit.
+                      </p>
+
+                      <!-- Herkunft, die trägt: der Satz, aus dem die Karte gemacht wurde -->
+                      <div style="position:relative; margin-top:18px; padding:11px 14px; border-radius:10px;
+                                  background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line)">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px">
+                          <span class="dot dot--notes"></span>
+                          <span class="t-label c-3">SO STAND ES IN DEINER NOTIZ</span>
+                        </div>
+                        <p class="t-sub serif c-2" style="margin:0; max-width:66ch">„Das ER ist das größte Membransystem der Zelle — raues ER mit Ribosomen für die Faltung, glattes ER für Lipide und den Calcium-Speicher."</p>
+                      </div>
+
+                      <div style="flex:1"></div>
+
+                      <div style="position:relative; display:flex; align-items:center; gap:8px">
+                        <button class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie"<span class="ico" data-ico="chevR" style="width:13px;height:13px"></span></button>
+                        <span class="chip">#uni/bio</span>
+                        <div style="flex:1"></div>
+                        <span class="chip chip--ghost"><span class="ico" data-ico="link" style="width:13px;height:13px"></span>Golgi-Apparat</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Vier Stufen mit echter Vorschau -->
+                <div style="display:flex; justify-content:flex-end; margin-bottom:-8px">
+                  <span class="t-label c-3">Tastatur: Leertaste dreht um · 1 – 4 bewerten</span>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px">
+                  <button class="btn" style="height:76px; flex-direction:column; gap:3px; border-radius:13px; padding:0 8px">
+                    <span class="t-body is-strong">Nochmal</span>
+                    <span class="t-sub c-3 num">&lt; 1 Min</span>
+                  </button>
+                  <button class="btn" style="height:76px; flex-direction:column; gap:3px; border-radius:13px; padding:0 8px">
+                    <span class="t-body is-strong">Schwer</span>
+                    <span class="t-sub c-3 num">2 Tage</span>
+                  </button>
+                  <button class="btn btn--primary" style="height:76px; flex-direction:column; gap:3px; border-radius:13px; padding:0 8px; box-shadow:0 2px 10px rgba(22,24,28,.20)">
+                    <span class="t-body is-strong">Gut</span>
+                    <span class="t-sub num" style="color:var(--accent-on); opacity:.74">5 Tage</span>
+                  </button>
+                  <button class="btn" style="height:76px; flex-direction:column; gap:3px; border-radius:13px; padding:0 8px">
+                    <span class="t-body is-strong">Leicht</span>
+                    <span class="t-sub c-3 num">12 Tage</span>
+                  </button>
+                </div>
+
+                <!-- Zusatzaktionen -->
+                <div style="display:flex; align-items:center; gap:4px">
+                  <button class="btn btn--quiet btn--sm" style="white-space:nowrap; flex:none"><span class="ico" data-ico="clock" style="width:16px;height:16px"></span>Bis morgen zurücklegen</button>
+                  <button class="btn btn--quiet btn--sm" style="white-space:nowrap; flex:none"><span class="ico" data-ico="moon" style="width:16px;height:16px"></span>Aussetzen</button>
+                  <button class="btn btn--quiet btn--sm" style="white-space:nowrap; flex:none"><span class="ico" data-ico="edit" style="width:16px;height:16px"></span>Bearbeiten</button>
+                  <div style="flex:1"></div>
+                  <span class="ico c-3" data-ico="cloud" style="width:15px;height:15px"></span>
+                  <span class="t-label c-3" style="white-space:nowrap">Gesichert</span>
+                </div>
+              </div>
+
+              <!-- ══ Rechte Spalte: mitrechnen und mitzählen ══ -->
+              <div style="display:flex; flex-direction:column; gap:14px; min-width:0">
+
+                <!-- Zeichenfläche — der Strich ist noch nicht trocken -->
+                <section class="card" style="flex:1 1 auto; min-height:0; display:flex; flex-direction:column; padding:14px">
+                  <div class="card__head" style="margin-bottom:10px">
+                    <span class="dot dot--canvas"></span>
+                    <span class="t-label c-3" style="white-space:nowrap">MITRECHNEN</span>
+                    <div style="flex:1"></div>
+                    <span class="t-label c-3" style="white-space:nowrap">bleibt an der Karte</span>
+                  </div>
+
+                  <div style="flex:1 1 auto; min-height:0; border-radius:12px; background:var(--paper-2);
+                              box-shadow:inset 0 0 0 1px var(--line), inset 0 2px 6px rgba(22,24,28,.05);
+                              background-image:radial-gradient(var(--line-2) .9px, transparent .9px);
+                              background-size:18px 18px; background-position:9px 9px; overflow:hidden">
+                    <svg viewBox="0 0 336 200" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" aria-hidden="true"
+                         style="display:block; color:var(--ink-1)">
+                      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" opacity=".78">
+                        <!-- Zellkern, mit der Hand gezogen -->
+                        <path d="M64 62c-21-3-33 20-23 38 9 17 41 17 49-3 7-18-6-33-26-35Z" stroke-width="2.3"/>
+                        <path d="M52 74c6-5 15-6 21-2" stroke-width="1.5" opacity=".6"/>
+                        <!-- ER-Membranen: zwei parallele Wellen -->
+                        <path d="M96 74c26-17 50 17 76-3 24-18 46 14 70-5" stroke-width="2.3"/>
+                        <path d="M97 92c26-17 50 17 76-3 24-18 46 14 70-5" stroke-width="2"/>
+                        <!-- Ribosomen auf der rauen Seite -->
+                        <circle cx="112" cy="68" r="2.6" fill="currentColor" stroke="none"/>
+                        <circle cx="134" cy="69" r="2.6" fill="currentColor" stroke="none"/>
+                        <circle cx="158" cy="80" r="2.6" fill="currentColor" stroke="none"/>
+                        <circle cx="182" cy="66" r="2.6" fill="currentColor" stroke="none"/>
+                        <circle cx="206" cy="60" r="2.6" fill="currentColor" stroke="none"/>
+                        <circle cx="230" cy="72" r="2.6" fill="currentColor" stroke="none"/>
+                        <!-- Pfeil zum Golgi -->
+                        <path d="M120 132c30-11 62-16 96-14" stroke-width="2"/>
+                        <path d="m206 111 12 7-12 8" stroke-width="2"/>
+                        <!-- Golgi: gestapelte Bögen -->
+                        <path d="M238 106c14-6 30-6 44 1" stroke-width="2.2"/>
+                        <path d="M240 116c14-6 30-6 44 1" stroke-width="2.2"/>
+                        <path d="M243 126c13-6 29-6 43 1" stroke-width="2.2"/>
+                        <!-- Vesikel, die vom Golgi abschnüren -->
+                        <circle cx="252" cy="150" r="7" stroke-width="1.9"/>
+                        <circle cx="272" cy="162" r="5" stroke-width="1.9"/>
+                        <circle cx="290" cy="172" r="3.4" stroke-width="1.8"/>
+                        <path d="M262 140c8-4 16-8 22-14" stroke-width="1.6" opacity=".7"/>
+                        <!-- Unterstreichung, zweimal gezogen -->
+                        <path d="M54 158c38 7 84 8 124 1" stroke-width="2"/>
+                        <path d="M57 164c38 7 82 8 121 2" stroke-width="1.4" opacity=".55"/>
+                      </g>
+                      <!-- der laufende Strich: Tinte läuft zum Stift hin aus -->
+                      <path d="M178 167c22-1 44-4 64-9" fill="none" stroke="currentColor" stroke-width="1.9"
+                            stroke-linecap="round" opacity=".34"/>
+                      <circle cx="242" cy="158" r="3.4" fill="currentColor" opacity=".5"/>
+                    </svg>
+                  </div>
+
+                  <div style="display:flex; align-items:center; gap:6px; margin-top:10px">
+                    <span class="chip chip--solid"><span class="ico" data-ico="edit" style="width:13px;height:13px"></span>Stift</span>
+                    <span class="chip chip--ghost">Radierer</span>
+                    <span class="chip chip--ghost">Lineal</span>
+                    <div style="flex:1"></div>
+                    <button class="btn btn--quiet btn--sm" style="padding:0 8px">Leeren</button>
+                  </div>
+                </section>
+
+                <!-- Diese Sitzung in Zahlen -->
+                <section class="card" style="padding:14px">
+                  <div class="card__head" style="margin-bottom:10px"><span class="t-label c-3">DIESE SITZUNG</span></div>
+                  <div style="display:flex; flex-direction:column; gap:9px">
+                    <div style="display:flex; align-items:baseline; gap:8px">
+                      <span class="count"><span class="count__n num">6</span><span class="count__w t-sub">bewertet</span></span>
+                      <div style="flex:1"></div>
+                      <span class="count"><span class="count__n num">2</span><span class="count__w t-sub">im Nochmal-Stapel</span></span>
+                    </div>
+                    <div style="height:1px; background:var(--line)"></div>
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
+                      <span class="t-sub c-3 num">8 Karten</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="origin"><span class="dot dot--cards"></span>Deck „Anatomie Grundlagen"</span>
+                      <span class="t-sub c-3 num">15</span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Was gerade entschieden wurde — der Weg zurück -->
+                <section class="card" style="padding:6px 6px 8px">
+                  <div style="display:flex; align-items:center; gap:8px; padding:8px 8px 4px">
+                    <span class="t-label c-3">ZULETZT BEWERTET</span>
+                    <div style="flex:1"></div>
+                    <button class="btn btn--quiet btn--sm" style="padding:0 8px"><span class="ico" data-ico="undo" style="width:15px;height:15px"></span>Zurücknehmen</button>
+                  </div>
+                  <div class="row" style="min-height:44px">
+                    <div class="row__main"><span class="t-body">Osmose</span></div>
+                    <div class="row__meta"><span class="t-sub c-3 num">in 5 Tagen</span><span class="chip">Gut</span></div>
+                  </div>
+                  <div class="row" style="min-height:44px">
+                    <div class="row__main"><span class="t-body">Golgi-Apparat</span></div>
+                    <div class="row__meta"><span class="t-sub c-3">gleich wieder</span><span class="chip chip--ghost">Nochmal</span></div>
+                  </div>
+                  <div class="row" style="min-height:44px">
+                    <div class="row__main"><span class="t-body">Zellmembran</span></div>
+                    <div class="row__meta"><span class="t-sub c-3 num">in 12 Tagen</span><span class="chip">Leicht</span></div>
+                  </div>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Karte im Vollbild, Bewertung im Daumenbereich</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+
+        <!-- Schmale Leiste: Schließen · Fortschritt · Zurücknehmen -->
+        <div class="navbar" style="padding:4px 12px 6px; min-height:0">
+          <button class="iconbtn"><span class="ico" data-ico="close"></span></button>
+          <div style="flex:1 1 auto; display:flex; flex-direction:column; gap:5px; min-width:0">
+            <div style="display:flex; align-items:baseline; gap:8px">
+              <span class="t-label c-1 num">7 von 23</span>
+              <div style="flex:1"></div>
+              <span class="t-label c-3">ca. 8 Min</span>
+            </div>
+            <div class="bar" style="height:4px"><div class="bar__fill" style="width:26%"></div></div>
+          </div>
+          <button class="iconbtn"><span class="ico" data-ico="undo"></span></button>
+        </div>
+
+        <div class="scroll" style="padding:12px 16px 10px; display:flex; flex-direction:column; gap:10px">
+
+          <!-- Das Blatt, ebenfalls im letzten Drittel der Drehung -->
+          <div style="flex:1 1 auto; min-height:0; perspective:1100px; perspective-origin:56% 46%; position:relative">
+            <div style="position:absolute; left:12px; right:12px; top:14px; bottom:-8px; border-radius:14px; background:var(--paper); box-shadow:var(--sh-card); opacity:.55"></div>
+            <div class="card" style="position:absolute; inset:0; padding:18px 18px 14px; border-radius:16px; overflow:hidden;
+                                     transform:rotateY(14deg); transform-origin:50% 50%;
+                                     box-shadow:var(--sh-float), -14px 12px 30px rgba(22,24,28,.10);
+                                     display:flex; flex-direction:column">
+              <div style="position:absolute; right:0; top:0; bottom:0; width:44%; pointer-events:none;
+                          background:linear-gradient(90deg, rgba(22,24,28,0), rgba(22,24,28,.09))"></div>
+
+              <div style="position:relative; flex:none; display:flex; align-items:center; gap:8px">
+                <span class="dot dot--cards"></span>
+                <span class="t-label c-3">Lernkarte · „Zellbiologie"</span>
+              </div>
+
+              <div class="t-section" style="position:relative; flex:none; margin-top:12px">
+                Welche Funktion hat das Endoplasmatische Retikulum?
+              </div>
+
+              <div style="position:relative; flex:none; margin:12px 0 10px; height:1px; background:var(--line-2)"></div>
+
+              <p class="t-body serif c-1" style="position:relative; flex:none; margin:0">
+                Das raue ER trägt Ribosomen und faltet die dort entstehenden Proteine, bevor sie zum Golgi-Apparat wandern. Das glatte ER baut Lipide auf und speichert Calcium.
+              </p>
+
+              <!-- dieselbe Herkunft wie auf dem iPad, auf eine Zeile gefaltet -->
+              <div style="position:relative; flex:none; margin-top:12px; padding:8px 11px; border-radius:10px;
+                          background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line);
+                          display:flex; gap:8px; align-items:center">
+                <span class="dot dot--notes"></span>
+                <p class="t-sub serif c-2 clamp-1" style="margin:0">„Größtes Membransystem der Zelle."</p>
+              </div>
+
+              <div style="flex:1 1 auto; min-height:0"></div>
+
+              <div style="position:relative; flex:none; display:flex; align-items:center; gap:8px">
+                <button class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie"<span class="ico" data-ico="chevR" style="width:13px;height:13px"></span></button>
+                <div style="flex:1"></div>
+                <span class="t-label c-3 num">4 × richtig</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mitrechnen: derselbe Strich, eingeklappt auf einen Streifen -->
+          <button style="flex:none; height:70px; border-radius:12px; background:var(--paper-2);
+                         box-shadow:inset 0 0 0 1px var(--line); display:flex; align-items:center; gap:8px;
+                         padding:0 10px 0 12px; overflow:hidden; text-align:left; width:100%">
+            <span class="dot dot--canvas"></span>
+            <span class="t-label c-3" style="flex:none">Canvas · Mitrechnen</span>
+            <span style="flex:1 1 auto; min-width:0; height:60px; display:block">
+              <svg viewBox="0 0 240 60" width="100%" height="60" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="display:block; color:var(--ink-1)">
+                <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" opacity=".78">
+                  <path d="M24 18c-12-2-19 11-13 21 6 10 23 10 28-1 4-10-4-19-15-20Z" stroke-width="2"/>
+                  <path d="M46 20c16-11 31 11 47-2 15-12 29 9 44-3" stroke-width="2"/>
+                  <path d="M47 31c16-11 31 11 47-2 15-12 29 9 44-3" stroke-width="1.7"/>
+                  <circle cx="58" cy="16" r="2.1" fill="currentColor" stroke="none"/>
+                  <circle cx="80" cy="20" r="2.1" fill="currentColor" stroke="none"/>
+                  <circle cx="104" cy="13" r="2.1" fill="currentColor" stroke="none"/>
+                  <circle cx="128" cy="18" r="2.1" fill="currentColor" stroke="none"/>
+                  <path d="M60 46c26-9 54-13 84-11" stroke-width="1.8"/>
+                  <path d="m138 39 9 5-9 6" stroke-width="1.8"/>
+                  <path d="M160 32c11-5 24-5 35 1" stroke-width="1.9"/>
+                  <path d="M162 41c11-5 24-5 35 1" stroke-width="1.9"/>
+                  <circle cx="176" cy="53" r="4.4" stroke-width="1.7"/>
+                  <circle cx="192" cy="56" r="3" stroke-width="1.7"/>
+                </g>
+                <path d="M198 47c12-3 24-8 34-15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" opacity=".34"/>
+                <circle cx="232" cy="32" r="3" fill="currentColor" opacity=".5"/>
+              </svg>
+            </span>
+            <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+          </button>
+
+          <!-- Der Wischhinweis: zwei Wege, eine Zeile -->
+          <div style="flex:none; display:flex; align-items:center; justify-content:center">
+            <span class="t-label c-3">← nochmal · gut →</span>
+          </div>
+
+          <!-- Vier Stufen als 2 × 2 im Daumenbereich -->
+          <div style="flex:none; display:grid; grid-template-columns:1fr 1fr; gap:10px">
+            <button class="btn" style="height:66px; flex-direction:column; gap:2px; border-radius:13px">
+              <span class="t-body is-strong">Nochmal</span>
+              <span class="t-sub c-3 num">&lt; 1 Min</span>
+            </button>
+            <button class="btn" style="height:66px; flex-direction:column; gap:2px; border-radius:13px">
+              <span class="t-body is-strong">Schwer</span>
+              <span class="t-sub c-3 num">2 Tage</span>
+            </button>
+            <button class="btn btn--primary" style="height:66px; flex-direction:column; gap:2px; border-radius:13px; box-shadow:0 2px 10px rgba(22,24,28,.20)">
+              <span class="t-body is-strong">Gut</span>
+              <span class="t-sub num" style="color:var(--accent-on); opacity:.74">5 Tage</span>
+            </button>
+            <button class="btn" style="height:66px; flex-direction:column; gap:2px; border-radius:13px">
+              <span class="t-body is-strong">Leicht</span>
+              <span class="t-sub c-3 num">12 Tage</span>
+            </button>
+          </div>
+
+          <!-- Zusatzaktionen -->
+          <div style="flex:none; display:flex; align-items:center; justify-content:space-between; gap:2px">
+            <button class="btn btn--quiet btn--sm" style="padding:0 8px; white-space:nowrap">Zurücklegen</button>
+            <button class="btn btn--quiet btn--sm" style="padding:0 8px; white-space:nowrap">Aussetzen</button>
+            <button class="btn btn--quiet btn--sm" style="padding:0 8px; white-space:nowrap">Bearbeiten</button>
+          </div>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Review-Session — Steckbrief</h2>
+  <p>Der Schirm, an dem sich entscheidet, ob eine Lern-App Freude macht. Alles Nebensächliche ist weg — auf dem iPad gibt es hier keine Sidebar. Übrig bleiben: ein Blatt, vier Knöpfe, die ihre Folgen nennen, und eine Fläche zum Mitkritzeln.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Anki</td><td>Vier Stufen mit echter Intervall-Vorschau. <strong>Bewertung: sachlich die beste Lösung im Feld.</strong> Übernommen mit zwei Zeilen je Knopf („Gut" / „5 Tage") statt grauer Kleinschrift — und ohne die vier Buntfarben, weil Wort, Reihenfolge und Intervall die Stufen bereits dreifach unterscheiden.</td></tr>
+    <tr><td>Quizlet</td><td>Die Flip-Animation. <strong>Bewertung: die richtige Bewegung an der falschen Karte.</strong> Übernommen als eingefrorener Zwischenzustand — das Blatt steht bei rotateY(18°), Stapel und Bodenschatten machen die Drehung lesbar. Nicht übernommen: Punkte, Sterne, Sound.</td></tr>
+    <tr><td>RemNote</td><td>Herkunft bleibt während des Lernens sichtbar. <strong>Bewertung: konzeptionell die reifste Vorlage, versteckt hinter Syntax.</strong> Übernommen doppelt: als Chip „aus „Zellbiologie"" unten auf dem Blatt (ein Sprungziel, kein Konzept) und als Kasten „So stand es in deiner Notiz" mit dem Satz, aus dem die Karte gemacht wurde. Wer beim dritten „Nochmal" hängt, liest nach, ohne die Sitzung zu verlassen.</td></tr>
+    <tr><td>Notability / Freeform</td><td>Nur als Gedanke: die Nebenfläche zum Mitrechnen. Hier ein eingelassenes Feld neben der Karte, dessen Skizze bei der Karte bleibt und ins Canvas-Modul gehört (Dot + Wort).</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li>Ankis vier Buntfarben für die vier Knöpfe — Farbe wäre das Merkmal, das für Farbfehlsichtige als erstes ausfällt. Nur die Empfehlung „Gut" trägt Fläche.</li>
+    <li>Ankis Roh-Statistik nach jeder Karte (Ease, Lapses, Intervall in Tagen als Zahl ohne Satz) — der Planer erklärt sich dort, wo entschieden wird, und in Alltagssprache.</li>
+    <li>Quizlets Punkte, Sterne und Sitzungs-Feuerwerk — Belohnung für Anwesenheit.</li>
+    <li>Die Sidebar. In der Sitzung wäre jeder Absprung ein Abbruch; das X führt zurück nach „Lernkarten".</li>
+    <li>Duolingos Herzen — künstliche Verknappung mitten im Lernen.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: Karte 7 von 23, Antwortseite offen, vier Stufen mit ihren Intervallen, drei bereits bewertete Karten in der Seitenspalte.</td></tr>
+    <tr><td>Zwischenzustand</td><td><strong>Zwei, gleichzeitig.</strong> (1) Das Blatt steht bei rotateY(18°) in 1700 pt Perspektive — die letzten Grad der Drehung; der Stapel darunter liegt flach, der Bodenschatten ist nach links gewandert, die abgewandte Hälfte liegt im Lichtabfall. (2) In der Zeichenfläche ist der letzte Strich noch nicht fertig: er läuft auf 34 % Deckkraft aus und endet am Pencil-Punkt.</td></tr>
+    <tr><td>aktiv</td><td>„Gut" ist die Empfehlung: Ink-Fläche + Erhebung (Schlagschatten) + heller Text. Im Werkzeugstreifen der Zeichenfläche ist „Stift" gesetzt: Fläche + Symbol, die anderen tragen nur einen Ring.</td></tr>
+    <tr><td>vorher (nicht gezeigt)</td><td>Vor dem Umdrehen steht auf dem Blatt nur die Frage, und an der Stelle der vier Stufen liegt ein einzelner Knopf „Antwort zeigen". Die Höhe der Leiste bleibt gleich, damit nichts springt.</td></tr>
+    <tr><td>leer</td><td>Ist die Sitzung durch, ersetzt <code>.empty</code> die Karte: „23 Karten geschafft. Die nächsten 9 sind morgen dran." mit einem Knopf „Sitzung beenden" — kein Konfetti.</td></tr>
+    <tr><td>Fehler</td><td>Bricht die Synchronisierung ab, erscheint über den Stufen eine <code>.notice</code> — die Bewertung wird lokal gespeichert und später übertragen; die Sitzung läuft weiter.</td></tr>
+  </table>
+
+  <h3>Beide Geräte, dieselbe Aufgabe</h3>
+  <p>Bewerten kostet auf beiden Geräten einen Tap; auf dem iPhone liegen die vier Stufen als 2 × 2-Raster im unteren Drittel, wo der Daumen ist, plus Wischen nach links (nochmal) und rechts (gut) als zweiter Weg. Die Zeichenfläche steht auf dem iPad offen neben der Karte, auf dem iPhone als 70-pt-Streifen mit demselben Strich — ein Tap, dann ist sie im Vollbild. Die Herkunft steht auf beiden Geräten auf dem Blatt: derselbe Chip, dazu der Satz aus der Notiz — auf dem iPad als Kasten mit Überschrift, auf dem iPhone auf eine Zeile gefaltet. Auf dem iPhone heißt „Bis morgen zurücklegen" kurz „Zurücklegen" — gleiche Aktion, gleiche Tap-Zahl.</p>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Delight:</strong> Die Drehung ist nicht behauptet, sondern zu sehen — Blatt schräg im Raum, Stapel darunter, Schatten mitgewandert, Lichtabfall auf der abgewandten Hälfte. Daneben trocknet gerade Tinte. Zwei Bewegungen in einem stehenden Bild, ohne dass ein Wort sie erklärt. <strong>Interaktion:</strong> Jeder der vier Knöpfe zeigt seine Folge, bevor er gedrückt wird („Gut — 5 Tage"), und die letzten drei Entscheidungen stehen mit einem Rücknahme-Knopf daneben. Man kann diesen Planer bedienen, ohne ihn zu studieren.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe. Empfehlung = Ink-Fläche + Erhebung + heller Text. Werkzeug gesetzt = Fläche + Symbol. Fortschritt = Zahl („7 von 23") + Balken. Herkunft = Dot + Wort, nie ein Punkt allein. Die vier Stufen unterscheiden sich durch Wort, Reihenfolge und Intervall — dreifach, bevor überhaupt eine Fläche ins Spiel kommt. Die Handschrift in der Zeichenfläche ist Ink mit Deckkraft, kein Textträger: was sie bedeutet, steht als Wort daneben.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

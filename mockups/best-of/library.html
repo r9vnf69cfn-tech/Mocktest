@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bibliothek — Best-of</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+BEST-OF — Bibliothek / Home
+Vorbilder: GoodNotes 6 (Bibliothek) · Craft (Home/Space) · Apple Notes (Ordner)
+
+WAS VON WEM
+· GoodNotes 6 — Cover-Raster als Standardansicht. Die Kachel ist zu 80 % Bild:
+  Cover 3:4 mit Buchrücken, darunter Titel 15/20 Semibold auf eine Zeile und
+  Meta 13 pt. Grund: man scannt die Bibliothek, statt sie zu lesen.
+· GoodNotes 6 — Ordner im SELBEN Raster, aber flach (4:3) und ohne Papier-
+  schatten. Grund: Container und Dokument sind ohne Icon-Lesen unterscheidbar.
+· GoodNotes 6 — der sichtbare Chevron am Kachel-Titel als entdeckbarer Weg ins
+  Kontextmenü. Grund: Long-Press allein ist unsichtbar.
+· GoodNotes 6 — Neuanlage führt zwingend durch Cover- UND Papierwahl.
+  Grund: kein Dokument ohne visuelle Identität, sonst trägt das Raster nicht.
+· GoodNotes 6 — ein einziges Aktions-Cluster oben rechts: Suche, Sortierung,
+  Ansichtswechsel, Neu. Grund: der Nutzer scannt genau einen Ort.
+· Apple Notes — Zeilenanatomie der Listenansicht: 22-pt-Icon links, Titel und
+  Zähler in gleicher Größe und gleichem Gewicht, nur über Farbe getrennt,
+  Chevron rechts, Trennlinie eingerückt bis zum Icon-Rand statt durchgehend.
+· Apple Notes — Smart-Ordner sind Orte, keine Werkzeuge: gleiche Zeilenform,
+  gleiche Sortierposition, gleicher Zähler, unterschieden nur durch ein
+  zusätzliches Glyph im Ordner-Icon (hier: Filter-Marke) plus das Wort „Regel".
+· Apple Notes — Unterordner per Disclosure eingerückt statt in eigener Liste.
+· Apple Notes / iOS 26 — untere Leiste mit Rollenteilung: links Container
+  anlegen, rechts Dokument anlegen, Suche dazwischen in Daumenreichweite.
+· Craft — fixer Schnellzugriff-Streifen ganz oben, horizontale Kartenreihe,
+  dessen Bedeutung der Nutzer einmal wählt (Zuletzt / Favoriten / Aus).
+  Position im Layout fix, Semantik konfigurierbar.
+· Craft — Sektionsrhythmus: leise Köpfe, großer Sprung zwischen Sektionen,
+  enger Satz innerhalb einer Sektion. Trennlinien und Karten-Container
+  entfallen dadurch im Raster komplett.
+· Craft — leerer Ort: ein Satz und ein CTA, keine Illustration, kein Store.
+
+BEWUSST NICHT ÜBERNOMMEN
+· GoodNotes' Marktplatz als vierter Sidebar-Eintrag — Monetarisierung als
+  Informationsarchitektur.
+· GoodNotes' drei parallelen Aktionspfade (Chevron + Long-Press + eigener
+  Auswahlmodus-Knopf). Hier: Chevron sichtbar, Long-Press still, kein Modus.
+· GoodNotes' Sortierung ohne „Zuletzt geöffnet" — hier ist genau das der
+  sichtbare Default im Cluster.
+· GoodNotes' leerer Zustand (gar keiner) und Apple Notes' „Keine Notizen"
+  ohne Führung — hier Craft-Form: ein Satz, ein CTA.
+· Apple Notes' Account-Sektionen „iCloud" / „Auf meinem iPad" — Speicherort-
+  technik als oberste Ordnungsachse.
+· Apple Notes' gelbes Einheits-Icon für jeden Ordner und der Zähler als
+  einzige Metainformation — hier Zähler PLUS Aktivitätsdatum.
+· Crafts einspaltige iPad-App und der Space-Wechsel im Popover — das iPad
+  bekommt hier eine eigene zweispaltige Anatomie.
+· Crafts Beliebigkeit: der Schnellzugriff ist konfigurierbar, wird aber
+  kuratiert ausgeliefert („Zuletzt geöffnet").
+
+DIE KOMBINATION
+GoodNotes kann visuelle Identität, aber keine Ordnungslogik. Apple Notes kann
+Ordnungslogik und Zeilendisziplin, aber keine visuelle Identität. Craft kann
+Rhythmus und Personalisierung, hat aber keine Meinung. Erst zusammen ergibt
+sich der Screen: ein Cover-Raster für die Wiedererkennung, dieselbe Bibliothek
+als dichte Liste für den Bestand, und in beiden Ansichten stehen Smart-Ordner
+gleichberechtigt neben echten Ordnern — mit Cover-Akzent, damit die Liste ab
+dreißig Einträgen nicht zur Textwüste wird. Der Ansichtswechsel wird pro Ordner
+gemerkt, die Sortierung steht sichtbar im Cluster statt zwei Ebenen tiefer.
+
+ADA-KATEGORIE: Interaktion (ein Aktions-Cluster, ein sichtbarer Weg ins
+Kontextmenü, Anlegen mit Cover und Papier in einem Schritt) und Gestaltung
+(Cover-Raster mit Buchgefühl statt Datei-Liste).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Kachel-/Zeilentitel  ink-1 auf Papier   17,8:1  (hell) · 15,9:1 (dunkel)
+  Meta, Zähler         ink-2 auf Papier    5,3:1  (hell) ·  7,1:1 (dunkel)
+  Sektionsköpfe        ink-3 auf Grund     4,8:1  (hell) ·  4,9:1 (dunkel)
+  CTA-Text             accent-on auf Ink  17,8:1  (hell) · 17,3:1 (dunkel)
+  Löschen rot          danger auf Papier   5,2:1  (hell) ·  6,3:1 (dunkel)
+  Cover-Akzent ist Fläche, nie Textträger — der Buchrücken trägt keine Schrift.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Kachel-Titel t-sub
+Semibold, Kachel-Meta t-label. Serif nur auf dem Cover selbst — das ist der
+Titel, den der Nutzer geschrieben hat, nicht Oberfläche.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Bibliothek — Best-of aus GoodNotes 6, Craft und Apple Notes</h1>
+  <p>Links das Cover-Raster als Hauptansicht mit offener Neuanlage (Cover und Papier in einem Schritt), rechts dieselbe Bibliothek als Liste mit offenem Kontextmenü. Ordner und Smart-Ordner stehen in einer einzigen Liste.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Sidebar + Raster, Neuanlage offen</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+
+        <!-- ── Sidebar: Ordner und Smart-Ordner in EINER Liste (Apple Notes) ── -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Bibliothek</span>
+            <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+          </div>
+
+          <div class="field" style="margin: 0 2px 6px">
+            <span class="ico" data-ico="search"></span>
+            <span class="field__ph t-body">In 118 Dokumenten suchen</span>
+          </div>
+
+          <button class="navitem">
+            <span style="position:relative; display:inline-flex; flex:none">
+              <span class="ico" data-ico="folder"></span>
+              <span class="ico" data-ico="filter" style="width:11px;height:11px;position:absolute;right:-3px;bottom:-2px;background:var(--ground);border-radius:3px"></span>
+            </span>
+            <span class="t-body">Alle Dokumente</span>
+            <span class="t-label c-3" style="margin-left:auto">Regel</span>
+            <span class="navitem__count t-body num">118</span>
+          </button>
+
+          <div class="sidebar__group" style="margin-top:14px">
+            <div class="sidebar__grouptitle t-label">SAMMLUNGEN · ZULETZT GEÖFFNET</div>
+
+            <button class="navitem is-active">
+              <span class="ico" data-ico="chevD" style="width:15px;height:15px;margin-right:-4px"></span>
+              <span class="ico" data-ico="folder"></span>
+              <span class="t-body">Biologie 3. Semester</span>
+              <span class="navitem__count t-body num">42</span>
+            </button>
+
+            <div style="padding-left:22px">
+              <button class="navitem"><span class="ico" data-ico="doc"></span><span class="t-body">Vorlesungen</span><span class="navitem__count t-body num">18</span></button>
+              <button class="navitem"><span class="ico" data-ico="box"></span><span class="t-body">Praktikum &amp; Labor</span><span class="navitem__count t-body num">9</span></button>
+              <button class="navitem">
+                <span style="position:relative; display:inline-flex; flex:none">
+                  <span class="ico" data-ico="folder"></span>
+                  <span class="ico" data-ico="filter" style="width:11px;height:11px;position:absolute;right:-3px;bottom:-2px;background:var(--ground);border-radius:3px"></span>
+                </span>
+                <span class="t-body">Prüfungsstoff</span>
+                <span class="t-label c-3" style="margin-left:auto">Regel</span>
+                <span class="navitem__count t-body num">12</span>
+              </button>
+              <button class="navitem"><span class="ico" data-ico="hand"></span><span class="t-body">Laborgruppe</span><span class="navitem__count t-body num">4</span></button>
+            </div>
+
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span><span class="navitem__count t-body num">15</span></button>
+            <button class="navitem">
+              <span style="position:relative; display:inline-flex; flex:none">
+                <span class="ico" data-ico="folder"></span>
+                <span class="ico" data-ico="filter" style="width:11px;height:11px;position:absolute;right:-3px;bottom:-2px;background:var(--ground);border-radius:3px"></span>
+              </span>
+              <span class="t-body">Diese Woche</span>
+              <span class="t-label c-3" style="margin-left:auto">Regel</span>
+              <span class="navitem__count t-body num">7</span>
+            </button>
+            <button class="navitem">
+              <span style="position:relative; display:inline-flex; flex:none">
+                <span class="ico" data-ico="folder"></span>
+                <span class="ico" data-ico="filter" style="width:11px;height:11px;position:absolute;right:-3px;bottom:-2px;background:var(--ground);border-radius:3px"></span>
+              </span>
+              <span class="t-body">Favoriten</span>
+              <span class="t-label c-3" style="margin-left:auto">Regel</span>
+              <span class="navitem__count t-body num">6</span>
+            </button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Persönlich</span><span class="navitem__count t-body num">11</span></button>
+            <button class="navitem"><span class="ico" data-ico="box"></span><span class="t-body">Archiv</span><span class="navitem__count t-body num">63</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px; display:flex; flex-direction:column; gap:6px">
+            <!-- Fehler: Farbe + Symbol + Randlinie + Wort -->
+            <div class="notice notice--error" style="padding:9px 11px; align-items:center">
+              <span class="ico" data-ico="alert" style="width:18px;height:18px"></span>
+              <div style="min-width:0; flex:1 1 auto">
+                <div class="notice__text t-sub is-strong" style="white-space:nowrap">2 Objekte fehlen</div>
+                <div class="t-label c-3" style="margin-top:1px">Ohne iCloud-Verbindung</div>
+              </div>
+              <button class="t-label" style="color:var(--ink-1); padding:6px 8px">Erneut</button>
+            </div>
+            <button class="navitem"><span class="ico" data-ico="trash"></span><span class="t-body">Zuletzt gelöscht</span><span class="navitem__count t-body num">3</span></button>
+          </div>
+        </aside>
+
+        <!-- ── Inhalt: Cover-Raster ── -->
+        <main class="content">
+
+          <!-- Ein Aktions-Cluster, eine Zeile, oben rechts (GoodNotes) -->
+          <div class="navbar">
+            <div>
+              <div class="t-label c-3" style="white-space:nowrap">Bibliothek › 3. Semester</div>
+              <div class="t-title">Biologie</div>
+            </div>
+            <div class="navbar__spacer"></div>
+
+            <div class="field" style="width:150px">
+              <span class="ico" data-ico="search"></span>
+              <span class="field__ph t-sub" style="white-space:nowrap">In Biologie</span>
+            </div>
+            <button class="btn btn--sm">
+              <span class="ico" data-ico="sort" style="width:16px;height:16px"></span>Zuletzt geöffnet
+              <span class="ico" data-ico="chevD" style="width:14px;height:14px; color:var(--ink-3)"></span>
+            </button>
+            <div class="segmented">
+              <button class="is-on" title="Raster" style="padding:0 12px"><span class="ico" data-ico="grid" style="width:18px;height:18px;display:block"></span></button>
+              <button title="Liste" style="padding:0 12px"><span class="ico" data-ico="list" style="width:18px;height:18px;display:block"></span></button>
+            </div>
+            <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:17px;height:17px"></span>Neu</button>
+          </div>
+
+          <div class="scroll" style="display:flex; flex-direction:column; gap:14px">
+
+            <!-- ══ Schnellzugriff: fixer Slot, wählbare Bedeutung (Craft) ══ -->
+            <section>
+              <div style="display:flex; align-items:center; gap:7px; height:20px; margin-bottom:8px">
+                <span class="t-label c-3">SCHNELLZUGRIFF · ZULETZT GEÖFFNET</span>
+                <span class="ico c-3" data-ico="chevD" style="width:13px;height:13px"></span>
+              </div>
+              <div style="display:flex; gap:14px; overflow:hidden">
+
+                <button style="flex:none; width:172px; text-align:left; background:var(--paper); border-radius:12px; box-shadow:var(--sh-card); overflow:hidden">
+                  <span style="display:block; height:34px; background:var(--mod-notes)"></span>
+                  <span style="display:block; padding:8px 11px 10px">
+                    <span class="t-sub is-strong clamp-1">Zellbiologie</span>
+                    <span class="t-label c-3" style="display:block; margin-top:3px; white-space:nowrap">vor 18 Minuten</span>
+                  </span>
+                </button>
+
+                <button style="flex:none; width:172px; text-align:left; background:var(--paper); border-radius:12px; box-shadow:var(--sh-card); overflow:hidden">
+                  <span style="display:block; height:34px; background:var(--mod-notes)"></span>
+                  <span style="display:block; padding:8px 11px 10px">
+                    <span class="t-sub is-strong clamp-1">Laborprotokoll Zellkultur</span>
+                    <span class="t-label c-3" style="display:block; margin-top:3px; white-space:nowrap">gestern 21:40</span>
+                  </span>
+                </button>
+
+                <button style="flex:none; width:172px; text-align:left; background:var(--paper); border-radius:12px; box-shadow:var(--sh-card); overflow:hidden">
+                  <span style="display:block; height:34px; background:var(--mod-journal)"></span>
+                  <span style="display:block; padding:8px 11px 10px">
+                    <span class="t-sub is-strong clamp-1">Prof. Wendt — Sprechstunde</span>
+                    <span class="t-label c-3" style="display:block; margin-top:3px; white-space:nowrap">Montag</span>
+                  </span>
+                </button>
+
+                <button style="flex:none; width:172px; text-align:left; background:var(--paper); border-radius:12px; box-shadow:var(--sh-card); overflow:hidden">
+                  <span style="display:block; height:34px; background:var(--mod-cards)"></span>
+                  <span style="display:block; padding:8px 11px 10px">
+                    <span class="t-sub is-strong clamp-1">Kartendeck</span>
+                    <span class="t-label c-3" style="display:block; margin-top:3px; white-space:nowrap">Montag</span>
+                  </span>
+                </button>
+
+                <button style="flex:none; width:172px; text-align:left; background:var(--paper); border-radius:12px; box-shadow:var(--sh-card); overflow:hidden">
+                  <span style="display:block; height:34px; background:var(--mod-canvas)"></span>
+                  <span style="display:block; padding:8px 11px 10px">
+                    <span class="t-sub is-strong clamp-1">Mikroskopie</span>
+                    <span class="t-label c-3" style="display:block; margin-top:3px; white-space:nowrap">Freitag</span>
+                  </span>
+                </button>
+              </div>
+            </section>
+
+            <!-- ══ Ordner und Smart-Ordner: gleiches Raster, flacher (GoodNotes) ══ -->
+            <section>
+              <div style="display:flex; align-items:center; gap:8px; height:20px; margin-bottom:8px">
+                <span class="t-label c-3">ORDNER UND SAMMLUNGEN</span>
+                <span class="t-label c-3 num">4</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:20px">
+
+                <!-- Ordner -->
+                <button style="text-align:left; display:flex; flex-direction:column; gap:6px">
+                  <span style="position:relative; display:block; height:100px; border-radius:9px; background:var(--fill); box-shadow:inset 0 0 0 1px var(--line-2); overflow:hidden">
+                    <span style="position:absolute; left:0; top:0; bottom:0; width:7px; background:var(--mod-notes)"></span>
+                    <span class="ico" data-ico="folder" style="position:absolute; left:16px; top:14px; width:26px; height:26px; color:var(--ink-2)"></span>
+                    <span class="t-label c-3 num" style="position:absolute; left:17px; bottom:12px">18 Objekte</span>
+                  </span>
+                  <span style="display:flex; align-items:center; gap:5px; height:20px">
+                    <span class="t-sub is-strong clamp-1">Vorlesungen</span>
+                    <span class="ico c-3" data-ico="chevD" style="width:13px;height:13px"></span>
+                  </span>
+                  <span class="t-label c-3" style="display:block; margin-top:-4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Ordner · gestern</span>
+                </button>
+
+                <button style="text-align:left; display:flex; flex-direction:column; gap:6px">
+                  <span style="position:relative; display:block; height:100px; border-radius:9px; background:var(--fill); box-shadow:inset 0 0 0 1px var(--line-2); overflow:hidden">
+                    <span style="position:absolute; left:0; top:0; bottom:0; width:7px; background:var(--mod-canvas)"></span>
+                    <span class="ico" data-ico="box" style="position:absolute; left:16px; top:14px; width:26px; height:26px; color:var(--ink-2)"></span>
+                    <span class="t-label c-3 num" style="position:absolute; left:17px; bottom:12px">9 Objekte</span>
+                  </span>
+                  <span style="display:flex; align-items:center; gap:5px; height:20px">
+                    <span class="t-sub is-strong clamp-1">Praktikum</span>
+                    <span class="ico c-3" data-ico="chevD" style="width:13px;height:13px"></span>
+                  </span>
+                  <span class="t-label c-3" style="display:block; margin-top:-4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Ordner · Montag</span>
+                </button>
+
+                <!-- Smart-Ordner: gleiche Kachel, ein Glyph mehr + das Wort „Regel" -->
+                <button style="text-align:left; display:flex; flex-direction:column; gap:6px">
+                  <span style="position:relative; display:block; height:100px; border-radius:9px; background:var(--fill); box-shadow:inset 0 0 0 1px var(--line-2); overflow:hidden">
+                    <span style="position:absolute; left:0; top:0; bottom:0; width:7px; background:var(--mod-cards)"></span>
+                    <span style="position:absolute; left:16px; top:14px; display:inline-flex">
+                      <span class="ico" data-ico="folder" style="width:26px;height:26px; color:var(--ink-2)"></span>
+                      <span class="ico" data-ico="filter" style="width:13px;height:13px; position:absolute; right:-4px; bottom:-2px; background:var(--ground); border-radius:3px; color:var(--ink-1)"></span>
+                    </span>
+                    <span class="chip" style="position:absolute; left:15px; bottom:10px; height:22px; background:var(--paper)">Regel · #Prüfung</span>
+                  </span>
+                  <span style="display:flex; align-items:center; gap:5px; height:20px">
+                    <span class="t-sub is-strong clamp-1">Prüfungsstoff</span>
+                    <span class="ico c-3" data-ico="chevD" style="width:13px;height:13px"></span>
+                  </span>
+                  <span class="t-label c-3 num" style="display:block; margin-top:-4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Smart-Ordner · heute</span>
+                </button>
+
+                <!-- Geteilter Ordner -->
+                <button style="text-align:left; display:flex; flex-direction:column; gap:6px">
+                  <span style="position:relative; display:block; height:100px; border-radius:9px; background:var(--fill); box-shadow:inset 0 0 0 1px var(--line-2); overflow:hidden">
+                    <span style="position:absolute; left:0; top:0; bottom:0; width:7px; background:var(--mod-tasks)"></span>
+                    <span style="position:absolute; left:16px; top:14px; display:inline-flex">
+                      <span class="ico" data-ico="folder" style="width:26px;height:26px; color:var(--ink-2)"></span>
+                      <span class="ico" data-ico="hand" style="width:13px;height:13px; position:absolute; right:-4px; bottom:-2px; background:var(--ground); border-radius:3px; color:var(--ink-1)"></span>
+                    </span>
+                    <span class="chip" style="position:absolute; left:15px; bottom:10px; height:22px; background:var(--paper)">Geteilt · 4 Personen</span>
+                  </span>
+                  <span style="display:flex; align-items:center; gap:5px; height:20px">
+                    <span class="t-sub is-strong clamp-1">Laborgruppe</span>
+                    <span class="ico c-3" data-ico="chevD" style="width:13px;height:13px"></span>
+                  </span>
+                  <span class="t-label c-3 num" style="display:block; margin-top:-4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Geteilt · Dienstag</span>
+                </button>
+
+                <!-- Neuanlage im Raster -->
+                <button style="text-align:left; display:flex; flex-direction:column; gap:6px">
+                  <span style="display:flex; align-items:center; justify-content:center; height:100px; border-radius:9px; box-shadow:inset 0 0 0 1.5px var(--line-2); color:var(--ink-3)">
+                    <span class="ico" data-ico="plus" style="width:24px;height:24px"></span>
+                  </span>
+                  <span class="t-sub c-3" style="height:20px">Neuer Ordner</span>
+                </button>
+              </div>
+            </section>
+
+            <!-- ══ Notizbücher: Cover 3:4 mit Buchrücken (GoodNotes) ══ -->
+            <section>
+              <div style="display:flex; align-items:center; gap:8px; height:20px; margin-bottom:8px">
+                <span class="t-label c-3">NOTIZBÜCHER UND DECKS</span>
+                <span class="t-label c-3 num">29</span>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:20px">
+
+                <button style="text-align:left; display:flex; flex-direction:column; gap:6px">
+                  <span style="position:relative; display:block; height:176px; border-radius:6px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+                    <span style="position:absolute; left:0; top:0; bottom:0; width:9px; background:var(--mod-notes)"></span>
+                    <span style="position:absolute; left:9px; right:0; top:62px; bottom:0; background:repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px 13px)"></span>
+                    <span class="t-sub serif c-1" style="position:absolute; left:20px; right:14px; top:16px; display:block">Zellbiologie</span>
+                    <span class="ico" data-ico="star" style="position:absolute; right:9px; top:9px; width:15px; height:15px; color:var(--ink-2)"></span>
+                    <span class="ico" data-ico="notes" style="position:absolute; right:9px; bottom:9px; width:15px; height:15px; color:var(--ink-4)"></span>
+                  </span>
+                  <span style="display:flex; align-items:center; gap:5px; height:20px">
+                    <span class="t-sub is-strong clamp-1">Zellbiologie</span>
+                    <span class="ico c-3" data-ico="chevD" style="width:13px;height:13px"></span>
+                  </span>
+                  <span class="t-label c-3 num" style="display:block; margin-top:-4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">34 Seiten · vor 18 Min.</span>
+                </button>
+
+                <button style="text-align:left; display:flex; flex-direction:column; gap:6px">
+                  <span style="position:relative; display:block; height:176px; border-radius:6px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+                    <span style="position:absolute; left:0; top:0; bottom:0; width:9px; background:var(--mod-journal)"></span>
+                    <span style="position:absolute; left:9px; right:0; top:62px; bottom:0; background:repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px 13px)"></span>
+                    <span class="t-sub serif c-1" style="position:absolute; left:20px; right:14px; top:16px; display:block">Laborjournal</span>
+                    <span class="ico" data-ico="journal" style="position:absolute; right:9px; bottom:9px; width:15px; height:15px; color:var(--ink-4)"></span>
+                  </span>
+                  <span style="display:flex; align-items:center; gap:5px; height:20px">
+                    <span class="t-sub is-strong clamp-1">Laborjournal</span>
+                    <span class="ico c-3" data-ico="chevD" style="width:13px;height:13px"></span>
+                  </span>
+                  <span class="t-label c-3 num" style="display:block; margin-top:-4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Journal · 41 Einträge</span>
+                </button>
+
+                <button style="text-align:left; display:flex; flex-direction:column; gap:6px">
+                  <span style="position:relative; display:block; height:176px; border-radius:6px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+                    <span style="position:absolute; left:0; top:0; bottom:0; width:9px; background:var(--mod-canvas)"></span>
+                    <span style="position:absolute; left:9px; right:0; top:62px; bottom:0; background:
+                        radial-gradient(var(--line-2) .9px, transparent 1px) 0 0/15px 15px"></span>
+                    <span class="t-sub serif c-1" style="position:absolute; left:20px; right:14px; top:16px; display:block">Mikroskopie</span>
+                    <span class="ico" data-ico="canvas" style="position:absolute; right:9px; bottom:9px; width:15px; height:15px; color:var(--ink-4)"></span>
+                  </span>
+                  <span style="display:flex; align-items:center; gap:5px; height:20px">
+                    <span class="t-sub is-strong clamp-1">Mikroskopie</span>
+                    <span class="ico c-3" data-ico="chevD" style="width:13px;height:13px"></span>
+                  </span>
+                  <span class="t-label c-3 num" style="display:block; margin-top:-4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">Canvas · 9 Blätter</span>
+                </button>
+
+                <button style="text-align:left; display:flex; flex-direction:column; gap:6px">
+                  <span style="position:relative; display:block; height:176px; border-radius:6px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+                    <span style="position:absolute; left:0; top:0; bottom:0; width:9px; background:var(--mod-cards)"></span>
+                    <span style="position:absolute; left:26px; right:16px; top:70px; height:56px; border-radius:5px; box-shadow:inset 0 0 0 1px var(--line-2)"></span>
+                    <span style="position:absolute; left:20px; right:22px; top:78px; height:56px; border-radius:5px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line-2)"></span>
+                    <span class="t-sub serif c-1" style="position:absolute; left:20px; right:14px; top:16px; display:block">Zellbiologie</span>
+                    <span class="ico" data-ico="cards" style="position:absolute; right:9px; bottom:9px; width:15px; height:15px; color:var(--ink-4)"></span>
+                  </span>
+                  <span style="display:flex; align-items:center; gap:5px; height:20px">
+                    <span class="t-sub is-strong clamp-1">Kartendeck</span>
+                    <span class="ico c-3" data-ico="chevD" style="width:13px;height:13px"></span>
+                  </span>
+                  <span class="t-label c-3 num" style="display:block; margin-top:-4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">128 Karten · Montag</span>
+                </button>
+
+                <!-- Laden: Skelett statt Spinner -->
+                <div style="display:flex; flex-direction:column; gap:6px">
+                  <span class="skeleton" style="display:block; height:176px; border-radius:6px"></span>
+                  <span class="skeleton" style="display:block; height:13px; width:78%; margin-top:3px"></span>
+                  <span class="skeleton" style="display:block; height:11px; width:52%"></span>
+                </div>
+              </div>
+            </section>
+
+            <!-- ══ Leerer Ort: ein Satz, ein CTA (Craft) ══ -->
+            <section>
+              <div style="display:flex; align-items:center; gap:8px; height:20px; margin-bottom:8px">
+                <span class="t-label c-3">GETEILT MIT DER LABORGRUPPE</span>
+                <span class="t-label c-3 num">0</span>
+              </div>
+              <div class="empty" style="flex-direction:row; text-align:left; align-items:center; justify-content:flex-start; gap:14px; padding:12px 16px; background:var(--paper-2); border-radius:var(--r-card); box-shadow:inset 0 0 0 1px var(--line)">
+                <span class="empty__art" style="width:46px; height:46px; border-radius:13px">
+                  <span class="ico" data-ico="hand" style="width:22px;height:22px"></span>
+                </span>
+                <div style="flex:1 1 auto; min-width:0">
+                  <div class="empty__title t-body is-strong">Noch nichts freigegeben</div>
+                  <div class="empty__text t-sub" style="max-width:none">Was du hier ablegst, sehen Jana, Tarek und Mira sofort — ein Dokument genügt zum Anfang.</div>
+                </div>
+                <button class="btn btn--sm" style="white-space:nowrap"><span class="ico" data-ico="share" style="width:16px;height:16px"></span>Freigeben</button>
+              </div>
+            </section>
+
+          </div>
+        </main>
+      </div>
+
+      <!-- ══ Neuanlage: Cover UND Papier in einem Schritt (GoodNotes) ══ -->
+      <div style="position:absolute; right:24px; top:96px; width:336px; z-index:60;
+                  background:var(--paper); border-radius:var(--r-sheet); box-shadow:var(--sh-float), inset 0 0 0 1px var(--line);
+                  padding:14px">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+          <span class="t-section" style="flex:1 1 auto">Neu anlegen</span>
+          <button class="iconbtn" style="width:30px;height:30px"><span class="ico" data-ico="close" style="width:18px;height:18px"></span></button>
+        </div>
+
+        <div class="segmented" style="width:100%; margin-bottom:10px">
+          <button class="is-on" style="flex:1 1 0; padding:0 4px; white-space:nowrap">Notizbuch</button>
+          <button style="flex:1 1 0; padding:0 4px; white-space:nowrap">Ordner</button>
+          <button style="flex:1 1 0; padding:0 4px; white-space:nowrap">Smart-Ordner</button>
+        </div>
+
+        <div class="field" style="margin-bottom:12px">
+          <span class="ico" data-ico="edit"></span>
+          <span class="t-body">Praktikum — Zellkultur</span>
+          <span style="width:1.5px; height:19px; background:var(--accent); margin-left:1px"></span>
+        </div>
+
+        <div class="t-label c-3" style="margin-bottom:6px">COVER · PFLICHTSCHRITT</div>
+        <div style="display:flex; gap:9px; margin-bottom:12px">
+          <span style="position:relative; width:52px; height:52px; border-radius:5px; background:var(--paper); box-shadow:var(--sh-cover), 0 0 0 2.5px var(--accent); overflow:hidden">
+            <span style="position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--mod-notes)"></span>
+            <span class="check is-done" style="position:absolute; right:4px; bottom:4px; width:17px; height:17px"></span>
+          </span>
+          <span style="position:relative; width:52px; height:52px; border-radius:5px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+            <span style="position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--mod-canvas)"></span>
+          </span>
+          <span style="position:relative; width:52px; height:52px; border-radius:5px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+            <span style="position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--mod-journal)"></span>
+          </span>
+          <span style="position:relative; width:52px; height:52px; border-radius:5px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+            <span style="position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--mod-cards)"></span>
+          </span>
+          <span style="position:relative; width:52px; height:52px; border-radius:5px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+            <span style="position:absolute; left:0; top:0; bottom:0; width:6px; background:var(--fill-3)"></span>
+          </span>
+        </div>
+
+        <div class="t-label c-3" style="margin-bottom:6px">PAPIER</div>
+        <div style="display:flex; gap:9px; margin-bottom:12px">
+          <span style="width:52px; height:52px; border-radius:5px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line-2)"></span>
+          <span style="position:relative; width:52px; height:52px; border-radius:5px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line-2), 0 0 0 2.5px var(--accent); overflow:hidden">
+            <span style="position:absolute; inset:0; background:repeating-linear-gradient(to bottom, transparent 0 8px, var(--line-2) 8px 9px)"></span>
+            <span class="check is-done" style="position:absolute; right:3px; bottom:3px; width:17px; height:17px"></span>
+          </span>
+          <span style="position:relative; width:52px; height:52px; border-radius:5px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line-2); overflow:hidden">
+            <span style="position:absolute; inset:0; background:
+                repeating-linear-gradient(to bottom, transparent 0 8px, var(--line-2) 8px 9px),
+                repeating-linear-gradient(to right, transparent 0 8px, var(--line-2) 8px 9px)"></span>
+          </span>
+          <span style="position:relative; width:52px; height:52px; border-radius:5px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line-2); overflow:hidden">
+            <span style="position:absolute; inset:0; background: radial-gradient(var(--line-2) 1px, transparent 1.2px) 0 0/9px 9px"></span>
+          </span>
+          <span style="width:52px; height:52px; border-radius:5px; box-shadow:inset 0 0 0 1.5px var(--line-2); display:flex; align-items:center; justify-content:center; color:var(--ink-3)">
+            <span class="ico" data-ico="more" style="width:18px;height:18px"></span>
+          </span>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:10px">
+          <span class="chip"><span class="ico" data-ico="folder" style="width:14px;height:14px"></span>Praktikum &amp; Labor</span>
+          <div style="flex:1 1 auto"></div>
+          <button class="btn btn--primary btn--sm">Anlegen</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Listenansicht, Kontextmenü offen</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <div>
+            <div class="t-label c-3">Bibliothek ›</div>
+            <div class="t-title">Biologie</div>
+          </div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column; gap:12px">
+
+          <!-- Ansichtswechsel + Sortierung: derselbe Cluster wie auf dem iPad -->
+          <div style="display:flex; align-items:center; gap:8px">
+            <div class="segmented">
+              <button title="Raster" style="padding:0 12px"><span class="ico" data-ico="grid" style="width:18px;height:18px;display:block"></span></button>
+              <button class="is-on" title="Liste" style="padding:0 12px"><span class="ico" data-ico="list" style="width:18px;height:18px;display:block"></span></button>
+            </div>
+            <button class="btn btn--sm">
+              <span class="ico" data-ico="sort" style="width:16px;height:16px"></span>Zuletzt geöffnet
+              <span class="ico" data-ico="chevD" style="width:14px;height:14px; color:var(--ink-3)"></span>
+            </button>
+          </div>
+
+          <!-- Ordner und Smart-Ordner in EINER Gruppe (Apple Notes) -->
+          <section>
+            <div style="display:flex; align-items:center; gap:8px; height:18px; margin-bottom:6px">
+              <span class="t-label c-3">ORDNER UND SAMMLUNGEN</span>
+            </div>
+            <div class="card" style="padding:4px">
+              <div class="row">
+                <span class="ico c-2" data-ico="doc"></span>
+                <div class="row__main"><span class="t-body row__title">Vorlesungen</span></div>
+                <div class="row__meta">
+                  <span class="t-body c-3 num">18</span>
+                  <span class="ico" data-ico="chevR" style="width:16px;height:16px; color:var(--ink-4)"></span>
+                </div>
+              </div>
+              <div class="row">
+                <span style="position:relative; display:inline-flex; flex:none">
+                  <span class="ico c-2" data-ico="folder"></span>
+                  <span class="ico" data-ico="filter" style="width:12px;height:12px;position:absolute;right:-3px;bottom:-2px;background:var(--paper);border-radius:3px;color:var(--ink-1)"></span>
+                </span>
+                <div class="row__main">
+                  <span class="t-body row__title">Prüfungsstoff</span>
+                  <span class="t-sub c-3">Regel · #Prüfung</span>
+                </div>
+                <div class="row__meta">
+                  <span class="t-body c-3 num">12</span>
+                  <span class="ico" data-ico="chevR" style="width:16px;height:16px; color:var(--ink-4)"></span>
+                </div>
+              </div>
+              <div class="row">
+                <span style="position:relative; display:inline-flex; flex:none">
+                  <span class="ico c-2" data-ico="folder"></span>
+                  <span class="ico" data-ico="hand" style="width:12px;height:12px;position:absolute;right:-3px;bottom:-2px;background:var(--paper);border-radius:3px;color:var(--ink-1)"></span>
+                </span>
+                <div class="row__main">
+                  <span class="t-body row__title">Laborgruppe</span>
+                  <span class="t-sub c-3">Geteilt · 4 Personen</span>
+                </div>
+                <div class="row__meta">
+                  <span class="t-body c-3 num">4</span>
+                  <span class="ico" data-ico="chevR" style="width:16px;height:16px; color:var(--ink-4)"></span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Dokumentliste: Mini-Cover 32×40 statt Einheits-Icon -->
+          <section>
+            <div style="display:flex; align-items:center; gap:8px; height:18px; margin-bottom:6px">
+              <span class="t-label c-3">NOTIZBÜCHER UND DECKS</span>
+              <span class="t-label c-3 num">29</span>
+            </div>
+            <div class="card" style="padding:4px">
+
+              <div class="row is-selected" style="min-height:58px">
+                <span style="position:relative; display:block; width:32px; height:40px; flex:none; border-radius:3px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+                  <span style="position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--mod-notes)"></span>
+                </span>
+                <div class="row__main">
+                  <span class="t-body row__title">Zellbiologie</span>
+                  <span class="t-sub c-3 num">34 Seiten · vor 18 Min.</span>
+                </div>
+                <div class="row__meta">
+                  <span class="ico" data-ico="star" style="width:16px;height:16px; color:var(--ink-2)"></span>
+                  <span class="ico" data-ico="chevD" style="width:16px;height:16px; color:var(--ink-2)"></span>
+                </div>
+              </div>
+
+              <div class="row" style="min-height:58px">
+                <span style="position:relative; display:block; width:32px; height:40px; flex:none; border-radius:3px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+                  <span style="position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--mod-journal)"></span>
+                </span>
+                <div class="row__main">
+                  <span class="t-body row__title">Laborjournal WS 25/26</span>
+                  <span class="t-sub c-3 num">Journal · 41 Einträge</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevD" style="width:16px;height:16px; color:var(--ink-4)"></span></div>
+              </div>
+
+              <div class="row" style="min-height:58px">
+                <span style="position:relative; display:block; width:32px; height:40px; flex:none; border-radius:3px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+                  <span style="position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--mod-canvas)"></span>
+                </span>
+                <div class="row__main">
+                  <span class="t-body row__title">Mikroskopie — Skizzen</span>
+                  <span class="t-sub c-3 num">Canvas · 9 Blätter</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevD" style="width:16px;height:16px; color:var(--ink-4)"></span></div>
+              </div>
+
+              <div class="row" style="min-height:58px">
+                <span style="position:relative; display:block; width:32px; height:40px; flex:none; border-radius:3px; background:var(--paper); box-shadow:var(--sh-cover); overflow:hidden">
+                  <span style="position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--mod-cards)"></span>
+                </span>
+                <div class="row__main">
+                  <span class="t-body row__title">Zellbiologie — Deck</span>
+                  <span class="t-sub c-3 num">128 Karten · Montag</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevD" style="width:16px;height:16px; color:var(--ink-4)"></span></div>
+              </div>
+
+              <div class="row" style="min-height:58px">
+                <span class="skeleton" style="display:block; width:32px; height:40px; flex:none; border-radius:3px"></span>
+                <div class="row__main" style="gap:6px">
+                  <span class="skeleton" style="display:block; height:13px; width:62%"></span>
+                  <span class="skeleton" style="display:block; height:11px; width:40%"></span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Untere Leiste mit Rollenteilung, Suche in Daumenreichweite -->
+        <div style="flex:none; display:flex; align-items:center; gap:10px; padding:6px 16px;
+                    background:var(--chrome); backdrop-filter:blur(24px) saturate(180%); border-top:1px solid var(--line)">
+          <button class="iconbtn" title="Neuer Ordner" style="width:40px;height:40px">
+            <span style="position:relative; display:inline-flex">
+              <span class="ico" data-ico="folder"></span>
+              <span class="ico" data-ico="plus" style="width:12px;height:12px;position:absolute;right:-3px;bottom:-2px;background:var(--chrome);border-radius:3px;color:var(--ink-1)"></span>
+            </span>
+          </button>
+          <div class="field" style="flex:1 1 auto">
+            <span class="ico" data-ico="search"></span>
+            <span class="field__ph t-body">Suchen</span>
+          </div>
+          <button class="iconbtn" title="Neues Notizbuch" style="width:40px;height:40px">
+            <span class="ico" data-ico="edit"></span>
+          </button>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+
+      <!-- ══ Kontextmenü: ein sichtbarer Weg (Chevron), Long-Press als Zweitroute ══ -->
+      <div style="position:absolute; left:24px; top:482px; width:292px; z-index:60;
+                  background:var(--paper); border-radius:15px; box-shadow:var(--sh-float), inset 0 0 0 1px var(--line);
+                  padding:6px; overflow:hidden">
+        <button class="row" style="min-height:40px; width:100%; padding:0 10px">
+          <span class="t-body" style="flex:1 1 auto; text-align:left">Öffnen</span>
+          <span class="ico c-2" data-ico="doc" style="width:19px;height:19px"></span>
+        </button>
+        <button class="row" style="min-height:40px; width:100%; padding:0 10px">
+          <span class="t-body" style="flex:1 1 auto; text-align:left">Umbenennen</span>
+          <span class="ico c-2" data-ico="edit" style="width:19px;height:19px"></span>
+        </button>
+        <button class="row" style="min-height:40px; width:100%; padding:0 10px">
+          <span class="t-body" style="flex:1 1 auto; text-align:left">Cover &amp; Papier ändern</span>
+          <span class="ico c-2" data-ico="layers" style="width:19px;height:19px"></span>
+        </button>
+        <button class="row" style="min-height:40px; width:100%; padding:0 10px">
+          <span class="t-body" style="flex:1 1 auto; text-align:left">Teilen</span>
+          <span class="ico c-2" data-ico="share" style="width:19px;height:19px"></span>
+        </button>
+        <div style="height:1px; background:var(--line); margin:4px 0"></div>
+        <button class="row" style="min-height:40px; width:100%; padding:0 10px; color:var(--danger)">
+          <span class="t-body" style="flex:1 1 auto; text-align:left">Löschen</span>
+          <span class="ico" data-ico="trash" style="width:19px;height:19px"></span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Bibliothek — Steckbrief</h2>
+  <p>Ein Bücherregal, das man scannt, und eine Liste, die man liest — dieselbe Bibliothek, zwei Aufgaben, ein Umschalter. Ordner und Smart-Ordner stehen in einer einzigen Liste, weil eine gespeicherte Regel ein Ort ist und kein Werkzeug.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>GoodNotes 6</td><td>Cover-Raster als Standardansicht: Cover 3:4 mit Buchrücken, Ordner im selben Raster aber flach (4:3), Titel 15/20 Semibold auf eine Zeile, Meta 13 pt. Der sichtbare Chevron am Kachel-Titel ist der eine entdeckbare Weg ins Kontextmenü.</td></tr>
+    <tr><td>GoodNotes 6</td><td>Neuanlage führt zwingend durch Cover- <em>und</em> Papierwahl — hier in einem Panel statt in drei Schritten. Kein Dokument ohne visuelle Identität, sonst trägt das Raster nicht.</td></tr>
+    <tr><td>Apple Notes</td><td>Zeilenanatomie der Liste: 22-pt-Icon links, Titel und Zähler in gleicher Größe und gleichem Gewicht, nur über Farbe getrennt, Chevron rechts, Trennlinie eingerückt bis zum Icon-Rand statt durchgehend. Dazu die untere Leiste mit Rollenteilung und Suche in Daumenreichweite.</td></tr>
+    <tr><td>Apple Notes</td><td>Smart-Ordner als Orte: gleiche Zeile, gleiche Sortierposition, gleicher Zähler — unterschieden nur durch die Filter-Marke am Ordner-Icon plus das Wort „Regel".</td></tr>
+    <tr><td>Craft</td><td>Fixer Schnellzugriff-Streifen ganz oben, Bedeutung einmal wählbar (Zuletzt / Favoriten / Aus). Sektionsrhythmus mit leisen Köpfen, großer Sprung zwischen Sektionen, enger Satz innerhalb. Leerer Ort: ein Satz, ein CTA.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Marktplatz in der Sidebar</strong> (GoodNotes) — ein Store gehört nicht in die Informationsarchitektur.</li>
+    <li><strong>Drei parallele Aktionspfade</strong> (GoodNotes: Chevron, Long-Press, eigener Auswahlmodus). Hier: Chevron sichtbar, Long-Press still, kein Modus-Knopf.</li>
+    <li><strong>Sortierung ohne „Zuletzt geöffnet"</strong> (GoodNotes) und <strong>Sortierung im Mehr-Menü versteckt</strong> (Apple Notes) — hier steht sie beschriftet im Cluster und ist der Default.</li>
+    <li><strong>Account-Sektionen „iCloud" / „Auf meinem iPad"</strong> (Apple Notes) — Speicherorttechnik als Ordnungsachse.</li>
+    <li><strong>Gelbes Einheits-Icon für jeden Ordner</strong> (Apple Notes) — ab dreißig Ordnern eine Textwüste. Hier trägt jedes Objekt einen Cover-Akzent, auch in der Liste als 32 × 40-Mini-Cover.</li>
+    <li><strong>Einspaltige iPad-App und Space-Wechsel im Popover</strong> (Craft) — das iPad bekommt eine eigene Anatomie: Sammlungsliste links, Raster rechts.</li>
+    <li><strong>Leerer Zustand ohne Führung</strong> (GoodNotes gar keiner, Apple Notes „Keine Notizen") — hier Craft-Form.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: 42 Objekte in „Biologie 3. Semester“ — fünf Schnellzugriff-Karten, vier Ordner, vier Notizbücher, dazu 118 Dokumente in der Sammlungsliste.</td></tr>
+    <tr><td>leer</td><td>„Geteilt mit der Laborgruppe“ hat null Objekte: ein Satz mit echten Namen und ein CTA, keine Illustration. Leere <em>Sektionen</em> verschwinden ganz — ein leerer <em>Ort</em> bekommt eine Anleitung.</td></tr>
+    <tr><td>aktiv/ausgewählt</td><td>„Biologie 3. Semester“ in der Sidebar: Fläche + Gewicht + Ink-Balken. Der Ansichtsumschalter: Fläche + Schatten + Ink-Icon. Cover und Papier im Anlege-Panel: Ring + Haken. Die Zeile mit offenem Kontextmenü: Fläche + Ring + Gewicht.</td></tr>
+    <tr><td>Laden</td><td>Das fünfte Raster-Feld und die letzte Listenzeile sind Skelette — die Bibliothek lädt nach, ohne dass das Raster springt. Kein Spinner ohne Kontext.</td></tr>
+    <tr><td>Fehler</td><td>Unten in der Sidebar: „2 Objekte nicht geladen“ mit Randlinie, Warnsymbol, rotem Ink und einem Knopf „Erneut“ — Farbe ist nie das einzige Merkmal.</td></tr>
+  </table>
+
+  <h3>Warum die Kombination trägt</h3>
+  <p>Jedes der drei Vorbilder scheitert an genau der Stelle, an der ein anderes stark ist. GoodNotes gibt jedem Objekt eine Gestalt, kennt aber nur Ordner — bei wachsendem Bestand zwingt das zu tiefen Verschachtelungen. Apple Notes hat mit Smart-Ordnern die bessere Ordnungslogik und die ruhigste Zeile, gibt aber jedem Ordner dasselbe gelbe Symbol und kennt im Ordner-Screen gar kein Raster. Craft hat den besten Rhythmus und den erwachsensten leeren Zustand, delegiert aber die Meinung an den Nutzer und zieht die iPhone-Spalte aufs iPad. Zusammengesetzt heben sich die Schwächen auf: Das Raster ist die Wiedererkennungsansicht (wenige Objekte, viel Bild), die Liste die Bestandsansicht (drei- bis vierfache Dichte), beide teilen dieselben Objekte, dieselbe Sortierung und denselben Aktions-Cluster; der Cover-Akzent aus dem Raster reist als Mini-Cover in die Liste mit, sodass auch dort Farbe navigiert und nicht nur Text; und die Smart-Ordner stehen in beiden Ansichten an derselben Stelle wie echte Ordner, weil eine gespeicherte Regel ein Ort ist. Der Nutzer lernt genau ein Modell.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe. Aktiv in der Sidebar = Fläche + Gewicht + Balken. Ansicht gewählt = Fläche + Schatten + Ink-Icon. Cover gewählt = Ring + Haken. Smart-Ordner = zusätzliches Glyph + das Wort „Regel“. Geteilt = Glyph + „Geteilt · 4 Personen“. Fehler = Randlinie + Warnsymbol + Wort. Der Cover-Akzent ist reine Fläche und trägt nie Schrift — die Modulpalette erscheint hier ausschließlich als Buchrücken und Kartenband, wie system.css §1.3 es erlaubt.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

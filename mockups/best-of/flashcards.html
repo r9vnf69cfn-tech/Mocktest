@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lernkarten — Best-of</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+BEST-OF LERNKARTEN — Anki / AnkiMobile · Quizlet · RemNote
+
+Die drei beantworten drei verschiedene Fragen. Anki: „Wann sehe ich das
+wieder?" Quizlet: „Komme ich voran?" RemNote: „Woher kommt diese Karte?"
+Keine der drei beantwortet die beiden anderen Fragen. Dieser Schirm stellt
+alle drei Antworten nebeneinander — Deck-Liste und laufende Sitzung auf
+demselben iPad-Bild, darunter die Historie.
+
+WAS VON WEM
+
+· Anki — Der Bewertungsknopf trägt den ausgerechneten Termin.
+  `describe_next_states()` lässt den echten Scheduler alle möglichen Zukünfte
+  der Karte vorab durchrechnen, bevor der Nutzer etwas drückt; auch die ANZAHL
+  der Knöpfe ist Ergebnis dieser Rechnung, nicht Layout (reviewer.py:887-951).
+  Hier: „Nochmal · Schwer · Gut · Einfach", darunter Intervall (Min. · Tg.)
+  UND Kalendertag. Grund: der Nutzer bewertet dann nicht sein Gefühl, sondern
+  wählt zwischen vier Terminen.
+
+· Anki — Zähler mit Wert 0 verblassen, statt zu verschwinden.
+  `.zero-count` → `--fg-faint` (deckbrowser.py:280). „Fachbegriffe"
+  steht mit 0 · 0 · 0 in der Liste und sortiert sich damit optisch selbst
+  nach unten, ohne dass eine Zeile die Position wechselt. Zwei Merkmale:
+  Deckkraft plus das Wort „heute geschafft".
+
+· Anki — Der Review-Screen bleibt leer und die Knöpfe stehen weit auseinander.
+  reviewer-bottom.scss: `margin: 9px` rundum, also 18 px zwischen zwei Knöpfen
+  — mehr Luft als irgendwo sonst in der App. Fehlervermeidung als Leerraum:
+  die Bewertung ist der einzige kaum umkehrbare Griff der Sitzung.
+
+· Anki — Die tote Mitte auf der Antwortseite.
+  Tippzonen 3×3, Standard: linke Spalte „Nochmal", rechte Spalte „Gut",
+  Mitte bewusst ohne Funktion (preferences.md). Hier als Zeile unter der
+  Knopfreihe benannt, statt in einem Einstellungsdialog versteckt.
+
+· Anki — Heatmap mit Wurzelskala und 20 % Mindestdeckkraft.
+  calendar.ts: 7 Zeilen × 53 Wochen, Zellen um 2 px verkleinert statt Gap,
+  `scaleSequentialSqrt`, Intensität abgeschnitten auf [0,2 … 1,0]. Hier in
+  Ink-Abstufungen statt in `interpolateBlues`. Grund: bei linearer Skala und
+  Spitzentagen um 200 wäre ein Tag mit drei Wiederholungen unsichtbar.
+
+· Anki — Der leere Zustand ist ein Verteiler, kein Endpunkt.
+  CongratsPage.svelte nennt den GRUND der Leere und bietet Auswege an. Hier:
+  der Hinweis unter der Deck-Liste sagt, warum heute keine neuen Karten mehr
+  kommen (Tageslimit 20/20), und bietet genau einen Ausweg an („Anheben").
+
+· Quizlet — Zwei verschieden schnelle Fortschrittsskalen, beide sichtbar.
+  Quizlet-Blog: ein schneller Balken für die laufende Runde, ein langsamer
+  für die Gesamtbeherrschung. Hier: „Diese Sitzung 9 von 23" füllt sich
+  sichtbar bei jeder Karte, „Beherrschung des Decks" bewegt sich pro Sitzung
+  um Millimeter. Grund: der schnelle trägt durch die Sitzung, der langsame
+  verhindert das Gefühl, fertig zu sein.
+
+· Quizlet — Benannte Stufen statt roher Zahlen.
+  „Neu / Gesehen / Vertraut / Gemeistert" — jeder Balkenabschnitt hat einen
+  Namen, nicht nur eine Länge. Hier: Neu · Lerne noch · Vertraut · Sitzt,
+  jeweils mit Zahl und eigener Ink-Stufe.
+
+· Quizlet — Die Karte ist das größte Objekt des Schirms.
+  Der Typo-Sprung zwischen Kartentext und Metatext liegt bei Quizlet bei 2,5
+  bis 3 (36 pt gegen 12 pt), bei Anki bei 1,5 (15 px gegen 10 px). Hier:
+  Frage in 28 pt gegen Metazeile 13 pt — Faktor 2,15, die größte im System
+  zulässige Spanne.
+
+· Quizlet — Ein Merken-Stern als einzige Auszeichnungsebene.
+  Statt Ankis vier Flags plus Tags plus „Marked". Ein Icon in der Kopfzeile
+  der Karte, in der Sidebar als Filter „Markiert 12".
+
+· RemNote — Die Karte behält ihren Kontext.
+  Bei RemNote ist eine Karte kein hergestelltes Objekt, sondern ein Zustand,
+  den eine Textzeile annimmt. Hier in der Fassung, die dieser Schirm allein
+  tragen kann: unter der Antwort steht der Satz, aus dem die Karte markiert
+  wurde, plus „Im Zusammenhang zeigen" — ohne die Sitzung zu verlassen. Und
+  das leere Deck erklärt genau das als ersten Schritt: markieren statt anlegen.
+
+· RemNote — Tagesziel und Serie als eigenständige Einheit.
+  Ein Streak ist eine Folge von Tagen mit ERREICHTEM Tagesziel, nicht mit
+  geleertem Stapel — Anki kennt kein Tagesziel und deshalb keinen „fertig"-
+  Moment. Hier unten in der Sidebar: 31 von 40, 12 Tage in Folge.
+
+· RemNote — Die Queue als eigenes, ruhiges Layout.
+  Zwei Dichten in einer App, bewusst gesetzt: Verwaltungsseite links mit
+  52-pt-Zeilen, Sitzung rechts mit einer Karte und einer Knopfreihe.
+
+BEWUSST NICHT ÜBERNOMMEN
+
+· Ankis drei Zähler mit Pluszeichen dazwischen („12 + 3 + 47"). Das ist eine
+  Rechenaufgabe, kein Statusbericht. Hier drei rechtsbündige Spalten mit
+  Überschrift — und, wichtiger: Deck-Liste und Sitzung benutzen DIESELBE
+  Reihenfolge (Neu · Lernen · Fällig). Anki benutzt in Deck-Liste und Review
+  zwei verschiedene Reihenfolgen für dieselben drei Zahlen.
+· Ankis vier gleich breite Knöpfe in einer HTML-Tabelle mit <center>-Tag.
+  „Gut" ist in den allermeisten Fällen die richtige Antwort und bekommt hier
+  1,5 Spalten Fläche plus Ink-Füllung. Gleich breit ist Altlast, keine
+  Entscheidung.
+· Ankis 14 Diagramme ohne Zusammenfassung. Hier beginnt die Statistik mit
+  einem Satz, dann kommt die Heatmap — der Rest liegt hinter „Alle Werte".
+· Ankis 1-px-Zeilenpadding in der Deck-Liste (35–45 Decks pro Bild) und
+  Quizlets 80-pt-Zeilen. Hier 52 pt: dicht genug für zwölf Decks, groß genug
+  für den Daumen.
+· Ankis neun Tippzonen × zwei Kartenseiten × 60 belegbare Aktionen. Eine
+  abgeschobene Designentscheidung. Hier: drei Spalten, feste Bedeutung.
+· Quizlets Modus-Kacheln (Karteikarten / Lernen / Test / Zuordnen). Vier
+  gleichwertige Kacheln heißen: das Produkt weiß nicht, was als Nächstes
+  dran ist. Hier gibt es einen Weg — die fällige Karte.
+· Quizlets Feiergrafiken, Konfetti und Runden-Abschlussbildschirme.
+· Quizlets iPad-Layout, das ein hochskaliertes iPhone ist. Hier trägt die
+  zusätzliche Fläche Information: Liste und Sitzung nebeneinander.
+· RemNotes fünfter Knopf „Skip". Er mischt zwei Fragen in eine Reihe: wie gut
+  wusste ich es, und will ich jetzt überhaupt antworten. Überspringen liegt
+  hier im Menü der Karte.
+· RemNotes Tastenkürzel, die nur beim Hovern erscheinen — auf iPhone und iPad
+  gibt es kein Hover.
+· RemNotes Trennzeichen-Syntax im Fließtext. Auf einer Telefontastatur mit
+  Autokorrektur ist das feindselig.
+
+DIE KOMBINATION
+Anki weiß, wann die Karte wiederkommt, kann aber nicht zeigen, ob man
+vorankommt. Quizlet zeigt Fortschritt, verrät aber nie einen Termin — „Lerne
+noch" ist eine Stimmung. RemNote hat beides mal, mal nicht. Erst zusammen
+ergibt sich ein vollständiger Satz: Diese Karte kommt am Montag wieder (Anki),
+89 von 212 sitzen bereits (Quizlet), und sie stammt aus diesem Absatz
+(RemNote). Der zweite Gewinn ist die Fläche: weil die Sitzung neben der Liste
+steht, kostet der Wechsel des Decks keinen Screen-Wechsel — genau der harte
+Schnitt, den RemNote-Nutzer im Feedback-Board beklagen.
+
+ADA-KATEGORIE: Interaktion (die Bewertung ist eine Terminwahl mit vier
+sichtbaren Konsequenzen) und Visual Design (zwei Dichten auf einem Bild,
+Zustände ausschließlich in Ink-Abstufungen).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Frage/Antwort     ink-1 auf Papier   17,8:1  (hell) · 15,9:1 (dunkel)
+  Zähler sekundär   ink-2 auf Papier    5,3:1  (hell) ·  7,1:1 (dunkel)
+  Spaltenköpfe      ink-3 auf Papier    4,8:1  (hell) ·  4,9:1 (dunkel)
+  Knopf „Gut"       accent-on auf Ink  17,8:1  (hell) · 17,3:1 (dunkel)
+  Null-Zähler       is-off, 0,38 Deckkraft — nie allein, immer mit dem Wort
+                    „heute geschafft" daneben (Zwei-Merkmal-Regel)
+  Heatmap-Stufen    Ink mit 22 / 40 / 64 / 88 / 100 % Deckkraft; leerer Tag
+                    ist fill-2. Die Stufen tragen zusätzlich eine Legende
+                    („weniger … mehr") und einen Zahlenbereich im Steckbrief.
+  Modul-Dot cards   6 pt, nur im Sidebar-Kopf, nie allein.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Die Frage der Karte
+läuft auf 28 pt, die Metazeile auf 13 pt — Faktor 2,15, Quizlets Sprung.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Lernkarten</h1>
+  <p>Links die Decks mit drei Zählern in einer festen Reihenfolge, rechts die laufende Sitzung: zwei verschieden schnelle Fortschrittsskalen, die Karte, und vier Knöpfe, auf denen der nächste Termin schon ausgerechnet steht. Unten das Jahr als Heatmap.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Deck-Liste und Sitzung nebeneinander</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+
+        <!-- ── Sidebar: der Bereich für sich ── -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section" style="display:flex; align-items:center; gap:8px"><span class="dot dot--cards"></span>Lernkarten</span>
+            <button class="iconbtn"><span class="ico" data-ico="plus"></span></button>
+          </div>
+
+          <div class="field" style="margin:0 2px 8px">
+            <span class="ico" data-ico="search"></span>
+            <span class="field__ph t-body">In 1 486 Karten suchen</span>
+          </div>
+
+          <button class="navitem is-active"><span class="ico" data-ico="cards"></span><span class="t-body">Heute fällig</span><span class="navitem__count t-body num">23</span></button>
+          <button class="navitem"><span class="ico" data-ico="calendar"></span><span class="t-body">Nächste 7 Tage</span><span class="navitem__count t-body num">141</span></button>
+          <button class="navitem"><span class="ico" data-ico="star"></span><span class="t-body">Markiert</span><span class="navitem__count t-body num">12</span></button>
+          <button class="navitem"><span class="ico" data-ico="list"></span><span class="t-body">Alle Karten</span><span class="navitem__count t-body num">1 486</span></button>
+
+          <div class="sidebar__group" style="margin-top:14px">
+            <div class="sidebar__grouptitle t-label">DECKS</div>
+            <button class="navitem"><span class="ico" data-ico="chevD" style="width:15px;height:15px;margin-right:-4px"></span><span class="ico" data-ico="folder"></span><span class="t-body">Zellbiologie</span><span class="navitem__count t-body num">23</span></button>
+            <div style="padding-left:22px">
+              <button class="navitem"><span class="ico" data-ico="doc"></span><span class="t-body">Membrantransport</span><span class="navitem__count t-body num">8</span></button>
+            </div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span><span class="navitem__count t-body num">19</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Fachbegriffe</span><span class="navitem__count t-body num c-3">0</span></button>
+            <button class="navitem"><span class="ico" data-ico="cloud"></span><span class="t-body">Laborgruppe 4</span><span class="navitem__count t-label c-3">lädt</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Wahlfach Neuro</span><span class="navitem__count t-body num c-3">0</span></button>
+          </div>
+
+          <!-- Tagesziel und Serie: RemNotes Einheit, unabhängig von der Fälligkeit -->
+          <div style="margin-top:auto; padding:12px 10px 4px">
+            <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
+              <span class="t-label">Tagesziel</span>
+              <span class="t-label c-3 num" style="margin-left:auto">31 / 40</span>
+            </div>
+            <div class="bar"><div class="bar__fill" style="width:78%"></div></div>
+            <div style="display:flex; align-items:center; gap:7px; margin-top:8px">
+              <span class="ico" data-ico="flame" style="width:16px;height:16px;color:var(--ink-2)"></span>
+              <span class="t-sub c-2 num">12 Tage in Folge</span>
+            </div>
+          </div>
+          <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Deck-Einstellungen</span></button>
+        </aside>
+
+        <!-- ── Inhalt ── -->
+        <main class="content">
+          <div class="navbar">
+            <div class="t-title">Heute fällig</div>
+            <span class="chip"><span class="ico" data-ico="clock" style="width:14px;height:14px"></span>ca. 11 Min.</span>
+            <div class="navbar__spacer"></div>
+            <div class="segmented">
+              <button class="is-on">Decks</button>
+              <button>Karten</button>
+              <button>Statistik</button>
+            </div>
+            <button class="iconbtn"><span class="ico" data-ico="sort"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+          </div>
+
+          <div class="scroll" style="display:flex; flex-direction:column; gap:12px; padding:14px 24px 14px">
+
+            <div style="display:grid; grid-template-columns:380px 1fr; gap:16px; align-items:start">
+
+              <!-- ══ Links: Deck-Liste, drei Zähler in fester Reihenfolge ══ -->
+              <div style="display:flex; flex-direction:column; gap:12px">
+
+                <section class="card" style="padding:6px">
+                  <!-- Spaltenköpfe: der Ersatz für Ankis „12 + 3 + 47" -->
+                  <div style="display:flex; align-items:center; gap:12px; padding:6px 12px 8px">
+                    <span class="t-label c-3" style="flex:1 1 auto">DECK</span>
+                    <span style="display:flex; gap:5px; flex:none">
+                      <span class="t-label c-3" style="width:34px; text-align:right">NEU</span>
+                      <span class="t-label c-3" style="width:58px; text-align:right">LERNEN</span>
+                      <span class="t-label c-3" style="width:52px; text-align:right">FÄLLIG</span>
+                    </span>
+                  </div>
+
+                  <div class="row is-selected">
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Zellbiologie</span>
+                      <span class="t-sub c-3 clamp-1">212 Karten · gestern</span>
+                    </div>
+                    <span style="display:flex; gap:5px; flex:none">
+                      <span class="t-body num" style="width:34px; text-align:right">8</span>
+                      <span class="t-body num" style="width:58px; text-align:right">3</span>
+                      <span class="t-body num is-strong" style="width:52px; text-align:right">12</span>
+                    </span>
+                  </div>
+
+                  <div class="row" style="padding-left:16px">
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Membrantransport</span>
+                      <span class="t-sub c-3 clamp-1">Unterdeck · 46</span>
+                    </div>
+                    <span style="display:flex; gap:5px; flex:none">
+                      <span class="t-body num is-off" style="width:34px; text-align:right">0</span>
+                      <span class="t-body num" style="width:58px; text-align:right">2</span>
+                      <span class="t-body num is-strong" style="width:52px; text-align:right">6</span>
+                    </span>
+                  </div>
+
+                  <div class="row">
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Analysis II</span>
+                      <span class="t-sub c-3 clamp-1">148 Karten · Reihen</span>
+                    </div>
+                    <span style="display:flex; gap:5px; flex:none">
+                      <span class="t-body num" style="width:34px; text-align:right">4</span>
+                      <span class="t-body num is-off" style="width:58px; text-align:right">0</span>
+                      <span class="t-body num is-strong" style="width:52px; text-align:right">15</span>
+                    </span>
+                  </div>
+
+                  <!-- Null-Zähler: verblasst, nicht ausgeblendet — plus das Wort daneben -->
+                  <div class="row">
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Fachbegriffe</span>
+                      <span class="t-sub c-3 clamp-1">heute geschafft</span>
+                    </div>
+                    <span style="display:flex; gap:5px; flex:none">
+                      <span class="t-body num is-off" style="width:34px; text-align:right">0</span>
+                      <span class="t-body num is-off" style="width:58px; text-align:right">0</span>
+                      <span class="t-body num is-off" style="width:52px; text-align:right">0</span>
+                    </span>
+                  </div>
+
+                  <!-- Laden: Name steht, Zähler kommen noch (Skelett + Wort) -->
+                  <div class="row">
+                    <div class="row__main">
+                      <span class="t-body row__title clamp-1">Laborgruppe 4</span>
+                      <span class="t-sub c-3 clamp-1">geteiltes Deck · lädt</span>
+                    </div>
+                    <span style="display:flex; gap:5px; flex:none; align-items:center">
+                      <span style="width:34px; display:flex; justify-content:flex-end"><span class="skeleton" style="width:20px; height:14px"></span></span>
+                      <span style="width:58px; display:flex; justify-content:flex-end"><span class="skeleton" style="width:20px; height:14px"></span></span>
+                      <span style="width:52px; display:flex; justify-content:flex-end"><span class="skeleton" style="width:24px; height:14px"></span></span>
+                    </span>
+                  </div>
+                </section>
+
+                <!-- Hinweis: der leere Zustand als Verteiler — Grund plus ein Ausweg -->
+                <div class="notice" style="padding:9px 12px; align-items:center">
+                  <span class="ico" data-ico="info" style="width:18px;height:18px;color:var(--ink-2)"></span>
+                  <div class="notice__text t-sub c-2 clamp-1" style="flex:1 1 auto">Tageslimit neu: <span class="num">20 von 20</span></div>
+                  <button class="btn btn--sm btn--quiet" style="height:26px;padding:0 6px;flex:none"><span class="t-label">Anheben</span></button>
+                </div>
+
+                <!-- Leer: markieren statt anlegen (RemNotes Griff als erster Schritt) -->
+                <section class="card empty" style="padding:11px 12px; gap:12px; flex-direction:row; align-items:center; text-align:left">
+                  <div class="empty__art" style="width:40px; height:40px; border-radius:12px">
+                    <span class="ico" data-ico="cards" style="width:20px;height:20px"></span>
+                  </div>
+                  <div style="flex:1 1 auto; min-width:0">
+                    <div class="empty__title t-body is-strong clamp-1">Wahlfach Neuro: leer</div>
+                    <div class="empty__text t-sub clamp-1">Markieren statt anlegen</div>
+                  </div>
+                  <button class="btn btn--sm" style="flex:none; padding:0 10px"><span class="ico" data-ico="plus" style="width:16px;height:16px"></span>Karte</button>
+                </section>
+              </div>
+
+              <!-- ══ Rechts: die Sitzung — ruhig, eine Karte, eine Knopfreihe ══ -->
+              <section class="card" style="padding:12px 16px 14px">
+
+                <div class="card__head" style="margin-bottom:12px">
+                  <div class="card__title">
+                    <div class="t-section">Zellbiologie</div>
+                    <div class="t-sub c-3 num">Karte 10 von 23 · noch ca. 6 Minuten</div>
+                  </div>
+                  <button class="iconbtn is-active"><span class="ico" data-ico="star"></span></button>
+                  <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+                </div>
+
+                <!-- Skala 1: schnell. Bewegt sich bei jeder Karte sichtbar. -->
+                <div style="margin-bottom:12px">
+                  <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
+                    <span class="t-label">Diese Sitzung</span>
+                    <span class="t-label c-3 num" style="margin-left:auto">9 von 23 · noch 14</span>
+                  </div>
+                  <div class="bar"><div class="bar__fill" style="width:39%"></div></div>
+                </div>
+
+                <!-- Skala 2: langsam. Benannte Stufen, Ink-Abstufungen. -->
+                <div style="margin-bottom:12px">
+                  <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
+                    <span class="t-label">Beherrschung des Decks</span>
+                    <span class="t-label c-3 num" style="margin-left:auto">89 von 212 sitzen</span>
+                  </div>
+                  <div style="display:flex; gap:2px; height:8px; border-radius:4px; overflow:hidden">
+                    <i style="flex:0 0 8.5%; background:var(--accent); opacity:.14"></i>
+                    <i style="flex:0 0 16%; background:var(--accent); opacity:.34"></i>
+                    <i style="flex:0 0 33.5%; background:var(--accent); opacity:.62"></i>
+                    <i style="flex:1 1 auto; background:var(--accent)"></i>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:14px; margin-top:8px; flex-wrap:wrap">
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <i style="width:9px;height:9px;border-radius:3px;background:var(--accent);opacity:.14"></i>
+                      <span class="t-label c-2">Neu</span><span class="t-label c-3 num">18</span>
+                    </span>
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <i style="width:9px;height:9px;border-radius:3px;background:var(--accent);opacity:.34"></i>
+                      <span class="t-label c-2">Lerne noch</span><span class="t-label c-3 num">34</span>
+                    </span>
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <i style="width:9px;height:9px;border-radius:3px;background:var(--accent);opacity:.62"></i>
+                      <span class="t-label c-2">Vertraut</span><span class="t-label c-3 num">71</span>
+                    </span>
+                    <span style="display:inline-flex; align-items:center; gap:6px">
+                      <i style="width:9px;height:9px;border-radius:3px;background:var(--accent)"></i>
+                      <span class="t-label c-2">Sitzt</span><span class="t-label c-3 num">89</span>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Die Karte: größtes Objekt des Schirms -->
+                <div style="background:var(--paper-2); border-radius:12px; box-shadow:inset 0 0 0 1px var(--line); padding:11px 13px">
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+                    <span class="chip chip--ghost">Frage → Antwort</span>
+                    <span class="chip"><span class="ico" data-ico="star" style="width:13px;height:13px"></span>Markiert</span>
+                    <span style="flex:1 1 auto"></span>
+                    <span class="t-label c-3">ANTWORTSEITE</span>
+                  </div>
+                  <div class="t-title">Warum diffundiert O₂ frei durch die Membran?</div>
+                  <div style="height:1px; background:var(--line); margin:9px 0"></div>
+                  <div class="t-body clamp-2">Es ist klein, unpolar und ungeladen — es löst sich in der Lipidschicht.</div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-top:8px">
+                    <span class="ico c-3" data-ico="quote" style="width:15px;height:15px"></span>
+                    <span class="t-sub c-3 clamp-1" style="flex:1 1 auto">Aus „Passiver Transport"</span>
+                    <button class="btn btn--sm btn--quiet" style="height:26px; padding:0 8px; flex:none"><span class="t-label">Zusammenhang</span></button>
+                  </div>
+                </div>
+
+                <!-- Knopfreihe: vier ausgerechnete Termine, „Gut" bekommt Fläche -->
+                <div style="display:grid; grid-template-columns:1fr 1fr 1.5fr 1fr; gap:10px; margin-top:12px">
+                  <button class="btn" style="height:58px; flex-direction:column; gap:0; padding:0 4px">
+                    <span class="t-body">Nochmal</span>
+                    <span class="t-label c-2">&lt; 1 Min.</span>
+                    <span class="t-label c-3">sofort</span>
+                  </button>
+                  <button class="btn" style="height:58px; flex-direction:column; gap:0; padding:0 4px">
+                    <span class="t-body">Schwer</span>
+                    <span class="t-label c-2 num">2 Tg.</span>
+                    <span class="t-label c-3 num">Sa 15.11.</span>
+                  </button>
+                  <button class="btn btn--primary" style="height:58px; flex-direction:column; gap:0; padding:0 4px">
+                    <span class="t-body">Gut</span>
+                    <span class="t-label num" style="opacity:.82">4 Tg.</span>
+                    <span class="t-label num" style="opacity:.66">Mo 17.11.</span>
+                  </button>
+                  <button class="btn" style="height:58px; flex-direction:column; gap:0; padding:0 4px">
+                    <span class="t-body">Einfach</span>
+                    <span class="t-label c-2 num">9 Tg.</span>
+                    <span class="t-label c-3 num">Sa 22.11.</span>
+                  </button>
+                </div>
+                <div class="t-sub c-3" style="margin-top:8px">Links „Nochmal" · rechts „Gut" · Mitte ohne Funktion</div>
+              </section>
+            </div>
+
+            <!-- ══ Unten: die Statistik beginnt mit einer Antwort ══ -->
+            <section class="card" style="padding:8px 16px 12px">
+              <div class="t-body clamp-1" style="margin-bottom:6px"><strong>So läuft es:</strong> 12 Tage ohne Lücke · <span class="num">1 240</span> Bewertungen in 30 Tagen · Ziel <span class="num">26 von 30</span></div>
+
+              <!--HM-START--><div style="display:flex;flex-direction:column;gap:3px">
+                <div style="display:flex"><span class="t-label c-3" style="width:40px;margin-right:2px;overflow:hidden;white-space:nowrap">Nov</span><span class="t-label c-3" style="width:68px;margin-right:2px;overflow:hidden;white-space:nowrap">Dez</span><span class="t-label c-3" style="width:54px;margin-right:2px;overflow:hidden;white-space:nowrap">Jan</span><span class="t-label c-3" style="width:54px;margin-right:2px;overflow:hidden;white-space:nowrap">Feb</span><span class="t-label c-3" style="width:68px;margin-right:2px;overflow:hidden;white-space:nowrap">Mär</span><span class="t-label c-3" style="width:54px;margin-right:2px;overflow:hidden;white-space:nowrap">Apr</span><span class="t-label c-3" style="width:54px;margin-right:2px;overflow:hidden;white-space:nowrap">Mai</span><span class="t-label c-3" style="width:68px;margin-right:2px;overflow:hidden;white-space:nowrap">Jun</span><span class="t-label c-3" style="width:54px;margin-right:2px;overflow:hidden;white-space:nowrap">Jul</span><span class="t-label c-3" style="width:54px;margin-right:2px;overflow:hidden;white-space:nowrap">Aug</span><span class="t-label c-3" style="width:68px;margin-right:2px;overflow:hidden;white-space:nowrap">Sep</span><span class="t-label c-3" style="width:54px;margin-right:2px;overflow:hidden;white-space:nowrap">Okt</span><span class="t-label c-3" style="width:26px;margin-right:2px;overflow:hidden;white-space:nowrap"></span></div>
+                <div style="display:flex;gap:2px"><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent)"></i><i style="height:12px;border-radius:2px;background:var(--accent)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.22"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.22"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.22"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.22"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.22"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.22"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.40"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill-2)"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i></div><div style="display:flex;flex-direction:column;gap:2px;width:12px"><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.88"></i><i style="height:12px;border-radius:2px;background:var(--accent);opacity:.64"></i><i style="height:12px;border-radius:2px;background:var(--fill);opacity:.35"></i><i style="height:12px;border-radius:2px;background:var(--fill);opacity:.35"></i><i style="height:12px;border-radius:2px;background:var(--fill);opacity:.35"></i></div></div>
+              </div><!--HM-END-->
+              <div style="display:flex; align-items:center; gap:10px; margin-top:5px">
+                <span class="t-sub c-3 clamp-1" style="flex:1 1 auto">Ein Jahr · Zeilen Mo–So · graue Felder: kein Lernen</span>
+                <span class="t-label c-3">weniger</span>
+                <i style="width:11px;height:11px;border-radius:3px;background:var(--fill-2)"></i>
+                <i style="width:11px;height:11px;border-radius:3px;background:var(--accent);opacity:.22"></i>
+                <i style="width:11px;height:11px;border-radius:3px;background:var(--accent);opacity:.40"></i>
+                <i style="width:11px;height:11px;border-radius:3px;background:var(--accent);opacity:.64"></i>
+                <i style="width:11px;height:11px;border-radius:3px;background:var(--accent);opacity:.88"></i>
+                <i style="width:11px;height:11px;border-radius:3px;background:var(--accent)"></i>
+                <span class="t-label c-3">mehr</span>
+                <button class="btn btn--sm btn--quiet" style="height:28px; padding:0 8px; margin-left:6px; flex:none"><span class="t-label">Alle Werte</span></button>
+              </div>
+            </section>
+
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Deck-Liste, Sitzung als Vorschau unten</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <div class="t-title">Lernkarten</div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+          <button class="iconbtn"><span class="ico" data-ico="plus"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column; gap:9px; padding-bottom:4px">
+
+          <p class="t-sub c-2 clamp-1" style="margin:0">
+            Do, 13. Nov · <strong class="c-1 num">23 fällig</strong> · Ziel <span class="num">31/40</span>
+          </p>
+
+          <section class="card" style="padding:4px">
+            <div style="display:flex; align-items:center; gap:12px; padding:5px 12px 7px">
+              <span class="t-label c-3" style="flex:1 1 auto">DECK</span>
+              <span style="display:flex; gap:6px; flex:none">
+                <span class="t-label c-3" style="width:34px; text-align:right">NEU</span>
+                <span class="t-label c-3" style="width:58px; text-align:right">LERNEN</span>
+                <span class="t-label c-3" style="width:52px; text-align:right">FÄLLIG</span>
+              </span>
+            </div>
+
+            <div class="row is-selected" style="min-height:54px">
+              <div class="row__main">
+                <span class="t-body row__title clamp-1">Zellbiologie</span>
+                <span class="t-sub c-3 clamp-1">212 Karten · läuft</span>
+              </div>
+              <span style="display:flex; gap:6px; flex:none">
+                <span class="t-body num" style="width:34px; text-align:right">8</span>
+                <span class="t-body num" style="width:58px; text-align:right">3</span>
+                <span class="t-body num is-strong" style="width:52px; text-align:right">12</span>
+              </span>
+            </div>
+
+            <div class="row" style="min-height:54px">
+              <div class="row__main">
+                <span class="t-body row__title clamp-1">Analysis II</span>
+                <span class="t-sub c-3 clamp-1">148 Karten · Reihen</span>
+              </div>
+              <span style="display:flex; gap:6px; flex:none">
+                <span class="t-body num" style="width:34px; text-align:right">4</span>
+                <span class="t-body num is-off" style="width:58px; text-align:right">0</span>
+                <span class="t-body num is-strong" style="width:52px; text-align:right">15</span>
+              </span>
+            </div>
+
+            <div class="row" style="min-height:54px">
+              <div class="row__main">
+                <span class="t-body row__title clamp-1">Fachbegriffe</span>
+                <span class="t-sub c-3 clamp-1">heute geschafft</span>
+              </div>
+              <span style="display:flex; gap:6px; flex:none">
+                <span class="t-body num is-off" style="width:34px; text-align:right">0</span>
+                <span class="t-body num is-off" style="width:58px; text-align:right">0</span>
+                <span class="t-body num is-off" style="width:52px; text-align:right">0</span>
+              </span>
+            </div>
+
+            <div class="row" style="min-height:54px">
+              <div class="row__main">
+                <span class="t-body row__title clamp-1">Laborgruppe 4</span>
+                <span class="t-sub c-3 clamp-1">geteiltes Deck · lädt</span>
+              </div>
+              <span style="display:flex; gap:6px; flex:none; align-items:center">
+                <span style="width:34px; display:flex; justify-content:flex-end"><span class="skeleton" style="width:18px; height:14px"></span></span>
+                <span style="width:58px; display:flex; justify-content:flex-end"><span class="skeleton" style="width:18px; height:14px"></span></span>
+                <span style="width:52px; display:flex; justify-content:flex-end"><span class="skeleton" style="width:22px; height:14px"></span></span>
+              </span>
+            </div>
+          </section>
+
+          <section class="card empty" style="padding:10px 12px; gap:10px; flex-direction:row; align-items:center; text-align:left">
+            <div class="empty__art" style="width:34px; height:34px; border-radius:10px">
+              <span class="ico" data-ico="cards" style="width:18px;height:18px"></span>
+            </div>
+            <div style="flex:1 1 auto; min-width:0">
+              <div class="empty__title t-body is-strong clamp-1">Wahlfach Neuro</div>
+              <div class="empty__text t-sub clamp-1">Markieren statt anlegen</div>
+            </div>
+            <button class="btn btn--sm" style="flex:none; padding:0 10px"><span class="ico" data-ico="plus" style="width:16px;height:16px"></span>Karte</button>
+          </section>
+        </div>
+
+        <!-- Sitzung als Vorschau: bleibt über der Tab-Bar stehen -->
+        <section class="card" style="margin:0 16px 8px; padding:11px 14px 12px; border-radius:16px">
+          <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:7px">
+            <span class="t-label clamp-1">Sitzung läuft · Zellbiologie</span>
+            <span class="t-label c-3 num" style="margin-left:auto; flex:none">9 von 23</span>
+          </div>
+          <div class="bar" style="margin-bottom:9px"><div class="bar__fill" style="width:39%"></div></div>
+
+          <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:6px">
+            <span class="t-label">Beherrschung</span>
+            <span class="t-label c-3 num" style="margin-left:auto; flex:none">89 von 212 sitzen</span>
+          </div>
+          <div style="display:flex; gap:2px; height:7px; border-radius:4px; overflow:hidden">
+            <i style="flex:0 0 8.5%; background:var(--accent); opacity:.14"></i>
+            <i style="flex:0 0 16%; background:var(--accent); opacity:.34"></i>
+            <i style="flex:0 0 33.5%; background:var(--accent); opacity:.62"></i>
+            <i style="flex:1 1 auto; background:var(--accent)"></i>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 10px; margin-top:7px">
+            <span style="display:inline-flex; align-items:center; gap:6px"><i style="width:8px;height:8px;border-radius:3px;background:var(--accent);opacity:.14"></i><span class="t-label c-2">Neu</span><span class="t-label c-3 num">18</span></span>
+            <span style="display:inline-flex; align-items:center; gap:6px"><i style="width:8px;height:8px;border-radius:3px;background:var(--accent);opacity:.34"></i><span class="t-label c-2">Lerne noch</span><span class="t-label c-3 num">34</span></span>
+            <span style="display:inline-flex; align-items:center; gap:6px"><i style="width:8px;height:8px;border-radius:3px;background:var(--accent);opacity:.62"></i><span class="t-label c-2">Vertraut</span><span class="t-label c-3 num">71</span></span>
+            <span style="display:inline-flex; align-items:center; gap:6px"><i style="width:8px;height:8px;border-radius:3px;background:var(--accent)"></i><span class="t-label c-2">Sitzt</span><span class="t-label c-3 num">89</span></span>
+          </div>
+
+          <div class="t-body clamp-2" style="margin-top:9px">Warum diffundiert O₂ frei durch die Membran?</div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1.25fr 1fr; gap:7px; margin-top:9px">
+            <button class="btn btn--sm" style="height:58px; flex-direction:column; gap:0; padding:0 3px">
+              <span class="t-label">Nochmal</span><span class="t-label c-2" style="white-space:nowrap">&lt; 1 Min.</span><span class="t-label c-3">sofort</span>
+            </button>
+            <button class="btn btn--sm" style="height:58px; flex-direction:column; gap:0; padding:0 3px">
+              <span class="t-label">Schwer</span><span class="t-label c-2 num">2 Tg.</span><span class="t-label c-3 num" style="white-space:nowrap">15.11.</span>
+            </button>
+            <button class="btn btn--sm btn--primary" style="height:58px; flex-direction:column; gap:0; padding:0 3px">
+              <span class="t-label">Gut</span><span class="t-label num" style="opacity:.82">4 Tg.</span><span class="t-label num" style="opacity:.66; white-space:nowrap">17.11.</span>
+            </button>
+            <button class="btn btn--sm" style="height:58px; flex-direction:column; gap:0; padding:0 3px">
+              <span class="t-label">Einfach</span><span class="t-label c-2 num">9 Tg.</span><span class="t-label c-3 num" style="white-space:nowrap">22.11.</span>
+            </button>
+          </div>
+        </section>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Lernkarten — Steckbrief</h2>
+  <p>Anki weiß, <strong>wann</strong> die Karte wiederkommt. Quizlet zeigt, <strong>ob</strong> man vorankommt. RemNote weiß, <strong>woher</strong> die Karte stammt. Dieser Schirm sagt alle drei Sätze gleichzeitig — und stellt Liste und Sitzung nebeneinander, damit der Deckwechsel keinen Screen kostet.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Anki — Termin im Knopf</td><td>Der Scheduler rechnet alle möglichen Zukünfte der Karte vorab durch (<span class="num">reviewer.py:912–951</span>); auch die Anzahl der Knöpfe ist Ergebnis dieser Rechnung. Hier trägt jeder Knopf Intervall <em>und</em> Kalendertag: Nochmal &lt; 1 Min. · Schwer 2 Tg. (Sa 15.11.) · Gut 4 Tg. (Mo 17.11.) · Einfach 9 Tg. (Sa 22.11.).</td></tr>
+    <tr><td>Anki — Nullen verblassen</td><td><span class="num">.zero-count</span> → <span class="num">--fg-faint</span> (deckbrowser.py:280). „Fachbegriffe" bleibt mit 0 · 0 · 0 stehen und verschwindet trotzdem aus der Aufmerksamkeit.</td></tr>
+    <tr><td>Anki — Luft zwischen den Knöpfen</td><td><span class="num">margin: 9px</span> rundum = 18 pt zwischen zwei Knöpfen (reviewer-bottom.scss), mehr als irgendwo sonst. Hier 10 pt Gitterlücke bei 58 pt Knopfhöhe — dieselbe Absicht auf Touch-Maß.</td></tr>
+    <tr><td>Anki — tote Mitte</td><td>Tippzonen 3×3, linke Spalte „Nochmal", rechte „Gut", Mitte ohne Funktion. Hier unter der Knopfreihe in einem Satz benannt statt in den Einstellungen versteckt.</td></tr>
+    <tr><td>Anki — Heatmap</td><td>7 × 53, 2 px Fuge durch Verkleinern der Zelle, Wurzelskala mit 20 % Mindestdeckkraft (calendar.ts). Hier in Ink statt in Blau: <span class="num">22 / 40 / 64 / 88 / 100 %</span> Deckkraft für 1–4 / 5–14 / 15–34 / 35–74 / ab 75 Bewertungen.</td></tr>
+    <tr><td>Anki — leerer Zustand als Verteiler</td><td>CongratsPage nennt den Grund und bietet Auswege. Hier: „Tageslimit 20 von 20 erreicht" mit genau einem Ausweg („Limit heute anheben").</td></tr>
+    <tr><td>Quizlet — zwei Geschwindigkeiten</td><td>Ein schneller Balken für die Runde, ein langsamer für die Beherrschung. Hier „Diese Sitzung 9 von 23" (bewegt sich pro Karte um 4 %) über „Beherrschung des Decks 89 von 212" (bewegt sich pro Sitzung um Millimeter).</td></tr>
+    <tr><td>Quizlet — benannte Stufen</td><td>Neu · Lerne noch · Vertraut · Sitzt, jede mit Zahl und eigener Ink-Stufe. Ein Balkenabschnitt ohne Namen ist nur eine Länge.</td></tr>
+    <tr><td>Quizlet — großer Typo-Sprung</td><td>Frage 28 pt gegen Metazeile 13 pt = Faktor 2,15. Anki liegt bei 1,5 (15 px gegen 10 px) und wirkt deshalb ausgegeben statt gestaltet.</td></tr>
+    <tr><td>Quizlet — ein Merken-Stern</td><td>Eine Auszeichnungsebene statt vier Flags plus Tags plus „Marked". Stern in der Kartenkopfzeile, Filter „Markiert 12" in der Sidebar.</td></tr>
+    <tr><td>RemNote — Karte behält Kontext</td><td>Unter der Antwort steht der markierte Satz plus „Im Zusammenhang zeigen", ohne die Sitzung zu verlassen. Das leere Deck erklärt denselben Griff als ersten Schritt: markieren statt anlegen.</td></tr>
+    <tr><td>RemNote — Tagesziel und Serie</td><td>Eine eigene Einheit, unabhängig von der Zahl fälliger Karten: 31 von 40, 12 Tage in Folge. Anki hat kein Tagesziel und deshalb kein definierbares „fertig".</td></tr>
+    <tr><td>RemNote — zwei Dichten</td><td>Verwaltung links mit 52-pt-Zeilen, Sitzung rechts mit einer Karte und einer Knopfreihe — aber ohne RemNotes harten Schnitt, weil beide gleichzeitig sichtbar sind.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Ankis Pluszeichen-Zähler „12 + 3 + 47".</strong> Eine Rechenaufgabe statt eines Statusberichts. Hier drei rechtsbündige Spalten mit Überschrift — und dieselbe Reihenfolge (Neu · Lernen · Fällig) in Deck-Liste, Sitzung und auf beiden Geräten. Anki dreht sie zwischen Deck-Liste und Review um; das ist der billigste vermeidbare Fehler im ganzen Feld.</li>
+    <li><strong>Vier gleich breite Knöpfe</strong> in einer HTML-Tabelle mit <span class="num">&lt;center&gt;</span>-Tag. „Gut" bekommt hier 1,5 Spalten plus Ink-Füllung, weil es in den allermeisten Fällen die richtige Antwort ist.</li>
+    <li><strong>14 Diagramme ohne Zusammenfassung.</strong> Die Statistik beginnt hier mit einem Satz, dann folgt die Heatmap; alles Weitere liegt hinter „Alle Werte".</li>
+    <li><strong>Ankis 1-px-Zeilen</strong> (35–45 Decks pro Bild) und <strong>Quizlets 80-pt-Zeilen.</strong> Hier 52 pt.</li>
+    <li><strong>Neun Tippzonen × zwei Kartenseiten × 60 belegbare Aktionen.</strong> Konfigurierbarkeit als abgeschobene Designentscheidung.</li>
+    <li><strong>Quizlets Modus-Kacheln</strong> (Karteikarten / Lernen / Test / Zuordnen) — vier gleichwertige Kacheln heißen: das Produkt weiß nicht, was als Nächstes dran ist. Seit 2026 tragen sie zusätzlich Schlösser.</li>
+    <li><strong>Quizlets Feiergrafiken und Runden-Abschlussbildschirme</strong> und <strong>das iPad-Layout als vergrößertes iPhone.</strong></li>
+    <li><strong>RemNotes fünfter Knopf „Skip".</strong> Er mischt „wie gut wusste ich es" mit „will ich jetzt überhaupt antworten". Überspringen liegt hier im Kartenmenü.</li>
+    <li><strong>RemNotes Tastenkürzel, die nur beim Hovern erscheinen</strong> — auf iPhone und iPad gibt es kein Hover.</li>
+    <li><strong>RemNotes Trennzeichen-Syntax im Fließtext.</strong> Auf einer Telefontastatur mit Autokorrektur ein echter Reibungspunkt.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Fünf Decks mit Zählern, eine laufende Sitzung bei Karte 10 von 23, ein Jahr Heatmap mit 1 240 Bewertungen in 30 Tagen.</td></tr>
+    <tr><td>aktiv / ausgewählt</td><td>„Heute fällig" in der Sidebar (Fläche + Gewicht + Ink-Balken), „Zellbiologie" als <span class="num">.row.is-selected</span> (Fläche + Ring + Gewicht), „Decks" im Segment, der Stern als <span class="num">.iconbtn.is-active</span>, „Gut" als gefüllter Standardknopf (Fläche + Füllung).</td></tr>
+    <tr><td>verblasst statt weg</td><td>Null-Zähler mit <span class="num">.is-off</span> — Deckkraft <em>und</em> das Wort „heute geschafft" daneben. Nie Farbe allein.</td></tr>
+    <tr><td>Laden</td><td>„Laborgruppe 4": Name und Herkunft stehen bereits, die drei Zähler sind Skelette, die Unterzeile benennt den Grund („Zähler werden geladen"). Zwei Merkmale: Skelett plus Wort.</td></tr>
+    <tr><td>leer</td><td>„Wahlfach Neuro" mit <span class="num">.empty</span> — Grund, ein Satz Anleitung und genau ein erster Schritt („Erste Karte anlegen"). Auf beiden Geräten sichtbar.</td></tr>
+    <tr><td>Hinweis</td><td><span class="num">.notice</span> unter der Deck-Liste: Tageslimit neue Karten 20 von 20, daneben genau ein Ausweg („Anheben"). Erklärt, warum die Spalte NEU morgen wieder Zahlen zeigt.</td></tr>
+  </table>
+
+  <h3>Warum die Kombination trägt</h3>
+  <p>Weil jede der drei Apps genau die Lücke der anderen füllt und keine Idee der anderen widerspricht. Ankis Termin am Knopf braucht Quizlets Balken nicht zu kennen — er beantwortet eine andere Frage, an einer anderen Stelle des Schirms. Quizlets zwei Geschwindigkeiten funktionieren erst richtig, wenn darunter ein echter Terminierer arbeitet; bei Quizlet selbst steckt der hinter der Bezahlschranke, weshalb „Lerne noch" dort eine Stimmung bleibt. RemNotes Kontextzeile wiederum rechtfertigt überhaupt erst, dass Lernkarten und Text im selben Produkt wohnen — sie kostet drei Zeilen und macht aus der Karte etwas, das man nachschlagen kann statt neu zu suchen.</p>
+  <p>Der bauliche Gewinn liegt in der Fläche: <span class="num">1194 × 834</span> tragen Liste <em>und</em> Sitzung. Damit verschwindet der harte Schnitt zwischen dichter Verwaltung und ruhigem Lernen, den RemNote-Nutzer im Feedback-Board als „flashcards-only interface" zurückfordern — die beiden Dichten stehen nebeneinander statt hintereinander. Auf dem iPhone bleibt die Reihenfolge dieselbe: Liste oben, Sitzung als Vorschau darunter, dieselben drei Zähler in derselben Reihenfolge, dieselben vier Termine auf denselben vier Knöpfen — nur der Wochentag fällt auf 393 pt weg, weil dort die Zahl reicht (Ankis Regel: Nebenschrift auf kleinen Screens ausdünnen, nicht verkleinern).</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe. Ausgewählt = Fläche + Ring + Gewicht. Standardknopf = Fläche + Füllung. Null = Deckkraft + Wort. Laden = Skelett + Wort. Die Heatmap-Stufen sind reine Ink-Deckkraft und tragen zusätzlich eine Legende mit Zahlenbereichen. Der einzige Modul-Dot sitzt im Sidebar-Kopf, 6 pt, neben dem Wort „Lernkarten" — dieser Schirm kennt nur seinen eigenen Bereich.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

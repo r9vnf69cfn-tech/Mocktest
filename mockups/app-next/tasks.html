@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aufgaben — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Aufgaben
+
+ÜBERNOMMEN
+· Things 3 — Gruppierung nach Bereich statt nach Uhrzeit. Übernommen, weil Emil
+  in Bereichen denkt („Biologie", „Analysis II"), nicht in Stundenblöcken. Jede
+  Gruppe trägt einen Zähler, damit die Länge der Liste vor dem Scrollen bekannt
+  ist. Bewertung: das Beste an Things — und billig zu haben.
+· Things 3 — die Checkbox als Delight-Moment (großes Ziel, ruhiger Ring, Haken
+  wächst). Übernommen als .check.is-checking, hier eingefroren sichtbar.
+  Bewertung: kostet nichts und ist der Moment, den man am Tag zwanzigmal sieht.
+  Genau dort gehört Sorgfalt hin.
+· Things 3 — „Magic Plus": Erfassen ist immer erreichbar, ohne Modus. Übernommen,
+  aber verlegt: auf dem iPhone als Feld direkt über der Tab-Bar (Daumenzone),
+  auf dem iPad als Feld über der Liste. Bewertung: die Idee ist richtig, der
+  schwebende Ziehpunkt von Things ist es nicht — er versteckt seine Funktion.
+· Todoist — natürliche Sprache beim Erfassen. Übernommen und verschärft: Todoist
+  färbt die erkannten Wörter im Feld ein und lässt den Nutzer raten, was daraus
+  wurde. Hier stehen die erkannten Werte als eigene Chips UNTER dem Feld
+  („Morgen 14:00 · #labor · Hohe Priorität · Bereich Biologie"), jeder einzeln
+  antippbar und korrigierbar. Bewertung: die stärkste Einzelidee im Feld.
+· TickTick — Ansichtsvielfalt auf denselben Daten. Übernommen als vier Segmente
+  (Liste · Planer · Matrix · Board) plus Kalender. Bewertung: richtig gedacht,
+  bei TickTick aber über drei Menüs verstreut; hier steht die Wahl an einer
+  Stelle im Kopf und wechselt nur die Darstellung, nie den Datenbestand.
+· Amazing Marvin / Sorted — die Trennung von Termin und Frist. Übernommen als
+  zwei Chips mit verschiedener Grammatik: grau „Geplant 16:00" (wann ich es tue)
+  gegen rot mit Flagge „noch 0 Tage" (wann es zu spät ist).
+
+BEWUSST NICHT ÜBERNOMMEN
+· Todoists vier Prioritätsfarben (rot/orange/blau/grau) — vier Buntfarben für
+  eine Rangfolge. Priorität steht hier als Wort im Chip; Rot bleibt der Frist.
+· Todoists Karma, Ranglisten und Streak-Belohnungen — Fremdmotivation.
+· TickTicks Pomodoro-Timer, Gewohnheitstracker und Eisenhower-Erklärvideo im
+  selben Schirm — Ansichtsvielfalt ist gut, Funktionsvielfalt an einer Stelle
+  nicht.
+· Things' vollständig leerer „Heute"-Screen als Belohnung — in einer
+  All-in-One-App ist immer eine Kette offen; ein leerer Schirm wäre gelogen.
+· Rote Zeilen für Überfälliges (OmniFocus) — Rot als Fläche macht die Liste zur
+  Alarmanlage. Rot bleibt hier auf dem Chip und auf dem Wort.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Zwei Dinge, die keine der drei Vorlagen zusammen hat:
+1. Geplant und Fällig sind sichtbar zwei verschiedene Sachen. „Statistik-Blatt 4
+   abgeben" trägt beides nebeneinander — grau, wann Emil es macht; rot mit
+   Flagge und Resttagen, wann es weg sein muss. Aufgaben-Apps werfen das
+   üblicherweise in ein Feld „Fällig am" und erzeugen damit jeden Abend ein
+   schlechtes Gewissen für Termine, die nie Fristen waren.
+2. Der Herkunfts-Chip. „Laborprotokoll Zellkultur schreiben" weiß, dass es aus
+   der Notiz „Zellbiologie" entstanden ist, „Übungsblatt 5 fertig rechnen" weiß,
+   dass es aus dem Canvas kommt. Eine Aufgabe ist hier nie ein Zettel ohne
+   Vorgeschichte — ein Tipp führt zurück an die Stelle, an der sie entstand.
+
+ADA-KATEGORIE: Interaktion (fünf Ansichten auf einem Datenbestand, Erfassen in
+einem Satz, Mehrfachauswahl mit Übergabe-Leiste) und Inklusion (jeder Zustand
+trägt zwei Merkmale; Frist und Termin sind auch ohne Farbwahrnehmung zu
+unterscheiden — Wort, Symbol und Umriss unterscheiden sie, nicht nur Rot).
+
+KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
+  Titel/Fließtext  ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
+  Sekundärtext     ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
+  Metadaten        ink-3 auf Grund     4,8:1   (hell) ·  4,9:1 (dunkel)
+  CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Deadline rot     danger auf Papier   5,2:1   (hell) ·  6,3:1 (dunkel)
+  Swipe-Aktion     accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
+  Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort. Bereichs-Dots
+  sind Ink, nicht bunt: Bereiche sind keine Module.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Aufgaben</h1>
+  <p>Die Liste, die weiß, woher jede Aufgabe kommt. Fünf Ansichten auf denselben Daten, ein Erfassungsfeld, das ganze Sätze versteht — und zwei Chips, die den Unterschied zwischen „heute geplant" und „heute fällig" endlich sichtbar machen.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Sidebar, Liste und Kontextspalte</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar — auf allen Schirmen gleich, nur „Aufgaben" ist aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem is-active"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar" style="padding-top:6px; padding-bottom:6px">
+            <div style="min-width:0">
+              <div class="t-title">Heute</div>
+              <div class="t-sub c-3" style="white-space:nowrap">Donnerstag, 13. November</div>
+            </div>
+
+            <!-- Ansichten: vier Segmente auf derselben Liste … -->
+            <div class="segmented" style="margin-left:12px">
+              <button class="is-on">Liste</button>
+              <button>Planer</button>
+              <button>Matrix</button>
+              <button>Board</button>
+            </div>
+            <!-- … die fünfte Ansicht mischt Termine dazu und verlässt damit die
+                 Liste. Deshalb steht sie abgesetzt daneben, nicht im Segment. -->
+            <div class="segmented" style="margin-left:4px">
+              <button><span class="ico" data-ico="calendar" style="width:15px;height:15px;margin-right:6px;vertical-align:-3px"></span>Kalender</button>
+            </div>
+
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
+            <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neu</button>
+          </div>
+
+          <div class="scroll" style="padding-top:12px; padding-bottom:14px; display:flex; flex-direction:column; gap:12px">
+
+            <!-- ══ Schnellerfassung, Zustand „getippt" ══
+                 Der Beweis für natürliche Sprache: der Satz bleibt stehen, wie
+                 Emil ihn geschrieben hat — die Auswertung steht als Chips
+                 darunter und ist einzeln antippbar. -->
+            <section class="card" style="padding:10px 12px">
+              <div style="display:flex; align-items:center; gap:10px">
+                <div class="field" style="flex:1 1 auto; height:42px; padding:0 14px">
+                  <span class="ico" data-ico="plus" style="width:18px;height:18px"></span>
+                  <span class="t-body" style="white-space:nowrap">Laborprotokoll <span style="background:var(--accent-soft); box-shadow:inset 0 0 0 1px var(--line-2); border-radius:5px; padding:1px 4px">morgen 14 Uhr</span> <span style="background:var(--accent-soft); box-shadow:inset 0 0 0 1px var(--line-2); border-radius:5px; padding:1px 4px">#labor</span> <span style="background:var(--accent-soft); box-shadow:inset 0 0 0 1px var(--line-2); border-radius:5px; padding:1px 4px">!!!</span></span><span style="display:inline-block; width:2px; height:20px; background:var(--accent); margin-left:3px; vertical-align:-4px"></span>
+                  <span style="flex:1"></span>
+                  <span class="ico" data-ico="mic" style="width:18px;height:18px"></span>
+                </div>
+                <button class="btn btn--primary btn--sm" style="height:42px">Sichern</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; margin-top:6px">
+                <span class="t-label c-3" style="letter-spacing:.05em">ERKANNT</span>
+                <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Morgen 14:00</span>
+                <span class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#labor</span>
+                <span class="chip"><span class="ico" data-ico="bolt" style="width:13px;height:13px"></span>Hohe Priorität</span>
+                <span class="chip"><span class="dot" style="background:var(--ink-2)"></span>Bereich Biologie</span>
+                <span style="flex:1"></span>
+                <span class="t-label c-3" style="white-space:nowrap">Antippen zum Ändern</span>
+              </div>
+            </section>
+
+            <!-- ══ Zweispaltig: links die Arbeit, rechts der Überblick ══ -->
+            <div style="display:grid; grid-template-columns:1fr 200px; gap:16px; align-items:start">
+
+              <!-- ── Liste, gruppiert nach Bereich ── -->
+              <div style="display:flex; flex-direction:column; gap:10px">
+
+                <!-- Biologie: hier liegt die Mehrfachauswahl -->
+                <section class="card" style="padding:6px">
+                  <div style="display:flex; align-items:center; gap:8px; padding:5px 12px 3px">
+                    <span class="dot" style="background:var(--ink-2)"></span>
+                    <span class="t-label c-2">Biologie</span>
+                    <span style="flex:1"></span>
+                    <span class="t-label c-3 num">2</span>
+                  </div>
+
+                  <div class="row is-selected">
+                    <span class="check"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title">Laborprotokoll Zellkultur schreiben</span>
+                      <span class="t-sub c-3">Messwerte von Tag 3 eintragen</span>
+                    </div>
+                    <div class="row__meta">
+                      <span class="origin"><span class="dot dot--notes"></span>Zellbiologie</span>
+                    </div>
+                  </div>
+
+                  <div class="row is-selected">
+                    <span class="check"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title">Karteikarten Anatomie nacharbeiten</span>
+                    </div>
+                    <div class="row__meta">
+                      <span class="chip"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>Wöchentlich</span>
+                    </div>
+                  </div>
+
+                  <!-- Übergabe-Leiste: erscheint an jeder Auswahl, überall gleich -->
+                  <div style="display:flex; justify-content:center; margin-top:4px">
+                    <span class="handoff">
+                      <span class="handoff__from t-label"><span class="dot dot--tasks"></span>aus <span class="num">2</span> Aufgaben</span>
+                      <button class="handoff__btn is-primary"><span class="ico" data-ico="calendar" style="width:14px;height:14px"></span>Planen</button>
+                      <button class="handoff__btn"><span class="ico" data-ico="folder" style="width:14px;height:14px"></span>Bereich</button>
+                      <button class="handoff__btn"><span class="dot dot--notes"></span>Notiz</button>
+                      <button class="handoff__btn" style="padding:0 9px"><span class="ico" data-ico="close" style="width:15px;height:15px"></span></button>
+                    </span>
+                  </div>
+                </section>
+
+                <!-- Analysis II -->
+                <section class="card" style="padding:6px">
+                  <div style="display:flex; align-items:center; gap:8px; padding:5px 12px 3px">
+                    <span class="dot" style="background:var(--ink-2)"></span>
+                    <span class="t-label c-2">Analysis II</span>
+                    <span style="flex:1"></span>
+                    <span class="t-label c-3 num">2</span>
+                  </div>
+
+                  <!-- Die Zeile, an der die getrennte Semantik hängt:
+                       grau = wann ich es tue · rot = wann es zu spät ist -->
+                  <div class="row">
+                    <span class="check"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title">Statistik-Blatt 4 abgeben</span>
+                      <span class="t-sub c-3">Abgabe heute 18:00</span>
+                    </div>
+                    <div class="row__meta">
+                      <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Geplant 16:00</span>
+                      <span class="chip chip--danger"><span class="ico" data-ico="flag" style="width:13px;height:13px"></span>noch 0 Tage</span>
+                    </div>
+                  </div>
+
+                  <!-- Zwischenzustand: der Haken wächst gerade -->
+                  <div class="row">
+                    <span class="check is-checking"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title">Übungsblatt 5 fertig rechnen</span>
+                    </div>
+                    <div class="row__meta">
+                      <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Geplant morgen</span>
+                      <span class="origin"><span class="dot dot--canvas"></span>Canvas</span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Uni -->
+                <section class="card" style="padding:6px">
+                  <div style="display:flex; align-items:center; gap:8px; padding:5px 12px 3px">
+                    <span class="dot" style="background:var(--ink-2)"></span>
+                    <span class="t-label c-2">Uni</span>
+                    <span style="flex:1"></span>
+                    <span class="t-label c-3 num">1</span>
+                  </div>
+                  <div class="row">
+                    <span class="check"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title">Rückmeldung an Prof. Wendt</span>
+                      <span class="t-sub c-3">Labortermin für Jana und Milan bestätigen</span>
+                    </div>
+                    <div class="row__meta">
+                      <span class="chip"><span class="ico" data-ico="list" style="width:13px;height:13px"></span><span class="num">1</span> von <span class="num">2</span> Schritten</span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Persönlich -->
+                <section class="card" style="padding:6px">
+                  <div style="display:flex; align-items:center; gap:8px; padding:5px 12px 3px">
+                    <span class="dot" style="background:var(--ink-2)"></span>
+                    <span class="t-label c-2">Persönlich</span>
+                    <span style="flex:1"></span>
+                    <span class="t-label c-3 num">1</span>
+                  </div>
+                  <div class="row">
+                    <span class="check"></span>
+                    <div class="row__main">
+                      <span class="t-body row__title">Bücher in der Bibliothek verlängern</span>
+                    </div>
+                    <div class="row__meta">
+                      <span class="chip"><span class="ico" data-ico="location" style="width:13px;height:13px"></span>Bibliothek</span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Erledigtes verschwindet nicht, es zieht sich zusammen -->
+                <button class="card card--flat" style="display:flex; align-items:center; gap:12px; padding:8px 14px; width:100%; text-align:left">
+                  <span class="check is-done"></span>
+                  <span class="t-body c-2" style="flex:1">Heute erledigt</span>
+                  <span class="t-label c-3 num">2</span>
+                  <span class="ico c-3" data-ico="chevD" style="width:16px;height:16px"></span>
+                </button>
+              </div>
+
+              <!-- ── Kontextspalte ── -->
+              <div style="display:flex; flex-direction:column; gap:12px">
+
+                <section class="card" style="padding:14px">
+                  <div class="card__head" style="margin-bottom:10px">
+                    <span class="t-label c-3" style="flex:1">DIESE WOCHE</span>
+                    <span class="t-label c-3 num">25</span>
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:4px">
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-label c-3" style="width:20px">Mo</span>
+                      <span class="bar" style="flex:1"><span class="bar__fill" style="width:67%; opacity:.45"></span></span>
+                      <span class="t-label c-3 num" style="width:10px; text-align:right">4</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-label c-3" style="width:20px">Di</span>
+                      <span class="bar" style="flex:1"><span class="bar__fill" style="width:50%; opacity:.45"></span></span>
+                      <span class="t-label c-3 num" style="width:10px; text-align:right">3</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-label c-3" style="width:20px">Mi</span>
+                      <span class="bar" style="flex:1"><span class="bar__fill" style="width:83%; opacity:.45"></span></span>
+                      <span class="t-label c-3 num" style="width:10px; text-align:right">5</span>
+                    </div>
+                    <!-- heute = Fläche + Ink-Text + voller Balken -->
+                    <div style="display:flex; align-items:center; gap:8px; background:var(--accent-soft); border-radius:7px; padding:4px 6px; margin:0 -6px">
+                      <span class="t-label c-1" style="width:20px">Do</span>
+                      <span class="bar" style="flex:1"><span class="bar__fill" style="width:100%"></span></span>
+                      <span class="t-label c-1 num" style="width:10px; text-align:right">6</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-label c-3" style="width:20px">Fr</span>
+                      <span class="bar" style="flex:1"><span class="bar__fill" style="width:67%; opacity:.45"></span></span>
+                      <span class="t-label c-3 num" style="width:10px; text-align:right">4</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-label c-3" style="width:20px">Sa</span>
+                      <span class="bar" style="flex:1"><span class="bar__fill" style="width:17%; opacity:.45"></span></span>
+                      <span class="t-label c-3 num" style="width:10px; text-align:right">1</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px">
+                      <span class="t-label c-3" style="width:20px">So</span>
+                      <span class="bar" style="flex:1"><span class="bar__fill" style="width:33%; opacity:.45"></span></span>
+                      <span class="t-label c-3 num" style="width:10px; text-align:right">2</span>
+                    </div>
+                  </div>
+                  <div class="t-sub c-3" style="margin-top:8px">Heute <span class="num">6</span> offen, davon <span class="num">1</span> mit Frist.</div>
+                </section>
+
+                <section class="card" style="padding:14px">
+                  <div class="card__head" style="margin-bottom:8px">
+                    <span class="ico" data-ico="inbox" style="width:16px;height:16px; color:var(--ink-3)"></span>
+                    <span class="t-label c-3" style="flex:1">EINGANG</span>
+                  </div>
+                  <div class="count"><span class="count__n num">3</span><span class="count__w t-sub">ohne Bereich</span></div>
+                  <button class="btn btn--sm" style="width:100%; margin-top:10px">Jetzt sortieren</button>
+                </section>
+
+                <section class="card" style="padding:14px 8px 8px">
+                  <div class="card__head" style="margin:0 6px 4px">
+                    <span class="t-label c-3">GESPEICHERTE FILTER</span>
+                  </div>
+                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
+                    <span class="ico c-3" data-ico="flag" style="width:16px;height:16px"></span>
+                    <span class="t-sub" style="flex:1; text-align:left">Alle Fristen</span>
+                    <span class="t-label c-3 num">2</span>
+                  </button>
+                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
+                    <span class="ico c-3" data-ico="tag" style="width:16px;height:16px"></span>
+                    <span class="t-sub" style="flex:1; text-align:left">#labor</span>
+                    <span class="t-label c-3 num">5</span>
+                  </button>
+                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
+                    <span class="ico c-3" data-ico="tag" style="width:16px;height:16px"></span>
+                    <span class="t-sub" style="flex:1; text-align:left">#prüfung</span>
+                    <span class="t-label c-3 num">7</span>
+                  </button>
+                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
+                    <span class="ico c-3" data-ico="calendar" style="width:16px;height:16px"></span>
+                    <span class="t-sub" style="flex:1; text-align:left">Ohne Datum</span>
+                    <span class="t-label c-3 num">4</span>
+                  </button>
+                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
+                    <span class="ico c-3" data-ico="location" style="width:16px;height:16px"></span>
+                    <span class="t-sub" style="flex:1; text-align:left">Unterwegs</span>
+                    <span class="t-label c-3 num">1</span>
+                  </button>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · Erfassen in der Daumenzone</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding:6px var(--pad-iphone) 0">
+          <div class="t-title">Heute</div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="calendar"></span></button>
+          <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
+        </div>
+
+        <div class="scroll" style="padding-top:5px; padding-bottom:4px; display:flex; flex-direction:column; gap:5px">
+
+          <!-- Dieselben fünf Ansichten: vier im Segment, Kalender oben rechts -->
+          <div class="segmented" style="display:flex">
+            <button class="is-on" style="flex:1; padding:0">Liste</button>
+            <button style="flex:1; padding:0">Planer</button>
+            <button style="flex:1; padding:0">Matrix</button>
+            <button style="flex:1; padding:0">Board</button>
+          </div>
+
+          <!-- Biologie -->
+          <section class="card" style="padding:4px">
+            <div style="display:flex; align-items:center; gap:8px; padding:3px 10px 0">
+              <span class="dot" style="background:var(--ink-2)"></span>
+              <span class="t-label c-2">Biologie</span>
+              <span style="flex:1"></span>
+              <span class="t-label c-3 num">2</span>
+            </div>
+            <div class="row" style="padding:6px 12px">
+              <span class="check"></span>
+              <div class="row__main" style="gap:4px">
+                <span class="t-body">Laborprotokoll Zellkultur schreiben</span>
+                <span style="display:flex; gap:6px"><span class="origin" style="height:20px"><span class="dot dot--notes"></span>Zellbiologie</span><span class="chip" style="height:20px"><span class="ico" data-ico="clock" style="width:12px;height:12px"></span>Geplant 14:00</span></span>
+              </div>
+            </div>
+            <div class="row" style="padding:6px 12px">
+              <span class="check"></span>
+              <div class="row__main" style="gap:4px">
+                <span class="t-body">Karteikarten Anatomie nacharbeiten</span>
+                <span><span class="chip" style="height:20px"><span class="ico" data-ico="undo" style="width:12px;height:12px"></span>Wöchentlich</span></span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Analysis II -->
+          <section class="card" style="padding:4px">
+            <div style="display:flex; align-items:center; gap:8px; padding:3px 10px 0">
+              <span class="dot" style="background:var(--ink-2)"></span>
+              <span class="t-label c-2">Analysis II</span>
+              <span style="flex:1"></span>
+              <span class="t-label c-3 num">2</span>
+            </div>
+            <div class="row" style="padding:6px 12px">
+              <span class="check"></span>
+              <div class="row__main" style="gap:4px">
+                <span class="t-body">Statistik-Blatt 4 abgeben</span>
+                <span style="display:flex; gap:6px"><span class="chip" style="height:20px"><span class="ico" data-ico="clock" style="width:12px;height:12px"></span>Geplant 16:00</span><span class="chip chip--danger" style="height:20px"><span class="ico" data-ico="flag" style="width:12px;height:12px"></span>noch 0 Tage</span></span>
+              </div>
+            </div>
+            <!-- Zwischenzustand: der Haken wächst gerade -->
+            <div class="row" style="padding:6px 12px">
+              <span class="check is-checking"></span>
+              <div class="row__main" style="gap:4px">
+                <span class="t-body">Übungsblatt 5 fertig rechnen</span>
+                <span><span class="origin" style="height:20px"><span class="dot dot--canvas"></span>Canvas</span></span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Uni -->
+          <section class="card" style="padding:4px">
+            <div style="display:flex; align-items:center; gap:8px; padding:3px 10px 0">
+              <span class="dot" style="background:var(--ink-2)"></span>
+              <span class="t-label c-2">Uni</span>
+              <span style="flex:1"></span>
+              <span class="t-label c-3 num">1</span>
+            </div>
+            <div class="row" style="padding:6px 12px">
+              <span class="check"></span>
+              <div class="row__main" style="gap:4px">
+                <span class="t-body">Rückmeldung an Prof. Wendt</span>
+                <span><span class="chip" style="height:20px"><span class="ico" data-ico="list" style="width:12px;height:12px"></span><span class="num">1</span> von <span class="num">2</span> Schritten</span></span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Persönlich — hier läuft der Swipe -->
+          <section class="card" style="padding:4px">
+            <div style="display:flex; align-items:center; gap:8px; padding:3px 10px 0">
+              <span class="dot" style="background:var(--ink-2)"></span>
+              <span class="t-label c-2">Persönlich</span>
+              <span style="flex:1"></span>
+              <span class="t-label c-3 num">1</span>
+            </div>
+            <!-- Angefangener Swipe: die Zeile liegt 72 pt rechts, die Aktion
+                 dahinter ist bereits vollständig lesbar — nicht nur ein Streifen. -->
+            <div style="position:relative; overflow:hidden; border-radius:10px">
+              <div style="position:absolute; inset:0; display:flex">
+                <div style="width:100px; background:var(--accent); color:var(--accent-on); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px">
+                  <span class="ico" data-ico="calendar" style="width:20px;height:20px"></span>
+                  <span class="t-label">Planen</span>
+                </div>
+              </div>
+              <div class="row" style="padding:6px 12px; transform:translateX(88px); background:var(--paper); box-shadow:-1px 0 0 var(--line-2), -10px 0 20px rgba(0,0,0,.18)">
+                <span class="check"></span>
+                <div class="row__main" style="gap:4px">
+                  <span class="t-body">Bücher in der Bibliothek verlängern</span>
+                  <span><span class="chip" style="height:20px"><span class="ico" data-ico="location" style="width:12px;height:12px"></span>Bibliothek</span></span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Schnellerfassung in der Daumenzone: direkt über der Tab-Bar -->
+        <div style="flex:none; padding:6px var(--pad-iphone); background:var(--chrome); backdrop-filter:blur(24px) saturate(180%); border-top:1px solid var(--line)">
+          <div class="field" style="height:40px; padding:0 14px; background:var(--paper); box-shadow:inset 0 0 0 1px var(--line-2)">
+            <span class="ico" data-ico="plus" style="width:18px;height:18px"></span>
+            <span class="t-body field__ph" style="flex:1; white-space:nowrap">Aufgabe in einem Satz erfassen</span>
+            <span class="ico" data-ico="mic" style="width:18px;height:18px"></span>
+          </div>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Aufgaben — Steckbrief</h2>
+  <p>Eine Liste, die nach Bereich gruppiert, ihre Herkunft kennt und zwischen „heute geplant" und „heute fällig" unterscheidet. Fünf Ansichten liegen auf denselben Daten; gewechselt wird im Kopf, nicht im Menü.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Things 3 — Gruppierung</td><td>Bereiche statt Stundenraster, jede Gruppe mit Zähler. Übernommen, weil Emil in „Biologie" und „Analysis II" denkt. Bewertung: die stärkste Ordnungsidee im Feld.</td></tr>
+    <tr><td>Things 3 — Checkbox</td><td>Großes rundes Ziel, ruhiger Ring, wachsender Haken. Übernommen als <strong>.check.is-checking</strong> — der Moment, den man täglich zwanzigmal sieht, verdient Sorgfalt.</td></tr>
+    <tr><td>Things 3 — Magic Plus</td><td>Erfassen ohne Modus. Übernommen, aber verlegt: iPhone unten über der Tab-Bar, iPad über der Liste. Bewertung: die Idee stimmt, der schwebende Ziehpunkt versteckt seine Funktion — ein sichtbares Feld nicht.</td></tr>
+    <tr><td>Todoist — Sprache</td><td>„Laborprotokoll morgen 14 Uhr #labor !!!" in einem Zug. Übernommen und verschärft: die erkannten Werte stehen als eigene Chips unter dem Feld und sind einzeln antippbar. Todoist färbt nur ein und lässt raten.</td></tr>
+    <tr><td>TickTick — Ansichten</td><td>Liste · Planer · Matrix · Board (+ Kalender) auf demselben Datenbestand. Übernommen, aber an eine Stelle geholt; bei TickTick liegt die Wahl über drei Menüs verstreut.</td></tr>
+    <tr><td>Sorted / Amazing Marvin</td><td>Termin und Frist sind zwei Felder. Übernommen als zwei Chips mit verschiedener Grammatik — grau mit Uhr, rot mit Flagge und Resttagen.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Todoists vier Prioritätsfarben</strong> — eine Rangfolge in vier Buntfarben. Priorität steht hier als Wort im Chip; Rot bleibt allein der Frist.</li>
+    <li><strong>Karma, Streaks und Ranglisten</strong> (Todoist) — Fremdmotivation statt Arbeit.</li>
+    <li><strong>Pomodoro-Timer, Gewohnheiten und Erklärvideo im selben Schirm</strong> (TickTick) — Ansichtsvielfalt ja, Funktionsvielfalt an einer Stelle nein.</li>
+    <li><strong>Rot eingefärbte Zeilen für Überfälliges</strong> (OmniFocus) — Rot als Fläche macht die Liste zur Alarmanlage.</li>
+    <li><strong>Der leere „Heute"-Schirm als Belohnung</strong> (Things) — in einer All-in-One-App ist immer eine Kette offen.</li>
+  </ul>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Sechs offene Aufgaben in vier Bereichen, eine davon mit Frist heute 18:00. Die Zahl <span class="num">6</span> stimmt mit der Sidebar und mit Today überein.</td></tr>
+    <tr><td>aktiv</td><td>„Aufgaben" in der Sidebar: Fläche + Gewicht + Ink-Balken links. „Liste" im Segment: Papier-Fläche + Ink-Text + Schatten. Heute in der Wochenreihe: Fläche + Ink-Text + voller Balken.</td></tr>
+    <tr><td>ausgewählt</td><td>Die zwei Zeilen unter „Biologie": getönte Fläche + Ring innen + fetter Titel. Darunter die Übergabe-Leiste, die zählt, woraus die Auswahl besteht („aus <span class="num">2</span> Aufgaben") — dieselbe Leiste wie in Notizen und Bibliothek.</td></tr>
+    <tr><td>Zwischenzustand 1</td><td><strong>„Übungsblatt 5 fertig rechnen" wird gerade erledigt.</strong> Der Ring ist zur Fläche geworden, der weiche Hof steht noch außen, der Haken sitzt auf <span class="num">60 %</span> und ist halbdurchsichtig — auf beiden Geräten dieselbe Zeile.</td></tr>
+    <tr><td>Zwischenzustand 2</td><td><strong>Der Swipe auf dem iPhone ist angefangen.</strong> „Bücher in der Bibliothek verlängern" liegt <span class="num">72</span> pt rechts und wirft einen Schatten auf die Aktion darunter; „Planen" ist bereits vollständig lesbar, nicht nur ein Streifen Farbe.</td></tr>
+    <tr><td>Zwischenzustand 3</td><td><strong>Die Schnellerfassung ist mitten im Tippen.</strong> Der Satz steht mit Schreibmarke im Feld, die erkannten Teile sind im Text hinterlegt, und darunter stehen die vier Chips, die daraus geworden sind.</td></tr>
+    <tr><td>eingeklappt</td><td>„Heute erledigt <span class="num">2</span>" am Listenende: erledigte Arbeit verschwindet nicht, sie zieht sich zusammen.</td></tr>
+    <tr><td>leer</td><td>Ohne offene Aufgaben bleibt die Erfassungszeile stehen, darüber ein Satz: „Für heute ist nichts mehr offen. <span class="num">2</span> Aufgaben warten auf morgen." Kein Konfetti.</td></tr>
+  </table>
+
+  <h3>Warum award-würdig</h3>
+  <p><strong>Interaktion:</strong> Ein Satz genügt — „Laborprotokoll morgen 14 Uhr #labor !!!" wird zu Datum, Uhrzeit, Tag, Priorität und Bereich, und jede dieser fünf Entscheidungen ist als eigener Chip sichtbar und mit einem Tipp korrigierbar. Kein Formular, kein Nachkontrollieren.</p>
+  <p><strong>Innovation:</strong> Der Herkunfts-Chip. Eine Aufgabe ist hier kein Zettel ohne Vorgeschichte: „Laborprotokoll Zellkultur schreiben" trägt die Notiz „Zellbiologie", „Übungsblatt 5 fertig rechnen" trägt das Canvas. Ein Tipp führt zurück an die Stelle, an der die Aufgabe entstand — das kann keine reine Aufgaben-App.</p>
+  <p><strong>Inklusion:</strong> Frist und Termin sind ohne jede Farbwahrnehmung zu unterscheiden — verschiedene Wörter („Geplant 16:00" / „noch 0 Tage"), verschiedene Symbole (Uhr / Flagge) und verschiedene Umrisse (gefüllt / umrandet). Rot ist die dritte Bestätigung, nie die einzige. Alle Ziele sind mindestens <span class="num">44</span> pt hoch, die Checkbox trägt zusätzlich den weichen Hof.</p>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Kein Zustand hängt an Farbe allein. <strong>Aktiv</strong> = Fläche + Gewicht (+ Balken in der Sidebar). <strong>Ausgewählt</strong> = Fläche + Ring + fetter Titel. <strong>Frist</strong> = rotes Wort + Flaggen-Symbol + Umriss statt Füllung. <strong>Geplant</strong> = graue Fläche + Uhr-Symbol + das Wort „Geplant". <strong>Wiederholung</strong> = Kreispfeil + das Wort „Wöchentlich". <strong>Ortserinnerung</strong> = Nadel-Symbol + der Ort im Klartext. <strong>Erledigt</strong> = gefüllte Fläche + Haken. Modul-Dots sind 6 pt und stehen nie ohne ihr Wort.</p>
+  <p><strong>Was inline ergänzt wurde</strong> (system.css blieb unangetastet): der Bereichs-Dot ist ein <strong>.dot</strong> mit Ink-Füllung statt Modul-Farbe — Bereiche sind keine Module und bekommen deshalb keine eigene Buntfarbe, das unterscheidende Merkmal ist das Wort; die Hinterlegung der erkannten Wörter im Erfassungsfeld ist <strong>accent-soft</strong> mit feiner Randlinie; die Swipe-Aktion ist eine Ink-Fläche mit <strong>accent-on</strong>-Text unter der verschobenen Zeile; die zweite <strong>.segmented</strong>-Gruppe („Kalender") ist dieselbe Komponente, nur abgesetzt, weil diese Ansicht Termine hinzumischt und damit die Liste verlässt.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>
