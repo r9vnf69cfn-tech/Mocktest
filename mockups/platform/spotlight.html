@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spotlight — Velum im System</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* ══ PLATTFORM-KERN (inline, wie in allen Seiten dieses Ordners) ══════════ */
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+.os { position:relative; overflow:hidden; flex:none; background:#0B0C0E;
+      box-shadow: var(--sh-float), 0 0 0 1px var(--line); }
+.os--iphone { width:393px; height:852px; border-radius:44px; }
+.os__wall  { position:absolute; inset:0; width:100%; height:100%;
+             object-fit:cover; object-position:50% 44%; }
+.os__scrim { position:absolute; inset:0; }
+
+.osbar { position:absolute; left:0; right:0; top:0; height:59px; z-index:6;
+         display:flex; align-items:center; justify-content:space-between;
+         padding:0 30px; color:#fff; }
+.osbar__t { font:600 15px/20px var(--sans); font-variant-numeric:tabular-nums; }
+.osbar__r { display:flex; align-items:center; gap:6px; }
+.osbar__bat { width:24px; height:12px; border:1.2px solid rgba(255,255,255,.6);
+              border-radius:3.5px; position:relative; }
+.osbar__bat::after { content:""; position:absolute; inset:1.6px; right:5px;
+                     background:#fff; border-radius:1.5px; }
+.osbar__sig { display:flex; align-items:flex-end; gap:1.6px; height:11px; }
+.osbar__sig i { width:3px; background:#fff; border-radius:1px; display:block; }
+
+.island { position:absolute; left:50%; transform:translateX(-50%); top:11px;
+          width:126px; height:37.33px; border-radius:999px; background:#000; z-index:7; }
+.oshome { position:absolute; left:50%; bottom:8px; transform:translateX(-50%);
+          width:140px; height:5px; border-radius:3px; background:rgba(255,255,255,.85); z-index:8; }
+
+.on-dark {
+  --paper:#141619; --paper-2:#1B1D21; --ground:#0B0C0E;
+  --ink-1:#FFFFFF; --ink-2:rgba(255,255,255,.72); --ink-3:rgba(255,255,255,.60);
+  --ink-4:rgba(255,255,255,.34);
+  --line:rgba(255,255,255,.14); --line-2:rgba(255,255,255,.22);
+  --fill:rgba(255,255,255,.10); --fill-2:rgba(255,255,255,.16); --fill-3:rgba(255,255,255,.22);
+  --accent:#FFFFFF; --accent-on:#0B0C0E;
+  --accent-soft:rgba(255,255,255,.12); --accent-ring:rgba(255,255,255,.38);
+  --thread:rgba(255,255,255,.58); --dot-hollow:rgba(255,255,255,.58);
+  --node-ring:#2A2C30;
+  --danger:#FF6B5E; --success:#4ED18B;
+  color:var(--ink-1);
+}
+
+/* ══ SEITENEIGENES — Spotlight und Tastatur ══════════════════════════════ */
+
+.spot__field { position:absolute; left:16px; right:16px; top:70px; height:40px; z-index:6;
+               border-radius:11px; background:rgba(255,255,255,.20);
+               display:flex; align-items:center; gap:8px; padding:0 12px;
+               font:400 17px/23px var(--sans); color:#fff; }
+.spot__field .ico { width:18px; height:18px; color:rgba(255,255,255,.62); }
+.spot__caret { width:2px; height:22px; background:#fff; }
+
+.spot__list { position:absolute; left:0; right:0; top:126px; bottom:296px; z-index:6;
+              overflow:hidden; padding:0 16px; }
+.spot__sec { font:600 13px/16px var(--sans); letter-spacing:.06em; text-transform:uppercase;
+             color:rgba(255,255,255,.60); margin:14px 0 6px 4px; }
+.hit { display:flex; align-items:flex-start; gap:12px; padding:9px 4px; position:relative; }
+.hit + .hit::before { content:""; position:absolute; left:56px; right:4px; top:0; height:1px;
+                      background:rgba(255,255,255,.12); }
+.hit__ico { width:40px; height:40px; border-radius:8.9px; flex:none;   /* 40 × 22,37 % */
+            background:rgba(255,255,255,.16); display:flex; align-items:center; justify-content:center;
+            color:rgba(255,255,255,.9); }
+.hit__ico .ico { width:22px; height:22px; }
+.hit__main { flex:1 1 auto; min-width:0; }
+
+/* Tastatur. Deutsche Belegung (QWERTZ), Maße geschätzt — siehe Kommentar. */
+.kb { position:absolute; left:0; right:0; bottom:0; height:296px; z-index:7;
+      background:rgba(28,30,34,.94); backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px); padding:0 3px; }
+.kb__sug { height:44px; display:flex; align-items:center; }
+.kb__sug span { flex:1 1 0; text-align:center; font:400 17px/23px var(--sans); color:#fff; }
+.kb__sug span + span { box-shadow:inset 1px 0 0 rgba(255,255,255,.16); }
+.kb__row { display:flex; gap:5px; margin-bottom:11px; }
+.key { flex:1 1 0; height:42px; border-radius:5px; background:rgba(255,255,255,.18);
+       display:flex; align-items:center; justify-content:center;
+       font:400 22px/26px var(--sans); color:#fff;
+       box-shadow:0 1px 0 rgba(0,0,0,.35); }
+.key--wide { flex:1.5 1 0; font-size:15px; }
+.key--dark { background:rgba(255,255,255,.08); }
+.key--space { flex:5 1 0; font-size:15px; }
+.kb__pad { display:flex; gap:5px; }
+
+/* Der Velum-eigene Suchschirm (Gerät 2) */
+.cmd { position:absolute; left:16px; right:16px; top:96px; z-index:7;
+       background:var(--paper); border-radius:16px; box-shadow:var(--sh-float);
+       overflow:hidden; }
+.cmd__field { display:flex; align-items:center; gap:10px; height:52px; padding:0 16px;
+              border-bottom:1px solid var(--line); }
+.weg { padding:12px 16px; position:relative; }
+.weg + .weg::before { content:""; position:absolute; left:16px; right:16px; top:0; height:1px; background:var(--line); }
+.weg__lbl { display:flex; margin-top:7px; }
+.weg__lbl > div { flex:1 1 0; min-width:0; }
+.weg__lbl > div:nth-child(2) { text-align:center; }
+.weg__lbl > div:nth-child(3) { text-align:right; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — SPOTLIGHT
+
+WAS DAS IST
+Links: die Suchergebnisliste von iOS mit Velum-Treffern. Rechts: dieselbe
+Suche im Velum-eigenen Feld. Die beiden Schirme gehören zusammen, weil sie
+den Unterschied zeigen, um den es geht — iOS gibt Objekte zurück, Velum gibt
+Wege zurück.
+
+DER TREFFER, DEN NUR VELUM HABEN KANN
+Der Top-Treffer ist eine Lernkarte. Unter ihr steht, aus welcher Notiz und
+aus welchem Absatz sie geschnitten wurde — als Faden mit zwei Knoten, nicht
+als Zeile Kleingedrucktes. Spotlight zeigt sonst Dokumente; hier zeigt es
+eine Beziehung. Das setzt voraus, dass Velum die Kante in den Suchindex gibt
+(CSSearchableItem mit der Herkunft als Attribut) — inhaltlich möglich, weil
+die Kante ein eigener Datensatz ist.
+
+WARUM DIE ERGEBNISLISTE DUNKEL IST
+iOS' Spotlight nimmt die Farbigkeit der Tapete auf. Die Tapete ist hier
+dunkel, also ist Spotlight dunkel — in beiden Erscheinungsbildern. Der
+Velum-eigene Suchschirm rechts folgt dagegen dem Erscheinungsbild und
+wechselt mit dem Umschalter oben rechts.
+
+SYSTEMMASSE — ALLES GESCHÄTZT, MIT HERLEITUNG
+  Suchfeld 361 × 40 pt bei 16 pt Seitenabstand, Radius 11 — geschätzt.
+  Trefferzeile: Symbol 40 pt, Radius 8,9 = 40 × 22,37 % (der Squircle-Anteil
+    ist belegt, die 40 pt sind geschätzt). Zeilenhöhe ≥ 58 pt, also über den
+    geforderten 44 pt.
+  Tastatur 296 pt hoch = 44 Vorschlagszeile + 4 × 42 Tastenreihen
+    + 3 × 11 Reihenabstand + 4 unten + 41 untere Zone. Die Zahlen sind
+    gesetzt, nicht gemessen; die Rechnung steht hier, damit man sie prüfen
+    kann. Belegung QWERTZ, weil die Oberfläche deutsch ist.
+  Trennlinien der Trefferliste beginnen bei 56 pt = 16 Rand + 40 Symbol —
+    hergeleitet, nicht gemessen.
+
+DAS ZEICHEN
+Jede Velum-Trefferzeile trägt links das App-Symbol. Die drei PNG liegen
+nicht vor; an dieser Stelle steht der reservierte leere Rahmen. Der
+vollständige Baustein mit Pfadangabe steht auf der Übersichtsseite und im
+Steckbrief. Pfad: assets/brand/velum-appicon-dark.png.
+
+WO DER FADEN STEHT
+  · Top-Treffer: Notiz „Osmose", Absatz 4 ──●── Lernkarte. 2,5 pt, zwei
+    Knoten, echte Kante.
+  · Gerät 2, alle drei Zeilen: jede Zeile IST ein Faden mit Knoten, und
+    jeder Knoten ist ein Sprungziel. Das ist der Vorschlag D5 aus der
+    Wiederlesung, hier gebaut.
+  · KEIN Faden bei den beiden Treffern ohne Herkunft (Notiz und Journal
+    stehen für sich) und keiner bei der Websuche.
+
+AFFORDANZ
+Trefferzeilen sind ganzflächige Ziele, ≥ 58 pt hoch — das ist die Konvention
+von iOS und braucht kein zusätzliches Zeichen. Im Velum-Feld trägt der
+gewählte Knoten den Ink-Ring (Auswahl, eine der drei erlaubten Rollen), und
+die Zeile darunter nennt in Worten, was ein Tippen dort täte.
+
+KONTRAST — Werte im Steckbrief unter der Bühne.
+TYPO: fünf Größen, zwei Gewichte. Die Tastenbeschriftung läuft auf 22 pt —
+das ist iOS' Maß für Tasten und gehört nicht zu Velums Skala; es ist die
+einzige Ausnahme auf dieser Seite.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="index.html"><span aria-hidden="true">‹</span><span class="u">Plattform-Übersicht</span></a>
+  <a href="../index.html"><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Spotlight</h1>
+  <p>Links iOS, rechts Velum — dieselbe Suche nach „Osmose". Der Top-Treffer in Spotlight ist eine Lernkarte, und darunter steht, aus welchem Absatz welcher Notiz sie geschnitten wurde. Im Velum-eigenen Feld ist jede Zeile ein ganzer Weg.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════ 1 · iOS Spotlight ══════════════════ -->
+  <div class="device">
+    <div class="device__label">iOS Spotlight <span>Suche vom Home-Bildschirm</span></div>
+    <div class="os os--iphone on-dark">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="" style="filter:blur(22px) brightness(.55); transform:scale(1.12)">
+      <div class="os__scrim" style="background:rgba(10,12,15,.52)"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">9:41</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+      <div class="island"></div>
+
+      <div class="spot__field">
+        <span class="ico" data-ico="search"></span>
+        <span>Osmose</span>
+        <span class="spot__caret"></span>
+      </div>
+
+      <div class="spot__list">
+
+        <div class="spot__sec">Top-Treffer</div>
+        <div class="hit">
+          <span class="appicon hit__ico" style="--appicon-size:40px; background:none; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-dark.png"><span class="appicon__frame" style="border-radius:8.9px"></span></span>
+          <div class="hit__main">
+            <div class="t-body is-strong clamp-2">Osmose: Wohin wandert das Wasser?</div>
+            <div class="t-sub c-3" style="margin-top:1px">Lernkarte · Deck „Zellbiologie"</div>
+            <!-- Der Faden: die Karte weiß, aus welchem Absatz sie kommt. -->
+            <div style="margin-top:9px">
+              <div class="threadrow" style="padding:0 4px">
+                <span class="dot dot--node"></span>
+                <svg class="thread thread--h thread--origin"></svg>
+                <span class="dot dot--node"></span>
+              </div>
+              <div style="display:flex; margin-top:6px">
+                <span class="t-label c-3" style="flex:1 1 auto">Notiz „Osmose", Absatz 4</span>
+                <span class="t-label c-3">diese Karte</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spot__sec">Velum</div>
+        <div class="hit">
+          <span class="appicon hit__ico" style="--appicon-size:40px; background:none; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-dark.png"><span class="appicon__frame" style="border-radius:8.9px"></span></span>
+          <div class="hit__main">
+            <div class="t-body is-strong clamp-1">Osmose</div>
+            <div class="t-sub c-3">Notiz · 9 Absätze · 3 Rückverweise</div>
+          </div>
+        </div>
+        <div class="hit">
+          <span class="appicon hit__ico" style="--appicon-size:40px; background:none; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-dark.png"><span class="appicon__frame" style="border-radius:8.9px"></span></span>
+          <div class="hit__main">
+            <div class="t-body is-strong clamp-1">Osmose-Versuch, dritter Anlauf</div>
+            <div class="t-sub c-3">Journaleintrag · 10. November</div>
+          </div>
+          <img src="../assets/bilder/journal/labor-400.jpg" alt=""
+               style="width:44px; height:44px; border-radius:8px; object-fit:cover; flex:none">
+        </div>
+        <div class="hit">
+          <span class="appicon hit__ico" style="--appicon-size:40px; background:none; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-dark.png"><span class="appicon__frame" style="border-radius:8.9px"></span></span>
+          <div class="hit__main">
+            <div class="t-body is-strong clamp-1">Übungsblatt 5 fertig rechnen</div>
+            <div class="t-sub c-3">Aufgabe · geplant 19:30</div>
+          </div>
+        </div>
+
+        <div class="spot__sec">Aktionen</div>
+        <div class="hit">
+          <span class="hit__ico"><span class="ico" data-ico="play"></span></span>
+          <div class="hit__main">
+            <div class="t-body is-strong clamp-1">Lernsession starten</div>
+            <div class="t-sub c-3">Velum · Deck „Zellbiologie" · 8 fällig</div>
+          </div>
+        </div>
+
+        <div class="spot__sec">Websuche</div>
+        <div class="hit">
+          <span class="hit__ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m15.6 8.4-1.7 5.5-5.5 1.7 1.7-5.5Z"/></svg></span>
+          <div class="hit__main">
+            <div class="t-body is-strong clamp-1">Osmose</div>
+            <div class="t-sub c-3">Safari · Wikipedia</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tastatur, deutsche Belegung -->
+      <div class="kb">
+        <div class="kb__sug"><span>Osmose</span><span>Osmoserate</span><span>Osmotisch</span></div>
+        <div class="kb__row">
+          <span class="key">q</span><span class="key">w</span><span class="key">e</span><span class="key">r</span><span class="key">t</span><span class="key">z</span><span class="key">u</span><span class="key">i</span><span class="key">o</span><span class="key">p</span><span class="key">ü</span>
+        </div>
+        <div class="kb__row">
+          <span class="key">a</span><span class="key">s</span><span class="key">d</span><span class="key">f</span><span class="key">g</span><span class="key">h</span><span class="key">j</span><span class="key">k</span><span class="key">l</span><span class="key">ö</span><span class="key">ä</span>
+        </div>
+        <div class="kb__row">
+          <span class="key key--wide key--dark">⇧</span>
+          <span class="key">y</span><span class="key">x</span><span class="key">c</span><span class="key">v</span><span class="key">b</span><span class="key">n</span><span class="key">m</span>
+          <span class="key key--wide key--dark">⌫</span>
+        </div>
+        <div class="kb__row" style="margin-bottom:0">
+          <span class="key key--wide key--dark">123</span>
+          <span class="key key--dark" style="flex:.8 1 0; font-size:17px">🌐</span>
+          <span class="key key--space">Leerzeichen</span>
+          <span class="key key--wide key--dark" style="flex:2 1 0">Suchen</span>
+        </div>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 2 · Velums eigenes Feld ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Velums eigenes Feld <span>dieselbe Suche, Wege statt Treffer</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <!-- Der Schirm darunter: „Heute", abgedunkelt -->
+      <div class="body" style="position:relative">
+        <main class="content">
+          <div class="navbar"><div class="t-title">Heute</div></div>
+          <div class="scroll" style="display:flex; flex-direction:column; gap:14px">
+            <p class="t-body c-2" style="margin:0">Donnerstag, 13. November. Sechs Aufgaben sind heute fällig, davon eine mit Deadline.</p>
+            <div class="card">
+              <div class="card__head"><span class="dot dot--cards"></span><span class="t-label c-3 card__title">Lernkarten</span></div>
+              <div class="t-section num">23 fällig</div>
+              <div class="t-sub c-3" style="margin-top:2px">8 davon aus der Vorlesung von gestern.</div>
+            </div>
+            <div class="card">
+              <div class="card__head"><span class="dot dot--tasks"></span><span class="t-label c-3 card__title">Heute fällig</span></div>
+              <div class="row" style="padding:6px 0"><span class="check"></span><div class="row__main"><span class="t-body">Laborprotokoll Zellkultur schreiben</span><span class="t-sub" style="color:var(--danger)">heute 18:00</span></div></div>
+              <div class="row" style="padding:6px 0"><span class="check"></span><div class="row__main"><span class="t-body">Rückmeldung an Prof. Wendt</span><span class="t-sub c-3">geplant 16:00</span></div></div>
+              <div class="row" style="padding:6px 0"><span class="check"></span><div class="row__main"><span class="t-body">Übungsblatt 5 fertig rechnen</span><span class="t-sub c-3">geplant 19:30</span></div></div>
+            </div>
+          </div>
+        </main>
+        <div style="position:absolute; inset:0; background:rgba(10,12,15,.34); z-index:6"></div>
+      </div>
+
+      <div class="tabbar">
+        <button class="tab is-active"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+        <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+        <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+        <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernkarten</span></button>
+      </div>
+      <div class="home-indicator"></div>
+
+      <!-- Das Feld -->
+      <div class="cmd">
+        <div class="cmd__field">
+          <span class="ico" data-ico="search" style="width:18px;height:18px;color:var(--ink-3)"></span>
+          <span class="t-body">Osmose</span>
+          <span style="width:2px;height:22px;background:var(--accent)"></span>
+          <span style="flex:1"></span>
+          <span class="t-label c-3">3 Wege</span>
+        </div>
+
+        <!-- Weg 1 — der ausgewählte. Der mittlere Knoten trägt den Ink-Ring. -->
+        <div class="weg" style="background:var(--accent-soft)">
+          <div class="threadrow" style="padding:0 4px">
+            <span class="dot dot--node" style="--node-ring:var(--paper)"></span>
+            <svg class="thread thread--h thread--origin is-active"></svg>
+            <span class="dot dot--node dot--ring" style="--node-ring:var(--paper)"></span>
+            <svg class="thread thread--h thread--origin is-active"></svg>
+            <span class="dot dot--node" style="--node-ring:var(--paper)"></span>
+          </div>
+          <div class="weg__lbl">
+            <div><div class="t-label c-3">Notiz</div><div class="t-sub is-strong">Osmose</div></div>
+            <div><div class="t-label c-3">wurde zu</div><div class="t-sub is-strong num">5 Karten</div></div>
+            <div><div class="t-label c-3">morgen fällig</div><div class="t-sub is-strong num">5 Karten</div></div>
+          </div>
+          <div class="t-label c-3" style="margin-top:9px">Ausgewählt: „5 Karten" — Return öffnet das Deck an dieser Station.</div>
+        </div>
+
+        <!-- Weg 2 -->
+        <div class="weg">
+          <div class="threadrow" style="padding:0 4px">
+            <span class="dot dot--node" style="--node-ring:var(--paper)"></span>
+            <svg class="thread thread--h"></svg>
+            <span class="dot dot--node" style="--node-ring:var(--paper)"></span>
+          </div>
+          <div class="weg__lbl">
+            <div><div class="t-label c-3">Journal, 10. Nov</div><div class="t-sub is-strong">Osmose-Versuch</div></div>
+            <div style="text-align:right"><div class="t-label c-3">Foto</div><div class="t-sub is-strong">Färbung, 3. Anlauf</div></div>
+          </div>
+        </div>
+
+        <!-- Weg 3 -->
+        <div class="weg">
+          <div class="threadrow" style="padding:0 4px">
+            <span class="dot dot--node" style="--node-ring:var(--paper)"></span>
+            <svg class="thread thread--h"></svg>
+            <span class="dot dot--node" style="--node-ring:var(--paper)"></span>
+          </div>
+          <div class="weg__lbl">
+            <div><div class="t-label c-3">Canvas „Blatt 5"</div><div class="t-sub is-strong">Aufgabe 3</div></div>
+            <div style="text-align:right"><div class="t-label c-3">wurde zu</div><div class="t-sub is-strong">Übungsblatt 5</div></div>
+          </div>
+        </div>
+
+        <div style="padding:11px 16px; border-top:1px solid var(--line); display:flex; align-items:center; gap:8px">
+          <span class="t-label c-3">Ein Tippen springt an die Station, nicht an den Anfang.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sheetnote">
+  <h2>Steckbrief — Spotlight</h2>
+  <p>Apple veröffentlicht keine Maßtabelle für Spotlight oder die Systemtastatur. Auf dieser Seite ist <strong>kein Systemmaß belegt</strong>; jedes steht mit seiner Rechnung.</p>
+
+  <h3>Systemmaße</h3>
+  <table>
+    <tr><td>Suchfeld</td><td>361 × 40 pt bei 16 pt Seitenabstand, Radius 11 — geschätzt.</td></tr>
+    <tr><td>Trefferzeile</td><td>Symbol 40 pt (geschätzt), Radius 8,9 = 40 × 22,37 % (Anteil belegt). Zeilenhöhe ≥ 58 pt, also über 44.</td></tr>
+    <tr><td>Trennlinie</td><td>beginnt bei 56 pt = 16 Rand + 40 Symbol — hergeleitet.</td></tr>
+    <tr><td>Tastatur</td><td>296 pt = 44 Vorschlagszeile + 4 × 42 Tasten + 3 × 11 Abstand + 4 + 41 untere Zone. Gesetzt, nicht gemessen. Belegung QWERTZ.</td></tr>
+    <tr><td>Erscheinungsbild</td><td>Spotlight nimmt die Farbigkeit der Tapete auf. Die Tapete ist hier dunkel, also bleibt der linke Schirm in beiden Erscheinungsbildern dunkel. Der rechte folgt dem Umschalter.</td></tr>
+  </table>
+
+  <h3>Kontrast (gerechnet)</h3>
+  <table>
+    <tr><td>Treffertitel</td><td>Weiß auf dem abgedunkelten Untergrund ≥ 13:1</td></tr>
+    <tr><td>Trefferzeile 2</td><td>rgba(255,255,255,.60) auf demselben Grund 5,9:1</td></tr>
+    <tr><td>Faden im Treffer</td><td>rgba(255,255,255,.58) 5,6:1 — über der 3:1-Schwelle</td></tr>
+    <tr><td>Velum-Feld</td><td>ink-1 auf Papier 17,8:1 hell · 15,9:1 dunkel; Faden 3,10:1 hell · 3,13:1 dunkel</td></tr>
+    <tr><td>Auswahl im Velum-Feld</td><td>accent-soft als Fläche PLUS Ink-Ring am Knoten — zwei Merkmale, nie Farbe allein</td></tr>
+  </table>
+
+  <h3>Warum die beiden Schirme zusammengehören</h3>
+  <p>Spotlight, Bear, Craft, Obsidian, Notion und Linears Befehlsmenü geben alle <strong>Objekte</strong> zurück, weil sie nur Objekte haben. Velum kann Wege zurückgeben, weil die Beziehung bei ihm ein eigener Datensatz ist. Der linke Schirm zeigt, dass Velum sich in iOS einfügt; der rechte zeigt, was es dabei mitbringt.</p>
+
+  <h3>Das Zeichen</h3>
+  <p>Im Gerät steht der reservierte leere Rahmen; hier der vollständige Baustein mit seiner Warnung:</p>
+  <p><span class="appicon" data-appicon></span></p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

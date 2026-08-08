@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Apple Pencil — Velum im System</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* ══ PLATTFORM-KERN (inline, wie in allen Seiten dieses Ordners) ══════════ */
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+/* ══ SEITENEIGENES ═══════════════════════════════════════════════════════ */
+
+/* Die Schreibfläche der Notiz */
+.page { position:relative; background:var(--paper); border-radius:14px;
+        box-shadow:var(--sh-card); padding:26px 34px 26px 74px; overflow:hidden; }
+.page p { font:400 17px/26px var(--sans); color:var(--ink-1); margin:0 0 15px; max-width:62ch; }
+.page { min-height:612px; }
+.page p.lead { margin-bottom:18px; }
+
+/* Der Herkunfts-Rand (DNA §3, „Notizen-Editor"): jeder Absatz, aus dem etwas
+   entstanden ist, trägt links einen Fadenstumpf mit einem Punkt am Ende.
+   Gefüllt = das Objekt existiert. Hohl = vorgeschlagen, noch nicht da. */
+.para { position:relative; }
+.stub { position:absolute; left:-48px; top:6px; display:flex; align-items:center; gap:5px; }
+.stub svg.thread { width:16px; flex:none; }
+
+/* Handschrift: echte Tinte auf der Seite, kein Bild. */
+.ink { position:absolute; pointer-events:none; }
+.ink path, .ink line { fill:none; stroke:var(--ink-1); stroke-linecap:round; stroke-linejoin:round; }
+
+/* Der Pencil. Gezeichnet, nicht fotografiert: ein Zylinder mit flacher Seite
+   und konischer Spitze. Sitzt schräg über der Fläche. */
+.pencil { position:absolute; pointer-events:none; z-index:40;
+          filter:drop-shadow(0 18px 26px rgba(0,0,0,.28)); }
+
+/* Der Schwebeschatten unter der Spitze. iPadOS zeigt beim Schweben eine
+   weiche runde Andeutung dort, wo der Strich ansetzen würde. */
+.hoverdot { position:absolute; z-index:30; border-radius:50%;
+            background:radial-gradient(circle, rgba(22,24,28,.20), rgba(22,24,28,0) 68%); }
+
+/* Die Schwebe-Vorschau: ein kleines Blatt am Ort des Zeigers. */
+.hovercard { position:absolute; z-index:38; background:var(--paper);
+             border-radius:12px; box-shadow:var(--sh-float); padding:12px 14px;
+             min-width:210px; }
+
+/* Squeeze-Palette: erscheint bei einem Druck auf den Schaft, an der Spitze. */
+.squeeze { position:absolute; z-index:38;
+           background:var(--paper); backdrop-filter:blur(30px) saturate(180%);
+           -webkit-backdrop-filter:blur(30px) saturate(180%);
+           border-radius:16px; box-shadow:var(--sh-float), inset 0 0 0 1px var(--line);
+           padding:8px; display:flex; flex-direction:column; gap:2px; width:236px; }
+.sqrow { display:flex; white-space:nowrap; align-items:center; gap:10px; height:44px; padding:0 10px;
+         border-radius:10px; color:var(--ink-1); font:400 15px/20px var(--sans); width:100%; text-align:left; }
+.sqrow .ico { width:20px; height:20px; color:var(--ink-2); flex:none; }
+.sqrow .sp { flex:1 1 auto; }
+.sqrow.is-on { background:var(--accent-soft); font-weight:600; }
+.sqrow.is-on .ico { color:var(--ink-1); }
+.sqrule { height:1px; background:var(--line); margin:5px 10px; }
+
+/* Der Druckring der Geste — zwei Bögen am Schaft, nicht am Bildschirm. */
+.squeezemark { position:absolute; z-index:41; pointer-events:none; }
+
+/* Ausschnitt-Tafel für Scribble */
+.plate { width:620px; border-radius:22px; background:var(--ground); position:relative;
+         flex:none; box-shadow:var(--sh-float), 0 0 0 1px var(--line); padding:26px; overflow:hidden; }
+.plate__cap { font:600 13px/16px var(--sans); color:var(--ink-3); margin-bottom:12px; }
+
+/* Das Erfassungsfeld, in das geschrieben wird */
+.scribe { position:relative; background:var(--paper); border-radius:12px;
+          box-shadow:var(--sh-card); height:64px; display:flex; align-items:center;
+          padding:0 16px; overflow:visible; }
+.scribe__typed { font:400 17px/23px var(--sans); color:var(--ink-1); white-space:nowrap; }
+.scribe__caret { width:2px; height:22px; background:var(--accent); margin-left:1px; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — APPLE PENCIL AUF DEM iPAD
+
+WAS DAS IST
+Drei Pencil-Zustände an derselben Notiz: die Schwebe-Vorschau über der Fläche,
+die Squeeze-Palette und die Scribble-Eingabe in einem Textfeld — festgehalten
+in dem Moment, in dem das Wort halb Handschrift und halb schon Text ist.
+
+WARUM DAS BEI VELUM MEHR IST ALS EINE SYSTEMFUNKTION
+Handschrift ist bei Velum gleichwertiger Inhalt, nicht Anmerkung. Deshalb
+zeigt die Schwebe-Vorschau hier nicht den Strich, den man setzen würde,
+sondern die BEZIEHUNG: Emil schwebt über dem Fadenstumpf am linken Rand von
+Absatz 7, und der Faden wächst aus dem Rand heraus zu den drei Karten, die
+aus diesem Absatz entstanden sind. Der Pencil wird zum Ableseinstrument für
+Herkunft. Das kann keine App, die Herkunft nicht speichert.
+
+SYSTEMMASSE — WAS GESCHÄTZT IST
+Kein Netzzugang zu developer.apple.com in diesem Lauf; nichts hier ist belegt.
+  iPad 11″ quer 1194 × 834 pt — aus Runde 1 übernommen (system.css §3).
+  Schwebehöhe: der Pencil wird ab etwa 12 mm über dem Glas erkannt; die
+    Vorschau erscheint dichter darüber. Die Zahl steht hier nicht im Bild,
+    weil sie nicht zu belegen ist — gezeichnet ist nur die Wirkung.
+  Squeeze-Palette: Apple veröffentlicht keine Maße. 236 pt breit, Radius 16,
+    Zeilen 44 pt — alles gesetzt, nicht gemessen. Die Palette erscheint an
+    der Spitze, nicht am Bildschirmrand; das ist die belegbare Eigenschaft
+    der Geste und deshalb das, was hier gezeigt wird.
+  Scribble: die Umwandlung geschieht wortweise mit kurzer Verzögerung. Hier
+    steht der Zwischenzustand: „Laborprotokoll Zellku" ist schon Text,
+    „ltur" ist noch Tinte. Das Verhalten ist Modellwissen, nicht geprüft.
+
+DIE HANDSCHRIFT IST GEZEICHNET, NICHT GESETZT
+Alle Tinte auf dieser Seite — die Cristae-Skizze, die Randnotiz, das Wort im
+Scribble-Feld — besteht aus SVG-Pfaden mit runden Enden und wechselnder
+Stärke. Es ist keine Schreibschrift-Datei im Spiel und kein Bild. Das ist
+Absicht: eine Handschrift-Schriftart hätte gleichmäßige Striche, und genau
+daran erkennt man sie.
+
+WO DER FADEN STEHT
+  · Herkunfts-Rand: drei Stümpfe am linken Seitenrand. Absatz 3 und Absatz 7
+    haben etwas hervorgebracht (gefüllter Punkt), Absatz 11 nicht (hohler
+    Punkt — „dieser Merksatz hat noch keine Karte").
+  · Schwebe-Vorschau: der Faden wächst aus dem Stumpf von Absatz 7 heraus zu
+    den drei Karten. Ein 2,5-pt-Herkunftsfaden mit zwei Knoten.
+  · KEIN Faden in der Squeeze-Palette, keiner im Scribble-Feld, keiner unter
+    der Skizze. Wo nichts zusammenhängt, steht nichts.
+
+AFFORDANZ
+Die Squeeze-Palette ist eine Liste mit 44-pt-Zeilen; die gewählte Zeile trägt
+Fläche UND Gewicht, nicht nur Farbe. „Auswahl → Karte" steht unter einer
+Trennlinie, weil sie als einzige die Notiz verlässt. Im Scribble-Feld ist der
+Einfügestrich das einzige aktive Zeichen.
+
+KONTRAST — Werte im Steckbrief unter der Bühne.
+TYPO: fünf Größen, zwei Gewichte, keine Ausnahme auf dieser Seite.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="index.html"><span aria-hidden="true">‹</span><span class="u">Plattform-Übersicht</span></a>
+  <a href="../index.html"><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Apple Pencil</h1>
+  <p>Schweben, Drücken, Schreiben — an derselben Notiz. Beim Schweben zeigt Velum nicht den Strich, den man setzen würde, sondern die Herkunft: der Faden wächst aus dem Seitenrand heraus zu den Karten, die aus diesem Absatz entstanden sind.</p>
+</div>
+
+<div class="stage">
+
+  <div class="device">
+    <div class="device__label">iPad 11″ quer <span>Schweben über dem Herkunfts-Rand</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Notizbuch „Biologie"</div>
+            <button class="navitem is-active"><span class="ico" data-ico="notes"></span><span class="t-body">Zellbiologie</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Osmose</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Laborprotokolle</span><span class="dot dot--notes"></span></button>
+          </div>
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Daraus entstanden</div>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">12 Karten</span><span class="dot dot--cards"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">1 Aufgabe</span><span class="dot dot--tasks"></span></button>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="navbar">
+            <div>
+              <div class="t-section">Zellbiologie — Vorlesung 9</div>
+              <div class="t-sub c-3">Prof. Wendt · gestern 16:20 · 14 Absätze</div>
+            </div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="undo"></span></button>
+            <button class="iconbtn is-active"><span class="ico" data-ico="edit"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+          </div>
+
+          <div class="scroll" style="position:relative">
+            <div class="page">
+              <div class="para">
+                <div class="stub"><svg class="thread thread--h"></svg><span class="dot dot dot--cards"></span></div>
+                <p><strong>Absatz 3.</strong> Die innere Membran des Mitochondriums ist stark gefaltet. Diese Falten heißen Cristae; sie vergrößern die Fläche, auf der die Atmungskette sitzt.</p>
+              </div>
+              <div class="para">
+                <div class="stub"><svg class="thread thread--h"></svg><span class="dot dot dot--node"></span></div>
+                <p><strong>Absatz 7.</strong> Zwischen Matrix und Intermembranraum besteht ein Protonengradient. Er ist der eigentliche Energiespeicher der Zelle: die ATP-Synthase nutzt ihn wie ein Wasserrad.</p>
+                <!-- Der Faden wächst aus dem Rand heraus: zwei Knoten auf
+                     2,5 pt. Der Punkt des Stumpfes IST der linke Knoten —
+                     deshalb trägt Absatz 7 hier .dot--node statt des
+                     Modulpunktes. -->
+                <svg class="thread thread--origin is-active"
+                     style="position:absolute; left:-24px; top:-70px; width:124px; height:86px; overflow:visible"
+                     viewBox="0 0 124 86" aria-hidden="true"><path d="M0 81 120 20"/></svg>
+                <span class="dot dot--node" style="position:absolute; left:91.5px; top:-54.5px"></span>
+                <div class="hovercard" style="left:104px; top:-92px">
+                  <div class="t-label c-3" style="display:flex; align-items:center; gap:7px; margin-bottom:8px">
+                    <span class="dot dot--cards"></span>Aus diesem Absatz entstanden
+                  </div>
+                  <div class="t-body is-strong">3 Karten</div>
+                  <div class="t-sub c-3" style="margin-top:2px">Deck „Zellbiologie" · zuletzt 8. Nov</div>
+                </div>
+                <!-- Schwebeschatten: dort setzte der Strich an, wenn Emil aufsetzt. -->
+                <div class="hoverdot" style="left:-46px; top:-11px; width:44px; height:44px"></div>
+              </div>
+              <div class="para">
+                <div class="stub"><svg class="thread thread--h"></svg><span class="dot dot dot--hollow"></span></div>
+                <p><strong>Absatz 11.</strong> Merksatz: Wendt fragt in der Klausur Matrix / Intermembranraum. Wer die Richtung des Gradienten verwechselt, rechnet die Bilanz falsch herum.</p>
+              </div>
+              <div style="position:relative; height:186px; margin:2px 0 16px">
+                <svg class="ink" style="left:0; top:0; width:400px; height:186px" viewBox="0 0 400 186" aria-hidden="true">
+                  <!-- Umriss in zwei Zügen, wie von Hand -->
+                  <path d="M16 82C14 48 50 24 106 22c58-2 122 8 168 22 34 10 40 34 20 50-24 19-78 34-140 36-70 2-116-14-138-48Z" stroke-width="2.4"/>
+                  <path d="M26 76c6-26 44-44 96-45" stroke-width="1.2" opacity=".45"/>
+                  <!-- Cristae -->
+                  <path d="M60 42c14 16 12 34 2 48" stroke-width="2"/>
+                  <path d="M102 32c16 20 14 44 2 60" stroke-width="2"/>
+                  <path d="M146 30c18 22 16 48 2 64" stroke-width="2"/>
+                  <path d="M190 34c18 22 14 46 0 60" stroke-width="2"/>
+                  <path d="M234 42c16 20 12 40 0 52" stroke-width="2"/>
+                  <!-- Zeigerstrich zur Beschriftung -->
+                  <path d="M162 98c10 26 32 40 58 44" stroke-width="1.5"/>
+                  <!-- „Cristae", handgeschrieben, Grundlinie y = 160 -->
+                  <g stroke-width="2.3">
+                    <path d="M254 136c-10-6-21 1-21 13s11 20 22 14"/>
+                    <path d="M266 143c-1 8-2 13-1 17"/>
+                    <path d="M265 147c2-6 8-8 13-6"/>
+                    <path d="M290 142c-1 8-2 13-1 17"/>
+                    <path d="M290 133v2"/>
+                    <path d="M314 144c-6-4-13-1-12 3 1 5 12 3 12 8 0 5-7 6-13 3"/>
+                    <path d="M334 130c-2 18-3 26-2 29 1 4 5 4 9 1"/>
+                    <path d="M326 142h13"/>
+                    <path d="M366 146c-5-5-14-2-14 6s10 12 14 6"/>
+                    <path d="M366 142c-1 9-1 15 0 18"/>
+                    <path d="M378 154h13c1-6-4-9-9-8-6 1-8 8-5 12 3 3 8 3 12 0"/>
+                  </g>
+                </svg>
+              </div>
+              <p style="margin-bottom:0">Die Übung dazu steht auf Blatt 5, Aufgabe 3. Abgabe ist heute um 18:00 — das Protokoll dazu liegt schon als Aufgabe im Modul.</p>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <svg class="pencil" style="left:0; top:0; width:1194px; height:834px" viewBox="0 0 1194 834" aria-hidden="true">
+  <defs>
+    <linearGradient id="pshaft1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FCFCFD"/><stop offset=".38" stop-color="#EDEEF0"/>
+      <stop offset=".70" stop-color="#CDCFD3"/><stop offset="1" stop-color="#E4E5E8"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(394,237) rotate(-42)">
+    <path d="M0 0 30 -13V13Z" fill="#DFE0E3"/>
+    <path d="M0 0 11 -4.8V4.8Z" fill="#33363B"/>
+    <rect x="28" y="-13" width="700" height="26" rx="13" fill="url(#pshaft1)"/>
+    <rect x="28" y="-13" width="700" height="7" rx="3.5" fill="#FFFFFF" opacity=".55"/>
+    <rect x="58" y="-13" width="3" height="26" fill="#BFC2C7" opacity=".9"/>
+    <rect x="692" y="-13" width="8" height="26" rx="4" fill="#D4D6DA"/>
+  </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="device">
+    <div class="device__label">iPad 11″ quer <span>Squeeze-Palette an der Spitze</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:43</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Notizbuch „Biologie"</div>
+            <button class="navitem is-active"><span class="ico" data-ico="notes"></span><span class="t-body">Zellbiologie</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Osmose</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Laborprotokolle</span><span class="dot dot--notes"></span></button>
+          </div>
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Daraus entstanden</div>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">12 Karten</span><span class="dot dot--cards"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">1 Aufgabe</span><span class="dot dot--tasks"></span></button>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="navbar">
+            <div>
+              <div class="t-section">Zellbiologie — Vorlesung 9</div>
+              <div class="t-sub c-3">Prof. Wendt · gestern 16:20 · 14 Absätze</div>
+            </div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="undo"></span></button>
+            <button class="iconbtn is-active"><span class="ico" data-ico="edit"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+          </div>
+
+          <div class="scroll" style="position:relative">
+            <div class="page">
+              <div class="para">
+                <div class="stub"><svg class="thread thread--h"></svg><span class="dot dot dot--cards"></span></div>
+                <p><strong>Absatz 3.</strong> Die innere Membran des Mitochondriums ist stark gefaltet. Diese Falten heißen Cristae; sie vergrößern die Fläche, auf der die Atmungskette sitzt.</p>
+              </div>
+              <div class="para">
+                <div class="stub"><svg class="thread thread--h"></svg><span class="dot dot dot--cards"></span></div>
+                <p><strong>Absatz 7.</strong> Zwischen Matrix und Intermembranraum besteht ein Protonengradient. Er ist der eigentliche Energiespeicher der Zelle: die ATP-Synthase nutzt ihn wie ein Wasserrad.</p>
+              </div>
+              <div class="para">
+                <div class="stub"><svg class="thread thread--h"></svg><span class="dot dot dot--hollow"></span></div>
+                <p><strong>Absatz 11.</strong> Merksatz: Wendt fragt in der Klausur Matrix / Intermembranraum. Wer die Richtung des Gradienten verwechselt, rechnet die Bilanz falsch herum.</p>
+                <div style="position:absolute; left:-8px; top:-6px; right:0; height:64px;
+                            border-radius:8px; background:var(--accent-soft);
+                            box-shadow:inset 0 0 0 1.5px var(--accent-ring); max-width:600px"></div>
+              </div>
+              <div style="position:relative; height:186px; margin:2px 0 16px">
+                <svg class="ink" style="left:0; top:0; width:400px; height:186px" viewBox="0 0 400 186" aria-hidden="true">
+                  <!-- Umriss in zwei Zügen, wie von Hand -->
+                  <path d="M16 82C14 48 50 24 106 22c58-2 122 8 168 22 34 10 40 34 20 50-24 19-78 34-140 36-70 2-116-14-138-48Z" stroke-width="2.4"/>
+                  <path d="M26 76c6-26 44-44 96-45" stroke-width="1.2" opacity=".45"/>
+                  <!-- Cristae -->
+                  <path d="M60 42c14 16 12 34 2 48" stroke-width="2"/>
+                  <path d="M102 32c16 20 14 44 2 60" stroke-width="2"/>
+                  <path d="M146 30c18 22 16 48 2 64" stroke-width="2"/>
+                  <path d="M190 34c18 22 14 46 0 60" stroke-width="2"/>
+                  <path d="M234 42c16 20 12 40 0 52" stroke-width="2"/>
+                  <!-- Zeigerstrich zur Beschriftung -->
+                  <path d="M162 98c10 26 32 40 58 44" stroke-width="1.5"/>
+                  <!-- „Cristae", handgeschrieben, Grundlinie y = 160 -->
+                  <g stroke-width="2.3">
+                    <path d="M254 136c-10-6-21 1-21 13s11 20 22 14"/>
+                    <path d="M266 143c-1 8-2 13-1 17"/>
+                    <path d="M265 147c2-6 8-8 13-6"/>
+                    <path d="M290 142c-1 8-2 13-1 17"/>
+                    <path d="M290 133v2"/>
+                    <path d="M314 144c-6-4-13-1-12 3 1 5 12 3 12 8 0 5-7 6-13 3"/>
+                    <path d="M334 130c-2 18-3 26-2 29 1 4 5 4 9 1"/>
+                    <path d="M326 142h13"/>
+                    <path d="M366 146c-5-5-14-2-14 6s10 12 14 6"/>
+                    <path d="M366 142c-1 9-1 15 0 18"/>
+                    <path d="M378 154h13c1-6-4-9-9-8-6 1-8 8-5 12 3 3 8 3 12 0"/>
+                  </g>
+                </svg>
+              </div>
+              <p style="margin-bottom:0">Die Übung dazu steht auf Blatt 5, Aufgabe 3. Abgabe ist heute um 18:00 — das Protokoll dazu liegt schon als Aufgabe im Modul.</p>
+            </div>
+          </div>
+        </main>
+      </div>
+      <div class="squeeze" style="left:430px; top:196px">
+        <button class="sqrow is-on"><span class="ico" data-ico="edit"></span>Stift<span class="sp"></span><span class="t-label c-3 num">2,0 pt</span></button>
+        <button class="sqrow"><span class="ico" data-ico="pin"></span>Marker</button>
+        <button class="sqrow"><span class="ico" data-ico="close"></span>Radierer</button>
+        <button class="sqrow"><span class="ico" data-ico="tag"></span>Lasso</button>
+        <button class="sqrow">
+          <span class="ico" data-ico="quote"></span>Tinte
+          <span class="sp"></span>
+          <span style="width:18px;height:18px;border-radius:50%;background:var(--ink-1);box-shadow:0 0 0 1px var(--line-2)"></span>
+          <span class="ico" data-ico="chevR" style="width:16px;height:16px"></span>
+        </button>
+        <div class="sqrule"></div>
+        <!-- Der eine Eintrag, den nur Velum hier haben kann: die Auswahl
+             verlässt die Notiz und wird ein anderes Objekt. Deshalb steht er
+             unter der Trennlinie. -->
+        <button class="sqrow"><span class="ico" data-ico="cards"></span>Auswahl → Karte<span class="sp"></span><span class="dot dot--cards"></span></button>
+        <button class="sqrow"><span class="ico" data-ico="tasks"></span>Auswahl → Aufgabe<span class="sp"></span><span class="dot dot--tasks"></span></button>
+      </div>
+      <svg class="pencil" style="left:0; top:0; width:1194px; height:834px" viewBox="0 0 1194 834" aria-hidden="true">
+  <defs>
+    <linearGradient id="pshaft2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FCFCFD"/><stop offset=".38" stop-color="#EDEEF0"/>
+      <stop offset=".70" stop-color="#CDCFD3"/><stop offset="1" stop-color="#E4E5E8"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(704,504) rotate(-42)">
+    <path d="M0 0 30 -13V13Z" fill="#DFE0E3"/>
+    <path d="M0 0 11 -4.8V4.8Z" fill="#33363B"/>
+    <rect x="28" y="-13" width="700" height="26" rx="13" fill="url(#pshaft2)"/>
+    <rect x="28" y="-13" width="700" height="7" rx="3.5" fill="#FFFFFF" opacity=".55"/>
+    <rect x="58" y="-13" width="3" height="26" fill="#BFC2C7" opacity=".9"/>
+    <rect x="692" y="-13" width="8" height="26" rx="4" fill="#D4D6DA"/>
+    <g fill="none" stroke="#16181C" stroke-width="2.2" stroke-linecap="round" opacity=".40">
+      <path d="M118 -24a28 28 0 0 1 36 0"/>
+      <path d="M118 24a28 28 0 0 0 36 0"/>
+      <path d="M126 -34a36 36 0 0 1 20 0" opacity=".55"/>
+      <path d="M126 34a36 36 0 0 0 20 0" opacity=".55"/>
+    </g>
+  </g>
+
+      </svg>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 3 · Scribble ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Scribble <span>Ausschnitt 1:1 · der Moment davor</span></div>
+    <div class="plate">
+      <div class="plate__cap">Erfassungsfeld über der Aufgabenliste · 1:1</div>
+
+      <div class="scribe" style="margin-bottom:8px">
+        <span class="ico" data-ico="plus" style="width:18px;height:18px;color:var(--ink-3);margin-right:10px"></span>
+        <span class="scribe__typed">Laborprotokoll Zellku</span>
+        <span class="scribe__caret"></span>
+
+        <!-- Die noch nicht umgewandelte Tinte: „ltur", von Hand geschrieben.
+             Sie ragt bewusst über das Feld hinaus — man schreibt nicht in
+             eine Zeile, man schreibt über sie. -->
+        <svg class="ink" style="left:236px; top:-14px; width:190px; height:92px" viewBox="0 0 190 92" aria-hidden="true">
+          <g stroke-width="2.6">
+            <!-- l -->
+            <path d="M14 14c-1 18-2 34-1 44 0 5 3 8 8 6"/>
+            <!-- t -->
+            <path d="M42 20c-3 18-5 32-4 40 1 5 4 7 9 4"/>
+            <path d="M32 34c8-2 15-3 21-3"/>
+            <!-- u -->
+            <path d="M66 36c-2 12-3 20-2 24 1 5 6 6 9 1 3-6 5-14 6-22"/>
+            <path d="M79 39c-2 12-3 19-2 22 1 4 5 5 9 1"/>
+            <!-- r -->
+            <path d="M104 38c-2 12-3 19-3 23"/>
+            <path d="M102 42c3-5 8-7 12-5 2 1 3 3 2 5"/>
+          </g>
+          <!-- Der Strich, der gerade noch läuft: dünner am Ansatz, breiter
+               am Ende, wie bei einem echten Zug. -->
+          <path d="M116 44c4-2 8-1 11 2" stroke-width="3.2" opacity=".9"/>
+        </svg>
+      </div>
+
+      <div class="t-sub c-3" style="margin:14px 0 12px">
+        „Laborprotokoll Zellku" steht schon als Text. „ltur" ist noch Tinte —
+        die Umwandlung läuft wortweise und holt die letzten Buchstaben gleich nach.
+      </div>
+
+      <!-- Was Velum aus dem Satz erkannt hat: als eigene Chips unter dem Feld,
+           jeder einzeln antippbar — nicht als eingefärbte Wörter im Feld. -->
+      <div style="display:flex; gap:8px; flex-wrap:wrap">
+        <span class="chip"><span class="ico" data-ico="clock" style="width:14px;height:14px"></span>heute 18:00</span>
+        <span class="chip"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
+        <span class="chip"><span class="ico" data-ico="folder" style="width:14px;height:14px"></span>Bereich Biologie</span>
+      </div>
+
+      <div style="height:1px; background:var(--line); margin:20px 0 16px"></div>
+
+      <div class="plate__cap" style="margin-bottom:10px">Dieselbe Zeile, zwei Sekunden später</div>
+      <div class="scribe">
+        <span class="ico" data-ico="plus" style="width:18px;height:18px;color:var(--ink-3);margin-right:10px"></span>
+        <span class="scribe__typed">Laborprotokoll Zellkultur</span>
+        <span class="scribe__caret"></span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sheetnote">
+  <h2>Steckbrief — Apple Pencil</h2>
+  <p>Apple veröffentlicht weder Maße für die Squeeze-Palette noch eine Zahl für die Schwebehöhe, an der die Vorschau erscheint. Auf dieser Seite ist deshalb <strong>kein Systemmaß belegt</strong>; gezeichnet ist die Wirkung, nicht eine behauptete Zahl.</p>
+
+  <h3>Systemmaße</h3>
+  <table>
+    <tr><td>Belegt</td><td>Nichts. Kein Netzzugang zum Hersteller in diesem Lauf.</td></tr>
+    <tr><td>Übernommen</td><td>iPad 11″ quer 1194 × 834 pt — aus Runde 1 (system.css §3), dort schon gesetzt.</td></tr>
+    <tr><td>Geschätzt</td><td>Squeeze-Palette 236 pt breit, Radius 16, Zeilen 44 · Schwebeschatten 44 pt · Schwebe-Vorschau 210 pt breit. Alles gesetzt, nicht gemessen.</td></tr>
+    <tr><td>Verhalten</td><td>Dass Scribble wortweise umwandelt und dass die Squeeze-Palette an der Spitze erscheint: Modellwissen, in diesem Lauf nicht geprüft.</td></tr>
+  </table>
+
+  <h3>Kontrast (gerechnet)</h3>
+  <table>
+    <tr><td>Fließtext auf der Seite</td><td>ink-1 auf Papier 17,8:1 hell · 15,9:1 dunkel</td></tr>
+    <tr><td>Tinte (Handschrift)</td><td>ink-1 auf Papier — dieselbe Farbe wie der Text, weil Handschrift bei Velum gleichwertiger Inhalt ist und kein Zusatz</td></tr>
+    <tr><td>Fadenstumpf im Rand</td><td>thread auf Papier 3,10:1 hell · 3,13:1 dunkel</td></tr>
+    <tr><td>Hohler Punkt</td><td>dot-hollow auf Papier 3,10:1 hell · 3,13:1 dunkel</td></tr>
+    <tr><td>Gewählte Zeile der Palette</td><td>accent-soft als Fläche plus Gewicht 600 — die Auswahl hängt nie an der Farbe allein</td></tr>
+  </table>
+
+  <h3>Warum das nicht nur Systemtreue ist</h3>
+  <p>Schweben zeigt bei Velum nicht den Strich, sondern die <strong>Herkunft</strong>. Der Pencil wird zum Ableseinstrument: Emil fährt über den linken Rand und liest mit, welche Absätze gearbeitet haben. Das setzt voraus, dass Beziehungen erstklassige Datensätze sind — genau das, was die anderen Handschrift-Apps nicht haben.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

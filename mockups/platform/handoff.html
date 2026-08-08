@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handoff — Velum im System</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* ══ PLATTFORM-KERN (inline, wie in allen Seiten dieses Ordners) ══════════ */
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+.os { position:relative; overflow:hidden; flex:none; background:#0B0C0E;
+      box-shadow: var(--sh-float), 0 0 0 1px var(--line); }
+.os--ipad { width:1194px; height:834px; border-radius:22px; }
+.os__wall { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 50%; }
+.os__scrim { position:absolute; inset:0; }
+
+/* ══ SEITENEIGENES ═══════════════════════════════════════════════════════ */
+
+/* iPad-Dock. Die Handoff-Kachel sitzt rechts, abgetrennt durch eine Fuge —
+   so setzt iPadOS zuletzt benutzte Apps und Handoff ab. */
+.ipaddock { position:absolute; left:50%; transform:translateX(-50%); bottom:22px; z-index:6;
+            height:92px; border-radius:26px; padding:0 16px;
+            background:rgba(255,255,255,.20);
+            backdrop-filter:blur(28px) saturate(160%); -webkit-backdrop-filter:blur(28px) saturate(160%);
+            box-shadow:inset 0 0 0 .5px rgba(255,255,255,.22);
+            display:flex; align-items:center; gap:16px; }
+.dsq { width:64px; height:64px; border-radius:14.32px; flex:none;   /* 64 × 22,37 % */
+       background:linear-gradient(180deg,#232529,#141619);
+       box-shadow:inset 0 0 0 .5px rgba(255,255,255,.10), 0 1px 3px rgba(0,0,0,.35);
+       display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.88); }
+.dsq .ico, .dsq svg { width:32px; height:32px; }
+.dockrule { width:1px; height:52px; background:rgba(255,255,255,.28); flex:none; }
+
+/* Die Handoff-Kachel selbst: App-Platz mit einer kleinen Gerätemarke unten
+   rechts — so zeigt iPadOS die Quelle. */
+.hoff { position:relative; }
+.hoff__badge { position:absolute; right:-5px; bottom:-5px; width:26px; height:26px; border-radius:50%;
+               background:#F2F3F5; color:#16181C; display:flex; align-items:center; justify-content:center;
+               box-shadow:0 1px 3px rgba(0,0,0,.4); }
+.hoff__badge svg { width:15px; height:15px; }
+
+/* Trägerlinie: derselbe Pfad, doppelt gezeichnet. Der Faden läuft über
+   hellen Bühnengrund UND über die dunkle Tapete des iPads; ohne die helle
+   Unterlage fiele er auf der Tapete unter 3:1. Das ist kein zweiter Faden,
+   sondern eine Kontur — wie bei einer Konturschrift. */
+.thread.halo { stroke: rgba(255,255,255,.60); stroke-width: 7; }
+
+.legende { max-width:1100px; margin:26px auto 0; padding:0 30px;
+           display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%,300px),1fr)); gap:16px 30px; }
+.legende__item { display:flex; gap:12px; align-items:flex-start; }
+.legende__n { width:26px; height:26px; border-radius:50%; flex:none;
+              background:var(--accent); color:var(--accent-on);
+              display:flex; align-items:center; justify-content:center;
+              font:600 13px/16px var(--sans); }
+.legende p { font:400 15px/21px var(--sans); color:var(--ink-2); margin:0; max-width:38em; }
+.legende b { color:var(--ink-1); font-weight:600; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — HANDOFF (Erklärbild)
+
+WAS DAS IST
+Ein Erklärbild, kein Schirmfoto: links das iPhone, auf dem Emil in der
+Vorlesung schreibt, rechts das iPad zu Hause, dessen Dock die Fortsetzung
+anbietet. Dazwischen läuft ein Faden über die Bühne — vom Absatz, an dem er
+stehengeblieben ist, zur Handoff-Kachel im Dock.
+
+WARUM DER FADEN HIER ÜBER DIE GERÄTE HINWEG GEZEICHNET IST
+Weil Handoff eine echte Kante ist: dasselbe Objekt an zwei Orten. Das ist der
+einzige Ort im ganzen Ordner, an dem ein Faden den Gerätrahmen verlässt, und
+es ist der einzige Ort, an dem er es darf. Er wird von MOCK.thread() zwischen
+zwei benannten Elementen gespannt (system.css §9.2, mock.js §A) — also mit
+demselben Baustein wie überall, nur über eine größere Strecke.
+
+DASS ES EIN ERKLÄRBILD IST, IST SICHTBAR: Der Faden liegt über den
+Gerätrahmen. Das ist Absicht. Wer die beiden Geräte einzeln als Schirmfotos
+sehen will, findet sie ohne den Faden — er beginnt und endet an Elementen,
+die auch ohne ihn vollständig sind.
+
+SYSTEMMASSE — GESCHÄTZT
+Kein Netzzugang zum Hersteller in diesem Lauf.
+  iPad-Dock: 92 pt hoch, Radius 26, Symbole 64 pt mit Radius 14,32 =
+    64 × 22,37 % (Anteil belegt, system.css §11). Höhe und Radius geschätzt.
+  Die Fuge zwischen festen Apps und dem Handoff-/Zuletzt-Bereich ist eine
+    1-pt-Linie — so setzt iPadOS beide Bereiche voneinander ab.
+  Handoff-Marke: 26 pt Kreis unten rechts an der Kachel. Geschätzt.
+  Dass Handoff auf dem iPad im Dock erscheint (und auf dem Mac im Dock, auf
+    dem iPhone im App-Umschalter), ist Modellwissen; in diesem Lauf nicht
+    geprüft.
+
+WO DER FADEN STEHT
+  · Über die Bühne: Absatz 7 auf dem iPhone ──●── Handoff-Kachel im
+    iPad-Dock. 2,5 pt (Herkunft), zwei Knoten, aktiv (Ink).
+  · Auf dem iPhone zusätzlich der Herkunfts-Rand mit zwei Stümpfen —
+    derselbe Baustein wie in pencil.html.
+  · KEIN Faden im Dock zwischen den App-Symbolen und keiner in der Legende.
+
+AFFORDANZ
+Die Handoff-Kachel ist das einzige Ziel dieser Ansicht; sie trägt die
+Gerätemarke als zweites Merkmal neben ihrer abgesetzten Position im Dock.
+Auf dem iPhone ist der Einfügestrich das einzige aktive Zeichen.
+
+KONTRAST — Werte im Steckbrief unter der Bühne.
+TYPO: fünf Größen, zwei Gewichte, keine Ausnahme auf dieser Seite.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="index.html"><span aria-hidden="true">‹</span><span class="u">Plattform-Übersicht</span></a>
+  <a href="../index.html"><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Handoff</h1>
+  <p>Emil schreibt in der Vorlesung auf dem iPhone. Zu Hause bietet das iPad im Dock die Fortsetzung an. Der Faden zwischen den Geräten ist derselbe Baustein wie überall — nur, dass er hier den Gerätrahmen verlässt, weil die Beziehung es auch tut.</p>
+</div>
+
+<div class="stage" style="align-items:center">
+
+  <!-- ══════════════════ iPhone: die Quelle ══════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 11:24 <span>Hörsaal B 214</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">11:24</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <main class="content">
+          <div class="navbar">
+            <button class="iconbtn" style="margin-left:-10px"><span class="ico" data-ico="chevL"></span></button>
+            <div><div class="t-body is-strong">Zellbiologie</div><div class="t-label c-3">Vorlesung 10 · Aufnahme läuft</div></div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn is-active"><span class="ico" data-ico="mic"></span></button>
+          </div>
+
+          <div class="scroll" style="padding-left:44px; position:relative">
+            <!-- Herkunfts-Rand wie im Notiz-Editor -->
+            <div style="position:relative; margin-bottom:14px">
+              <div style="position:absolute; left:-40px; top:6px; display:flex; align-items:center; gap:5px">
+                <svg class="thread thread--h" style="width:14px"></svg><span class="dot dot--cards"></span>
+              </div>
+              <p class="t-body" style="margin:0">Die Atmungskette sitzt in der inneren Membran. Vier Komplexe, dazwischen zwei mobile Überträger.</p>
+            </div>
+
+            <div style="position:relative; margin-bottom:14px">
+              <div style="position:absolute; left:-40px; top:6px; display:flex; align-items:center; gap:5px">
+                <svg class="thread thread--h" style="width:14px"></svg><span class="dot dot--hollow"></span>
+              </div>
+              <p class="t-body" style="margin:0">Wendt hat gesagt, das kommt in der Klausur. Zwei Beispiele hat er an die Tafel geschrieben.</p>
+            </div>
+
+            <!-- Der Absatz, an dem er stehengeblieben ist. Hier hängt der Faden. -->
+            <div id="hoQuelle" style="position:relative; padding:10px 12px; margin:0 -12px;
+                        border-radius:10px; background:var(--accent-soft);
+                        box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+              <!-- Der Knoten, an dem der Faden ansetzt. -->
+              <span class="dot dot--node" style="position:absolute; right:-4.5px; top:50%;
+                    transform:translateY(-50%); --node-ring:var(--ground)"></span>
+              <p class="t-body" style="margin:0">Der Protonengradient wird von Komplex I, III und IV aufgebaut. Die ATP-Synthase<span style="display:inline-block; width:2px; height:19px; background:var(--accent); vertical-align:-4px; margin-left:2px"></span></p>
+            </div>
+
+            <div class="t-label c-3" style="margin-top:14px">Tinte, Ton und Text laufen synchron mit. Aufnahme seit 11:02.</div>
+          </div>
+        </main>
+      </div>
+
+      <div class="tabbar">
+        <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+        <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+        <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+        <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernkarten</span></button>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ iPad: das Ziel ══════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 18:40 <span>zu Hause, Home-Bildschirm</span></div>
+    <div class="os os--ipad">
+      <img class="os__wall" src="../assets/bilder/journal/schreibtisch-1200.jpg" alt="">
+      <div class="os__scrim" style="background:linear-gradient(180deg,rgba(6,8,11,.64),rgba(6,8,11,.56) 40%,rgba(6,8,11,.70))"></div>
+
+      <div style="position:absolute; left:0; right:0; top:0; height:24px; z-index:6;
+                  display:flex; align-items:center; justify-content:space-between; padding:0 28px;
+                  font:600 13px/16px var(--sans); color:#fff">
+        <span class="num">18:40</span>
+        <span style="display:flex; align-items:center; gap:8px"><span class="num">Do 13. Nov</span></span>
+      </div>
+
+      <!-- App-Raster, iOS-18-„Dunkel"-Erscheinungsbild -->
+      <div style="position:absolute; left:118px; top:96px; width:958px; z-index:5;
+                  display:grid; grid-template-columns:repeat(6,1fr); gap:38px 0; justify-items:center">
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="calendar"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Kalender</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="photo"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Fotos</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="inbox"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Mail</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="map"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Karten</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="mic"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Podcasts</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="settings"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Einstellungen</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="clock"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Uhr</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="cloud"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Wetter</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="box"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">App Store</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="check"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Erinnerungen</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="heart"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Health</div></div>
+        <div style="text-align:center"><div class="dsq"><span class="ico" data-ico="layers"></span></div><div style="font:400 13px/16px var(--sans); color:#fff; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.5)">Freeform</div></div>
+      </div>
+
+      <!-- Das Dock mit der Handoff-Kachel rechts -->
+      <div class="ipaddock">
+        <div class="dsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m15.6 8.4-1.7 5.5-5.5 1.7 1.7-5.5Z"/></svg></div>
+        <div class="dsq"><span class="ico" data-ico="folder"></span></div>
+        <div class="dsq"><span class="ico" data-ico="doc"></span></div>
+        <!-- Velum als feste App: reservierter Zeichenplatz -->
+        <span class="appicon" style="--appicon-size:64px; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:14.32px"></span></span>
+
+        <div class="dockrule"></div>
+
+        <!-- Handoff: dieselbe App, aber vom iPhone übergeben -->
+        <div class="hoff" id="hoZiel">
+          <span class="dot dot--node" style="position:absolute; left:-4.5px; top:50%;
+                transform:translateY(-50%); --node-ring:#6E7278; z-index:3"></span>
+          <span class="appicon" style="--appicon-size:64px; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:14.32px"></span></span>
+          <span class="hoff__badge" title="von Emils iPhone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="7" y="2.6" width="10" height="18.8" rx="2.4"/><path d="M10.6 5.2h2.8"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <!-- Was die Kachel sagt, wenn man darauf zeigt -->
+      <div style="position:absolute; right:44px; bottom:130px; z-index:6; width:286px;
+                  background:var(--paper); border-radius:12px; padding:12px 14px; box-shadow:var(--sh-float)">
+        <div class="t-label c-3" style="display:flex; align-items:center; gap:7px; margin-bottom:7px">
+          <span class="dot dot--notes"></span>Von Emils iPhone
+        </div>
+        <div class="t-body is-strong clamp-1">Zellbiologie — Vorlesung 10</div>
+        <div class="t-sub c-3" style="margin-top:2px">Weiterschreiben ab Absatz 7. Die Aufnahme läuft dort seit 11:02.</div>
+      </div>
+
+      <div style="position:absolute; left:50%; bottom:6px; transform:translateX(-50%);
+                  width:180px; height:5px; border-radius:3px; background:rgba(255,255,255,.8); z-index:8"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Legende — dies ist ein Erklärbild, es darf beschriften. -->
+<div class="legende">
+  <div class="legende__item">
+    <span class="legende__n">1</span>
+    <p><b>Der Absatz ist markiert, nicht der Bildschirm.</b> Handoff übergibt bei Velum nicht „die App", sondern die Stelle: Absatz 7, Einfügestrich dahinter, Aufnahmezeit 11:02. Wer auf dem iPad weiterschreibt, setzt den Satz fort.</p>
+  </div>
+  <div class="legende__item">
+    <span class="legende__n">2</span>
+    <p><b>Der Faden ist die Kante.</b> Dasselbe Objekt liegt an zwei Orten. Das ist eine echte Beziehung im Datenmodell — deshalb steht hier ein Faden und keine Pfeilgrafik, und deshalb ist er 2,5 pt stark wie jede Herkunftskante.</p>
+  </div>
+  <div class="legende__item">
+    <span class="legende__n">3</span>
+    <p><b>Die Aufnahme läuft weiter.</b> Zeit ist bei Velum Inhalt: Tinte und Ton hängen an derselben Achse. Beim Übergeben wandert die Achse mit, nicht nur der Text.</p>
+  </div>
+</div>
+
+<div class="sheetnote">
+  <h2>Steckbrief — Handoff</h2>
+
+  <h3>Systemmaße (geschätzt)</h3>
+  <table>
+    <tr><td>iPad-Dock</td><td>92 pt hoch, Radius 26, Symbole 64 pt mit Radius 14,32 = 64 × 22,37 % (Anteil belegt, system.css §11). Höhe und Radius gesetzt, nicht gemessen.</td></tr>
+    <tr><td>Fuge im Dock</td><td>1-pt-Linie zwischen festen Apps und dem Handoff-/Zuletzt-Bereich.</td></tr>
+    <tr><td>Handoff-Marke</td><td>26-pt-Kreis unten rechts an der Kachel, mit dem Umriss des Quellgeräts.</td></tr>
+    <tr><td>Verhalten</td><td>Dass Handoff auf dem iPad im Dock erscheint (auf dem Mac im Dock, auf dem iPhone im App-Umschalter): Modellwissen, in diesem Lauf nicht geprüft.</td></tr>
+  </table>
+
+  <h3>Kontrast (gerechnet)</h3>
+  <table>
+    <tr><td>Text auf der Tapete</td><td>Am gerenderten Bild nachgemessen: der Untergrund unter Dock und Symbolbeschriftungen hält 9,3:1 für Weiß (97. Perzentil). Über den 4,5:1 für Text.</td></tr>
+    <tr><td>Faden über die Bühne</td><td>aktiv, also Ink: 15,9:1 auf dem Bühnengrund hell · 17,3:1 dunkel. Er ist der einzige aktive Faden dieser Seite, weil man ihm gerade folgt.</td></tr>
+    <tr><td>Karte „Von Emils iPhone"</td><td>ink-1 auf Papier 17,8:1 hell · 15,9:1 dunkel</td></tr>
+    <tr><td>Markierter Absatz</td><td>accent-soft als Fläche plus Ring accent-ring 3,3:1 — zwei Merkmale</td></tr>
+  </table>
+
+  <h3>Warum der Faden hier den Gerätrahmen verlassen darf</h3>
+  <p>Er darf es, weil die Beziehung es auch tut: dasselbe Objekt liegt an zwei Orten. Das ist die einzige Stelle im ganzen Ordner, an der ein Faden über einen Rahmen läuft — überall sonst bleibt er innerhalb eines Schirms, weil die Beziehung es auch tut. Dass diese Ansicht ein Erklärbild ist und kein Schirmfoto, ist damit auch sichtbar und nicht nur behauptet.</p>
+
+  <h3>Das Zeichen</h3>
+  <p>Im Gerät steht der reservierte leere Rahmen ohne Text; hier der vollständige Baustein mit seiner Warnung:</p>
+  <p><span class="appicon" data-appicon></span></p>
+</div>
+
+<script src="../shared/mock.js"></script>
+<script>
+/* Der Faden zwischen den Geräten. Derselbe Baustein wie überall
+   (mock.js §A) — nur über eine größere Strecke. Er wird erst nach dem
+   vollständigen Laden gespannt, damit die Bilder ihre Maße haben. */
+window.addEventListener('load', function () {
+  if (!window.MOCK) return;
+  var opt = { strength: 'origin', curve: 70, fromSide: 'right', toSide: 'left' };
+  var halo = MOCK.thread('#hoQuelle', '#hoZiel', opt);
+  if (halo) halo.node.classList.add('halo');
+  MOCK.thread('#hoQuelle', '#hoZiel', {
+    strength: 'origin', curve: 70, active: true, fromSide: 'right', toSide: 'left'
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Velum im System — Übersicht</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+.wrap { max-width:1100px; margin:0 auto; padding:0 30px; }
+
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+.lead p { font:400 17px/23px var(--sans); color:var(--ink-2); margin:0 0 12px; max-width:35em; }
+.lead strong { color:var(--ink-1); font-weight:600; }
+
+.sec { margin-top:52px; }
+.sec h2 { font:600 20px/26px var(--sans); letter-spacing:-.015em; margin:0 0 6px; }
+.sec > p { font:400 15px/20px var(--sans); color:var(--ink-2); margin:0 0 20px; max-width:35em; }
+
+/* Die zehn Kacheln. Jede ist ein ganzflächiges Ziel mit Winkelzeichen —
+   Fläche UND Zeichen, nie Farbe allein. */
+.tiles { display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%,320px),1fr)); gap:14px; }
+.tile { display:flex; gap:14px; align-items:flex-start; text-decoration:none; color:inherit;
+        background:var(--paper); border-radius:var(--r-card); box-shadow:var(--sh-card);
+        padding:16px 16px 14px; min-height:44px;
+        transition:transform var(--t-std) var(--ease-spring), box-shadow var(--t-std) var(--ease); }
+.tile:hover { transform:translateY(-2px); box-shadow:var(--sh-float); }
+.tile__n { width:28px; height:28px; border-radius:50%; flex:none;
+           background:var(--accent); color:var(--accent-on);
+           display:flex; align-items:center; justify-content:center;
+           font:600 13px/16px var(--sans); font-variant-numeric:tabular-nums; }
+.tile__main { flex:1 1 auto; min-width:0; }
+.tile__t { font:600 17px/23px var(--sans); display:flex; align-items:center; gap:8px; }
+.tile__t .ico { width:16px; height:16px; color:var(--ink-4); margin-left:auto; flex:none; }
+.tile__d { font:400 15px/20px var(--sans); color:var(--ink-2); margin-top:3px; }
+.tile__chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+
+.marke { display:flex; gap:26px; align-items:flex-start; flex-wrap:wrap;
+         background:var(--paper); border-radius:var(--r-card); box-shadow:var(--sh-card);
+         padding:24px 26px; }
+.marke p { font:400 15px/21px var(--sans); color:var(--ink-2); margin:0 0 8px; max-width:44em; }
+.marke code { font:400 13px/16px var(--mono); color:var(--ink-1); }
+
+table.uebersicht { width:100%; border-collapse:collapse; margin-top:8px; }
+table.uebersicht td, table.uebersicht th { font:400 15px/21px var(--sans); color:var(--ink-2);
+        padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top; text-align:left; }
+table.uebersicht th { font-weight:600; color:var(--ink-1); font-size:13px; line-height:16px;
+        letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); }
+table.uebersicht td:first-child { color:var(--ink-1); font-weight:600; width:220px; }
+
+.foot { margin:56px 0 0; padding:22px 0 70px; border-top:1px solid var(--line); }
+.foot p { font:400 15px/21px var(--sans); color:var(--ink-3); margin:0 0 8px; max-width:44em; }
+.foot code { font:400 13px/16px var(--mono); color:var(--ink-2); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — ÜBERSICHT „VELUM IM SYSTEM"
+
+WAS DIESER ORDNER IST
+Zehn Ansichten, die zeigen, dass Velum eine iOS-App ist und keine portierte
+Web-App. Sie sind nicht animiert, aber sie stehen im gleichen Entwurf:
+dieselben Tokens aus mockups/shared/system.css, dieselbe Fünfer-Typo,
+dieselbe Farbdisziplin, dieselbe Geschichte (Emil, Zellbiologie, Prof. Wendt).
+
+WARUM ZEHN UND NICHT NEUN
+Der Auftrag führt Teilen-Blatt und Kontextmenü unter einem Punkt. Getrennt
+wird es klarer: das eine ist ein Systemblatt von unten, das andere ein Menü
+am Objekt. Sie stehen deshalb als teilen.html und kontextmenue.html.
+
+DIE EHRLICHE ZEILE ZU DEN SYSTEMMASSEN
+In diesem Lauf war developer.apple.com nicht erreichbar — der Abruf der
+HIG-Seite „Widgets" gab nur den Seitentitel zurück, keinen Inhalt. Es ist
+deshalb NICHTS am Hersteller nachgeprüft. Jede Seite trennt in ihrem
+Steckbrief, was aus der HIG-Tabelle erinnert ist, was hergeleitet wurde
+(Rechnung dabei) und was schlicht gesetzt ist. Die Tabelle weiter unten
+fasst das zusammen.
+
+DAS ZEICHEN
+Diese Seite ist der Ort, an dem der vollständige Baustein .appicon steht —
+mit seiner Warnung und der Pfadangabe. In den Geräten der zehn Ansichten
+steht derselbe leere Rahmen ohne Text, weil die Pfadangabe eine 40-pt-Zelle
+sprengt. Nichts wird nachgezeichnet und nichts repariert.
+
+AFFORDANZ
+Jede Kachel ist ein ganzflächiges Ziel mit einem Winkelzeichen — Fläche und
+Zeichen zusammen, nie Farbe allein. Die Zählnummer ist eine gefüllte
+Ink-Scheibe mit hellem Text.
+
+TYPO: fünf Größen, zwei Gewichte, keine Ausnahme auf dieser Seite.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="../index.html"><span aria-hidden="true">‹</span><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Velum im System</h1>
+  <p>Zehn Berührungspunkte zwischen Velum und iOS: Widgets, Live Activity, Apple Pencil, Sperrbildschirm, Spotlight, Kurzbefehle, Fokus, Teilen, Kontextmenü, Handoff. Sie sollen beweisen, dass die App auf dieser Plattform zu Hause ist — und dass sie überall dasselbe mitbringt: den Faden.</p>
+</div>
+
+<div class="wrap">
+
+  <div class="lead">
+    <p><strong>Die Regel dieses Ordners:</strong> die Rahmen, Radien, Materialien und Größen gehören iOS, der Inhalt gehört Velum. Wo eine Systemgröße nicht zu belegen war, steht sie mit ihrer Herleitung im Steckbrief der jeweiligen Seite — nicht als Behauptung.</p>
+    <p><strong>Und die zweite Regel:</strong> kein Faden ohne echte Beziehung. Auf sieben der zehn Seiten steht einer, auf dreien steht bewusst keiner an Stellen, an denen man ihn erwarten könnte. Beides ist im Steckbrief begründet.</p>
+  </div>
+
+  <!-- ── Die zehn Ansichten ─────────────────────────────────────────── -->
+  <div class="sec">
+    <h2>Die zehn Ansichten</h2>
+    <p>In der Reihenfolge des Auftrags. Jede Seite trägt oben einen Kommentarblock im Quelltext und unten einen sichtbaren Steckbrief mit Maßen, Kontrastwerten und der Begründung, wo ein Faden steht und wo nicht.</p>
+
+    <div class="tiles">
+
+      <a class="tile" href="widgets.html">
+        <span class="tile__n num">1</span>
+        <span class="tile__main">
+          <span class="tile__t">Widgets<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Klein, mittel, groß im echten Raster eines 393 × 852-pt-iPhones, dazu die drei Sperrbildschirm-Zubehörformen und eine Rasterzeichnung mit jedem benutzten Maß.</span>
+          <span class="tile__chips">
+            <span class="chip">iPhone · 4 Ansichten</span>
+            <span class="chip"><span class="dot dot--cards"></span>Kette · Serie</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="tile" href="live-activity.html">
+        <span class="tile__n num">2</span>
+        <span class="tile__main">
+          <span class="tile__t">Live Activity und Dynamic Island<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Alle vier Formen: Ruhe, kompakt, minimal, erweitert — plus die Sperrbildschirm-Fassung. Die Minimalform erscheint nur, weil eine zweite Aktivität läuft.</span>
+          <span class="tile__chips">
+            <span class="chip">iPhone · 4 Ansichten</span>
+            <span class="chip"><span class="dot dot--cards"></span>Karte ↔ Absatz</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="tile" href="pencil.html">
+        <span class="tile__n num">3</span>
+        <span class="tile__main">
+          <span class="tile__t">Apple Pencil<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Schweben über dem Herkunfts-Rand, Squeeze-Palette an der Spitze, Scribble im Moment davor — das Wort halb Tinte, halb schon Text.</span>
+          <span class="tile__chips">
+            <span class="chip">iPad · 3 Ansichten</span>
+            <span class="chip"><span class="dot dot--notes"></span>Absatz → Karten</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="tile" href="sperrbildschirm.html">
+        <span class="tile__n num">4</span>
+        <span class="tile__main">
+          <span class="tile__t">Sperrbildschirm-Mitteilung<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Stapel, aufgezogen und lange Fassung. Die Mitteilung nennt nicht nur eine Zahl, sondern den Weg — und in der langen Fassung den Satz, aus dem die Karte kam.</span>
+          <span class="tile__chips">
+            <span class="chip">iPhone · 3 Ansichten</span>
+            <span class="chip"><span class="dot dot--cards"></span>Notiz → Karten</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="tile" href="spotlight.html">
+        <span class="tile__n num">5</span>
+        <span class="tile__main">
+          <span class="tile__t">Spotlight<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Die Systemsuche mit Velum-Treffern — der Top-Treffer ist eine Lernkarte und sagt, aus welchem Absatz sie stammt. Daneben Velums eigenes Feld, das Wege statt Treffer zurückgibt.</span>
+          <span class="tile__chips">
+            <span class="chip">iPhone · 2 Ansichten</span>
+            <span class="chip"><span class="dot dot--notes"></span>vier Fäden</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="tile" href="kurzbefehle.html">
+        <span class="tile__n num">6</span>
+        <span class="tile__main">
+          <span class="tile__t">Siri und Kurzbefehle<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Fünf Aktionen im System, eine davon geöffnet — und die Siri-Antwort. „Aufgabe aus Auswahl" nimmt Text aus einer fremden App und behält die Herkunft.</span>
+          <span class="tile__chips">
+            <span class="chip">iPhone · 3 Ansichten</span>
+            <span class="chip"><span class="dot dot--tasks"></span>Quelle → Aufgabe</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="tile" href="fokus.html">
+        <span class="tile__n num">7</span>
+        <span class="tile__main">
+          <span class="tile__t">Fokus-Filter<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Der Filter in den Systemeinstellungen und derselbe Schirm zweimal: ohne Fokus und im Fokus „Studium". Was fehlt, sagt Velum in einer Zeile.</span>
+          <span class="tile__chips">
+            <span class="chip">iPhone · 3 Ansichten</span>
+            <span class="chip"><span class="dot dot--cards"></span>Kette bleibt</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="tile" href="teilen.html">
+        <span class="tile__n num">8</span>
+        <span class="tile__main">
+          <span class="tile__t">Teilen-Blatt<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Zwei Richtungen: eine Notiz hinaus, eine Webseite herein. Beim Hereinteilen zeigt Velum vorher, welches Objekt entsteht und woran es hängen wird.</span>
+          <span class="tile__chips">
+            <span class="chip">iPhone · 2 Ansichten</span>
+            <span class="chip"><span class="dot dot--notes"></span>Quelle → Notiz</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="tile" href="kontextmenue.html">
+        <span class="tile__n num">9</span>
+        <span class="tile__main">
+          <span class="tile__t">Kontextmenü mit Vorschau<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Langes Drücken auf ein Notizbuch. Die Vorschau zeigt die Kette, die aus dem Buch herausführt; im Menü stehen zwei Einträge, die eine Beziehung voraussetzen.</span>
+          <span class="tile__chips">
+            <span class="chip">iPhone und iPad</span>
+            <span class="chip"><span class="dot dot--cards"></span>Buch → Karten</span>
+          </span>
+        </span>
+      </a>
+
+      <a class="tile" href="handoff.html">
+        <span class="tile__n num">10</span>
+        <span class="tile__main">
+          <span class="tile__t">Handoff<span class="ico" data-ico="chevR"></span></span>
+          <span class="tile__d">Ein Erklärbild: iPhone im Hörsaal, iPad zu Hause — und dazwischen der einzige Faden dieses Ordners, der den Gerätrahmen verlässt, weil die Beziehung es auch tut.</span>
+          <span class="tile__chips">
+            <span class="chip">iPhone + iPad</span>
+            <span class="chip"><span class="dot dot--notes"></span>Absatz ↔ Dock</span>
+          </span>
+        </span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ── Systemmaße ─────────────────────────────────────────────────── -->
+  <div class="sec">
+    <h2>Systemmaße — was belegt ist und was nicht</h2>
+    <p>In diesem Lauf war <code>developer.apple.com</code> nicht erreichbar; der Abruf der HIG-Seite „Widgets" gab nur den Seitentitel zurück. Es ist deshalb <strong>nichts am Hersteller nachgeprüft</strong>. Die Tabelle trennt drei Sicherheiten.</p>
+    <table class="uebersicht">
+      <tr><th>Sicherheit</th><th>Was darunter fällt</th></tr>
+      <tr>
+        <td>Aus der HIG-Tabelle erinnert</td>
+        <td>Die Widget-Größen für 393 × 852 pt: klein 158 × 158 · mittel 338 × 158 · groß 338 × 354; Zubehör rund 72 × 72, Zeile Höhe 26. Hohe Sicherheit — aber in diesem Lauf nicht geprüft.</td>
+      </tr>
+      <tr>
+        <td>Hergeleitet</td>
+        <td>Alles, was aus den obigen Zahlen folgt: Seitenrand 27,5 = (393 − 338)/2 · Lücken 22 und 38 · Zeilenraster 196 · Symbolraster 84,5 = 338/4. Dazu jeder Symbolradius als 22,37 % der Kantenlänge — dieser Anteil steht seit Runde 1 in system.css §11.</td>
+      </tr>
+      <tr>
+        <td>Geschätzt</td>
+        <td>Dynamic Island (126 × 37,33 und alles daraus), Mitteilungsbreite und -radius, Blattradius, Tastaturhöhe, Menübreite, Dockhöhe, Squeeze-Palette, Siris Leuchtrand, die Sperrbildschirm-Uhr. Jede dieser Zahlen steht im Steckbrief ihrer Seite mit der Rechnung oder der Begründung, aus der sie stammt.</td>
+      </tr>
+      <tr>
+        <td>Verhalten statt Maß</td>
+        <td>Dass die Minimalform der Insel nur bei zwei Aktivitäten erscheint, dass Handoff auf dem iPad im Dock sitzt, dass Scribble wortweise umwandelt, dass Siri seit iOS 18 den Bildschirmrand leuchten lässt: Modellwissen, nicht geprüft. Es ist an jeder Stelle als solches ausgewiesen.</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ── Der Faden ──────────────────────────────────────────────────── -->
+  <div class="sec">
+    <h2>Wo der Faden steht — und wo bewusst keiner</h2>
+    <p>Die Regel aus der DNA gilt hier genauso: kein Faden ohne echte Kante im Datenmodell. Wer einen sieht, muss sagen können, welche zwei Objekte er verbindet.</p>
+    <table class="uebersicht">
+      <tr><th>Ansicht</th><th>Der Faden</th></tr>
+      <tr><td>Widgets</td><td>Kette Notiz → Karten → fällig (mittel und groß) · Herkunftsstumpf an der nächsten Aufgabe (klein und Zubehör) · die Serie als Fadenreihe (groß).</td></tr>
+      <tr><td>Live Activity</td><td>Erweiterte Form und Sperrbildschirm: die laufende Karte und ihr Ursprungsabsatz. <strong>Keiner</strong> in der kompakten und der minimalen Form — dort ist kein Platz für zwei Punkte, und ein Strich ohne zwei Enden wäre eine Zierlinie.</td></tr>
+      <tr><td>Apple Pencil</td><td>Herkunfts-Rand mit drei Stümpfen; beim Schweben wächst der Faden aus dem Rand heraus zu den drei Karten. <strong>Keiner</strong> in der Squeeze-Palette und im Scribble-Feld.</td></tr>
+      <tr><td>Sperrbildschirm</td><td>Notiz → Karten in der Mitteilung, in der langen Fassung der ganze Weg. <strong>Keiner</strong> in der Journal-Erinnerung: der Impuls kommt aus keinem Objekt.</td></tr>
+      <tr><td>Spotlight</td><td>Im Top-Treffer die Kante Absatz → Karte; im Velum-eigenen Feld ist jede Zeile ein Weg. <strong>Keiner</strong> bei Treffern ohne Herkunft und bei der Websuche.</td></tr>
+      <tr><td>Kurzbefehle</td><td>Die Ergebnisvorschau (Quelle → neue Aufgabe) und die Siri-Antwort. <strong>Keiner</strong> in der Aktionsliste — drei Aktionen untereinander sind eine Liste, keine Kette.</td></tr>
+      <tr><td>Fokus</td><td>Die Ketten-Karte steht in beiden Fassungen: der Filter filtert Bestand, nicht Beziehungen. <strong>Keiner</strong> im Fokus-Streifen.</td></tr>
+      <tr><td>Teilen</td><td>Beim Hereinteilen die Zusage Quelle → Notiz. <strong>Keiner</strong> beim Hinausteilen: die Notiz verlässt das Datenmodell, sie knüpft nichts an.</td></tr>
+      <tr><td>Kontextmenü</td><td>In der Vorschau die Kette aus dem Notizbuch; auf dem Cover der Buchrücken. <strong>Keiner</strong> im Menü.</td></tr>
+      <tr><td>Handoff</td><td>Über die Bühne, vom Absatz auf dem iPhone zur Handoff-Kachel im iPad-Dock — der einzige Faden dieses Ordners, der einen Gerätrahmen verlässt.</td></tr>
+    </table>
+  </div>
+
+  <!-- ── Die Marke ──────────────────────────────────────────────────── -->
+  <div class="sec">
+    <h2>Das Zeichen</h2>
+    <p>Die drei PNG unter <code>assets/brand/</code> liegen nicht vor, und Nachzeichnen ist verboten. Diese Seite ist der Ort, an dem der vollständige Baustein mit seiner Warnung steht.</p>
+    <div class="marke">
+      <span class="appicon" data-appicon></span>
+      <div>
+        <p>In den Geräten der zehn Ansichten steht an denselben Stellen <strong>derselbe leere Rahmen ohne Text</strong> — die Pfadangabe würde eine 40-pt-Trefferzeile oder eine 60-pt-Dockzelle sprengen. Es wird nichts nachgezeichnet und nichts repariert: die Warnung verschwindet nicht, sie steht einmal statt siebenmal.</p>
+        <p>Sobald die drei Dateien abgelegt sind, erscheinen sie überall gleichzeitig, ohne dass eine Zeile geändert werden muss:</p>
+        <p><code>assets/brand/velum-appicon-light.png</code><br>
+           <code>assets/brand/velum-appicon-dark.png</code><br>
+           <code>assets/brand/velum-appicon-tinted.png</code></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <p>Alle zehn Seiten binden <code>../shared/system.css</code> und <code>../shared/mock.js</code> ein und ändern an beiden nichts. Was an eigenem CSS nötig war, steht inline in der jeweiligen Seite; der gemeinsame Teil ist in jeder Datei als „Plattform-Kern" ausgewiesen.</p>
+    <p>Die Bedienleiste oben rechts gehört nicht zum Entwurf. Sie schaltet Hell/Dunkel und die große Dynamic-Type-Stufe um, damit sich beide Fassungen im selben Dokument prüfen lassen.</p>
+  </div>
+
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+/* ============================================================================
+ * bewegung.css — Velums Bewegungssystem
+ *
+ * Liegt NEBEN system.css und mock.js und überschreibt dort nichts. Alle
+ * Klassen und Variablen tragen das Präfix `bw-`. Einbinden nach system.css:
+ *
+ *   <link rel="stylesheet" href="../shared/system.css">
+ *   <link rel="stylesheet" href="../shared/bewegung.css">
+ *   <script src="../shared/mock.js"></script>
+ *   <script src="../shared/bewegung.js"></script>
+ *
+ * ── DER GRUNDSATZ ──────────────────────────────────────────────────────────
+ * Bewegung nur, wo sie etwas erklärt: Herkunft, Fortschritt, Zustandswechsel.
+ * Kein Zierrat. Was hier NICHT steht, steht mit Begründung in docs/03.
+ *
+ * ── VIER ROLLEN, MEHR GIBT ES NICHT ────────────────────────────────────────
+ *   ÖFFNEN      320 ms   springStandard   Dokument, Detail
+ *   WECHSELN    180 ms   springQuick      Modul, Ansicht
+ *   ÜBERGEBEN   780 ms   dreisätzig       Modul zu Modul — Velums Signatur
+ *   BESTÄTIGEN  180 ms   springQuick      erledigt, gespeichert, bewertet
+ *
+ * ── DIE KURVEN SIND GERECHNET, NICHT GERATEN ───────────────────────────────
+ * Velums März-Spec §9 nennt vier Federn. Jede ist als Sprungantwort
+ *   x(t) = 1 − e^(−ζωt)·(cos ω_d t + ζ/√(1−ζ²)·sin ω_d t),  ω = 2π/response
+ * ausgewertet und mit vier freien Parametern als cubic-bezier angenähert
+ * (Nelder-Mead, 120 Stützstellen). Das Zeitfenster endet bei 2 % Restweg.
+ * Fehler der Anpassung, quadratisches Mittel über den ganzen Verlauf:
+ *   springQuick 0,36 %  ·  springStandard 0,33 %  ·  springBouncy 0,76 %  ·
+ *   springGentle 0,92 % des Weges. Tabelle und Herleitung: docs/03_bewegung.md.
+ *
+ * ── ZWEI DINGE, DIE EINE FEDER KANN UND EINE BÉZIER NICHT ──────────────────
+ * 1. springBouncy (ζ 0,65) schwingt um 6,8 % über und danach um 0,46 % unter.
+ *    Eine cubic-bezier bildet das Überschwingen ab (7,3 %), das darauf
+ *    folgende Unterschwingen nicht — sie kehrt einsinnig zurück. Zwei
+ *    verkettete Animationen könnten es, sie werden hier bewusst nicht
+ *    verkettet: das Unterschwingen fällt in dieselben 60 ms, in denen beim
+ *    Übergeben der Zähler hochzählt, und zwei Bewegungen an einer Stelle
+ *    heben sich gegenseitig auf.
+ * 2. Eine Feder nimmt die Geschwindigkeit auf, mit der man loslässt. Eine
+ *    cubic-bezier hat eine feste Anfangssteigung. Beim Wischen einer Lernkarte
+ *    wird deshalb nicht die Kurve, sondern die DAUER aus der Wurfgeschwindig-
+ *    keit bestimmt: 260 ms bei schnellem Schnippen, 480 ms bei langsamem
+ *    Loslassen, dieselbe Kurve. Das rechnet bewegung.js (§3.3).
+ *
+ * ── REDUCE MOTION ──────────────────────────────────────────────────────────
+ * Jede einzelne Bewegung hat einen eigenen gebauten Pfad, nicht „keine
+ * Animation". Die Pfade stehen jeweils direkt unter der Bewegung, mit
+ * `:root[data-bw-reduce="1"]` davor. bewegung.js setzt dieses Attribut aus
+ * zwei Quellen: der Systemvorliebe und dem erzwungenen Umschalter
+ * (`data-motion="system|full|reduce"`).
+ *
+ * system.css §8 klemmt unter der Systemvorliebe jede Bewegung auf 1 ms
+ * (`* { animation-duration: 1ms !important }`). Als Grundsicherung richtig —
+ * es überschreibt aber auch die hier gebauten Reduce-Pfade. §6 dieser Datei
+ * setzt sie für die eigenen Bausteine wieder in Kraft. Deshalb gilt in dieser
+ * Datei die Regel: JEDE Klasse, die animiert, setzt --bw-dur und benutzt es.
+ * ========================================================================== */
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 1 · TOKENS
+ * ════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Verlangsamer. 1 = Echtzeit, 4 = 0,25×. bewegung.js setzt den Wert;
+     jede Dauer unten rechnet ihn ein, JS-Wartezeiten ebenso (MOTION.ms). */
+  --bw-tempo: 1;
+
+  /* Reduce als Zahl 0/1 — so können Wege und Maßstäbe damit rechnen,
+     statt jede Regel zweimal zu schreiben:
+       transform: translateY(calc((1 - var(--bw-red)) * 8px)); */
+  --bw-red: 0;
+
+  /* Die vier Kurven aus den vier Federn (Herleitung im Kopf der Datei) */
+  --bw-e-quick:    cubic-bezier(.239, .071, .325, .913);   /* .25 / .85  */
+  --bw-e-standard: cubic-bezier(.216, .052, .330, 1.110);  /* .40 / .80  */
+  --bw-e-bouncy:   cubic-bezier(.280, .224, .224, 1.370);  /* .50 / .65  */
+  --bw-e-gentle:   cubic-bezier(.271, .115, .268, .755);   /* .60 / .90  */
+  /* easeInOut steht in der März-Spec direkt und wird 1:1 übernommen.
+     Nur für Deckkraft und Farbe — nie für Position (Regel der März-Spec). */
+  --bw-e-io:       cubic-bezier(.42, 0, .58, 1);
+
+  /* ── Die vier Rollen ─────────────────────────────────────────────────── */
+  --bw-d-oeffnen:     calc(320ms * var(--bw-tempo));   /* springStandard */
+  --bw-d-wechseln:    calc(180ms * var(--bw-tempo));   /* springQuick    */
+  --bw-d-flug:        calc(480ms * var(--bw-tempo));   /* springBouncy   */
+  --bw-d-bestaetigen: calc(180ms * var(--bw-tempo));   /* springQuick    */
+
+  /* ── Teilzeiten, die mehrfach vorkommen ──────────────────────────────── */
+  --bw-d-faden:     calc(420ms * var(--bw-tempo));  /* = --t-hand aus system.css */
+  --bw-d-verdichten:calc(180ms * var(--bw-tempo));
+  --bw-d-ankunft:   calc(180ms * var(--bw-tempo));
+  --bw-d-press:     calc(120ms * var(--bw-tempo));
+  --bw-d-hover:     calc(180ms * var(--bw-tempo));
+  --bw-d-gehen:     calc(240ms * var(--bw-tempo));  /* Zeile verabschiedet sich */
+  --bw-d-luecke:    calc(260ms * var(--bw-tempo));  /* Nachbarn schließen auf   */
+  --bw-d-halten:    calc(1000ms * var(--bw-tempo)); /* Verweildauer = Rückgängig */
+  --bw-d-staffel:   calc(36ms * var(--bw-tempo));   /* Schritt der Staffelung   */
+  --bw-d-erscheinen:calc(220ms * var(--bw-tempo));  /* ein Listeneintrag        */
+
+  /* ── Der eine Wert, den jeder Reduce-Pfad benutzt ────────────────────── */
+  --bw-d-blende:    calc(160ms * var(--bw-tempo));  /* Kreuzblende statt Weg */
+  --bw-d-blende-kurz: calc(120ms * var(--bw-tempo));
+
+  /* Wege. Unter Reduce auf 0 — dafür ist --bw-red da. */
+  --bw-weg-wechseln: 8px;
+  --bw-weg-gehen:    16px;
+  --bw-weg-liste:    6px;
+}
+
+:root[data-bw-reduce="1"] { --bw-red: 1; }
+
+/* Notbehelf, falls bewegung.js nicht geladen ist: die Systemvorliebe wirkt
+   dann wenigstens auf die Zahl. Der Umschalter braucht JS. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]):not([data-bw-reduce="0"]) { --bw-red: 1; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 2 · DIE VIER ROLLEN
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── 2.1 ÖFFNEN — 320 ms · springStandard ──────────────────────────────────
+ * Zweck: Woher kommt dieses Dokument? Der Weg beantwortet die Frage, ein
+ * Schnitt nicht.
+ * Es bewegen sich: Ort (links/oben), Größe (Breite/Höhe — NICHT scale, sonst
+ * verzerrt der Radius und das Coverbild), Eckradius 14 → 0 px, Deckkraft des
+ * Inhalts hinter dem Blatt 1 → 0,55.
+ * Die große Fassung (Bibliothekskarte → Editor) rechnet bewegung.js aus den
+ * gemessenen Rechtecken; die Klasse hier ist die kleine Fassung für Blätter
+ * und Detailansichten, die keinen Ursprung auf dem Schirm haben. */
+.bw-oeffnen-blatt {
+  --bw-dur: var(--bw-d-oeffnen);
+  animation: bw-blatt-auf var(--bw-dur) var(--bw-e-standard) both;
+  transform-origin: 50% 100%;
+}
+@keyframes bw-blatt-auf {
+  from { opacity: 0; transform: translateY(14px) scale(.985); }
+  to   { opacity: 1; transform: none; }
+}
+/* Reduce-Pfad ÖFFNEN: kein Weg, keine Größenänderung. 160 ms Kreuzblende.
+   Die Herkunft wird trotzdem gesagt — bewegung.js legt vorher 80 ms lang
+   einen 2-pt-Ink-Ring auf die Ursprungskarte (.bw-ursprung-markiert). */
+:root[data-bw-reduce="1"] .bw-oeffnen-blatt {
+  --bw-dur: var(--bw-d-blende);
+  animation-name: bw-nur-blende;
+  animation-timing-function: var(--bw-e-io);
+}
+/* Der Ring liegt als eigene Fläche über der Karte, nicht als deren
+   box-shadow. Grund: die Ursprungskarte hat fast immer schon einen Schatten
+   (--sh-cover bei Notizbüchern), und eine Regel im Schirm überschriebe eine
+   Regel von hier — der Ring bliebe unsichtbar. Ein Pseudoelement kann
+   niemand versehentlich überschreiben, weil es ein anderer Gegenstand ist. */
+.bw-ursprung-markiert { position: relative; }
+.bw-ursprung-markiert::after {
+  content: "";
+  --bw-dur: var(--bw-d-blende-kurz);
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 2px var(--accent);
+  pointer-events: none;
+  z-index: 2;
+  animation: bw-nur-blende var(--bw-dur) var(--bw-e-io) both;
+}
+
+/* ── 2.2 WECHSELN — 180 ms hinaus, 180 ms herein, 60 ms Überlappung ────────
+ * Zweck: Richtung. Man soll wissen, ob man vor oder zurück gegangen ist.
+ * Es bewegen sich: Deckkraft 1 → 0 / 0 → 1 und ein Versatz von 8 pt in
+ * Laufrichtung. Kein Maßstab, kein Schatten, keine Blende — eine Ansicht ist
+ * kein Gegenstand, der auffliegt.
+ *   --bw-richtung:  1 = vorwärts (neu kommt von rechts), -1 = zurück
+ *   --bw-achse:     x (Module nebeneinander) oder y (Ansichten übereinander) */
+.bw-wechseln-raus,
+.bw-wechseln-rein { --bw-richtung: 1; }
+
+.bw-wechseln-raus {
+  --bw-dur: var(--bw-d-wechseln);
+  animation: bw-wechseln-raus var(--bw-dur) var(--bw-e-quick) both;
+}
+.bw-wechseln-rein {
+  --bw-dur: var(--bw-d-wechseln);
+  animation: bw-wechseln-rein var(--bw-dur) var(--bw-e-quick) both;
+  animation-delay: calc(120ms * var(--bw-tempo));   /* 180 − 60 Überlappung */
+}
+@keyframes bw-wechseln-raus {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateX(calc(var(--bw-richtung) * var(--bw-weg-wechseln) * -1)); }
+}
+@keyframes bw-wechseln-rein {
+  from { opacity: 0; transform: translateX(calc(var(--bw-richtung) * var(--bw-weg-wechseln))); }
+  to   { opacity: 1; transform: none; }
+}
+/* Reduce-Pfad WECHSELN: 0 pt Versatz, keine Überlappung, harte Kreuzblende
+   in 120 ms. Die Richtung sagt dann die Navigationsleiste (Zurück-Pfeil,
+   Titelwechsel) — sie hat sie ohnehin immer gesagt. */
+:root[data-bw-reduce="1"] .bw-wechseln-raus {
+  --bw-dur: var(--bw-d-blende-kurz);
+  animation-name: bw-nur-aus; animation-timing-function: var(--bw-e-io);
+}
+:root[data-bw-reduce="1"] .bw-wechseln-rein {
+  --bw-dur: var(--bw-d-blende-kurz);
+  animation-name: bw-nur-blende; animation-timing-function: var(--bw-e-io);
+  animation-delay: 0ms;
+}
+
+@keyframes bw-nur-blende { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bw-nur-aus    { from { opacity: 1; } to { opacity: 0; } }
+
+/* ── 2.3 ÜBERGEBEN — 780 ms in drei Sätzen · Velums Signatur ───────────────
+ *   Satz 1  Verdichten     0 – 180 ms   springQuick
+ *   Satz 2  Flug         120 – 600 ms   springBouncy (480 ms)
+ *           Faden       120 – 540 ms   --t-hand (420 ms), --ease-spring
+ *   Satz 3  Ankunft     600 – 780 ms   springQuick
+ * Der Faden ist 60 ms vor der Karte am Ziel. Das ist Absicht: erst liegt der
+ * Weg, dann kommt, was ihn geht. Umgekehrt sähe der Faden aus wie eine Spur.
+ * Der Ablauf steht in bewegung.js §3.1; hier die Flächen, die er braucht. */
+
+.bw-flug {
+  position: absolute; z-index: 60;
+  top: 0; left: 0;
+  width: var(--bw-flug-w, 176px);
+  height: var(--bw-flug-h, 96px);
+  padding: 10px 12px;
+  border-radius: 11px;
+  background: var(--paper);
+  box-shadow: var(--sh-float);
+  overflow: hidden;
+  pointer-events: none;
+  transform-origin: 0 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.bw-flug__kopf { display: flex; align-items: center; gap: 6px; color: var(--ink-3); }
+.bw-flug__text {
+  font: 400 13px/16px var(--sans); color: var(--ink-1);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Satz 1: die Auswahl verdichtet sich. Der Absatz behält seine Höhe (sonst
+   springt der Text darunter), verliert aber Zeichnung — was gleich fliegt,
+   ist nicht mehr hier. */
+.bw-verdichtet {
+  --bw-dur: var(--bw-d-verdichten);
+  transition: opacity var(--bw-dur) var(--bw-e-io);
+  opacity: .32;
+}
+:root[data-bw-reduce="1"] .bw-verdichtet { --bw-dur: var(--bw-d-blende-kurz); }
+
+/* Satz 3: das Ziel hat etwas bekommen. Bleibt stehen — es ist ein Zustand,
+   keine Bewegung. */
+.bw-ziel-aktiv {
+  --bw-dur: var(--bw-d-ankunft);
+  transition: background-color var(--bw-dur) var(--bw-e-io);
+  background: var(--accent-soft);
+}
+
+/* Reduce-Pfad ÜBERGEBEN: kein Flug, kein Verdichten, keine gekrümmte Bahn.
+   Der Faden erscheint auf voller Länge (Deckkraft 0 → 1 in 120 ms), 120 ms
+   später zählt das Ziel hoch und bekommt seinen Ring. Die Reihenfolge
+   Ursprung → Ziel bleibt also erhalten, nur der Weg fällt weg. Gesamt 360 ms.
+   Den Ablauf schaltet bewegung.js; hier steht nur die Blende des Fadens. */
+.bw-faden-blende {
+  --bw-dur: var(--bw-d-blende-kurz);
+  animation: bw-nur-blende var(--bw-dur) var(--bw-e-io) both;
+}
+
+/* ── 2.4 BESTÄTIGEN — 180 ms Haken, 1000 ms Verweildauer, 240 + 260 ms ─────
+ * Zweck: Der Haken zeichnet sich, weil das Zeichnen die Handlung wiederholt,
+ * die man gerade gemacht hat. Die Verweildauer von 1000 ms IST das
+ * Rückgängig: die Zeile ist noch da, man kann sie zurücknehmen, ohne dass ein
+ * Banner das anbieten muss.
+ * Es bewegen sich: Weglänge des Hakens (stroke-dashoffset 15 → 0),
+ * Maßstab der Kreisfüllung 0,72 → 1, Ringstärke 1,5 → 0 pt. */
+
+.bw-check {
+  width: 22px; height: 22px; border-radius: 50%;
+  flex: none; position: relative; display: inline-block;
+  box-shadow: inset 0 0 0 1.5px var(--line-2);
+  background: transparent;
+  /* Der Ring verschwindet in derselben Zeit, in der die Fläche kommt */
+  transition: box-shadow var(--bw-d-bestaetigen) var(--bw-e-io);
+}
+.bw-check svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+.bw-check__scheibe {
+  fill: var(--accent);
+  transform-origin: 11px 11px;
+  transform: scale(0);
+  opacity: 0;
+}
+.bw-check__haken {
+  fill: none; stroke: var(--accent-on); stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 15; stroke-dashoffset: 15;
+}
+.bw-check.is-an { box-shadow: none; }
+.bw-check.is-an .bw-check__scheibe {
+  --bw-dur: var(--bw-d-bestaetigen);
+  animation: bw-scheibe var(--bw-dur) var(--bw-e-quick) both;
+}
+.bw-check.is-an .bw-check__haken {
+  --bw-dur: var(--bw-d-bestaetigen);
+  animation: bw-haken var(--bw-dur) var(--bw-e-quick) both;
+  animation-delay: calc(60ms * var(--bw-tempo));
+}
+@keyframes bw-scheibe { from { transform: scale(.72); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes bw-haken   { from { stroke-dashoffset: 15; } to { stroke-dashoffset: 0; } }
+
+/* Zeile verabschiedet sich · Nachbarn schließen die Lücke */
+.bw-zeile-geht {
+  --bw-dur: var(--bw-d-gehen);
+  animation: bw-zeile-geht var(--bw-dur) var(--bw-e-quick) both;
+}
+@keyframes bw-zeile-geht {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateX(var(--bw-weg-gehen)); }
+}
+.bw-luecke {
+  --bw-dur: var(--bw-d-luecke);
+  overflow: hidden;
+  /* system.css gibt .row eine min-height von 52 pt. Eine Höhe von 0 kommt
+     dagegen nicht an — ohne diese Zeile bliebe nach jeder erledigten Aufgabe
+     eine 52 pt hohe leere Zeile stehen. */
+  min-height: 0;
+  transition: height var(--bw-dur) var(--bw-e-quick),
+              margin var(--bw-dur) var(--bw-e-quick),
+              padding var(--bw-dur) var(--bw-e-quick),
+              opacity calc(var(--bw-dur) / 2) var(--bw-e-io);
+}
+/* Innenabstand und Rand müssen mit, sonst bleibt eine Zeile von 16 pt stehen,
+   die niemand mehr sieht, aber jeder Nachbar spürt. */
+.bw-luecke.is-zu {
+  height: 0 !important;
+  margin-top: 0; margin-bottom: 0;
+  padding-top: 0; padding-bottom: 0;
+  opacity: 0;
+}
+/* Die Trennlinie der Folgezeile (system.css .row + .row::before) darf nicht
+   auf einer Zeile stehen bleiben, die gerade verschwindet. */
+.bw-luecke.is-zu::before { opacity: 0; }
+
+/* Reduce-Pfad BESTÄTIGEN: Der Haken wird nicht gezeichnet, er ist da
+   (Deckkraft 0 → 1 in 120 ms). Die Verweildauer von 1000 ms bleibt
+   unverändert — sie ist Bedienlogik, nicht Bewegung, und ohne sie verlöre
+   man das Rückgängig. Die Zeile blendet aus (120 ms), die Lücke schließt
+   ohne Weg: bewegung.js entfernt die Zeile und die Liste steht neu. */
+:root[data-bw-reduce="1"] .bw-check.is-an .bw-check__scheibe {
+  --bw-dur: var(--bw-d-blende-kurz);
+  animation-name: bw-nur-blende; animation-timing-function: var(--bw-e-io);
+  transform: scale(1);
+}
+:root[data-bw-reduce="1"] .bw-check.is-an .bw-check__haken {
+  --bw-dur: var(--bw-d-blende-kurz);
+  animation-name: bw-nur-blende; animation-timing-function: var(--bw-e-io);
+  animation-delay: 0ms;
+  stroke-dashoffset: 0;
+}
+:root[data-bw-reduce="1"] .bw-zeile-geht {
+  --bw-dur: var(--bw-d-blende-kurz);
+  animation-name: bw-nur-aus; animation-timing-function: var(--bw-e-io);
+}
+:root[data-bw-reduce="1"] .bw-luecke { --bw-dur: 0ms; transition: none; }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 3 · DIE FÜNF MOMENTE — was CSS beisteuert
+ * Der Ablauf steht in bewegung.js. Hier stehen die Flächen und Zustände,
+ * die er ein- und ausschaltet.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── 3.1 Der Zähler, der hochzählt (Übergabe, Satz 3) ─────────────────────
+ * Die alte Ziffer geht nach oben hinaus, die neue kommt von unten herein —
+ * dieselbe Richtung, in der die Zahl wächst. */
+.bw-zaehler { position: relative; display: inline-block; overflow: hidden; vertical-align: bottom; }
+.bw-zaehler__wert { display: block; }
+.bw-zaehler__wert--alt {
+  --bw-dur: var(--bw-d-ankunft);
+  position: absolute; inset: 0;
+  animation: bw-ziffer-raus var(--bw-dur) var(--bw-e-quick) both;
+}
+.bw-zaehler__wert--neu {
+  --bw-dur: var(--bw-d-ankunft);
+  animation: bw-ziffer-rein var(--bw-dur) var(--bw-e-quick) both;
+}
+@keyframes bw-ziffer-raus { from { transform: none; opacity: 1; } to { transform: translateY(-100%); opacity: 0; } }
+@keyframes bw-ziffer-rein { from { transform: translateY(100%); opacity: 0; } to { transform: none; opacity: 1; } }
+/* Reduce: keine Rolle, reine Kreuzblende an derselben Stelle. */
+:root[data-bw-reduce="1"] .bw-zaehler__wert--alt {
+  --bw-dur: var(--bw-d-blende-kurz); animation-name: bw-nur-aus; animation-timing-function: var(--bw-e-io);
+}
+:root[data-bw-reduce="1"] .bw-zaehler__wert--neu {
+  --bw-dur: var(--bw-d-blende-kurz); animation-name: bw-nur-blende; animation-timing-function: var(--bw-e-io);
+}
+
+/* ── 3.2 Der Flip mit echter Perspektive (Karte bewerten) ─────────────────
+ * 1200 px Perspektive am Behälter, nicht an der Karte — sonst dreht jede
+ * Karte um ihren eigenen Fluchtpunkt und die Reihe wirkt schief.
+ * springStandard schwingt um 0,8 % über: die Karte dreht 181,4° und kommt
+ * zurück. Genau das macht sie zum Gegenstand statt zur Textur. */
+.bw-flip { perspective: 1200px; }
+.bw-flip__innen {
+  --bw-dur: var(--bw-d-oeffnen);
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform var(--bw-dur) var(--bw-e-standard);
+  height: 100%;
+}
+.bw-flip.is-gedreht .bw-flip__innen { transform: rotateY(180deg); }
+.bw-flip__seite {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex; flex-direction: column;
+}
+.bw-flip__seite--hinten { transform: rotateY(180deg); }
+/* Reduce: keine Drehung, keine Perspektive. Die Rückseite blendet an
+   derselben Stelle über die Vorderseite (160 ms). Dass es dieselbe Karte
+   ist, sagt der Ort — sie bewegt sich nicht. */
+:root[data-bw-reduce="1"] .bw-flip { perspective: none; }
+:root[data-bw-reduce="1"] .bw-flip__innen {
+  --bw-dur: 0ms; transition: none; transform: none !important; transform-style: flat;
+}
+:root[data-bw-reduce="1"] .bw-flip__seite {
+  --bw-dur: var(--bw-d-blende);
+  backface-visibility: visible; -webkit-backface-visibility: visible;
+  transition: opacity var(--bw-dur) var(--bw-e-io);
+}
+:root[data-bw-reduce="1"] .bw-flip__seite--hinten { transform: none; opacity: 0; }
+:root[data-bw-reduce="1"] .bw-flip.is-gedreht .bw-flip__seite--vorn { opacity: 0; }
+:root[data-bw-reduce="1"] .bw-flip.is-gedreht .bw-flip__seite--hinten { opacity: 1; }
+
+/* Wisch-Rückmeldung. Während der Finger liegt: keine Übergangszeit, die Karte
+   folgt eins zu eins. Beim Loslassen setzt bewegung.js die Dauer aus der
+   Wurfgeschwindigkeit (260–480 ms) — siehe Kopf der Datei, Punkt 2. */
+/* Kein Textmarkieren beim Ziehen: eine Karte, die man wischt, ist ein
+   Gegenstand, kein Absatz. */
+.bw-wisch {
+  touch-action: pan-y; will-change: transform;
+  user-select: none; -webkit-user-select: none;
+}
+.bw-wisch.is-gefasst { transition: none; }
+.bw-wisch.is-los {
+  --bw-dur: var(--bw-d-flug);
+  /* Die Deckkraft geht in gut der halben Zeit — die Karte fliegt an der
+     Intervall-Reihe vorbei, und die ist gerade das, was man ansehen soll. */
+  transition: transform var(--bw-dur) var(--bw-e-quick),
+              opacity calc(var(--bw-dur) * .55) var(--bw-e-io);
+}
+/* Reduce: kein Wischen. bewegung.js hängt die Zeiger-Ereignisse gar nicht
+   erst ein — bewertet wird über die vier Knöpfe, die ohnehin da sind. */
+
+/* Die nächste Karte kommt nach */
+.bw-karte-nach {
+  --bw-dur: var(--bw-d-oeffnen);
+  animation: bw-karte-nach var(--bw-dur) var(--bw-e-standard) both;
+}
+@keyframes bw-karte-nach {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+:root[data-bw-reduce="1"] .bw-karte-nach {
+  --bw-dur: var(--bw-d-blende); animation-name: bw-nur-blende; animation-timing-function: var(--bw-e-io);
+}
+
+/* Die Intervall-Reihe (1 d · 3 d · 8 d · 21 d) ist ein Faden mit Punkten —
+   §3 der DNA. Der Punkt, auf den die Bewertung führen würde, bekommt seinen
+   Ring, das Stück davor wird aktiv. Beides sind Zustände, keine Zierde. */
+.bw-intervall .dot,
+.bw-intervall .thread {
+  --bw-dur: var(--bw-d-wechseln);
+  transition: box-shadow var(--bw-dur) var(--bw-e-io),
+              background-color var(--bw-dur) var(--bw-e-io),
+              stroke var(--bw-dur) var(--bw-e-io);
+}
+
+/* ── 3.3 Hero: Bibliothekskarte → Editor (Dokument öffnen) ────────────────
+ * Der Zwilling ist eine Kopie der Karte, die über allem liegt und in einem
+ * Zug Ort, Größe und Radius wechselt. Breite/Höhe statt scale, damit das
+ * Coverbild nicht gestaucht wird und der Radius nicht mitwächst. */
+.bw-zwilling {
+  position: fixed; z-index: 300;
+  margin: 0; overflow: hidden;
+  pointer-events: none;
+  box-shadow: var(--sh-cover);
+  background: var(--paper);
+  will-change: left, top, width, height;
+}
+.bw-zwilling img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Was zurückbleibt, tritt zurück: nur Deckkraft, kein Maßstab. Eine zweite
+   gleichzeitige Bewegung würde mit der ersten um die Aufmerksamkeit ringen. */
+.bw-huelle-zurueck {
+  --bw-dur: var(--bw-d-oeffnen);
+  transition: opacity var(--bw-dur) var(--bw-e-io);
+  opacity: .55;
+}
+:root[data-bw-reduce="1"] .bw-huelle-zurueck { --bw-dur: var(--bw-d-blende); }
+
+/* ── 3.4 Herkunft zeigen: die Karte weicht, die Quelle kommt ──────────────
+ * D2 aus der Wiederlesung: Der Rückweg ist eine Bewegung, kein Sprung. Die
+ * Karte weicht nach links, der Quellabsatz kommt von rechts, der Faden
+ * dazwischen bleibt gespannt (MOCK.thread führt ihn selbst nach) — und der
+ * Sitzungszähler bewegt sich NICHT. Das ist der ganze Unterschied zu
+ * RemNotes „im Dokument zeigen", das die Sitzung verlässt. */
+.bw-weicht {
+  --bw-dur: var(--bw-d-oeffnen);
+  transition: transform var(--bw-dur) var(--bw-e-standard),
+              opacity var(--bw-dur) var(--bw-e-io);
+}
+.bw-weicht.is-weg { transform: translateX(-38%); opacity: .5; }
+
+.bw-quelle {
+  --bw-dur: var(--bw-d-oeffnen);
+  transition: transform var(--bw-dur) var(--bw-e-standard),
+              opacity var(--bw-dur) var(--bw-e-io);
+  transform: translateX(calc(100% + 24px));
+  opacity: 0;
+}
+.bw-quelle.is-da { transform: none; opacity: 1; }
+/* Reduce: nichts weicht, nichts kommt herein. Die Quelle blendet an ihrem
+   Platz auf (160 ms), die Karte bleibt stehen und wird nur ruhiger (0,5).
+   Der Faden erscheint auf voller Länge. Man sieht dieselbe Beziehung,
+   nur ohne Weg. */
+:root[data-bw-reduce="1"] .bw-weicht { --bw-dur: var(--bw-d-blende); }
+:root[data-bw-reduce="1"] .bw-weicht.is-weg { transform: none; }
+:root[data-bw-reduce="1"] .bw-quelle { --bw-dur: var(--bw-d-blende); transform: none; }
+
+/* Der markierte Satz in der Quelle — er ist der Grund, warum es die Karte
+   gibt. Auswahl ist eine der drei erlaubten Rollen des Ink-Akzents. */
+.bw-markiert {
+  background: var(--accent-soft);
+  box-shadow: inset 2.5px 0 0 var(--accent);
+  padding-left: 10px;
+  border-radius: 0 4px 4px 0;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 4 · KLEINBEWEGUNGEN
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── 4.1 Zeigen und Drücken ───────────────────────────────────────────────
+ * Zeigen: 180 ms, nur Fläche. Kein Anheben, kein Vergrößern von Listenzeilen
+ * — auf einer Liste mit 20 Zeilen wäre das ein wanderndes Beben.
+ * Drücken: 120 ms, Maßstab 0,98 — die einzige Stelle, an der etwas
+ * schrumpft, und sie hat einen Grund: der Finger drückt es hinein.
+ * Karten dürfen beim Zeigen 1,2 % wachsen, weil eine Karte ein Gegenstand
+ * ist und einzeln steht. */
+.bw-tap {
+  --bw-dur: var(--bw-d-hover);
+  transition: background-color var(--bw-dur) var(--bw-e-io),
+              box-shadow var(--bw-dur) var(--bw-e-io),
+              transform var(--bw-d-press) var(--bw-e-quick),
+              opacity var(--bw-dur) var(--bw-e-io);
+}
+.bw-tap:active { --bw-dur: var(--bw-d-press); transform: scale(.98); }
+.bw-tap--karte { transform-origin: 50% 50%; }
+.bw-tap--karte:hover { transform: scale(1.012); box-shadow: var(--sh-float); }
+.bw-tap--karte:active { transform: scale(.985); }
+/* Reduce: Fläche und Schatten bleiben — sie sagen „hier bin ich" ohne Weg.
+   Der Maßstab entfällt vollständig. */
+:root[data-bw-reduce="1"] .bw-tap:active,
+:root[data-bw-reduce="1"] .bw-tap--karte:hover,
+:root[data-bw-reduce="1"] .bw-tap--karte:active { transform: none; }
+:root[data-bw-reduce="1"] .bw-tap { --bw-dur: var(--bw-d-blende-kurz); }
+
+/* ── 4.2 Laden: Skelett statt Spinner ─────────────────────────────────────
+ * Ein Skelett hat die Form dessen, was kommt: man sieht vorher, wie viel es
+ * ist. Ein Spinner sagt nur „warte".
+ * Der Puls ist ein Atmen der Deckkraft (0,55 ↔ 1 in 1200 ms), KEIN wandernder
+ * Glanz. Ein Glanz, der von links nach rechts läuft, behauptet einen
+ * Fortschritt, den niemand kennt. */
+.bw-skelett {
+  --bw-dur: calc(1200ms * var(--bw-tempo));
+  border-radius: 6px;
+  background: var(--fill-2);
+  animation: bw-atmen var(--bw-dur) var(--bw-e-io) infinite alternate;
+}
+@keyframes bw-atmen { from { opacity: .55; } to { opacity: 1; } }
+/* Reduce: kein Puls. Das Skelett steht still bei 0,72 — die Form allein sagt
+   schon, was kommt, und daneben steht ein Wort („Wird geladen"). */
+:root[data-bw-reduce="1"] .bw-skelett { --bw-dur: 0ms; animation: none; opacity: .72; }
+
+/* Der Behälter dazu. Skelett und Inhalt liegen beide im Markup; getauscht
+   wird über eine Klasse, damit kein Nachladen nötig ist.
+     <div data-bw-laden class="is-laden">
+       <div class="bw-laden__skelett"> … </div>
+       <div class="bw-laden__inhalt">  … </div>
+     </div> */
+[data-bw-laden] > .bw-laden__skelett { display: none; }
+[data-bw-laden].is-laden > .bw-laden__skelett { display: block; }
+[data-bw-laden].is-laden > .bw-laden__inhalt { display: none; }
+
+/* ── 4.3 Listen erscheinen gestaffelt ─────────────────────────────────────
+ * 36 ms Schritt, höchstens 12 Einträge weit — danach erscheinen alle
+ * gemeinsam. Bei 20 Zeilen wäre der letzte sonst eine halbe Sekunde zu spät,
+ * und eine Liste, die tröpfelt, kann man nicht überfliegen.
+ * Der Weg ist 6 pt nach oben — gerade genug, um „ist neu" zu sagen. */
+.bw-staffel > * {
+  --bw-dur: var(--bw-d-erscheinen);
+  animation: bw-erscheinen var(--bw-dur) var(--bw-e-quick) both;
+  animation-delay: calc(var(--bw-i, 0) * var(--bw-d-staffel));
+}
+@keyframes bw-erscheinen {
+  from { opacity: 0; transform: translateY(var(--bw-weg-liste)); }
+  to   { opacity: 1; transform: none; }
+}
+/* Reduce: kein Weg und keine Staffelung. Alle Einträge blenden gemeinsam in
+   120 ms auf. Gestaffeltes Erscheinen ist gerade die Bewegung, die bei
+   vestibulärer Empfindlichkeit am unangenehmsten ist — viele kleine Wege
+   gleichzeitig im Blickfeld. */
+:root[data-bw-reduce="1"] .bw-staffel > * {
+  --bw-dur: var(--bw-d-blende-kurz);
+  animation-name: bw-nur-blende;
+  animation-timing-function: var(--bw-e-io);
+  animation-delay: 0ms;
+}
+
+/* ── 4.4 Der Streak-Punkt füllt sich ──────────────────────────────────────
+ * Der Streak ist ein Faden aus Punkten (DNA §3): gefüllt = erledigter Tag.
+ * Beim Füllen wächst die Scheibe im Punkt von 0 auf 1 — springBouncy, weil
+ * ein Tag, den man geschafft hat, einmal aufschlagen darf. Gleichzeitig
+ * zeichnet sich das Fadenstück vom Vortag her (180 ms): der Punkt allein
+ * wäre eine Zahl, der Faden macht daraus eine Folge. */
+.bw-streak__tag { position: relative; }
+.bw-streak__tag .bw-streak__scheibe {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: var(--ink-2);
+  transform: scale(0);
+}
+.bw-streak__tag.is-voll .bw-streak__scheibe {
+  --bw-dur: calc(300ms * var(--bw-tempo));
+  animation: bw-scheibe-auf var(--bw-dur) var(--bw-e-bouncy) both;
+}
+@keyframes bw-scheibe-auf { from { transform: scale(0); } to { transform: scale(1); } }
+/* Reduce: die Scheibe ist einfach da (120 ms Deckkraft), das Fadenstück auch. */
+:root[data-bw-reduce="1"] .bw-streak__tag.is-voll .bw-streak__scheibe {
+  --bw-dur: var(--bw-d-blende-kurz);
+  animation-name: bw-nur-blende; animation-timing-function: var(--bw-e-io);
+  transform: scale(1);
+}
+
+/* ── 4.5 Die Wellenform beim Aufnehmen ────────────────────────────────────
+ * Die einzige Dauerbewegung im ganzen System, und sie hat einen harten
+ * Grund: sie sagt „das Mikrofon hört gerade", und das muss ununterbrochen
+ * wahr bleiben. Ein stehendes Bild könnte das nicht.
+ * 24 Balken, Höhe aus --bw-a (Grundprofil), Maßstab 0,35 ↔ 1 in 900 ms,
+ * je Balken um 70 ms versetzt. */
+.bw-welle { display: flex; align-items: center; gap: 3px; height: 32px; }
+.bw-welle__balken {
+  --bw-a: .5;
+  flex: 1 1 0; min-width: 2px;
+  height: calc(32px * var(--bw-a));
+  border-radius: 2px;
+  background: var(--ink-2);
+  transform-origin: 50% 50%;
+  /* Ruhezustand ist das Grundprofil, nicht der kleinste Ausschlag — sonst
+     sähe eine stehende Wellenform wie eine gestrichelte Linie aus, und das
+     ist der Zustand, den Reduce Motion dauerhaft zeigt. */
+  transform: scaleY(1);
+}
+.bw-welle.is-an .bw-welle__balken {
+  --bw-dur: calc(900ms * var(--bw-tempo));
+  animation: bw-welle var(--bw-dur) var(--bw-e-io) infinite alternate;
+  animation-delay: calc(var(--bw-i, 0) * -70ms * var(--bw-tempo));
+}
+@keyframes bw-welle { from { transform: scaleY(.35); } to { transform: scaleY(1); } }
+/* Reduce: die Balken stehen auf ihrem Grundprofil still. Dass aufgenommen
+   wird, sagt dann die laufende Zeit daneben (00:07, 00:08 …) — eine Ziffer,
+   die sich ändert, ist keine Bewegung im Blickfeld, aber derselbe Beweis. */
+:root[data-bw-reduce="1"] .bw-welle.is-an .bw-welle__balken {
+  --bw-dur: 0ms; animation: none; transform: scaleY(1);
+}
+
+/* ── 4.6 Der Faden im Ruhezustand ─────────────────────────────────────────
+ * MOCK.thread(...).draw() benutzt --t-hand und --ease-spring aus system.css.
+ * bewegung.js setzt --t-hand auf dem Faden-Knoten neu, sobald der
+ * Verlangsamer greift — deshalb steht hier nichts, was das überschreiben
+ * würde. Nur der Zustandswechsel ruhig ↔ aktiv bekommt eine Zeit. */
+.thread.bw-weich { --bw-dur: var(--bw-d-wechseln); transition: stroke var(--bw-dur) var(--bw-e-io); }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 5 · WAS ABSICHTLICH NICHT BEWEGT WIRD
+ *
+ * · Der heutige Tag pulsiert nicht. Velums März-Spec §8 sieht für den
+ *   Kalenderpunkt „scale 1.0 → 1.05, 2 s, repeat" vor. Eine Dauerbewegung,
+ *   die keinen Zustandswechsel meldet, ist Zierrat; sie zieht in jeder
+ *   Sekunde Aufmerksamkeit ab, in der man liest. Heute ist heute — das sagt
+ *   der Ink-Ring (.dot--ring), ohne sich zu rühren.
+ * · Keine Parallaxe, kein Zurückweichen der Liste beim Öffnen, kein
+ *   Weichzeichner als Übergang. Alle drei bewegen etwas, das gar nicht
+ *   gemeint ist.
+ * · Der Tab-Wechsel bekommt keine Bewegung des Inhalts, nur die Kreuzblende
+ *   aus 2.2. Tabs sind Orte, keine Wege — wer zwischen zwei Orten hin und her
+ *   schaltet, will nicht jedes Mal reisen.
+ * · Zahlen, die sich beim Laden hochzählen (Kennzahlen auf „Heute"), bleiben
+ *   stehen. Der Zähler rollt genau dort, wo er sich WEGEN einer Handlung
+ *   ändert (Übergabe) — sonst behauptet die Bewegung eine Ursache, die
+ *   es nicht gab.
+ * · Trennlinien und Ränder animieren nie. Sie sind keine Fäden, und was kein
+ *   Faden ist, wächst auch nicht.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 6 · DIE NOTBREMSE GEGEN DIE NOTBREMSE
+ *
+ * system.css §8 setzt unter der Systemvorliebe `* { animation-duration: 1ms
+ * !important; transition-duration: 1ms !important }`. Für fremde Bewegungen
+ * ist das richtig. Für die hier gebauten Reduce-Pfade ist es zu viel: eine
+ * Kreuzblende von 120 ms ist kein Weg im Blickfeld, sondern ein weicher
+ * Wechsel — und bei 1 ms wird daraus ein Schnitt, der härter ist als nötig.
+ *
+ * Die Regel unten gilt NUR für Elemente dieser Datei (`bw-` im Klassennamen
+ * oder [data-bw]) und stellt genau die Dauer wieder her, die im Reduce-Zweig
+ * ohnehin schon steht: --bw-dur. Höhere Spezifität als `*`, und
+ * bewegung.css wird nach system.css geladen — beides trägt.
+ * Wer --bw-dur nicht setzt, bleibt bei 1 ms. Das ist der Grund für die Regel
+ * „jede animierende Klasse in dieser Datei setzt --bw-dur".
+ * ════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  [class*="bw-"],
+  [data-bw] {
+    animation-duration: var(--bw-dur, 1ms) !important;
+    transition-duration: var(--bw-dur, 1ms) !important;
+  }
+}

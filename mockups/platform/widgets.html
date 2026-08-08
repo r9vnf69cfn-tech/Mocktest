@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Widgets — Velum im System</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+ * PLATTFORM-KERN — steht inline in jeder Seite dieses Ordners.
+ *
+ * system.css und mock.js gehören in dieser Runde einem anderen Agenten; hier
+ * wird an beiden nichts geändert. Alles Eigene steht deshalb inline. Tokens,
+ * Typo-Skala und Farbdisziplin kommen unverändert aus system.css. Neu ist nur,
+ * was iOS selbst mitbringt und wofür system.css keinen Baustein hat: ein
+ * Systemschirm ohne App-Rahmen, die Tapete, die Dynamic Island, das
+ * Widget-Raster, der Mitteilungsstapel.
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+/* Der Systemschirm. Nicht .screen aus system.css §3 — der trägt App-Chrome
+   (Statusleiste als Kulisse, Flex-Spalte) und kennt weder Tapete noch Island. */
+.os { position:relative; overflow:hidden; flex:none; background:#0B0C0E;
+      box-shadow: var(--sh-float), 0 0 0 1px var(--line); }
+.os--iphone { width:393px; height:852px; border-radius:44px; }
+.os--ipad   { width:1194px; height:834px; border-radius:22px; }
+.os__wall  { position:absolute; inset:0; width:100%; height:100%;
+             object-fit:cover; object-position:50% 44%; }
+.os__scrim { position:absolute; inset:0; }
+
+/* Auf der Tapete spricht iOS weiß. Das ist Systemfarbe, nicht Velum-Ink.
+   Gerechnet gegen den abgedunkelten Untergrund — Werte im Steckbrief. */
+.on-wall   { color:#FFFFFF; }
+.on-wall-2 { color:rgba(255,255,255,.76); }
+
+/* iOS-Statusleiste des Systemschirms */
+.osbar { position:absolute; left:0; right:0; top:0; height:59px; z-index:6;
+         display:flex; align-items:center; justify-content:space-between;
+         padding:0 30px; color:#fff; }
+.osbar__t { font:600 15px/20px var(--sans); font-variant-numeric:tabular-nums; }
+.osbar__r { display:flex; align-items:center; gap:6px; }
+.osbar__bat { width:24px; height:12px; border:1.2px solid rgba(255,255,255,.6);
+              border-radius:3.5px; position:relative; }
+.osbar__bat::after { content:""; position:absolute; inset:1.6px; right:5px;
+                     background:#fff; border-radius:1.5px; }
+.osbar__bat::before { content:""; position:absolute; right:-3px; top:3.6px;
+                      width:1.6px; height:4.8px; border-radius:0 1px 1px 0;
+                      background:rgba(255,255,255,.5); }
+.osbar__sig { display:flex; align-items:flex-end; gap:1.6px; height:11px; }
+.osbar__sig i { width:3px; background:#fff; border-radius:1px; display:block; }
+
+/* Dynamic Island — Ruhezustand. Stadionform, Radius = halbe Höhe. */
+.island { position:absolute; left:50%; transform:translateX(-50%); top:11px;
+          width:126px; height:37.33px; border-radius:999px; background:#000; z-index:7; }
+
+/* Home-Indikator des Systemschirms */
+.oshome { position:absolute; left:50%; bottom:8px; transform:translateX(-50%);
+          width:140px; height:5px; border-radius:3px; background:rgba(255,255,255,.85); z-index:8; }
+
+/* ── Maßband für die Rasterzeichnung ──────────────────────────────────── */
+.mass { position:absolute; z-index:9; pointer-events:none; }
+.mass__box { position:absolute; border:1.5px dashed rgba(255,255,255,.62); border-radius:21.5px; }
+.mass__tag { position:absolute; font:600 13px/16px var(--sans);
+             font-variant-numeric:tabular-nums; color:#fff;
+             background:rgba(0,0,0,.62); padding:2px 7px; border-radius:6px; white-space:nowrap; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * SEITENEIGENES — Widget-Raster und die drei Widget-Größen
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+/* Radius aller Home-Screen-Widgets. GESCHÄTZT — siehe Kommentarblock. */
+.wdg { position:absolute; border-radius:21.5px; overflow:hidden;
+       background:var(--paper); box-shadow:0 1px 3px rgba(0,0,0,.24), 0 8px 22px rgba(0,0,0,.18);
+       padding:14px 15px; display:flex; flex-direction:column; }
+.wdg--s { width:158px; height:158px; }
+.wdg--m { width:338px; height:158px; }
+.wdg--l { width:338px; height:354px; }
+
+.wdg__eye { display:flex; align-items:center; gap:7px; color:var(--ink-3);
+            font:600 13px/16px var(--sans); }
+.wdg__eye .sp { flex:1 1 auto; }
+
+/* Punkt für einen Tag. Tage sind keine Modulobjekte — deshalb Ink, nicht bunt
+   (dieselbe Regel wie für die Bereichs-Dots in tasks.html). */
+.dot--tag  { background:var(--ink-2); }
+.dot--tag2 { background:var(--ink-4); }
+
+/* Der Faden im Widget: die Fadenreihe aus system.css §9.2 mit Beschriftung.
+   Die drei Beschriftungen sitzen links/mittig/rechts unter ihren Knoten. */
+.kette__lbl { display:flex; margin-top:7px; }
+.kette__lbl > div { flex:1 1 0; min-width:0; }
+.kette__lbl > div:nth-child(2) { text-align:center; }
+.kette__lbl > div:nth-child(3) { text-align:right; }
+
+/* App-Symbole des Home-Bildschirms. iOS 18+ „Dunkel"-Erscheinungsbild:
+   ein Ton für alle Symbole. Genau deshalb gewählt — so behauptet diese Seite
+   keine erfundenen Fremdmarkenfarben. */
+.appgrid { position:absolute; z-index:4; }
+.appcell { position:absolute; width:84.5px; display:flex; flex-direction:column;
+           align-items:center; gap:5px; }
+.appsq { width:60px; height:60px; border-radius:13.42px;   /* 60 × 22,37 % */
+         background:linear-gradient(180deg,#232529,#141619);
+         box-shadow:inset 0 0 0 .5px rgba(255,255,255,.10), 0 1px 3px rgba(0,0,0,.35);
+         display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.88); }
+.appsq .ico { width:30px; height:30px; }
+.appsq svg { width:30px; height:30px; display:block; }
+/* Systemtext, nicht Velum-Text: iOS setzt die Symbolbeschriftung auf 11 pt.
+   Dieselbe begründete Ausnahme wie die Tab-Beschriftung in system.css §4. */
+.applbl { font:400 11px/13px var(--sans); color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.55);
+          max-width:84.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.dock { position:absolute; left:10px; right:10px; bottom:56px; height:96px;
+        border-radius:34px; background:rgba(255,255,255,.18);
+        backdrop-filter:blur(28px) saturate(160%);
+        -webkit-backdrop-filter:blur(28px) saturate(160%);
+        box-shadow:inset 0 0 0 .5px rgba(255,255,255,.20); z-index:5;
+        display:flex; align-items:center; justify-content:space-around; padding:0 18px; }
+.pagedots { position:absolute; left:0; right:0; bottom:166px; z-index:5;
+            display:flex; justify-content:center; gap:8px; }
+.pagedots i { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.42); display:block; }
+.pagedots i.on { background:#fff; }
+
+/* Reservierter Zeichenplatz im Gerät. Erklärung im Kommentarblock unter
+   ZEICHEN. In dunkler Umgebung braucht der Rahmen einen hellen Strich —
+   --thread wird lokal umgesetzt, nicht überschrieben. */
+.markplatz { --thread: rgba(255,255,255,.55); }
+
+/* ── Sperrbildschirm: Uhr und Zubehör-Widgets ─────────────────────────── */
+/* Die Uhr ist ein Systemelement. Sie folgt iOS, nicht Velums Fünferskala —
+   sie in 28 pt zu zwingen hieße, iOS falsch zu zeichnen. */
+.lockdate { position:absolute; left:0; right:0; top:96px; text-align:center;
+            font:600 17px/23px var(--sans); color:rgba(255,255,255,.86); z-index:5; }
+.lockclock { position:absolute; left:0; right:0; top:118px; text-align:center;
+             font:500 92px/104px var(--sans); letter-spacing:-.03em;
+             font-variant-numeric:tabular-nums; color:#fff; z-index:5; }
+
+.acc { display:flex; align-items:center; justify-content:center; }
+.acc--circ { width:72px; height:72px; border-radius:50%;
+             background:rgba(255,255,255,.18); box-shadow:inset 0 0 0 .5px rgba(255,255,255,.24);
+             flex-direction:column; gap:1px; }
+.acc--rect { width:158px; height:72px; border-radius:14px; padding:8px 10px;
+             background:rgba(255,255,255,.18); box-shadow:inset 0 0 0 .5px rgba(255,255,255,.24);
+             flex-direction:column; align-items:flex-start; justify-content:center; gap:3px; }
+.accrow { position:absolute; left:27.5px; top:238px; display:flex; gap:12px; align-items:center; z-index:5; }
+.accinline { position:absolute; left:0; right:0; top:70px; z-index:5;
+             display:flex; align-items:center; justify-content:center; gap:6px;
+             font:600 15px/20px var(--sans); color:rgba(255,255,255,.86); }
+
+/* Weiße Fäden auf der Tapete: derselbe Baustein, andere Umgebung.
+   --thread und --accent werden lokal gesetzt, nicht in system.css geändert. */
+.on-glass { --thread: rgba(255,255,255,.62); --accent:#FFFFFF; --node-ring: rgba(90,96,104,.9); }
+
+/* Rasterzeichnung */
+.rasterplate { position:absolute; inset:0; background:#101216; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — WIDGETS (Home- und Sperrbildschirm)
+
+WAS DAS IST
+Drei Home-Screen-Widgets in den echten Größen klein / mittel / groß, im echten
+Raster eines 393 × 852-pt-iPhones, dazu die drei Sperrbildschirm-Zubehörformen
+(rund, rechteckig, Zeile) und eine Rasterzeichnung, in der jedes benutzte Maß
+steht. Inhalt sind Emils fällige Karten, seine nächste Aufgabe und die Serie.
+
+SYSTEMMASSE — WAS BELEGT IST UND WAS NICHT
+Diese Sitzung hat keinen Netzzugang zu developer.apple.com (der Abruf der
+HIG-Seite „Widgets" gab nur den Seitentitel zurück, keinen Inhalt). Es ist in
+diesem Lauf deshalb NICHTS am Hersteller nachgeprüft. Die Werte stammen aus
+Modellwissen und sind hier nach Sicherheit getrennt:
+
+  AUS DER HIG-TABELLE ERINNERT (hohe Sicherheit, in diesem Lauf nicht geprüft)
+    Bildschirm 393 × 852 pt (iPhone 15/16 Pro, iPhone 14 Pro)
+    Widget klein     158 × 158 pt
+    Widget mittel    338 × 158 pt
+    Widget groß      338 × 354 pt
+    Zubehör rund      72 ×  72 pt
+    Zubehör Zeile     Höhe 26 pt
+
+  HERGELEITET (Rechnung steht dabei, kein Herstellerwert)
+    Seitenrand         (393 − 338) / 2            = 27,5 pt
+    Lücke waagerecht   338 − 2 × 158              = 22 pt
+    Lücke senkrecht    354 − 2 × 158              = 38 pt
+    Zeilenraster       158 + 38                   = 196 pt
+    Symbolraster       338 / 4                    = 84,5 pt
+    Symbollücke        84,5 − 60                  = 24,5 pt
+    Zubehör rechteckig 2 × 72 + 14 Lücke ≈ 158 pt Breite (auf die Widget-
+                       Kleinbreite gelegt, weil beide dasselbe Raster teilen)
+
+  GESCHÄTZT (kein Beleg, Herleitung dabei)
+    Obere Sicherheitsfläche 59 pt — erinnert für 393 × 852, nicht geprüft.
+    Erste Widget-Zeile bei y = 77 pt — aus 59 pt Sicherheitsfläche plus 18 pt
+      Luft; auf dem Bild geprüft, nicht am Gerät gemessen.
+    Widget-Radius 21,5 pt — Apple zeichnet Widgets konzentrisch zum
+      Gehäuseradius. Aus dem Symbolradius abgeleitet: 60 pt × 22,37 %
+      (Apples Squircle-Anteil, in system.css §11 belegt) = 13,42 pt für das
+      Symbol; für Widgets wird 21,5 pt gängig genannt. Als geschätzt geführt.
+    Symbolgröße 60 pt, Symbolbeschriftung 11 pt.
+    Dock: 96 pt hoch, 10 pt Seitenabstand, Radius 34 pt.
+    Dynamic Island im Ruhezustand 126 × 37,33 pt, 11 pt unter der Oberkante.
+      Diese Zahl wird häufig zitiert, steht aber in keinem Apple-Dokument.
+    Uhr auf dem Sperrbildschirm ≈ 92 pt. Sie ist ein Systemelement und folgt
+      iOS, nicht Velums Fünferskala. Sie in 28 pt zu zwingen hieße, iOS falsch
+      zu zeichnen — das ist die einzige Stelle dieser Seite, an der eine Größe
+      außerhalb der Skala steht, und sie gehört nicht Velum.
+
+  NICHT GEZEICHNET, MIT ABSICHT
+    Das iPad kennt zusätzlich systemExtraLarge. Die Aussage wäre dieselbe
+    Kette in breiter — das rechtfertigt kein weiteres Gerät auf dieser Seite.
+
+WO DER FADEN STEHT (und wo bewusst keiner steht)
+  · Mittleres Widget: Notiz „Zellbiologie" → 12 Karten → 8 heute fällig.
+    Drei Knoten auf einem 2,5-pt-Herkunftsfaden. Das ist eine echte Kante im
+    Datenmodell: aus der Notiz sind die Karten entstanden.
+  · Kleines Widget: ein 1,5-pt-Fadenstumpf von der Aufgabe zu ihrem Ursprung,
+    Punkt am Ende in der Notizen-Farbe. Auch das ist eine echte Kante.
+  · Großes Widget: die Serie als Fadenreihe — 12 gefüllte Tage, heute mit
+    Ring, morgen hohl. Die DNA nennt die Serie ausdrücklich als Ort (§3).
+  · KEIN Faden im Zähler-Widget-Kopf, keiner unter den Beschriftungen, keiner
+    als Trennlinie. Wo zwei Dinge nur nebeneinanderstehen, steht nichts.
+
+DAS ZEICHEN
+Die drei PNG unter assets/brand/ liegen nicht vor; Nachzeichnen ist verboten.
+Der vollständige Baustein .appicon[data-appicon] trägt seine Warnung samt Pfad
+und ist damit breiter als jede Symbolzelle — in einer 60-pt-Dockzelle sprengt
+er die Zeile. Deshalb steht er einmal in voller Größe auf der Übersichtsseite
+(platform/index.html) und im Steckbrief unter der Bühne; im Gerät steht
+derselbe leere Rahmen ohne Text (.appicon__frame, dieselbe Klasse, dieselbe
+gestrichelte Kontur). Es wird nichts nachgezeichnet und nichts repariert: die
+Warnung verschwindet nicht, sie steht einmal statt siebenmal. Der fehlende
+Pfad lautet assets/brand/velum-appicon-light.png bzw. -dark.png.
+
+AFFORDANZ
+Widgets sind selbst das Ziel — ein Tap öffnet die App an der angetippten
+Stelle. Innerhalb eines Widgets ist nur das antippbar, was iOS als Knopf
+zulässt; hier ist das im großen Widget der gefüllte Ink-Knopf „Lernen"
+(44 pt hoch, heller Text auf Ink). Alles andere ist Anzeige und sieht auch so
+aus: kein Chevron, keine Chip-Fläche, keine Unterstreichung.
+
+KONTRAST (gerechnet, Werte im Steckbrief unter der Bühne)
+TYPO: Velums fünf Größen (28/20/17/15/13), zwei Gewichte. Zwei begründete
+Ausnahmen, beide gehören iOS und nicht Velum: Symbolbeschriftung 11 pt und
+die Sperrbildschirm-Uhr.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="index.html"><span aria-hidden="true">‹</span><span class="u">Plattform-Übersicht</span></a>
+  <a href="../index.html"><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Widgets</h1>
+  <p>Drei Größen auf dem Home-Bildschirm, drei Zubehörformen auf dem Sperrbildschirm — im echten Raster eines 393 × 852-pt-iPhones. Das mittlere Widget zeigt die Kette: aus einer Vorlesungsnotiz sind Karten geworden, acht davon sind heute fällig.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════ 1 · Home-Bildschirm ══════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · Home-Bildschirm <span>393 × 852 pt</span></div>
+    <div class="os os--iphone">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="">
+      <div class="os__scrim" style="background:linear-gradient(180deg,rgba(6,8,11,.68),rgba(6,8,11,.60) 34%,rgba(6,8,11,.72))"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">9:41</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+      <div class="island"></div>
+
+      <!-- ── Zeile 1 (y = 77): mittleres Widget — die Kette ── -->
+      <div class="wdg wdg--m" style="left:27.5px; top:77px">
+        <div class="wdg__eye">
+          <span class="dot dot--cards"></span>Lernkarten
+          <span class="sp"></span>
+          <span class="num">gestern 16:20</span>
+        </div>
+
+        <div style="margin-top:auto">
+          <!-- Der Faden: Notiz → Karten → heute fällig. Drei Knoten,
+               Stärke „origin", weil A zu B geworden ist. -->
+          <div class="threadrow" style="padding:0 4px">
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+          </div>
+          <div class="kette__lbl">
+            <div>
+              <div class="t-label c-3">Notiz</div>
+              <div class="t-sub is-strong">Zellbiologie</div>
+            </div>
+            <div>
+              <div class="t-label c-3">wurde zu</div>
+              <div class="t-sub is-strong num">12 Karten</div>
+            </div>
+            <div>
+              <div class="t-label c-3">heute fällig</div>
+              <div class="t-sub is-strong num">8 Karten</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="t-label c-3" style="margin-top:10px">23 fällig gesamt · ca. 11 Minuten</div>
+      </div>
+
+      <!-- ── Zeile 2 (y = 273): kleines Widget + vier Symbole ── -->
+      <div class="wdg wdg--s" style="left:27.5px; top:273px">
+        <div class="wdg__eye"><span class="dot dot--tasks"></span>Als Nächstes</div>
+        <div class="t-sub is-strong clamp-3" style="margin-top:7px">Laborprotokoll Zellkultur schreiben</div>
+        <div style="margin-top:auto">
+          <!-- Herkunfts-Stumpf: die Aufgabe ist aus der Notiz entstanden.
+               1,5 pt, Punkt am Ende in der Modulfarbe des Ursprungs. -->
+          <div style="display:flex; align-items:center; gap:6px">
+            <svg class="thread thread--h" style="width:14px; flex:none"></svg>
+            <span class="dot dot--notes"></span>
+            <span class="t-label c-3 clamp-1">Zellbiologie</span>
+          </div>
+          <div class="t-label" style="margin-top:8px; color:var(--danger)">
+            <span class="ico" data-ico="flag" style="width:13px;height:13px;vertical-align:-2px"></span> heute 18:00
+          </div>
+        </div>
+      </div>
+
+      <div class="appgrid" style="left:27.5px; top:273px; width:338px; height:196px">
+        <div class="appcell" style="left:169px; top:0">
+          <div class="appsq"><span class="ico" data-ico="calendar"></span></div><div class="applbl">Kalender</div></div>
+        <div class="appcell" style="left:253.5px; top:0">
+          <div class="appsq"><span class="ico" data-ico="photo"></span></div><div class="applbl">Fotos</div></div>
+        <div class="appcell" style="left:169px; top:98px">
+          <div class="appsq"><span class="ico" data-ico="clock"></span></div><div class="applbl">Uhr</div></div>
+        <div class="appcell" style="left:253.5px; top:98px">
+          <div class="appsq"><span class="ico" data-ico="cloud"></span></div><div class="applbl">Wetter</div></div>
+      </div>
+
+      <!-- ── Zeile 3 (y = 469): acht Symbole ── -->
+      <div class="appgrid" style="left:27.5px; top:469px; width:338px; height:196px">
+        <div class="appcell" style="left:0; top:0"><div class="appsq"><span class="ico" data-ico="inbox"></span></div><div class="applbl">Mail</div></div>
+        <div class="appcell" style="left:84.5px; top:0"><div class="appsq"><span class="ico" data-ico="map"></span></div><div class="applbl">Karten</div></div>
+        <div class="appcell" style="left:169px; top:0"><div class="appsq"><span class="ico" data-ico="check"></span></div><div class="applbl">Erinnerungen</div></div>
+        <div class="appcell" style="left:253.5px; top:0"><div class="appsq"><span class="ico" data-ico="folder"></span></div><div class="applbl">Dateien</div></div>
+        <div class="appcell" style="left:0; top:98px"><div class="appsq"><span class="ico" data-ico="mic"></span></div><div class="applbl">Podcasts</div></div>
+        <div class="appcell" style="left:84.5px; top:98px"><div class="appsq"><span class="ico" data-ico="heart"></span></div><div class="applbl">Health</div></div>
+        <div class="appcell" style="left:169px; top:98px"><div class="appsq"><span class="ico" data-ico="box"></span></div><div class="applbl">App Store</div></div>
+        <div class="appcell" style="left:253.5px; top:98px"><div class="appsq"><span class="ico" data-ico="settings"></span></div><div class="applbl">Einstellungen</div></div>
+      </div>
+
+      <div class="pagedots"><i class="on"></i><i></i><i></i></div>
+
+      <div class="dock">
+        <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.4 3.6 5.2 5.8c-1 1-1.2 2.6-.5 3.9 2 3.7 5 6.7 8.7 8.7 1.3.7 2.9.5 3.9-.5l2.2-2.2-4-2.6-2 1.4a16 16 0 0 1-5.1-5.1l1.4-2Z"/></svg></div>
+        <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m15.6 8.4-1.7 5.5-5.5 1.7 1.7-5.5Z"/></svg></div>
+        <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.6 6.6 10.6 4.8h2.8l1 1.8h2.6a2.2 2.2 0 0 1 2.2 2.2v7.4a2.2 2.2 0 0 1-2.2 2.2H6.8a2.2 2.2 0 0 1-2.2-2.2V8.8a2.2 2.2 0 0 1 2.2-2.2Z"/><circle cx="12" cy="12.6" r="3.4"/></svg></div>
+        <!-- Velum: reservierter Zeichenplatz, 60 pt. Kein gezeichnetes V. -->
+        <span class="appicon markplatz" style="--appicon-size:60px" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:13.42px"></span></span>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 2 · Großes Widget + Sperrbildschirm ══════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · zweite Seite und Sperrbildschirm <span>groß 338 × 354 pt · Zubehör 72 pt</span></div>
+    <div class="os os--iphone">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="">
+      <div class="os__scrim" style="background:linear-gradient(180deg,rgba(6,8,11,.68),rgba(6,8,11,.60) 34%,rgba(6,8,11,.72))"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">9:41</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+      <div class="island"></div>
+
+      <!-- ── Großes Widget: der ganze Tag ── -->
+      <div class="wdg wdg--l" style="left:27.5px; top:77px">
+        <div class="wdg__eye">
+          <span>Donnerstag, 13. November</span>
+          <span class="sp"></span>
+          <span class="markplatz" style="--thread:var(--line-2)">
+            <span class="appicon" style="--appicon-size:20px" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:4.5px"></span></span>
+          </span>
+        </div>
+
+        <!-- Die Kette, in groß mit Zwischenschritt -->
+        <div style="margin-top:14px">
+          <div class="threadrow" style="padding:0 4px">
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+          </div>
+          <div class="kette__lbl">
+            <div>
+              <div class="t-label c-3">Notiz</div>
+              <div class="t-sub is-strong">Zellbiologie</div>
+            </div>
+            <div>
+              <div class="t-label c-3">wurde zu</div>
+              <div class="t-sub is-strong num">12 Karten</div>
+            </div>
+            <div>
+              <div class="t-label c-3">heute fällig</div>
+              <div class="t-sub is-strong num">8 Karten</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:1px; background:var(--line); margin:14px 0 12px"></div>
+
+        <div class="wdg__eye" style="margin-bottom:8px"><span class="dot dot--tasks"></span>Drei Aufgaben</div>
+        <div style="display:flex; align-items:flex-start; gap:9px; margin-bottom:8px">
+          <span class="check" style="width:19px;height:19px;margin-top:1px"></span>
+          <div style="min-width:0; flex:1 1 auto">
+            <div class="t-sub is-strong clamp-1">Laborprotokoll Zellkultur schreiben</div>
+            <div class="t-label" style="color:var(--danger)">heute 18:00</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:9px">
+          <span class="check" style="width:19px;height:19px;margin-top:1px"></span>
+          <div style="min-width:0; flex:1 1 auto">
+            <div class="t-sub is-strong clamp-1">Rückmeldung an Prof. Wendt</div>
+            <div class="t-label c-3">geplant 16:00</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:9px; margin-top:8px">
+          <span class="check" style="width:19px;height:19px;margin-top:1px"></span>
+          <div style="min-width:0; flex:1 1 auto">
+            <div class="t-sub is-strong clamp-1">Übungsblatt 5 fertig rechnen</div>
+            <div class="t-label c-3">geplant 19:30</div>
+          </div>
+        </div>
+
+        <div style="margin-top:auto; display:flex; align-items:flex-end; gap:12px">
+          <div style="flex:1 1 auto; min-width:0">
+            <div class="t-label c-3" style="margin-bottom:6px">Serie · 12 Tage · Rekord 34</div>
+            <!-- Die Serie als Faden aus Punkten. Gefüllt = gearbeitet,
+                 Ring = heute, hohl = noch nicht. -->
+            <div class="threadrow">
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--tag dot--ring" style="margin:0 3px"></span><svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--hollow"></span>
+            </div>
+          </div>
+          <button class="btn btn--primary" style="flex:none; padding:0 16px; font-size:15px">Lernen</button>
+        </div>
+      </div>
+
+      <div class="appgrid" style="left:27.5px; top:469px; width:338px; height:98px">
+        <div class="appcell" style="left:0; top:0"><div class="appsq"><span class="ico" data-ico="doc"></span></div><div class="applbl">Pages</div></div>
+        <div class="appcell" style="left:84.5px; top:0"><div class="appsq"><span class="ico" data-ico="grid"></span></div><div class="applbl">Numbers</div></div>
+        <div class="appcell" style="left:169px; top:0"><div class="appsq"><span class="ico" data-ico="layers"></span></div><div class="applbl">Freeform</div></div>
+        <div class="appcell" style="left:253.5px; top:0"><div class="appsq"><span class="ico" data-ico="lock"></span></div><div class="applbl">Passwörter</div></div>
+      </div>
+
+      <div class="pagedots"><i></i><i class="on"></i><i></i></div>
+
+      <div class="dock">
+        <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.4 3.6 5.2 5.8c-1 1-1.2 2.6-.5 3.9 2 3.7 5 6.7 8.7 8.7 1.3.7 2.9.5 3.9-.5l2.2-2.2-4-2.6-2 1.4a16 16 0 0 1-5.1-5.1l1.4-2Z"/></svg></div>
+        <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m15.6 8.4-1.7 5.5-5.5 1.7 1.7-5.5Z"/></svg></div>
+        <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.6 6.6 10.6 4.8h2.8l1 1.8h2.6a2.2 2.2 0 0 1 2.2 2.2v7.4a2.2 2.2 0 0 1-2.2 2.2H6.8a2.2 2.2 0 0 1-2.2-2.2V8.8a2.2 2.2 0 0 1 2.2-2.2Z"/><circle cx="12" cy="12.6" r="3.4"/></svg></div>
+        <span class="appicon markplatz" style="--appicon-size:60px" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:13.42px"></span></span>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 3 · Sperrbildschirm-Zubehör ══════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · Sperrbildschirm-Zubehör <span>rund 72 · rechteckig 158 × 72 · Zeile</span></div>
+    <div class="os os--iphone on-glass">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="">
+      <div class="os__scrim" style="background:linear-gradient(180deg,rgba(6,8,11,.74),rgba(6,8,11,.64) 40%,rgba(6,8,11,.78))"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">9:41</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+      <div class="island"></div>
+
+      <!-- Zeilen-Zubehör: sitzt über dem Datum -->
+      <div class="accinline">
+        <span class="dot dot--cards"></span><span>8 Karten fällig</span>
+      </div>
+      <div class="lockdate">Donnerstag, 13. November</div>
+      <div class="lockclock">9:41</div>
+
+      <!-- Widget-Zeile unter der Uhr: rund + rechteckig -->
+      <div class="accrow">
+        <div class="acc acc--circ">
+          <span class="dot dot--cards" style="margin-bottom:2px"></span>
+          <span class="t-section num on-wall" style="line-height:22px">8</span>
+          <span class="t-label on-wall-2" style="font-size:11px; line-height:13px">fällig</span>
+        </div>
+        <div class="acc acc--rect">
+          <div class="t-label on-wall-2" style="display:flex; align-items:center; gap:6px">
+            <span class="dot dot--tasks"></span><span class="num">heute 18:00</span>
+          </div>
+          <div class="t-sub is-strong on-wall clamp-1" style="width:100%">Laborprotokoll</div>
+          <!-- Herkunftsstumpf, hier in Weiß: dieselbe Kante wie im Widget -->
+          <div style="display:flex; align-items:center; gap:5px; width:100%">
+            <svg class="thread thread--h" style="width:12px; flex:none"></svg>
+            <span class="dot dot--notes"></span>
+            <span class="t-label on-wall-2 clamp-1">Zellbiologie</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Taschenlampe und Kamera, wie iOS sie unten setzt -->
+      <div style="position:absolute; left:38px; bottom:104px; width:50px; height:50px; border-radius:50%;
+                  background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; color:#fff; z-index:5">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.6h6v3.2l-1.4 2v11.6h-3.2V8.8L9 6.8Z"/></svg>
+      </div>
+      <div style="position:absolute; right:38px; bottom:104px; width:50px; height:50px; border-radius:50%;
+                  background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; color:#fff; z-index:5">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.6 6.6 10.6 4.8h2.8l1 1.8h2.6a2.2 2.2 0 0 1 2.2 2.2v7.4a2.2 2.2 0 0 1-2.2 2.2H6.8a2.2 2.2 0 0 1-2.2-2.2V8.8a2.2 2.2 0 0 1 2.2-2.2Z"/><circle cx="12" cy="12.6" r="3.4"/></svg>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 4 · Die Rasterzeichnung ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Das Raster <span>jedes Maß dieser Seite, mit Herkunft</span></div>
+    <div class="os os--iphone">
+      <div class="rasterplate"></div>
+
+      <div class="mass" style="inset:0">
+        <!-- Sicherheitsfläche -->
+        <div style="position:absolute; left:0; right:0; top:0; height:59px; background:rgba(255,255,255,.06); border-bottom:1px dashed rgba(255,255,255,.30)"></div>
+        <div class="mass__tag" style="left:14px; top:20px">obere Sicherheitsfläche 59 pt · geschätzt</div>
+
+        <!-- Seitenränder -->
+        <div style="position:absolute; left:0; top:59px; bottom:0; width:27.5px; background:rgba(255,255,255,.05)"></div>
+        <div style="position:absolute; right:0; top:59px; bottom:0; width:27.5px; background:rgba(255,255,255,.05)"></div>
+
+        <!-- Mittel -->
+        <div class="mass__box" style="left:27.5px; top:77px; width:338px; height:158px"></div>
+        <div class="mass__tag" style="left:33px; top:83px">mittel · 338 × 158</div>
+
+        <!-- senkrechte Lücke, erste Fuge -->
+        <div style="position:absolute; left:27.5px; top:235px; width:338px; height:38px; background:rgba(255,255,255,.12)"></div>
+        <div class="mass__tag" style="left:33px; top:245px">senkrecht 38 = 354 − 2 × 158</div>
+
+        <!-- Klein × 2 -->
+        <div class="mass__box" style="left:27.5px; top:273px; width:158px; height:158px"></div>
+        <div class="mass__tag" style="left:33px; top:279px">klein · 158</div>
+        <div class="mass__box" style="left:207.5px; top:273px; width:158px; height:158px"></div>
+        <div class="mass__tag" style="left:213px; top:279px">klein · 158</div>
+        <div style="position:absolute; left:185.5px; top:273px; width:22px; height:158px; background:rgba(255,255,255,.16)"></div>
+
+        <!-- waagerechte Lücke, zweite Fuge -->
+        <div style="position:absolute; left:27.5px; top:431px; width:338px; height:38px; background:rgba(255,255,255,.12)"></div>
+        <div class="mass__tag" style="left:33px; top:441px">waagerecht 22 = 338 − 2 × 158</div>
+
+        <!-- Groß -->
+        <div class="mass__box" style="left:27.5px; top:469px; width:338px; height:354px"></div>
+        <div class="mass__tag" style="left:33px; top:475px">groß · 338 × 354</div>
+
+        <!-- Symbolraster im großen Feld angedeutet -->
+        <div style="position:absolute; left:112px; top:469px; width:1px; height:354px; background:rgba(255,255,255,.22)"></div>
+        <div style="position:absolute; left:196.5px; top:469px; width:1px; height:354px; background:rgba(255,255,255,.22)"></div>
+        <div style="position:absolute; left:281px; top:469px; width:1px; height:354px; background:rgba(255,255,255,.22)"></div>
+        <div class="mass__tag" style="left:33px; top:760px">Symbolraster 84,5 = 338 / 4</div>
+        <div class="mass__tag" style="left:33px; top:790px">Seitenrand 27,5 = (393 − 338) / 2</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════ Steckbrief ══════════════════ -->
+<div class="sheetnote">
+  <h2>Steckbrief — Widgets</h2>
+  <p>Was hier steht, gilt für alle Seiten dieses Ordners: iOS-Maße sind in diesem Lauf <strong>nicht am Hersteller nachgeprüft</strong> — der Abruf von <code>developer.apple.com</code> gab nur den Seitentitel zurück. Die Tabelle trennt deshalb Erinnertes, Hergeleitetes und Geschätztes.</p>
+
+  <h3>Systemmaße</h3>
+  <table>
+    <tr><td>Aus der HIG-Tabelle erinnert</td><td>Bildschirm 393 × 852 pt · Widget klein 158 × 158 · mittel 338 × 158 · groß 338 × 354 · Zubehör rund 72 × 72 · Zubehör-Zeile Höhe 26. Hohe Sicherheit, in diesem Lauf nicht geprüft.</td></tr>
+    <tr><td>Hergeleitet</td><td>Seitenrand 27,5 = (393 − 338)/2 · waagerechte Lücke 22 = 338 − 2 × 158 · senkrechte Lücke 38 = 354 − 2 × 158 · Zeilenraster 196 = 158 + 38 · Symbolraster 84,5 = 338/4 · Symbollücke 24,5 = 84,5 − 60.</td></tr>
+    <tr><td>Geschätzt</td><td>Sicherheitsfläche oben 59 · erste Widget-Zeile y = 77 · Widget-Radius 21,5 · Symbol 60 pt, Radius 13,42 = 60 × 22,37 % · Dock 96 hoch, Radius 34 · Dynamic Island 126 × 37,33, 11 unter der Kante · Sperrbildschirm-Uhr ≈ 92.</td></tr>
+    <tr><td>Nicht gezeichnet</td><td>systemExtraLarge auf dem iPad — dieselbe Kette in breiter, kein neuer Beweis.</td></tr>
+  </table>
+
+  <h3>Kontrast (gerechnet)</h3>
+  <table>
+    <tr><td>Widget-Text</td><td>ink-1 auf Papier 17,8:1 hell · 15,9:1 dunkel</td></tr>
+    <tr><td>Widget-Nebentext</td><td>ink-3 auf Papier 4,8:1 hell · 4,9:1 dunkel</td></tr>
+    <tr><td>Frist rot</td><td>danger auf Papier 5,2:1 hell · 6,3:1 dunkel</td></tr>
+    <tr><td>Knopf „Lernen"</td><td>accent-on auf Ink 17,8:1 hell · 17,3:1 dunkel</td></tr>
+    <tr><td>Faden im Widget</td><td>thread auf Papier 3,10:1 hell · 3,13:1 dunkel — über der 3:1-Schwelle für Bedienoberfläche</td></tr>
+    <tr><td>Weiß auf der Tapete</td><td>Am gerenderten Bild nachgemessen (97. Perzentil der Untergrundhelligkeit, Vorhang über dem Foto): Statusleiste 6,8:1 · Symbolbeschriftung 5,6:1 · Datum 8,0:1 · Uhr 7,1:1 · Zeilen-Zubehör 8,2:1. Alle über den 4,5:1 für Text. Velum liefert die Tapete nicht — auf einer beliebigen Nutzer-Tapete kann iOS das nicht garantieren; hier ist sie gewählt und abgedunkelt, bis die Zahlen halten.</td></tr>
+  </table>
+
+  <h3>Das Zeichen</h3>
+  <p>Die drei PNG liegen nicht vor. Im Gerät steht der leere Rahmen ohne Text, damit eine 60-pt-Dockzelle nicht von einer Pfadangabe gesprengt wird; hier steht der vollständige Baustein mit seiner Warnung:</p>
+  <p><span class="appicon" data-appicon></span></p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live Activity und Dynamic Island — Velum im System</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+ * PLATTFORM-KERN — steht inline in jeder Seite dieses Ordners.
+ * system.css und mock.js gehören einem anderen Agenten; hier wird an beiden
+ * nichts geändert. Tokens, Typo und Farbdisziplin kommen unverändert von dort.
+ * ══════════════════════════════════════════════════════════════════════════ */
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+.os { position:relative; overflow:hidden; flex:none; background:#0B0C0E;
+      box-shadow: var(--sh-float), 0 0 0 1px var(--line); }
+.os--iphone { width:393px; height:852px; border-radius:44px; }
+.os__wall  { position:absolute; inset:0; width:100%; height:100%;
+             object-fit:cover; object-position:50% 44%; }
+.os__scrim { position:absolute; inset:0; }
+.on-wall   { color:#FFFFFF; }
+.on-wall-2 { color:rgba(255,255,255,.76); }
+
+.osbar { position:absolute; left:0; right:0; top:0; height:59px; z-index:6;
+         display:flex; align-items:center; justify-content:space-between;
+         padding:0 30px; color:#fff; }
+.osbar__t { font:600 15px/20px var(--sans); font-variant-numeric:tabular-nums; }
+.osbar__r { display:flex; align-items:center; gap:6px; }
+.osbar__bat { width:24px; height:12px; border:1.2px solid rgba(255,255,255,.6);
+              border-radius:3.5px; position:relative; }
+.osbar__bat::after { content:""; position:absolute; inset:1.6px; right:5px;
+                     background:#fff; border-radius:1.5px; }
+.osbar__sig { display:flex; align-items:flex-end; gap:1.6px; height:11px; }
+.osbar__sig i { width:3px; background:#fff; border-radius:1px; display:block; }
+
+.oshome { position:absolute; left:50%; bottom:8px; transform:translateX(-50%);
+          width:140px; height:5px; border-radius:3px; background:rgba(255,255,255,.85); z-index:8; }
+
+/* Dunkle Systemflächen — Insel, Glas, Blatt über der Tapete — sind in BEIDEN
+   Erscheinungsbildern dunkel; die Dynamic Island ist immer schwarz. Die
+   Tokens werden deshalb lokal gesetzt, nicht in system.css geändert. */
+.on-dark {
+  --paper:#141619; --paper-2:#1B1D21; --ground:#0B0C0E;
+  --ink-1:#FFFFFF; --ink-2:rgba(255,255,255,.72); --ink-3:rgba(255,255,255,.60);
+  --ink-4:rgba(255,255,255,.34);
+  --line:rgba(255,255,255,.14); --line-2:rgba(255,255,255,.22);
+  --fill:rgba(255,255,255,.10); --fill-2:rgba(255,255,255,.16); --fill-3:rgba(255,255,255,.22);
+  --accent:#FFFFFF; --accent-on:#0B0C0E;
+  --accent-soft:rgba(255,255,255,.12); --accent-ring:rgba(255,255,255,.38);
+  --thread:rgba(255,255,255,.58); --dot-hollow:rgba(255,255,255,.58);
+  --node-ring:#000000;
+  --danger:#FF6B5E; --success:#4ED18B;
+  color:var(--ink-1);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * SEITENEIGENES — Dynamic Island in ihren vier Formen
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+/* Alle Inselformen sind Stadionformen bzw. abgerundete Rechtecke in Schwarz.
+   Maße im Kommentarblock; alle GESCHÄTZT. */
+.isl { background:#000; color:#fff; position:relative; }
+.isl--rest    { width:126px; height:37.33px; border-radius:999px; }
+.isl--compact { height:37.33px; border-radius:999px; display:inline-flex; align-items:center;
+                padding:0 13px; gap:0; }
+.isl--attached{ height:37.33px; border-radius:999px; display:inline-flex; align-items:center;
+                padding:0 13px; gap:11px; }
+.isl--min     { width:36.67px; height:36.67px; border-radius:50%;
+                display:flex; align-items:center; justify-content:center; }
+.isl--exp     { width:371px; border-radius:44px; padding:16px 18px 14px; }
+
+.isl__lead  { display:flex; align-items:center; gap:6px;
+              font:600 13px/16px var(--sans); }
+.isl__trail { font:600 13px/16px var(--sans); font-variant-numeric:tabular-nums; }
+/* Die Aussparung der Kamera: der Bereich, den der Inhalt in der kompakten
+   Form frei lassen muss. */
+.isl__cut { width:126px; flex:none; }
+
+/* Insel im Gerät: sitzt 11 pt unter der Oberkante, mittig. */
+.islpos { position:absolute; left:50%; top:11px; transform:translateX(-50%); z-index:7; }
+
+/* Home-Bildschirm als Kulisse — Raster wie in widgets.html hergeleitet:
+   Symbolraster 84,5 = 338/4, Symbol 60 pt, Radius 13,42 = 60 × 22,37 %. */
+.hsrow { display:flex; }
+.hscell { width:84.5px; display:flex; flex-direction:column; align-items:center; gap:5px; }
+.hsq { width:60px; height:60px; border-radius:13.42px; flex:none;
+       background:linear-gradient(180deg,#232529,#141619);
+       box-shadow:inset 0 0 0 .5px rgba(255,255,255,.10), 0 1px 3px rgba(0,0,0,.35);
+       display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.88); }
+.hsq .ico, .hsq svg { width:30px; height:30px; }
+/* Systemtext, nicht Velum-Text: iOS setzt die Symbolbeschriftung auf 11 pt. */
+.hslbl { font:400 11px/13px var(--sans); color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.55);
+         max-width:84.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hsdock { position:absolute; left:10px; right:10px; bottom:56px; height:96px; border-radius:34px;
+          background:rgba(255,255,255,.18); backdrop-filter:blur(28px) saturate(160%);
+          -webkit-backdrop-filter:blur(28px) saturate(160%);
+          box-shadow:inset 0 0 0 .5px rgba(255,255,255,.20); z-index:5;
+          display:flex; align-items:center; justify-content:space-around; padding:0 18px; }
+
+/* Zustandstafel */
+.plate { width:470px; min-height:640px; border-radius:22px; background:#0F1114;
+         position:relative; overflow:hidden; flex:none;
+         box-shadow: var(--sh-float), 0 0 0 1px var(--line); padding:26px 24px; }
+.plate__row { margin-bottom:26px; }
+.plate__cap { font:600 13px/16px var(--sans); color:rgba(255,255,255,.62); margin-bottom:9px;
+              display:flex; align-items:baseline; gap:8px; }
+.plate__cap b { color:#fff; font-weight:600; }
+.plate__mass { font:400 13px/16px var(--sans); color:rgba(255,255,255,.46);
+               font-variant-numeric:tabular-nums; }
+
+/* Sperrbildschirm-Fassung der Live Activity */
+.la { width:361px; border-radius:22px; padding:14px 16px;
+      background:rgba(28,30,34,.72);
+      backdrop-filter:blur(30px) saturate(160%); -webkit-backdrop-filter:blur(30px) saturate(160%);
+      box-shadow:inset 0 0 0 .5px rgba(255,255,255,.16); }
+.la__head { display:flex; align-items:center; gap:8px; margin-bottom:10px;
+            font:600 13px/16px var(--sans); color:rgba(255,255,255,.62); }
+.la__head .sp { flex:1 1 auto; }
+
+.lockdate { position:absolute; left:0; right:0; top:88px; text-align:center;
+            font:600 17px/23px var(--sans); color:rgba(255,255,255,.86); z-index:5; }
+.lockclock { position:absolute; left:0; right:0; top:110px; text-align:center;
+             font:500 92px/104px var(--sans); letter-spacing:-.03em;
+             font-variant-numeric:tabular-nums; color:#fff; z-index:5; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — LIVE ACTIVITY UND DYNAMIC ISLAND
+
+WAS DAS IST
+Die laufende Lernsession als Live Activity, in allen vier Formen, die iOS
+kennt: Ruhe · kompakt (führend und folgend) · minimal · erweitert. Dazu die
+Sperrbildschirm-Fassung derselben Aktivität. Die Minimalform ist nicht
+erfunden: sie erscheint genau dann, wenn eine ZWEITE Aktivität läuft — hier
+Velums Vorlesungsaufnahme. Deshalb laufen auf dieser Seite zwei Aktivitäten
+gleichzeitig, sonst wäre die Minimalform nicht zu zeigen.
+
+SYSTEMMASSE — ALLES GESCHÄTZT, MIT HERLEITUNG
+Kein Netzzugang zu developer.apple.com in diesem Lauf; Apple veröffentlicht
+für die Dynamic Island ohnehin keine Maßtabelle. Nichts hier ist belegt.
+
+  Ruheform 126 × 37,33 pt, 11 pt unter der Oberkante — die weitverbreitete
+    Messung aus der Entwicklergemeinde. Kein Apple-Dokument nennt sie.
+  Kompaktform: dieselbe Höhe, Breite wächst mit dem Inhalt. Im gerenderten
+    Bild nachgemessen: 245 pt = 13 Luft + 57 führend + 126 Aussparung
+    + 36 folgend + 13 Luft. Die Breite ist damit eine Folge des Inhalts und
+    keine gesetzte Zahl.
+  Minimalform 36,67 pt Durchmesser = Inselhöhe 37,33 minus 0,66 pt Rand.
+    Hergeleitet, nicht gemessen.
+  Zwei Aktivitäten: eine sitzt ANGEHEFTET links der Aussparung in der Insel
+    (hier die Aufnahme, im Bild 172 pt breit), die andere ABGESETZT als eigene Kapsel
+    rechts daneben (die Lernsession). So verhält sich iOS nach meinem
+    Modellwissen; in diesem Lauf ist es nicht nachgeprüft.
+  Erweiterte Form 371 pt breit = 393 − 2 × 11 (derselbe Randabstand wie oben),
+    Höhe im Bild nachgemessen 203 pt, Radius 44 pt aus dem Gehäuseradius.
+  Sperrbildschirm-Fassung 361 pt breit = 393 − 2 × 16, Radius 22 pt.
+    Beides geschätzt; 16 pt ist der übliche Seitenabstand des
+    Mitteilungsstapels, 22 pt aus dem Bild abgelesen.
+
+WO DER FADEN STEHT (und wo bewusst keiner steht)
+  · Erweiterte Form, unterer Bereich: Notiz „Zellbiologie" ──●── „Karte 7".
+    Ein 2,5-pt-Herkunftsfaden mit zwei Knoten. Das ist der Satz, den keine
+    andere Lern-App auf einer Live Activity zeigen könnte: die Karte, die
+    gerade drankommt, weiß, aus welchem Absatz sie geschnitten wurde.
+  · Sperrbildschirm-Fassung: derselbe Faden, gleiche Stärke, gleiche Knoten.
+  · KEIN Faden in der kompakten und der minimalen Form — dort ist kein Platz
+    für zwei Punkte, und ein Strich ohne zwei Enden wäre eine Zierlinie.
+  · Der Fortschrittsbalken ist KEIN Faden: er verbindet nichts, er füllt.
+    Er bleibt deshalb .bar aus system.css §5 und sieht auch so aus.
+
+ZWEI-MERKMAL-REGEL, EIN EINGESTANDENES ZUGESTÄNDNIS
+Die Minimalform hat 36,67 pt — Platz für genau ein Zeichen. Dort steht der
+Lernkarten-Punkt ohne Wort. Getragen wird die Aussage hier von Ort und Form
+(die Kapsel sitzt an der Insel, wo iOS die zweite Aktivität führt), nicht von
+einem zweiten Zeichen. Das ist iOS' Beschränkung, nicht Velums Wahl — und es
+ist die einzige Stelle im ganzen Ordner, an der ein Punkt allein steht.
+
+DAS ZEICHEN
+Erscheint hier nicht. Die Live Activity trägt den Namen der App als Text
+(„Velum" in der Kopfzeile der Sperrbildschirm-Fassung); ein 22-pt-Symbolplatz
+in der Insel wäre in der Ruheform gar nicht sichtbar und in der Kompaktform
+der Ort, an dem die Beschriftung steht.
+
+AFFORDANZ
+In der erweiterten Form stehen zwei Knöpfe: „Pause" (Umrandung, sekundär) und
+„Weiter" (gefüllte Fläche, heller Text auf Weiß-auf-Schwarz — auf der immer
+schwarzen Insel dreht sich der Ink-Akzent um, weiß gefüllt mit dunklem Text).
+Beide 44 pt hoch. Alles andere in allen vier Formen ist Anzeige.
+
+KONTRAST — Werte im Steckbrief unter der Bühne.
+TYPO: Velums fünf Größen, zwei Gewichte. Eine Ausnahme, sie gehört iOS:
+die Sperrbildschirm-Uhr.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="index.html"><span aria-hidden="true">‹</span><span class="u">Plattform-Übersicht</span></a>
+  <a href="../index.html"><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Live Activity und Dynamic Island</h1>
+  <p>Die laufende Lernsession in allen vier Formen, die iOS kennt — und die Sperrbildschirm-Fassung. In der erweiterten Form steht der Satz, den sonst niemand zeigen kann: die Karte, die gerade drankommt, weiß, aus welchem Absatz sie geschnitten wurde.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════ 1 · Kompakt, im Betrieb ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Kompakt <span>führend · folgend</span></div>
+    <div class="os os--iphone">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="">
+      <div class="os__scrim" style="background:linear-gradient(180deg,rgba(6,8,11,.68),rgba(6,8,11,.60) 34%,rgba(6,8,11,.72))"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">9:41</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+
+      <!-- Kompaktform: 246 pt. Der Inhalt liegt links und rechts der
+           126-pt-Aussparung, nie darin. -->
+      <div class="islpos on-dark">
+        <div class="isl isl--compact">
+          <span class="isl__lead"><span class="dot dot--cards"></span>Karten</span>
+          <span class="isl__cut"></span>
+          <span class="isl__trail num">7/23</span>
+        </div>
+      </div>
+
+      <!-- Angeschnittener Home-Bildschirm dahinter, damit die Insel im Betrieb steht -->
+      <div style="position:absolute; left:27.5px; top:77px; width:338px; height:158px; border-radius:21.5px;
+                  background:var(--paper); box-shadow:0 1px 3px rgba(0,0,0,.24), 0 8px 22px rgba(0,0,0,.18);
+                  padding:14px 15px; display:flex; flex-direction:column">
+        <div style="display:flex; align-items:center; gap:7px; color:var(--ink-3); font:600 13px/16px var(--sans)">
+          <span class="dot dot--cards"></span>Lernkarten<span style="flex:1"></span><span class="num">gestern 16:20</span>
+        </div>
+        <div style="margin-top:auto">
+          <div class="threadrow" style="padding:0 4px">
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+          </div>
+          <div style="display:flex; margin-top:7px">
+            <div style="flex:1 1 0"><div class="t-label c-3">Notiz</div><div class="t-sub is-strong">Zellbiologie</div></div>
+            <div style="flex:1 1 0; text-align:center"><div class="t-label c-3">wurde zu</div><div class="t-sub is-strong num">12 Karten</div></div>
+            <div style="flex:1 1 0; text-align:right"><div class="t-label c-3">heute fällig</div><div class="t-sub is-strong num">8 Karten</div></div>
+          </div>
+        </div>
+        <div class="t-label c-3" style="margin-top:10px">23 fällig gesamt · ca. 11 Minuten</div>
+      </div>
+
+      <!-- Home-Bildschirm dahinter: iOS 18 „Dunkel"-Erscheinungsbild, ein Ton
+           für alle Symbole — so behauptet diese Seite keine erfundenen
+           Fremdmarkenfarben. Raster wie in widgets.html hergeleitet. -->
+      <div style="position:absolute; left:27.5px; top:273px; width:338px; z-index:4">
+        <div class="hsrow">
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="calendar"></span></div><div class="hslbl">Kalender</div></div>
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="photo"></span></div><div class="hslbl">Fotos</div></div>
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="clock"></span></div><div class="hslbl">Uhr</div></div>
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="cloud"></span></div><div class="hslbl">Wetter</div></div>
+        </div>
+        <div class="hsrow" style="margin-top:38px">
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="inbox"></span></div><div class="hslbl">Mail</div></div>
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="map"></span></div><div class="hslbl">Karten</div></div>
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="check"></span></div><div class="hslbl">Erinnerungen</div></div>
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="folder"></span></div><div class="hslbl">Dateien</div></div>
+        </div>
+        <div class="hsrow" style="margin-top:38px">
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="mic"></span></div><div class="hslbl">Podcasts</div></div>
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="heart"></span></div><div class="hslbl">Health</div></div>
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="box"></span></div><div class="hslbl">App Store</div></div>
+          <div class="hscell"><div class="hsq"><span class="ico" data-ico="settings"></span></div><div class="hslbl">Einstellungen</div></div>
+        </div>
+      </div>
+
+      <div style="position:absolute; left:0; right:0; bottom:166px; z-index:5; display:flex; justify-content:center; gap:8px">
+        <i style="width:7px;height:7px;border-radius:50%;background:#fff;display:block"></i>
+        <i style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.42);display:block"></i>
+        <i style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.42);display:block"></i>
+      </div>
+
+      <div class="hsdock">
+        <div class="hsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.4 3.6 5.2 5.8c-1 1-1.2 2.6-.5 3.9 2 3.7 5 6.7 8.7 8.7 1.3.7 2.9.5 3.9-.5l2.2-2.2-4-2.6-2 1.4a16 16 0 0 1-5.1-5.1l1.4-2Z"/></svg></div>
+        <div class="hsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m15.6 8.4-1.7 5.5-5.5 1.7 1.7-5.5Z"/></svg></div>
+        <div class="hsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.6 6.6 10.6 4.8h2.8l1 1.8h2.6a2.2 2.2 0 0 1 2.2 2.2v7.4a2.2 2.2 0 0 1-2.2 2.2H6.8a2.2 2.2 0 0 1-2.2-2.2V8.8a2.2 2.2 0 0 1 2.2-2.2Z"/><circle cx="12" cy="12.6" r="3.4"/></svg></div>
+        <span class="appicon" style="--appicon-size:60px; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:13.42px"></span></span>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 2 · Erweitert ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Erweitert <span>371 × 203 pt · geschätzt</span></div>
+    <div class="os os--iphone">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="">
+      <!-- iOS verdunkelt den Hintergrund, während die Insel offen steht. -->
+      <div class="os__scrim" style="background:rgba(6,7,9,.72)"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">9:41</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+
+      <div class="islpos on-dark">
+        <div class="isl isl--exp">
+          <div style="display:flex; align-items:flex-start; gap:12px">
+            <div style="flex:1 1 auto; min-width:0">
+              <div class="t-label" style="color:var(--ink-3); display:flex; align-items:center; gap:7px">
+                <span class="dot dot--cards"></span>Lernsession
+              </div>
+              <div class="t-section" style="margin-top:3px">Zellbiologie</div>
+            </div>
+            <div style="text-align:right; flex:none">
+              <div class="t-section num">7<span class="c-3" style="font-weight:400"> / 23</span></div>
+              <div class="t-label c-3 num">noch ca. 8 Min.</div>
+            </div>
+          </div>
+
+          <div class="bar" style="margin:12px 0 14px">
+            <div class="bar__fill" style="width:30.4%"></div>
+          </div>
+
+          <!-- Der Faden: die aktuelle Karte und ihr Ursprungsabsatz.
+               Echte Kante — die Karte wurde aus diesem Absatz geschnitten. -->
+          <div style="display:flex; align-items:center; gap:10px">
+            <div style="flex:none; display:flex; align-items:center; gap:8px">
+              <div>
+                <div class="t-label c-3">Notiz, Absatz 7</div>
+                <div class="t-sub is-strong">Zellbiologie</div>
+              </div>
+              <span class="dot dot--node"></span>
+            </div>
+            <svg class="thread thread--h thread--origin" style="flex:1 1 auto"></svg>
+            <div style="flex:none; display:flex; align-items:center; gap:8px">
+              <span class="dot dot--node"></span>
+              <div>
+                <div class="t-label c-3">Karte 7</div>
+                <div class="t-sub is-strong">Hypertonie</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:16px">
+            <button class="btn" style="flex:1 1 0; background:none; box-shadow:inset 0 0 0 1.5px var(--line-2)">Pause</button>
+            <button class="btn btn--primary" style="flex:1 1 0">Weiter</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 3 · Minimal + Sperrbildschirm ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Minimal <span>zwei Aktivitäten</span></div>
+    <div class="os os--iphone">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="">
+      <div class="os__scrim" style="background:linear-gradient(180deg,rgba(6,8,11,.74),rgba(6,8,11,.64) 40%,rgba(6,8,11,.78))"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">9:41</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+
+      <!-- Zwei Aktivitäten: die Aufnahme führt die Insel, die Lernsession
+           steht rechts daneben als Minimalform. -->
+      <div class="islpos on-dark" style="display:flex; align-items:center; gap:8px">
+        <!-- Angeheftet: die Aufnahme sitzt links der Aussparung in der Insel. -->
+        <div class="isl isl--attached">
+          <span style="width:9px;height:9px;border-radius:50%;background:var(--danger);display:block"></span>
+          <span class="isl__cut"></span>
+        </div>
+        <!-- Abgesetzt: die Lernsession als eigene Kapsel neben der Insel. -->
+        <div class="isl isl--min"><span class="dot dot--cards"></span></div>
+      </div>
+
+      <div class="lockdate">Donnerstag, 13. November</div>
+      <div class="lockclock">9:41</div>
+
+      <!-- Sperrbildschirm-Fassung der Lernsession -->
+      <div class="on-dark" style="position:absolute; left:16px; top:300px; z-index:5">
+        <div class="la">
+          <div class="la__head">
+            <span class="dot dot--cards"></span>Velum · Lernsession
+            <span class="sp"></span>
+            <span class="num">noch ca. 8 Min.</span>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:10px">
+            <div class="t-section">Zellbiologie</div>
+            <span style="flex:1"></span>
+            <div class="t-section num">7<span class="c-3" style="font-weight:400"> / 23</span></div>
+          </div>
+          <div class="bar" style="margin:11px 0 13px"><div class="bar__fill" style="width:30.4%"></div></div>
+          <div style="display:flex; align-items:center; gap:10px">
+            <div style="flex:none; display:flex; align-items:center; gap:8px">
+              <span class="t-label c-3">Notiz, Absatz 7</span>
+              <span class="dot dot--node"></span>
+            </div>
+            <svg class="thread thread--h thread--origin" style="flex:1 1 auto"></svg>
+            <div style="flex:none; display:flex; align-items:center; gap:8px">
+              <span class="dot dot--node"></span>
+              <span class="t-label c-3">Karte 7</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Die zweite Aktivität, ebenfalls auf dem Sperrbildschirm -->
+      <div class="on-dark" style="position:absolute; left:16px; top:472px; z-index:5">
+        <div class="la" style="padding:12px 16px">
+          <div class="la__head" style="margin-bottom:6px">
+            <span style="width:7px;height:7px;border-radius:50%;background:var(--danger);display:block"></span>Velum · Aufnahme
+            <span class="sp"></span>
+            <span class="num">12:04</span>
+          </div>
+          <div class="t-body is-strong">Zellbiologie — Vorlesung 9</div>
+          <div class="t-sub c-3" style="margin-top:2px">Tinte und Ton laufen synchron mit.</div>
+        </div>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 4 · Zustandstafel ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Zustandstafel <span>alle vier Formen</span></div>
+    <div class="plate on-dark">
+
+      <div class="plate__row">
+        <div class="plate__cap"><b>Ruhe</b><span class="plate__mass">126 × 37,33 pt · 11 pt unter der Kante</span></div>
+        <div class="isl isl--rest"></div>
+      </div>
+
+      <div class="plate__row">
+        <div class="plate__cap"><b>Kompakt</b><span class="plate__mass">245 pt · im Bild gemessen</span></div>
+        <div class="isl isl--compact">
+          <span class="isl__lead"><span class="dot dot--cards"></span>Karten</span>
+          <span class="isl__cut"></span>
+          <span class="isl__trail num">7/23</span>
+        </div>
+        <div class="plate__mass" style="margin-top:8px">
+          führend links, folgend rechts — die mittleren 126 pt bleiben frei.
+          Die Breite folgt dem Inhalt, sie ist nicht gesetzt.
+        </div>
+      </div>
+
+      <div class="plate__row">
+        <div class="plate__cap"><b>Minimal</b><span class="plate__mass">angeheftet + abgesetzt · 36,67 pt</span></div>
+        <div style="display:flex; align-items:center; gap:8px">
+          <div class="isl isl--attached">
+            <span style="width:9px;height:9px;border-radius:50%;background:var(--danger);display:block"></span>
+            <span class="isl__cut"></span>
+          </div>
+          <div class="isl isl--min"><span class="dot dot--cards"></span></div>
+        </div>
+      </div>
+
+      <div class="plate__row" style="margin-bottom:0">
+        <div class="plate__cap"><b>Erweitert</b><span class="plate__mass">371 × 203 pt · Radius 44</span></div>
+        <div class="isl isl--exp" style="width:371px; transform:scale(.87); transform-origin:0 0">
+          <div style="display:flex; align-items:flex-start; gap:12px">
+            <div style="flex:1 1 auto; min-width:0">
+              <div class="t-label" style="color:var(--ink-3); display:flex; align-items:center; gap:7px">
+                <span class="dot dot--cards"></span>Lernsession
+              </div>
+              <div class="t-section" style="margin-top:3px">Zellbiologie</div>
+            </div>
+            <div style="text-align:right; flex:none">
+              <div class="t-section num">7<span class="c-3" style="font-weight:400"> / 23</span></div>
+              <div class="t-label c-3 num">noch ca. 8 Min.</div>
+            </div>
+          </div>
+          <div class="bar" style="margin:12px 0 14px"><div class="bar__fill" style="width:30.4%"></div></div>
+          <div style="display:flex; align-items:center; gap:10px">
+            <div style="flex:none; display:flex; align-items:center; gap:8px">
+              <div><div class="t-label c-3">Notiz, Absatz 7</div><div class="t-sub is-strong">Zellbiologie</div></div>
+              <span class="dot dot--node"></span>
+            </div>
+            <svg class="thread thread--h thread--origin" style="flex:1 1 auto"></svg>
+            <div style="flex:none; display:flex; align-items:center; gap:8px">
+              <span class="dot dot--node"></span>
+              <div><div class="t-label c-3">Karte 7</div><div class="t-sub is-strong">Hypertonie</div></div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:16px">
+            <button class="btn" style="flex:1 1 0; background:none; box-shadow:inset 0 0 0 1.5px var(--line-2)">Pause</button>
+            <button class="btn btn--primary" style="flex:1 1 0">Weiter</button>
+          </div>
+        </div>
+        <div class="plate__mass" style="margin-top:36px">
+          Die erweiterte Form steht hier auf 87 % verkleinert, damit alle vier
+          Formen auf eine Tafel passen. Die drei anderen sind 1:1.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="sheetnote">
+  <h2>Steckbrief — Live Activity und Dynamic Island</h2>
+  <p>Apple veröffentlicht für die Dynamic Island <strong>keine Maßtabelle</strong>. Auf dieser Seite ist deshalb kein einziges Maß belegt; jedes steht mit seiner Herleitung da.</p>
+
+  <h3>Systemmaße — alle geschätzt</h3>
+  <table>
+    <tr><td>Ruhe</td><td>126 × 37,33 pt, 11 pt unter der Oberkante. Die in der Entwicklergemeinde verbreitete Messung; kein Apple-Dokument nennt sie.</td></tr>
+    <tr><td>Kompakt</td><td>Höhe wie Ruhe, Breite wächst mit dem Inhalt. Im Bild nachgemessen: 245 = 13 + 57 führend + 126 Aussparung + 36 folgend + 13.</td></tr>
+    <tr><td>Minimal</td><td>36,67 pt = 37,33 − 0,66 Rand. Hergeleitet. Bei zwei Aktivitäten sitzt eine angeheftet in der Insel, die andere abgesetzt daneben — Verhalten aus Modellwissen, nicht geprüft.</td></tr>
+    <tr><td>Erweitert</td><td>371 = 393 − 2 × 11 · Höhe im Bild nachgemessen 203 · Radius 44 aus dem Gehäuseradius übernommen.</td></tr>
+    <tr><td>Sperrbildschirm</td><td>361 = 393 − 2 × 16 · Radius 22. Beides geschätzt.</td></tr>
+  </table>
+
+  <h3>Kontrast (gerechnet)</h3>
+  <table>
+    <tr><td>Text auf der Insel</td><td>Weiß auf Schwarz 21:1 · sekundär rgba(255,255,255,.60) auf Schwarz 7,5:1</td></tr>
+    <tr><td>Faden auf der Insel</td><td>rgba(255,255,255,.58) auf Schwarz 7,0:1 — deutlich über der 3:1-Schwelle. Auf der immer schwarzen Insel ist der Faden heller als auf Papier; der Baustein bleibt derselbe, nur das Token wird lokal gesetzt.</td></tr>
+    <tr><td>Knopf „Weiter"</td><td>Schwarz auf Weiß 21:1 — auf der Insel dreht der Ink-Akzent um</td></tr>
+    <tr><td>Knopf „Pause"</td><td>Weiß auf Schwarz 21:1, Umrandung rgba(255,255,255,.22) 3,4:1</td></tr>
+    <tr><td>Aufnahme-Punkt</td><td>danger dunkel #FF6B5E auf Schwarz 8,0:1 — steht nie allein, immer neben dem Wort „Aufnahme"</td></tr>
+  </table>
+
+  <h3>Der Faden</h3>
+  <p>Zwei Orte, beide mit echter Kante: die laufende Karte und ihr Ursprungsabsatz, in der erweiterten Form und auf dem Sperrbildschirm. In der kompakten und der minimalen Form steht keiner — dort ist kein Platz für zwei Punkte, und ein Strich ohne zwei Enden wäre eine Zierlinie.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

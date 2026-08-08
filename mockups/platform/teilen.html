@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teilen-Blatt — Velum im System</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* ══ PLATTFORM-KERN (inline, wie in allen Seiten dieses Ordners) ══════════ */
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+/* ══ SEITENEIGENES — das Teilen-Blatt ════════════════════════════════════ */
+
+/* Blatt: 8 pt Seitenabstand, Radius 13. Beides geschätzt. */
+.sheet { position:absolute; left:8px; right:8px; bottom:0; z-index:20;
+         background:var(--paper-2); border-radius:13px 13px 0 0;
+         box-shadow:0 -2px 8px rgba(0,0,0,.10), 0 -18px 44px rgba(0,0,0,.18);
+         padding-bottom:34px; overflow:hidden; }
+.sheet__grab { width:36px; height:5px; border-radius:3px; background:var(--ink-4);
+               margin:6px auto 0; }
+.sheet__hdr { display:flex; align-items:center; gap:12px; padding:14px 16px; }
+.sheet__rule { height:1px; background:var(--line); margin:0 16px; }
+
+.approw { display:flex; gap:18px; padding:16px 16px 14px; overflow:hidden; }
+.appitem { width:60px; flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; }
+.appitem__sq { width:60px; height:60px; border-radius:13.42px; flex:none;   /* 60 × 22,37 % */
+               background:var(--fill-2); display:flex; align-items:center; justify-content:center;
+               color:var(--ink-2); }
+.appitem__sq .ico { width:28px; height:28px; }
+.appitem__lbl { font:400 11px/13px var(--sans); color:var(--ink-2); text-align:center;
+                max-width:64px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.act { display:flex; align-items:center; gap:12px; min-height:52px; padding:8px 16px;
+       position:relative; width:100%; text-align:left; color:var(--ink-1); }
+.act + .act::before { content:""; position:absolute; left:16px; right:0; top:0; height:1px; background:var(--line); }
+.act .sp { flex:1 1 auto; }
+.act .ico { width:22px; height:22px; color:var(--ink-2); flex:none; }
+.act--danger { color:var(--danger); }
+.act--danger .ico { color:var(--danger); }
+
+.blockhead { font:600 13px/16px var(--sans); letter-spacing:.06em; text-transform:uppercase;
+             color:var(--ink-3); padding:16px 16px 6px; }
+
+.kette__lbl { display:flex; margin-top:7px; }
+.kette__lbl > div { flex:1 1 0; min-width:0; }
+.kette__lbl > div:last-child { text-align:right; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — TEILEN-BLATT
+
+WAS DAS IST
+Zwei Richtungen desselben Blatts. Links: Emil teilt eine Velum-Notiz nach
+draußen — das Systemblatt mit Vorschau, App-Reihe und Aktionsliste, in der
+Velums eigene Aktionen unten mitstehen. Rechts: Emil teilt eine Webseite aus
+Safari NACH Velum — dort ist Velum die Erweiterung, und das Blatt zeigt
+vorher, welches Objekt entsteht und woran es hängen wird.
+
+Das Kontextmenü mit Vorschau steht auf einer eigenen Seite
+(kontextmenue.html). Der Auftrag führt beides unter einem Punkt; getrennt
+wird es klarer, weil das eine ein Systemblatt von unten ist und das andere
+ein Menü am Objekt.
+
+SYSTEMMASSE — ALLES GESCHÄTZT, MIT HERLEITUNG
+Kein Netzzugang zum Hersteller in diesem Lauf.
+  Blatt: 8 pt Seitenabstand, oben Radius 13, unten am Bildschirmrand bündig,
+    34 pt Fußraum für den Home-Indikator (dieser Wert steht als --home-indicator
+    seit Runde 1 in system.css §1.5).
+  Ziehgriff 36 × 5 pt, 6 pt unter der Blattkante.
+  App-Reihe: Symbol 60 pt, Radius 13,42 = 60 × 22,37 % (Anteil belegt),
+    Abstand 18 pt, Beschriftung 11 pt. Die 11 pt sind iOS' Maß für
+    Symbolbeschriftungen und nicht Velums Skala — dieselbe begründete
+    Ausnahme wie die Tab-Beschriftung in system.css §4.
+  Aktionszeile ≥ 52 pt, Trennlinie beginnt beim Innenabstand 16 pt.
+
+DAS ZEICHEN
+Velum steht in der App-Reihe des rechten Blatts. Die drei PNG liegen nicht
+vor: dort steht der reservierte leere Rahmen, 60 pt. Der vollständige
+Baustein mit Pfadangabe steht auf der Übersichtsseite und im Steckbrief.
+
+WO DER FADEN STEHT
+  · Rechtes Blatt, Vorschau des Ergebnisses: Safari-Seite ──●── neue Notiz
+    in „Biologie". 2,5 pt, zwei Knoten. Der Faden ist eine Zusage — so hängt
+    das Objekt hinterher im Netz, und der Weg ist rückwärts begehbar.
+  · Linkes Blatt: KEIN Faden. Eine Notiz nach draußen zu geben erzeugt keine
+    Kante im Datenmodell; sie verlässt es. Genau deshalb steht dort nichts.
+
+AFFORDANZ
+Die Aktionsliste trägt links Text und rechts das Symbol — iOS' Anordnung.
+Jede Zeile ist ≥ 52 pt. „Löschen" ist rot UND trägt das Papierkorb-Symbol
+(zwei Merkmale). Im rechten Blatt ist „Sichern" der einzige gefüllte
+Ink-Knopf.
+
+KONTRAST — Werte im Steckbrief unter der Bühne.
+TYPO: fünf Größen, zwei Gewichte. Eine Ausnahme, sie gehört iOS: die
+Beschriftung der App-Symbole auf 11 pt.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="index.html"><span aria-hidden="true">‹</span><span class="u">Plattform-Übersicht</span></a>
+  <a href="../index.html"><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Teilen-Blatt</h1>
+  <p>Zwei Richtungen: eine Notiz aus Velum hinaus — und eine Webseite aus Safari hinein. Beim Hineinteilen zeigt Velum vorher, welches Objekt entsteht und woran es hängen wird; der Faden ist hier eine Zusage.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════ 1 · Aus Velum hinaus ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Aus Velum hinaus <span>Systemblatt über dem Notiz-Editor</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body" style="position:relative">
+        <main class="content">
+          <div class="navbar">
+            <button class="iconbtn" style="margin-left:-10px"><span class="ico" data-ico="chevL"></span></button>
+            <div><div class="t-body is-strong">Zellbiologie</div><div class="t-label c-3">Vorlesung 9</div></div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn is-active"><span class="ico" data-ico="share"></span></button>
+          </div>
+          <div class="scroll">
+            <p class="t-body" style="margin:0 0 14px">Die innere Membran des Mitochondriums ist stark gefaltet. Diese Falten heißen Cristae; sie vergrößern die Fläche, auf der die Atmungskette sitzt.</p>
+            <p class="t-body" style="margin:0">Zwischen Matrix und Intermembranraum besteht ein Protonengradient. Er ist der eigentliche Energiespeicher der Zelle.</p>
+          </div>
+        </main>
+        <!-- iOS dunkelt den Schirm ab, während das Blatt offen steht. -->
+        <div style="position:absolute; inset:0; background:rgba(10,12,15,.36); z-index:10"></div>
+      </div>
+
+      <div class="sheet" style="bottom:-34px">
+        <div class="sheet__grab"></div>
+
+        <div class="sheet__hdr">
+          <span class="ico" data-ico="doc" style="width:38px;height:38px;color:var(--ink-3)"></span>
+          <div style="flex:1 1 auto; min-width:0">
+            <div class="t-body is-strong clamp-1">Zellbiologie</div>
+            <div class="t-sub c-3 clamp-1">Velum-Notiz · 2 Seiten</div>
+          </div>
+          <button class="btn btn--sm" style="background:var(--fill-2)">Optionen</button>
+        </div>
+
+        <div class="sheet__rule"></div>
+
+        <div class="approw">
+          <div class="appitem">
+            <span class="appitem__sq"><span class="ico" data-ico="cloud"></span></span>
+            <span class="appitem__lbl">AirDrop</span>
+          </div>
+          <div class="appitem">
+            <span class="appitem__sq"><span class="ico" data-ico="quote"></span></span>
+            <span class="appitem__lbl">Jana</span>
+          </div>
+          <div class="appitem">
+            <span class="appitem__sq"><span class="ico" data-ico="inbox"></span></span>
+            <span class="appitem__lbl">Mail</span>
+          </div>
+          <div class="appitem">
+            <span class="appitem__sq"><span class="ico" data-ico="notes"></span></span>
+            <span class="appitem__lbl">Notizen</span>
+          </div>
+          <div class="appitem">
+            <span class="appitem__sq"><span class="ico" data-ico="more"></span></span>
+            <span class="appitem__lbl">Mehr</span>
+          </div>
+        </div>
+
+        <div class="sheet__rule"></div>
+
+        <button class="act"><span>Kopieren</span><span class="sp"></span><span class="ico" data-ico="doc"></span></button>
+        <button class="act"><span>Als PDF sichern</span><span class="sp"></span><span class="ico" data-ico="folder"></span></button>
+        <button class="act"><span>Drucken</span><span class="sp"></span><span class="ico" data-ico="grid"></span></button>
+
+        <div class="blockhead">Velum</div>
+        <button class="act"><span>Nur den markierten Absatz teilen</span><span class="sp"></span><span class="ico" data-ico="quote"></span></button>
+        <button class="act"><span>Mit Herkunft teilen</span><span class="sp"></span><span class="ico" data-ico="link"></span></button>
+        <div style="padding:2px 16px 14px"><span class="t-label c-3">„Mit Herkunft" legt einen Link bei, der beim Empfänger auf die Stelle zeigt, an der die Notiz entstand — sofern er Velum hat.</span></div>
+      </div>
+      <div class="home-indicator" style="position:absolute; left:0; right:0; bottom:0; z-index:30"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 2 · Nach Velum hinein ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Nach Velum hinein <span>Systemblatt über Safari</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:44</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body" style="position:relative">
+        <main class="content">
+          <div class="navbar">
+            <button class="iconbtn" style="margin-left:-10px"><span class="ico" data-ico="chevL"></span></button>
+            <div class="field" style="flex:1 1 auto">
+              <span class="ico" data-ico="lock" style="width:14px;height:14px"></span>
+              <span class="t-sub">uni-portal.de/zellkultur</span>
+            </div>
+            <button class="iconbtn is-active"><span class="ico" data-ico="share"></span></button>
+          </div>
+          <div class="scroll">
+            <div class="t-section" style="margin-bottom:8px">Zellkultur-Protokoll — Vorlage</div>
+            <p class="t-body" style="margin:0 0 12px">Das Protokoll umfasst Ansatz, Passage und Auswertung. Für jede Passage werden Zellzahl und Vitalität notiert.</p>
+            <p class="t-body c-2" style="margin:0">Abgabe: spätestens 48 Stunden nach dem Versuch.</p>
+          </div>
+        </main>
+        <div style="position:absolute; inset:0; background:rgba(10,12,15,.36); z-index:10"></div>
+      </div>
+
+      <div class="sheet" style="bottom:-34px">
+        <div class="sheet__grab"></div>
+
+        <div class="sheet__hdr">
+          <span class="ico" data-ico="doc" style="width:38px;height:38px;color:var(--ink-3)"></span>
+          <div style="flex:1 1 auto; min-width:0">
+            <div class="t-body is-strong clamp-1">Zellkultur-Protokoll — Vorlage</div>
+            <div class="t-sub c-3 clamp-1">uni-portal.de</div>
+          </div>
+        </div>
+
+        <div class="sheet__rule"></div>
+
+        <div class="approw">
+          <div class="appitem">
+            <span class="appitem__sq"><span class="ico" data-ico="cloud"></span></span>
+            <span class="appitem__lbl">AirDrop</span>
+          </div>
+          <!-- Velum in der App-Reihe: reservierter Zeichenplatz, 60 pt. -->
+          <div class="appitem">
+            <span class="appicon" style="--appicon-size:60px" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:13.42px"></span></span>
+            <span class="appitem__lbl">Velum</span>
+          </div>
+          <div class="appitem">
+            <span class="appitem__sq"><span class="ico" data-ico="inbox"></span></span>
+            <span class="appitem__lbl">Mail</span>
+          </div>
+          <div class="appitem">
+            <span class="appitem__sq"><span class="ico" data-ico="more"></span></span>
+            <span class="appitem__lbl">Mehr</span>
+          </div>
+        </div>
+
+        <div class="sheet__rule"></div>
+
+        <!-- Velums Erweiterung: sie zeigt VORHER, was entsteht. -->
+        <div style="padding:14px 16px 4px">
+          <div class="t-label c-3" style="display:flex; align-items:center; gap:7px; margin-bottom:10px">
+            <span class="dot dot--notes"></span>In Velum sichern als
+          </div>
+
+          <div class="segmented" style="width:100%">
+            <button class="is-on" style="flex:1 1 0">Notiz</button>
+            <button style="flex:1 1 0">Aufgabe</button>
+            <button style="flex:1 1 0">Karte</button>
+          </div>
+
+          <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:8px">
+            <span class="chip"><span class="ico" data-ico="folder" style="width:14px;height:14px"></span>Notizbuch „Biologie"</span>
+            <span class="chip"><span class="ico" data-ico="tag" style="width:14px;height:14px"></span>Protokolle</span>
+          </div>
+
+          <!-- Die Zusage: so hängt das Objekt hinterher im Netz. -->
+          <div style="margin-top:16px; padding:12px 14px; border-radius:11px; background:var(--fill)">
+            <div class="t-label c-3" style="margin-bottom:9px">Danach hängt die Notiz so:</div>
+            <div class="threadrow" style="padding:0 4px">
+              <span class="dot dot--node" style="--node-ring:var(--paper-2)"></span>
+              <svg class="thread thread--h thread--origin"></svg>
+              <span class="dot dot--node" style="--node-ring:var(--paper-2)"></span>
+            </div>
+            <div class="kette__lbl">
+              <div><div class="t-label c-3">Quelle</div><div class="t-sub is-strong">uni-portal.de</div></div>
+              <div><div class="t-label c-3">wird zu</div><div class="t-sub is-strong">Notiz „Zellkultur-Protokoll"</div></div>
+            </div>
+          </div>
+
+          <button class="btn btn--primary" style="width:100%; margin-top:14px">Sichern</button>
+          <div style="height:8px"></div>
+        </div>
+      </div>
+      <div class="home-indicator" style="position:absolute; left:0; right:0; bottom:0; z-index:30"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sheetnote">
+  <h2>Steckbrief — Teilen-Blatt</h2>
+  <p>Apple veröffentlicht keine Maßtabelle für das Teilen-Blatt. Auf dieser Seite ist <strong>kein Systemmaß belegt</strong>; jedes steht mit seiner Rechnung.</p>
+
+  <h3>Systemmaße (geschätzt)</h3>
+  <table>
+    <tr><td>Blatt</td><td>8 pt Seitenabstand, oben Radius 13, 34 pt Fußraum (der Wert von --home-indicator aus system.css §1.5).</td></tr>
+    <tr><td>Ziehgriff</td><td>36 × 5 pt, 6 pt unter der Kante.</td></tr>
+    <tr><td>App-Reihe</td><td>Symbol 60 pt, Radius 13,42 = 60 × 22,37 % (Anteil belegt), Abstand 18, Beschriftung 11 pt (iOS' Maß, nicht Velums Skala).</td></tr>
+    <tr><td>Aktionszeile</td><td>≥ 52 pt, Trennlinie ab 16 pt Innenabstand.</td></tr>
+  </table>
+
+  <h3>Kontrast (gerechnet)</h3>
+  <table>
+    <tr><td>Blatttext</td><td>ink-1 auf paper-2 17,4:1 hell · 14,9:1 dunkel</td></tr>
+    <tr><td>Unterzeile</td><td>ink-3 auf paper-2 4,7:1 hell · 4,8:1 dunkel</td></tr>
+    <tr><td>Faden in der Zusage</td><td>thread auf fill über paper-2 3,05:1 hell · 3,09:1 dunkel — über der 3:1-Schwelle. Der Knoten trägt hier den Ring in paper-2, damit er auf der eingelassenen Fläche steht und nicht mit ihr verschmilzt (system.css §9.3).</td></tr>
+    <tr><td>Knopf „Sichern"</td><td>accent-on auf Ink 17,8:1 hell · 17,3:1 dunkel</td></tr>
+    <tr><td>Segmentwahl</td><td>weiße Fläche plus Gewicht 600 — nie Farbe allein</td></tr>
+  </table>
+
+  <h3>Warum das linke Blatt keinen Faden trägt</h3>
+  <p>Eine Notiz nach draußen zu geben erzeugt keine Kante im Datenmodell — sie verlässt es. Der Faden steht nur, wo wirklich eine Beziehung entsteht, und das ist im rechten Blatt der Fall: dort wird aus einer Webseite eine Notiz, und diese Kante bleibt danach begehbar. Die Aktion „Mit Herkunft teilen" im linken Blatt ist der Grenzfall — sie legt einen Link bei, der beim Empfänger zur Kante wird, aber erst dann. Deshalb steht dort ein Satz und kein Strich.</p>
+
+  <h3>Das Zeichen</h3>
+  <p>In der App-Reihe des rechten Blatts steht der reservierte leere Rahmen, 60 pt. Hier der vollständige Baustein mit seiner Warnung:</p>
+  <p><span class="appicon" data-appicon></span></p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

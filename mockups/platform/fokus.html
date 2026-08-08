@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fokus-Filter — Velum im System</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* ══ PLATTFORM-KERN (inline, wie in allen Seiten dieses Ordners) ══════════ */
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+/* ══ SEITENEIGENES ═══════════════════════════════════════════════════════ */
+
+/* Gruppierte Liste der Systemeinstellungen. Maße geschätzt, Rechnung im
+   Kommentarblock. */
+.grp { background:var(--paper); border-radius:11px; overflow:hidden; }
+.grp__row { display:flex; align-items:center; gap:12px; min-height:48px; padding:8px 14px;
+            position:relative; width:100%; text-align:left; color:var(--ink-1); }
+.grp__row + .grp__row::before { content:""; position:absolute; left:14px; right:0; top:0;
+                                height:1px; background:var(--line); }
+.grp__row .sp { flex:1 1 auto; }
+.grp__title { font:600 13px/16px var(--sans); letter-spacing:.06em; text-transform:uppercase;
+              color:var(--ink-3); margin:22px 0 7px 16px; }
+.grp__note { font:400 13px/17px var(--sans); color:var(--ink-3); margin:7px 16px 0; }
+
+/* Schalter. An = gefüllte Ink-Fläche mit Knopf rechts, Aus = leere Fläche mit
+   Knopf links: Stellung UND Fläche, nie Farbe allein. */
+.sw { width:51px; height:31px; border-radius:999px; flex:none; position:relative;
+      background:var(--fill-3); box-shadow:inset 0 0 0 1px var(--line-2); }
+.sw::after { content:""; position:absolute; top:2px; left:2px; width:27px; height:27px;
+             border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.28); }
+.sw.is-on { background:var(--accent); box-shadow:none; }
+.sw.is-on::after { left:22px; }
+
+/* Der Fokus-Streifen im Kopf des Schirms: sagt in Worten, was gerade fehlt. */
+.fokusband { display:flex; align-items:center; gap:9px; padding:9px 12px; border-radius:11px;
+             background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring); }
+
+.kette__lbl { display:flex; margin-top:7px; }
+.kette__lbl > div { flex:1 1 0; min-width:0; }
+.kette__lbl > div:nth-child(2) { text-align:center; }
+.kette__lbl > div:nth-child(3) { text-align:right; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — FOKUS-FILTER
+
+WAS DAS IST
+Drei Schirme: der Fokusfilter von Velum in den Systemeinstellungen, und
+danebeneinander derselbe Velum-Schirm „Heute" — einmal ohne Fokus, einmal im
+Fokus „Studium". Der Unterschied ist gezeigt, nicht beschrieben.
+
+WAS DER FILTER MACHT
+  · Bereiche: nur „Biologie" und „Analysis II". Alles aus anderen Bereichen
+    verschwindet — die Bibliotheksbücher und die Anatomie-Karteikarten.
+  · Journal aus. Der Tagesimpuls ist kein Studium; er kommt abends wieder.
+  · Nur fällige Karten. Neue Karten warten bis nach der Klausurphase.
+  · Erscheinungsbild bleibt aus: Velum wechselt nicht die Farbigkeit, nur
+    den Bestand. Ein Fokus, der die App anders aussehen lässt, verwirrt
+    mehr als er hilft.
+
+DIE EHRLICHE ZEILE
+Im Fokus steht oben ein Streifen: „Fokus Studium — 3 Objekte ausgeblendet",
+mit einem Knopf, der sie zeigt. Ein Filter, der schweigend etwas wegnimmt,
+ist ein Fehler; er muss sagen, was fehlt, und den Weg zurück offen lassen.
+Das ist der Grund, warum der Streifen kein Etikett ist, sondern ein
+Bedienelement mit 44 pt.
+
+SYSTEMMASSE — GESCHÄTZT
+  Gruppierte Liste: 16 pt Seitenabstand, Radius 11, Zeilenhöhe ≥ 48 pt,
+    Trennlinie beginnt beim Innenabstand 14 pt. Gesetzt, nicht gemessen.
+  Systemschalter 51 × 31 pt, Knopf 27 pt, Weg 20 pt = 51 − 2 × 2 − 27.
+    51 × 31 ist die seit iOS 7 gebräuchliche Größe; sie steht in keinem
+    zugänglichen Apple-Dokument dieses Laufs und gilt hier als geschätzt.
+    Die Rechnung für den Knopfweg steht dabei.
+
+WO DER FADEN STEHT
+  · Die Ketten-Karte steht in BEIDEN Fassungen: Notiz → 12 Karten → 8 heute
+    fällig. Sie überlebt den Filter, weil sie ganz im Bereich „Biologie"
+    liegt — das ist der Beweis, dass der Filter Bestand filtert und nicht
+    Beziehungen kappt.
+  · KEIN Faden im Fokus-Streifen und keiner in der Einstellungsliste.
+
+AFFORDANZ
+Der Systemschalter trägt Stellung UND Fläche: an = gefüllte Ink-Fläche,
+Knopf rechts; aus = leere Fläche, Knopf links. Nie Farbe allein. Der
+Fokus-Streifen ist 44 pt hoch und trägt rechts einen Knopf mit Umrandung.
+
+KONTRAST — Werte im Steckbrief unter der Bühne.
+TYPO: fünf Größen, zwei Gewichte, keine Ausnahme auf dieser Seite.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="index.html"><span aria-hidden="true">‹</span><span class="u">Plattform-Übersicht</span></a>
+  <a href="../index.html"><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Fokus-Filter</h1>
+  <p>Links stellt iOS ein, was im Fokus „Studium" gelten soll. Rechts steht derselbe Schirm zweimal: ohne Fokus und im Fokus. Was fehlt, sagt Velum in einer Zeile — ein Filter, der schweigend etwas wegnimmt, ist ein Fehler.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════ 1 · Systemeinstellungen ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Einstellungen <span>Fokus „Studium" → Filter</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <main class="content">
+          <div class="navbar">
+            <button class="iconbtn" style="margin-left:-10px"><span class="ico" data-ico="chevL"></span></button>
+            <div class="t-body is-strong">Studium</div>
+            <div class="navbar__spacer"></div>
+          </div>
+
+          <div class="scroll" style="padding:8px 16px 20px">
+            <h1 class="t-title" style="margin:2px 0 6px">Fokusfilter</h1>
+            <p class="t-sub c-3" style="margin:0">Apps können sich im Fokus anders verhalten. Velum stellt vier Filter zur Verfügung.</p>
+
+            <div class="grp__title">Velum</div>
+            <div class="grp">
+              <button class="grp__row">
+                <span class="ico" data-ico="folder" style="width:20px;height:20px;color:var(--ink-3)"></span>
+                <span class="t-body">Bereiche</span>
+                <span class="sp"></span>
+                <span class="t-body c-3">2 gewählt</span>
+                <span class="ico" data-ico="chevR" style="width:16px;height:16px;color:var(--ink-4)"></span>
+              </button>
+              <div class="grp__row">
+                <span class="dot dot--journal"></span>
+                <span class="t-body">Journal ausblenden</span>
+                <span class="sp"></span>
+                <span class="sw is-on"></span>
+              </div>
+              <div class="grp__row">
+                <span class="dot dot--cards"></span>
+                <span class="t-body">Nur fällige Karten</span>
+                <span class="sp"></span>
+                <span class="sw is-on"></span>
+              </div>
+              <div class="grp__row">
+                <span class="ico" data-ico="moon" style="width:20px;height:20px;color:var(--ink-3)"></span>
+                <span class="t-body">Dunkles Erscheinungsbild</span>
+                <span class="sp"></span>
+                <span class="sw"></span>
+              </div>
+            </div>
+            <p class="grp__note">Velum wechselt im Fokus nicht die Farbigkeit, nur den Bestand. Eine App, die im Fokus anders aussieht, verwirrt mehr, als sie hilft.</p>
+
+            <div class="grp__title">Gewählte Bereiche</div>
+            <div class="grp">
+              <div class="grp__row">
+                <span class="ico" data-ico="check" style="width:20px;height:20px;color:var(--ink-1)"></span>
+                <span class="t-body">Biologie</span>
+                <span class="sp"></span>
+                <span class="t-sub c-3">4 Aufgaben · 2 Notizbücher</span>
+              </div>
+              <div class="grp__row">
+                <span class="ico" data-ico="check" style="width:20px;height:20px;color:var(--ink-1)"></span>
+                <span class="t-body">Analysis II</span>
+                <span class="sp"></span>
+                <span class="t-sub c-3">1 Aufgabe · 1 Notizbuch</span>
+              </div>
+              <div class="grp__row is-off">
+                <span style="width:20px"></span>
+                <span class="t-body">Persönlich</span>
+                <span class="sp"></span>
+                <span class="t-sub c-3">2 Aufgaben</span>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 2 · Vorher ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Vorher <span>Velum ohne Fokus</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <main class="content">
+          <div class="navbar"><div class="t-title">Heute</div></div>
+          <div class="scroll" style="display:flex; flex-direction:column; gap:14px">
+
+            <p class="t-body c-2" style="margin:0">Donnerstag, 13. November. <strong class="c-1">Sechs Aufgaben</strong> sind heute fällig, <strong class="c-1">23 Karten</strong> warten.</p>
+
+            <section class="card" style="padding:14px">
+              <div style="display:flex; align-items:center; gap:7px; color:var(--ink-3); font:600 13px/16px var(--sans)">
+                <span class="dot dot--cards"></span>Aus der Vorlesung von gestern
+              </div>
+              <div style="margin-top:12px">
+                <div class="threadrow" style="padding:0 4px">
+                  <span class="dot dot--node"></span>
+                  <svg class="thread thread--h thread--origin"></svg>
+                  <span class="dot dot--node"></span>
+                  <svg class="thread thread--h thread--origin"></svg>
+                  <span class="dot dot--node"></span>
+                </div>
+                <div class="kette__lbl">
+                  <div><div class="t-label c-3">Notiz</div><div class="t-sub is-strong">Zellbiologie</div></div>
+                  <div><div class="t-label c-3">wurde zu</div><div class="t-sub is-strong num">12 Karten</div></div>
+                  <div><div class="t-label c-3">heute fällig</div><div class="t-sub is-strong num">8 Karten</div></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card" style="padding:14px">
+              <div class="card__head" style="margin-bottom:8px">
+                <span class="dot dot--journal"></span><span class="t-label c-3 card__title">Impuls</span>
+              </div>
+              <div class="t-body">Wie war der Tag im Labor? Ein Foto von heute liegt bereit.</div>
+            </section>
+
+            <section class="card" style="padding:14px">
+              <div class="card__head" style="margin-bottom:4px">
+                <span class="dot dot--tasks"></span><span class="t-label c-3 card__title">Heute fällig · 6</span>
+              </div>
+              <div class="row" style="padding:7px 0"><span class="check"></span><div class="row__main"><span class="t-body">Laborprotokoll Zellkultur schreiben</span><span class="t-sub" style="color:var(--danger)">heute 18:00 · Biologie</span></div></div>
+              <div class="row" style="padding:7px 0"><span class="check"></span><div class="row__main"><span class="t-body">Rückmeldung an Prof. Wendt</span><span class="t-sub c-3">geplant 16:00 · Biologie</span></div></div>
+              <div class="row" style="padding:7px 0"><span class="check"></span><div class="row__main"><span class="t-body">Übungsblatt 5 fertig rechnen</span><span class="t-sub c-3">geplant 19:30 · Analysis II</span></div></div>
+              <div class="row" style="padding:7px 0"><span class="check"></span><div class="row__main"><span class="t-body">Bücher in der Bibliothek verlängern</span><span class="t-sub c-3">heute · Persönlich</span></div></div>
+              <div class="row" style="padding:7px 0"><span class="check"></span><div class="row__main"><span class="t-body">Karteikarten Anatomie nacharbeiten</span><span class="t-sub c-3">geplant 21:00 · Persönlich</span></div></div>
+            </section>
+
+          </div>
+        </main>
+      </div>
+
+      <div class="tabbar">
+        <button class="tab is-active"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+        <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+        <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+        <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernkarten</span></button>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 3 · Nachher ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Nachher <span>Fokus „Studium" ist an</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right">
+          <span class="ico" data-ico="moon" style="width:14px;height:14px"></span>
+          <span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span>
+        </span>
+      </div>
+
+      <div class="body">
+        <main class="content">
+          <div class="navbar"><div class="t-title">Heute</div></div>
+          <div class="scroll" style="display:flex; flex-direction:column; gap:14px">
+
+            <!-- Der Streifen sagt, was fehlt — und lässt den Weg zurück offen. -->
+            <div class="fokusband">
+              <span class="ico" data-ico="moon" style="width:18px;height:18px;color:var(--ink-1)"></span>
+              <div style="flex:1 1 auto; min-width:0">
+                <div class="t-sub is-strong">Fokus „Studium"</div>
+                <div class="t-label c-3">3 Objekte ausgeblendet</div>
+              </div>
+              <button class="btn btn--sm" style="background:none; box-shadow:inset 0 0 0 1.5px var(--line-2)">Zeigen</button>
+            </div>
+
+            <p class="t-body c-2" style="margin:0">Donnerstag, 13. November. <strong class="c-1">Drei Aufgaben</strong> sind heute fällig, <strong class="c-1">8 Karten</strong> warten.</p>
+
+            <section class="card" style="padding:14px">
+              <div style="display:flex; align-items:center; gap:7px; color:var(--ink-3); font:600 13px/16px var(--sans)">
+                <span class="dot dot--cards"></span>Aus der Vorlesung von gestern
+              </div>
+              <div style="margin-top:12px">
+                <div class="threadrow" style="padding:0 4px">
+                  <span class="dot dot--node"></span>
+                  <svg class="thread thread--h thread--origin"></svg>
+                  <span class="dot dot--node"></span>
+                  <svg class="thread thread--h thread--origin"></svg>
+                  <span class="dot dot--node"></span>
+                </div>
+                <div class="kette__lbl">
+                  <div><div class="t-label c-3">Notiz</div><div class="t-sub is-strong">Zellbiologie</div></div>
+                  <div><div class="t-label c-3">wurde zu</div><div class="t-sub is-strong num">12 Karten</div></div>
+                  <div><div class="t-label c-3">heute fällig</div><div class="t-sub is-strong num">8 Karten</div></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card" style="padding:14px">
+              <div class="card__head" style="margin-bottom:4px">
+                <span class="dot dot--tasks"></span><span class="t-label c-3 card__title">Heute fällig · 3</span>
+              </div>
+              <div class="row" style="padding:7px 0"><span class="check"></span><div class="row__main"><span class="t-body">Laborprotokoll Zellkultur schreiben</span><span class="t-sub" style="color:var(--danger)">heute 18:00 · Biologie</span></div></div>
+              <div class="row" style="padding:7px 0"><span class="check"></span><div class="row__main"><span class="t-body">Rückmeldung an Prof. Wendt</span><span class="t-sub c-3">geplant 16:00 · Biologie</span></div></div>
+              <div class="row" style="padding:7px 0"><span class="check"></span><div class="row__main"><span class="t-body">Übungsblatt 5 fertig rechnen</span><span class="t-sub c-3">geplant 19:30 · Analysis II</span></div></div>
+            </section>
+
+            <p class="t-sub c-3" style="margin:0">Der Journal-Impuls kommt um 21:30 wieder, wenn der Fokus endet.</p>
+
+          </div>
+        </main>
+      </div>
+
+      <div class="tabbar">
+        <button class="tab is-active"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+        <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+        <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+        <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernkarten</span></button>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sheetnote">
+  <h2>Steckbrief — Fokus-Filter</h2>
+
+  <h3>Was der Filter wegnimmt — und was nicht</h3>
+  <table>
+    <tr><td>Weg</td><td>Zwei Aufgaben aus „Persönlich" (Bibliotheksbücher, Anatomie-Karteikarten) und der Journal-Impuls. Zusammen die drei Objekte, die der Streifen nennt.</td></tr>
+    <tr><td>Weg</td><td>15 der 23 Karten — es bleiben die 8 fälligen aus „Zellbiologie".</td></tr>
+    <tr><td>Bleibt</td><td>Die Ketten-Karte. Sie liegt ganz im Bereich „Biologie", also kappt der Filter keine Beziehung. Genau das ist der Punkt: gefiltert wird der Bestand, nicht das Netz.</td></tr>
+    <tr><td>Bleibt</td><td>Die Farbigkeit. Velum wechselt im Fokus nicht das Erscheinungsbild.</td></tr>
+  </table>
+
+  <h3>Systemmaße (geschätzt)</h3>
+  <table>
+    <tr><td>Gruppierte Liste</td><td>16 pt Seitenabstand, Radius 11, Zeilenhöhe ≥ 48, Trennlinie ab 14 pt Innenabstand.</td></tr>
+    <tr><td>Systemschalter</td><td>51 × 31 pt, Knopf 27 pt, Weg 20 = 51 − 2 × 2 − 27. Die 51 × 31 sind die seit iOS 7 gebräuchliche Größe, in diesem Lauf nicht am Hersteller geprüft.</td></tr>
+  </table>
+
+  <h3>Kontrast (gerechnet)</h3>
+  <table>
+    <tr><td>Listentext</td><td>ink-1 auf Papier 17,8:1 hell · 15,9:1 dunkel</td></tr>
+    <tr><td>Schalter an</td><td>Ink-Fläche gegen Papier 17,8:1; der weiße Knopf gegen die Ink-Fläche 17,8:1 — Stellung und Fläche tragen zusammen, die Farbe nie allein</td></tr>
+    <tr><td>Schalter aus</td><td>fill-3 gegen Papier 1,2:1 — deshalb trägt der Ring (line-2) und vor allem die Knopfstellung die Aussage</td></tr>
+    <tr><td>Fokus-Streifen</td><td>accent-soft als Fläche plus Ring accent-ring 3,3:1 plus das Wort „Fokus" — drei Merkmale</td></tr>
+    <tr><td>Ausgeblendeter Bereich</td><td>Deckkraft 38 % plus fehlendes Häkchen — zwei Merkmale, wie in system.css §7</td></tr>
+  </table>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

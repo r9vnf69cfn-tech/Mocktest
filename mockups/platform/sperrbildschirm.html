@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sperrbildschirm-Mitteilung — Velum im System</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* ══ PLATTFORM-KERN (inline, wie in allen Seiten dieses Ordners) ══════════ */
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+.os { position:relative; overflow:hidden; flex:none; background:#0B0C0E;
+      box-shadow: var(--sh-float), 0 0 0 1px var(--line); }
+.os--iphone { width:393px; height:852px; border-radius:44px; }
+.os__wall  { position:absolute; inset:0; width:100%; height:100%;
+             object-fit:cover; object-position:50% 44%; }
+.os__scrim { position:absolute; inset:0; }
+.on-wall   { color:#FFFFFF; }
+.on-wall-2 { color:rgba(255,255,255,.76); }
+
+.osbar { position:absolute; left:0; right:0; top:0; height:59px; z-index:6;
+         display:flex; align-items:center; justify-content:space-between;
+         padding:0 30px; color:#fff; }
+.osbar__t { font:600 15px/20px var(--sans); font-variant-numeric:tabular-nums; }
+.osbar__r { display:flex; align-items:center; gap:6px; }
+.osbar__bat { width:24px; height:12px; border:1.2px solid rgba(255,255,255,.6);
+              border-radius:3.5px; position:relative; }
+.osbar__bat::after { content:""; position:absolute; inset:1.6px; right:5px;
+                     background:#fff; border-radius:1.5px; }
+.osbar__sig { display:flex; align-items:flex-end; gap:1.6px; height:11px; }
+.osbar__sig i { width:3px; background:#fff; border-radius:1px; display:block; }
+
+.island { position:absolute; left:50%; transform:translateX(-50%); top:11px;
+          width:126px; height:37.33px; border-radius:999px; background:#000; z-index:7; }
+.oshome { position:absolute; left:50%; bottom:8px; transform:translateX(-50%);
+          width:140px; height:5px; border-radius:3px; background:rgba(255,255,255,.85); z-index:8; }
+
+.on-dark {
+  --paper:#141619; --paper-2:#1B1D21; --ground:#0B0C0E;
+  --ink-1:#FFFFFF; --ink-2:rgba(255,255,255,.72); --ink-3:rgba(255,255,255,.60);
+  --ink-4:rgba(255,255,255,.34);
+  --line:rgba(255,255,255,.14); --line-2:rgba(255,255,255,.22);
+  --fill:rgba(255,255,255,.10); --fill-2:rgba(255,255,255,.16); --fill-3:rgba(255,255,255,.22);
+  --accent:#FFFFFF; --accent-on:#0B0C0E;
+  --accent-soft:rgba(255,255,255,.12); --accent-ring:rgba(255,255,255,.38);
+  --thread:rgba(255,255,255,.58); --dot-hollow:rgba(255,255,255,.58);
+  --node-ring:#26282C;
+  --danger:#FF6B5E; --success:#4ED18B;
+  color:var(--ink-1);
+}
+
+/* ══ SEITENEIGENES — Uhr und Mitteilungsstapel ═══════════════════════════ */
+
+/* Die Uhr ist ein Systemelement und folgt iOS, nicht Velums Fünferskala. */
+.lockdate { position:absolute; left:0; right:0; top:88px; text-align:center;
+            font:600 17px/23px var(--sans); color:rgba(255,255,255,.86); z-index:5; }
+.lockclock { position:absolute; left:0; right:0; top:110px; text-align:center;
+             font:500 92px/104px var(--sans); letter-spacing:-.03em;
+             font-variant-numeric:tabular-nums; color:#fff; z-index:5; }
+
+/* Eine Mitteilung. Breite 361 = 393 − 2 × 16, Radius 22 — beides geschätzt. */
+.note { position:absolute; left:16px; width:361px; border-radius:22px; padding:12px 14px;
+        background:rgba(30,32,36,.70);
+        backdrop-filter:blur(30px) saturate(160%); -webkit-backdrop-filter:blur(30px) saturate(160%);
+        box-shadow:inset 0 0 0 .5px rgba(255,255,255,.16); z-index:5; }
+.note__head { display:flex; align-items:center; gap:8px; margin-bottom:6px;
+              font:600 13px/16px var(--sans); color:rgba(255,255,255,.62); }
+.note__head .sp { flex:1 1 auto; }
+.note .t-label { white-space:nowrap; }
+
+/* Der Stapel: zwei weitere Mitteilungen schauen unter der obersten hervor.
+   Versatz 8 pt, jeweils 20 pt schmaler — geschätzt aus dem Bild. */
+.stackcard { position:absolute; border-radius:22px;
+             background:rgba(30,32,36,.55);
+             box-shadow:inset 0 0 0 .5px rgba(255,255,255,.12); z-index:4; }
+
+.stackcount { position:absolute; left:0; right:0; text-align:center; z-index:5;
+              font:600 13px/16px var(--sans); color:rgba(255,255,255,.62); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — SPERRBILDSCHIRM-MITTEILUNG
+
+WAS DAS IST
+Zwei Zustände desselben Sperrbildschirms: der zusammengelegte Stapel, wie
+iOS ihn zeigt, wenn mehrere Mitteilungen liegen — und derselbe Stapel
+auseinandergezogen, mit Velums zwei Mitteilungen als eigene Karten. Dazu die
+lange Fassung mit Aktionen (langes Drücken).
+
+WELCHE ZWEI MITTEILUNGEN
+  1 Karten fällig: „8 Karten aus ‚Zellbiologie' sind fällig". Sie trägt die
+    Herkunft mit: ein 2,5-pt-Faden von der Notiz zu den Karten. Eine
+    Mitteilung, die sagt, WOHER die Arbeit kommt, ist etwas anderes als eine,
+    die nur eine Zahl nennt.
+  2 Journal-Erinnerung: „Wie war der Tag im Labor?" — Velums Impuls, abends
+    um 21:30, mit dem Foto des Tages als Anhang. Kein Wecker, eine Frage.
+
+SYSTEMMASSE — ALLES GESCHÄTZT, MIT HERLEITUNG
+Kein Netzzugang zu developer.apple.com in diesem Lauf. Nichts hier ist belegt.
+  Mitteilungsbreite 361 pt = 393 − 2 × 16. Der Seitenabstand von 16 pt ist
+    geschätzt und aus dem Bildeindruck abgeleitet, nicht gemessen.
+  Radius 22 pt — geschätzt. Er liegt zwischen dem Karten-Radius des Entwurfs
+    (14) und dem Gehäuseradius (44); 22 ist die Hälfte des Gehäuseradius und
+    passt zum Bild.
+  Symbol in der Kopfzeile der Mitteilung 22 pt, Radius 4,9 = 22 × 22,37 %
+    (Apples Squircle-Anteil, in system.css §11 belegt). Der Anteil ist
+    belegt, die 22 pt sind geschätzt. iOS setzt das Symbol seit iOS 15 klein
+    in die Kopfzeile, nicht groß an den Rand.
+  Stapelversatz 8 pt, je 20 pt schmaler — aus dem Bild abgelesen.
+  Uhr ≈ 92 pt, Datum 17 pt. Die Uhr ist ein Systemelement; sie folgt iOS,
+    nicht der Fünferskala. Das ist die einzige Größe außerhalb der Skala.
+
+DAS ZEICHEN
+Die Mitteilung trägt links das App-Symbol. Die drei PNG liegen nicht vor,
+Nachzeichnen ist verboten: an dieser Stelle steht der reservierte leere
+Rahmen (.appicon__frame, 22 pt). Der vollständige Baustein mit Pfadangabe
+steht auf der Übersichtsseite und im Steckbrief unter der Bühne. Fehlender
+Pfad: assets/brand/velum-appicon-dark.png (auf dem Sperrbildschirm gilt
+immer die dunkle Fassung, unabhängig vom Erscheinungsbild des Geräts).
+
+WO DER FADEN STEHT
+  · In der Karten-Mitteilung: Notiz „Zellbiologie" ──●── 8 Karten.
+    Zwei Knoten auf 2,5 pt. Echte Kante.
+  · In der langen Fassung zusätzlich der Weg bis zur Fälligkeit —
+    derselbe Faden, ein Knoten mehr.
+  · KEIN Faden in der Journal-Mitteilung: der Impuls kommt aus keinem Objekt,
+    er ist eine Frage an den Tag. Dort steht deshalb nichts.
+  · KEIN Faden im Stapel, obwohl drei Karten übereinanderliegen — sie sind
+    gestapelt, nicht verbunden.
+
+AFFORDANZ
+Die lange Fassung trägt zwei Knöpfe: „Später" (Umrandung) und „Lernen"
+(gefüllte Fläche, dunkler Text auf Weiß — auf der immer dunklen Mitteilung
+dreht der Ink-Akzent um). Beide 44 pt. Der Stapel selbst ist das Ziel; er
+trägt die Zahl „2 weitere Mitteilungen" als Wort, nicht nur als Andeutung.
+
+KONTRAST — Werte im Steckbrief unter der Bühne.
+TYPO: fünf Größen, zwei Gewichte. Eine Ausnahme, sie gehört iOS: die Uhr.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="index.html"><span aria-hidden="true">‹</span><span class="u">Plattform-Übersicht</span></a>
+  <a href="../index.html"><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Sperrbildschirm-Mitteilung</h1>
+  <p>Eine Mitteilung, die sagt, woher die Arbeit kommt: acht fällige Karten — und der Faden zurück zu der Vorlesungsnotiz, aus der sie geschnitten wurden. Drei Zustände: Stapel, aufgezogen, lange Fassung.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════ 1 · Stapel ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Stapel <span>wie iOS ihn zusammenlegt</span></div>
+    <div class="os os--iphone on-dark">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="">
+      <div class="os__scrim" style="background:linear-gradient(180deg,rgba(6,8,11,.74),rgba(6,8,11,.64) 40%,rgba(6,8,11,.78))"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">21:32</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+      <div class="island"></div>
+
+      <div class="lockdate">Donnerstag, 13. November</div>
+      <div class="lockclock">21:32</div>
+
+      <!-- Zwei Karten schauen unter der obersten hervor -->
+      <div class="stackcard" style="left:36px; width:321px; top:608px; height:48px"></div>
+      <div class="stackcard" style="left:26px; width:341px; top:600px; height:48px"></div>
+
+      <div class="note" style="top:500px">
+        <div class="note__head">
+          <span class="appicon" style="--appicon-size:22px; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-dark.png"><span class="appicon__frame" style="border-radius:4.9px"></span></span>
+          VELUM
+          <span class="sp"></span>
+          <span>jetzt</span>
+        </div>
+        <div class="t-body is-strong">8 Karten aus „Zellbiologie" sind fällig</div>
+        <div class="t-sub c-3" style="margin-top:2px">Zusammen ca. 4 Minuten.</div>
+        <!-- Der Faden: die Karten wissen, woher sie kommen. -->
+        <div style="display:flex; align-items:center; gap:9px; margin-top:10px">
+          <span class="t-label c-3">Zellbiologie</span>
+          <span class="dot dot--node" style="flex:none"></span>
+          <svg class="thread thread--h thread--origin" style="flex:1 1 auto; min-width:20px"></svg>
+          <span class="dot dot--node" style="flex:none"></span>
+          <span class="t-label c-3">8 Karten</span>
+        </div>
+      </div>
+
+      <div class="stackcount" style="top:672px">2 weitere Mitteilungen</div>
+
+      <div style="position:absolute; left:38px; bottom:104px; width:50px; height:50px; border-radius:50%;
+                  background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; color:#fff; z-index:5">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3.6h6v3.2l-1.4 2v11.6h-3.2V8.8L9 6.8Z"/></svg>
+      </div>
+      <div style="position:absolute; right:38px; bottom:104px; width:50px; height:50px; border-radius:50%;
+                  background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; color:#fff; z-index:5">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.6 6.6 10.6 4.8h2.8l1 1.8h2.6a2.2 2.2 0 0 1 2.2 2.2v7.4a2.2 2.2 0 0 1-2.2 2.2H6.8a2.2 2.2 0 0 1-2.2-2.2V8.8a2.2 2.2 0 0 1 2.2-2.2Z"/><circle cx="12" cy="12.6" r="3.4"/></svg>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 2 · Aufgezogen ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Aufgezogen <span>beide Velum-Mitteilungen</span></div>
+    <div class="os os--iphone on-dark">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="">
+      <div class="os__scrim" style="background:linear-gradient(180deg,rgba(6,8,11,.74),rgba(6,8,11,.64) 40%,rgba(6,8,11,.78))"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">21:32</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+      <div class="island"></div>
+
+      <div class="lockdate" style="top:78px">Donnerstag, 13. November</div>
+      <div class="lockclock" style="top:100px; font-size:72px; line-height:82px">21:32</div>
+
+      <div class="note" style="top:264px">
+        <div class="note__head">
+          <span class="appicon" style="--appicon-size:22px; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-dark.png"><span class="appicon__frame" style="border-radius:4.9px"></span></span>
+          VELUM
+          <span class="sp"></span>
+          <span>jetzt</span>
+        </div>
+        <div class="t-body is-strong">8 Karten aus „Zellbiologie" sind fällig</div>
+        <div class="t-sub c-3" style="margin-top:2px">Zusammen ca. 4 Minuten.</div>
+        <div style="display:flex; align-items:center; gap:9px; margin-top:10px">
+          <span class="t-label c-3">Zellbiologie</span>
+          <span class="dot dot--node" style="flex:none"></span>
+          <svg class="thread thread--h thread--origin" style="flex:1 1 auto; min-width:20px"></svg>
+          <span class="dot dot--node" style="flex:none"></span>
+          <span class="t-label c-3">8 Karten</span>
+        </div>
+      </div>
+
+      <div class="note" style="top:414px">
+        <div class="note__head">
+          <span class="appicon" style="--appicon-size:22px; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-dark.png"><span class="appicon__frame" style="border-radius:4.9px"></span></span>
+          VELUM · JOURNAL
+          <span class="sp"></span>
+          <span>21:30</span>
+        </div>
+        <div style="display:flex; gap:12px; align-items:flex-start">
+          <div style="flex:1 1 auto; min-width:0">
+            <div class="t-body is-strong">Wie war der Tag im Labor?</div>
+            <div class="t-sub c-3" style="margin-top:2px">Ein Foto von heute liegt bereit.</div>
+          </div>
+          <img src="../assets/bilder/journal/labor-400.jpg" alt=""
+               style="width:56px; height:56px; border-radius:9px; object-fit:cover; flex:none">
+        </div>
+      </div>
+
+      <div class="note" style="top:534px">
+        <div class="note__head">
+          <span style="width:22px;height:22px;border-radius:4.9px;background:rgba(255,255,255,.22);display:block"></span>
+          KALENDER
+          <span class="sp"></span>
+          <span>20:04</span>
+        </div>
+        <div class="t-body is-strong">Morgen 8:15 — Praktikum Zellkultur</div>
+        <div class="t-sub c-3" style="margin-top:2px">Raum B 214 · Prof. Wendt</div>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 3 · Lange Fassung ══════════════════ -->
+  <div class="device">
+    <div class="device__label">Lange Fassung <span>langes Drücken</span></div>
+    <div class="os os--iphone on-dark">
+      <img class="os__wall" src="../assets/bilder/journal/mikroskop-1200.jpg" alt="">
+      <!-- iOS verdunkelt und weichzeichnet den Rest, solange die Mitteilung offen steht -->
+      <div class="os__scrim" style="background:rgba(6,7,9,.74)"></div>
+
+      <div class="osbar">
+        <span class="osbar__t">21:32</span>
+        <span class="osbar__r">
+          <span class="osbar__sig"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8.5px"></i><i style="height:11px"></i></span>
+          <span class="osbar__bat"></span>
+        </span>
+      </div>
+      <div class="island"></div>
+
+      <div class="note" style="top:180px; padding:16px 16px 14px; background:rgba(34,36,40,.86)">
+        <div class="note__head" style="margin-bottom:10px">
+          <span class="appicon" style="--appicon-size:22px; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-dark.png"><span class="appicon__frame" style="border-radius:4.9px"></span></span>
+          VELUM
+          <span class="sp"></span>
+          <span>jetzt</span>
+        </div>
+
+        <div class="t-section">8 Karten aus „Zellbiologie" sind fällig</div>
+        <div class="t-sub c-3" style="margin-top:4px">Aus der Vorlesung vom 12. November. Zusammen ca. 4 Minuten.</div>
+
+        <!-- Der ganze Weg: Notiz → Karten → heute fällig. Drei Knoten. -->
+        <div style="margin:16px 0 4px">
+          <div class="threadrow" style="padding:0 4px">
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+          </div>
+          <div style="display:flex; margin-top:7px">
+            <div style="flex:1 1 0"><div class="t-label c-3">Notiz</div><div class="t-sub is-strong">Zellbiologie</div></div>
+            <div style="flex:1 1 0; text-align:center"><div class="t-label c-3">wurde zu</div><div class="t-sub is-strong num">12 Karten</div></div>
+            <div style="flex:1 1 0; text-align:right"><div class="t-label c-3">heute fällig</div><div class="t-sub is-strong num">8 Karten</div></div>
+          </div>
+        </div>
+
+        <!-- Der markierte Satz aus der Notiz — fremde Stimme, deshalb Serif -->
+        <div style="margin-top:16px; padding:12px 14px; border-radius:11px; background:rgba(255,255,255,.08)">
+          <div class="t-label c-3" style="margin-bottom:6px">So stand es in deiner Notiz</div>
+          <p class="serif--quote" style="margin:0; color:var(--ink-1)">Der Protonengradient ist der eigentliche Energiespeicher der Zelle.</p>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:16px">
+          <button class="btn" style="flex:1 1 0; background:none; box-shadow:inset 0 0 0 1.5px var(--line-2)">Später</button>
+          <button class="btn btn--primary" style="flex:1 1 0">Lernen</button>
+        </div>
+      </div>
+
+      <div class="oshome"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sheetnote">
+  <h2>Steckbrief — Sperrbildschirm-Mitteilung</h2>
+  <p>Apple veröffentlicht keine Maßtabelle für Mitteilungen. Auf dieser Seite ist <strong>kein Systemmaß belegt</strong>; jedes steht mit seiner Herleitung.</p>
+
+  <h3>Systemmaße</h3>
+  <table>
+    <tr><td>Breite</td><td>361 pt = 393 − 2 × 16. Der Seitenabstand 16 ist aus dem Bildeindruck abgeleitet, nicht gemessen.</td></tr>
+    <tr><td>Radius</td><td>22 pt — geschätzt. Liegt zwischen Karten-Radius 14 (system.css §1.5) und Gehäuseradius 44; 22 ist dessen Hälfte.</td></tr>
+    <tr><td>Symbol</td><td>22 pt in der Kopfzeile (geschätzt) mit Radius 4,9 = 22 × 22,37 %. Der Squircle-Anteil ist belegt, die 22 pt nicht.</td></tr>
+    <tr><td>Stapel</td><td>Versatz 8 pt, je 20 pt schmaler — aus dem Bild abgelesen.</td></tr>
+    <tr><td>Uhr</td><td>≈ 92 pt im Ruhezustand, ≈ 72 pt wenn Mitteilungen liegen (iOS schiebt die Uhr nach oben und verkleinert sie). Das Verhalten ist Modellwissen, die Zahlen sind geschätzt.</td></tr>
+  </table>
+
+  <h3>Kontrast (gerechnet)</h3>
+  <table>
+    <tr><td>Titelzeile</td><td>Weiß auf dem Mitteilungsgrund rgb(30,32,36) bei 70 % über der abgedunkelten Tapete: 15,3:1</td></tr>
+    <tr><td>Nebenzeile</td><td>rgba(255,255,255,.60) auf demselben Grund: 6,0:1</td></tr>
+    <tr><td>Faden</td><td>rgba(255,255,255,.58) auf demselben Grund: 5,7:1 — weit über der 3:1-Schwelle</td></tr>
+    <tr><td>Knopf „Lernen"</td><td>dunkler Text auf Weiß 17,3:1 — auf der dunklen Mitteilung dreht der Ink-Akzent um</td></tr>
+    <tr><td>Knopf „Später"</td><td>Weiß auf dunkel 15,3:1, Umrandung rgba(255,255,255,.22) 3,3:1</td></tr>
+    <tr><td>Weiß auf der Tapete</td><td>Am gerenderten Bild nachgemessen (97. Perzentil der Untergrundhelligkeit): Uhr 7,2:1 · Datum 8,1:1 · Statusleiste 6,8:1. Alle über den 4,5:1 für Text. Velum liefert die Tapete nicht; hier ist sie gewählt und abgedunkelt, bis die Zahlen halten.</td></tr>
+  </table>
+
+  <h3>Was Velum hier anders macht</h3>
+  <p>Eine Lern-App meldet üblicherweise eine Zahl: „8 Karten fällig". Velums Mitteilung meldet einen <strong>Weg</strong>: aus dieser Notiz sind diese Karten geworden, und acht davon sind heute dran. In der langen Fassung steht zusätzlich der Satz, aus dem die erste Karte geschnitten wurde — in der Serif, weil es eine fremde Stimme ist (DNA §4.1, Rolle „Zitat"). Wer die Mitteilung öffnet, weiß vorher, worum es geht.</p>
+
+  <h3>Das Zeichen</h3>
+  <p>Im Gerät steht der reservierte leere Rahmen, damit die Pfadangabe eine 22-pt-Kopfzeile nicht sprengt. Hier steht der vollständige Baustein mit seiner Warnung:</p>
+  <p><span class="appicon" data-appicon></span></p>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>

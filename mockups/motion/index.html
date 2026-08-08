@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bewegung — Musterseite</title>
+<link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
+<style>
+/* Nur das Gerüst dieser Musterseite. Alles, was eine BEWEGUNG ausmacht, steht
+   in shared/bewegung.css und shared/bewegung.js — hier steht nichts, was ein
+   Entwurf übernehmen soll. */
+
+.probe   { max-width: 1120px; margin: 0 auto; padding: 0 30px 70px; }
+/* [hidden] muss stärker sein als jede Layout-Regel dieser Seite — sonst
+   gewinnt ein display:flex am Element gegen das Vorgabe-display:none des
+   Browsers, und eine versteckte Karte steht sichtbar da. */
+[hidden]  { display: none !important; }
+.panel   { background: var(--paper); border-radius: var(--r-card); box-shadow: var(--sh-card);
+           padding: 22px 26px 24px; margin-bottom: 18px; }
+.panel > h2  { font: 600 20px/26px var(--sans); letter-spacing: -.015em; margin: 0 0 4px; }
+.panel > .warum { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0 0 16px; max-width: 80ch; }
+.gruppe  { font: 600 13px/16px var(--sans); letter-spacing: .05em; text-transform: uppercase;
+           color: var(--ink-3); margin: 34px 0 12px; }
+
+/* Die Leiste. Sie gehört wie die Bedienleiste oben rechts NICHT zum Entwurf. */
+.bwbar   { position: sticky; top: 0; z-index: 150;
+           background: var(--chrome); backdrop-filter: blur(24px) saturate(180%);
+           border-bottom: 1px solid var(--line);
+           padding: 10px 340px 10px 30px; margin-bottom: 20px;
+           display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.bwbar__block { display: flex; align-items: center; gap: 10px; }
+.bwbar__t { font: 600 13px/16px var(--sans); color: var(--ink-3); }
+.bwbar__lage { font: 400 13px/16px var(--sans); color: var(--ink-2); }
+.bwbar__lage b { font-weight: 600; color: var(--ink-1); }
+
+.buehne  { position: relative; background: var(--ground); border-radius: 12px;
+           padding: 18px; overflow: hidden; }
+.buehne--hoch { min-height: 300px; }
+.reihe2  { display: flex; gap: 20px; align-items: flex-start; }
+.reihe2 > * { flex: 1 1 0; min-width: 0; }
+
+.steuer  { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+.spec    { display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 3px 16px; margin: 14px 0 0; }
+.spec dt { font: 600 13px/19px var(--sans); color: var(--ink-3); }
+.spec dd { font: 400 13px/19px var(--sans); color: var(--ink-2); margin: 0; }
+.spec dd.kurve { font-family: var(--mono); font-size: 12px; color: var(--ink-1); overflow-wrap: anywhere; }
+.spec dd.rm { color: var(--ink-2); }
+.spec dd b { color: var(--ink-1); font-weight: 600; }
+
+.zahlpaar { display: flex; align-items: flex-end; gap: 7px; }
+.zahlpaar .bw-zaehler { font: 600 28px/32px var(--sans); font-variant-numeric: tabular-nums; height: 32px; }
+.zahlpaar .wort { font: 400 15px/20px var(--sans); color: var(--ink-3); padding-bottom: 4px; }
+
+.marke   { width: 9px; display: inline-flex; justify-content: center; flex: none; }
+.tabhuelle { overflow-x: auto; }
+.tab     { width: 100%; min-width: 660px; border-collapse: collapse; }
+.tab th  { font: 600 13px/16px var(--sans); color: var(--ink-3); text-align: left;
+           padding: 0 12px 8px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tab td  { font: 400 14px/20px var(--sans); color: var(--ink-2); padding: 7px 12px 7px 0;
+           border-bottom: 1px solid var(--line); vertical-align: top; }
+.tab td:first-child { color: var(--ink-1); font-weight: 600; white-space: nowrap; }
+.tab .mono { font-family: var(--mono); font-size: 12px; color: var(--ink-1); white-space: nowrap; }
+.tab .num  { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.liste   { margin: 0; padding-left: 20px; }
+.liste li { font: 400 15px/23px var(--sans); color: var(--ink-2); margin-bottom: 8px; }
+.liste li b { color: var(--ink-1); font-weight: 600; }
+
+/* Moment 1 */
+#m1-ziel  { width: 230px; }
+/* Moment 4 */
+.regal    { display: flex; gap: 14px; }
+.buch     { width: 132px; flex: none; border-radius: 10px; overflow: hidden;
+            background: var(--paper); box-shadow: var(--sh-cover); }
+.buch img { width: 100%; height: 168px; object-fit: cover; display: block; }
+.buch__fuss { padding: 8px 10px 10px; }
+#m4-editor { position: absolute; inset: 14px; background: var(--paper); border-radius: 14px;
+             box-shadow: var(--sh-float); padding: 18px 20px; overflow: hidden; z-index: 40; }
+/* Moment 5 */
+#m5-quelle { position: absolute; right: 18px; top: 74px; bottom: 18px; width: 44%;
+             background: var(--paper); border-radius: 12px; box-shadow: var(--sh-card);
+             padding: 14px 16px; overflow: hidden; z-index: 20; }
+#m5-anker  { position: absolute; right: 18px; top: 18px; z-index: 30; }
+#m5-karte  { width: 300px; }
+/* Ein Chip ist 24 pt hoch — als Ziel wäre er zu klein. Der Knopf darum hält
+   die 44 pt, ohne dass der Chip wächst: Ziel und Zeichnung sind zwei Dinge. */
+.chiptap   { min-height: 44px; display: inline-flex; align-items: center; padding: 0; }
+.chiptap:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--r-pill); }
+
+/* Moment 3 */
+.flipstapel { position: relative; width: 320px; height: 196px; }
+.flipbox   { position: absolute; inset: 0; }
+.flipseite { background: var(--paper); border-radius: 14px; box-shadow: var(--sh-card);
+             padding: 16px 18px; justify-content: space-between; }
+.noten     { display: flex; gap: 8px; align-items: stretch; flex-wrap: wrap; }
+.noten .btn { flex: 0 0 auto; }
+.noten .btn--primary { min-width: 132px; }
+
+/* Kleinbewegungen */
+.kachelraster { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+                gap: 16px; align-items: start; }
+.kachel  { background: var(--ground); border-radius: 12px; padding: 16px; }
+.kachel h3 { font: 600 15px/20px var(--sans); margin: 0 0 4px; }
+.kachel p  { font: 400 13px/18px var(--sans); color: var(--ink-2); margin: 0 0 12px; }
+
+@media (max-width: 1000px) {
+  body { padding-top: 62px; }
+  .bwbar { position: static; padding: 12px 20px; }
+}
+@media (max-width: 720px) {
+  .probe { padding: 0 16px 50px; }
+  .panel { padding: 18px 16px 20px; }
+  /* Zwei Spalten mit max-content links quetschen die rechte auf 40 %.
+     Auf schmalen Fenstern steht die Beschriftung deshalb über dem Wert. */
+  .spec { grid-template-columns: 1fr; gap: 0; }
+  .spec dt { margin-top: 10px; }
+  .spec dt:empty { display: none; }
+  .reihe2 { flex-direction: column; }
+  .buehne--hoch { min-height: 0; }
+  #m1-ziel, #m5-karte, .flipbox { width: 100%; }
+  #m5-quelle { position: static; width: auto; margin-top: 14px; }
+  .regal { overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Musterseite „Bewegung"
+
+WOZU DIESE SEITE
+Sie ist die Referenz, gegen die Runde 3 baut, wenn sie die Bewegungen in die
+13 Schirme holt. Jede der vier Rollen und jeder der fünf Momente ist hier
+einzeln auslösbar, mit Dauer und Kurve daneben. Was hier nicht läuft, läuft
+auch dort nicht.
+
+DIE DREI SCHALTER OBEN
+· Reduce Motion hat drei Stellungen: System · Aus erzwungen · An erzwungen.
+  Daneben steht, was das Betriebssystem meldet UND was gerade tatsächlich
+  gilt — das sind zwei verschiedene Dinge, und beide müssen sichtbar sein.
+· Der Verlangsamer setzt --bw-tempo auf 1 oder 4. Alle Dauern in CSS rechnen
+  ihn ein, alle Wartezeiten im JS ebenso (MOTION.ms). Bei 0,25× muss eine
+  Bewegung immer noch verständlich sein; fällt sie da auseinander, ist sie
+  falsch gebaut.
+· Hell/Dunkel und Dynamic Type stehen oben rechts — die liefert mock.js.
+
+WAS HIER NICHT STEHT
+Kein Entwurf, kein Schirm, keine Geschichte über die hinaus, die die Bewegung
+braucht. Die Seite ist Werkzeug, nicht Bildschirm.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Bewegung — vier Rollen, fünf Momente</h1>
+  <p>Bewegung nur, wo sie etwas erklärt: Herkunft, Fortschritt, Zustandswechsel. Die vier Kurven
+     sind aus Velums eigenen Federwerten gerechnet, nicht geraten — die Herleitung steht unten
+     in der Tabelle und in <code>docs/03_bewegung.md</code>. Jede einzelne Bewegung hat einen
+     gebauten Reduce-Motion-Pfad, keinen abgeschalteten.</p>
+</div>
+
+<div class="bwbar">
+  <div class="bwbar__block">
+    <span class="bwbar__t">Reduce Motion</span>
+    <div class="segmented" id="rm-schalter" role="group" aria-label="Reduce Motion">
+      <button type="button" data-modus="system">System</button>
+      <button type="button" data-modus="full">Aus</button>
+      <button type="button" data-modus="reduce">An</button>
+    </div>
+  </div>
+  <div class="bwbar__block">
+    <span class="bwbar__t">Tempo</span>
+    <div class="segmented" id="tempo-schalter" role="group" aria-label="Tempo">
+      <button type="button" data-tempo="1">1×</button>
+      <button type="button" data-tempo="4">0,25×</button>
+    </div>
+  </div>
+  <p class="bwbar__lage" id="lage" aria-live="polite"></p>
+</div>
+
+<div class="probe">
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     DIE VIER ROLLEN
+     ══════════════════════════════════════════════════════════════════ -->
+<p class="gruppe">Die vier Rollen</p>
+
+<!-- ── ÖFFNEN ──────────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>Öffnen — Dokument, Detail</h2>
+  <p class="warum">Die Frage, die diese Bewegung beantwortet, lautet: <b>Woher kommt das hier?</b>
+     Ein Schnitt beantwortet sie nicht. Die große Fassung (Bibliothekskarte&nbsp;→&nbsp;Editor)
+     steht als Moment&nbsp;4 weiter unten; hier die kleine für Blätter, die keinen sichtbaren
+     Ursprung haben.</p>
+  <div class="buehne" data-buehne id="r1-buehne" style="max-width:760px">
+    <div class="card" style="max-width:420px">
+      <div class="card__head"><span class="dot dot--tasks"></span><span class="t-label c-3">Aufgaben</span></div>
+      <div class="row"><span class="check"></span><span class="row__main"><span class="t-body">Protokoll Färbung abgeben</span></span></div>
+      <div class="row"><span class="check"></span><span class="row__main"><span class="t-body">Kapitel 4 lesen — Prof. Wendt</span></span></div>
+    </div>
+    <div class="card bw-oeffnen-blatt" id="r1-blatt" hidden
+         style="position:absolute;left:18px;right:18px;bottom:18px;max-width:420px">
+      <div class="card__head"><span class="t-section">Protokoll Färbung</span></div>
+      <p class="t-sub c-2" style="margin:0">Fällig Freitag, 21. November · aus „Zellbiologie · Vorlesung 7"</p>
+    </div>
+  </div>
+  <div class="steuer">
+    <button type="button" class="btn btn--primary btn--sm" data-tun="r1">Öffnen</button>
+    <button type="button" class="btn btn--sm" data-reset="r1-buehne">Zurücksetzen</button>
+  </div>
+  <dl class="spec" data-spec="oeffnen"></dl>
+</section>
+
+<!-- ── WECHSELN ────────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>Wechseln — Modul, Ansicht</h2>
+  <p class="warum">Die Frage lautet: <b>Bin ich vor oder zurück gegangen?</b> Acht Punkt Versatz
+     genügen, um das zu sagen. Kein Maßstab, kein Schatten, keine Blende — eine Ansicht ist kein
+     Gegenstand, der auffliegt.</p>
+  <div class="buehne" data-buehne id="r2-buehne" style="max-width:760px">
+    <div class="segmented" style="margin-bottom:14px">
+      <button type="button" class="is-on" data-ansicht="liste">Liste</button>
+      <button type="button" data-ansicht="planer">Planer</button>
+    </div>
+    <div id="r2-inhalt">
+      <div class="card" data-ansicht-inhalt="liste" style="max-width:460px">
+        <div class="row"><span class="dot dot--tasks"></span><span class="row__main"><span class="t-body">Protokoll Färbung abgeben</span><span class="t-sub c-3">Freitag</span></span></div>
+        <div class="row"><span class="dot dot--tasks"></span><span class="row__main"><span class="t-body">Kapitel 4 lesen</span><span class="t-sub c-3">Montag</span></span></div>
+        <div class="row"><span class="dot dot--notes"></span><span class="row__main"><span class="t-body">Osmose-Notiz aufräumen</span><span class="t-sub c-3">ohne Termin</span></span></div>
+      </div>
+      <div class="card" data-ansicht-inhalt="planer" hidden style="max-width:460px">
+        <div class="divider"><span class="t-label c-3">Mittwoch, 19.&nbsp;November</span></div>
+        <div class="row"><span class="dot dot--cards"></span><span class="row__main"><span class="t-body">23 Karten fällig</span></span></div>
+        <div class="divider"><span class="t-label c-3">Freitag, 21.&nbsp;November</span></div>
+        <div class="row"><span class="dot dot--tasks"></span><span class="row__main"><span class="t-body">Protokoll Färbung abgeben</span></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="steuer">
+    <button type="button" class="btn btn--primary btn--sm" data-tun="r2-vor">Vorwärts wechseln</button>
+    <button type="button" class="btn btn--sm" data-tun="r2-zurueck">Zurück wechseln</button>
+  </div>
+  <dl class="spec" data-spec="wechseln"></dl>
+</section>
+
+<!-- ── ÜBERGEBEN (klein) ───────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>Übergeben — Modul zu Modul</h2>
+  <p class="warum">Velums Signatur, hier in der kleinsten Fassung: ein Absatz wird eine Karte.
+     Die ausführliche steht als Moment&nbsp;1. Der Flug läuft nicht neben dem Faden her, sondern
+     <b>auf ihm</b> — die Bahn wird Punkt für Punkt aus dem Pfad gelesen, den
+     <code>MOCK.thread()</code> gespannt hat.</p>
+  <div class="buehne" data-buehne id="r3-buehne" style="min-height:210px">
+    <div class="reihe2">
+      <div class="card" id="r3-von" style="max-width:330px">
+        <div class="card__head"><span class="dot dot--notes"></span><span class="t-label c-3">Notiz · Absatz 7</span></div>
+        <p class="t-sub c-1" style="margin:0">Wasser folgt dem Potentialgefälle, nicht der
+           Konzentration allein.</p>
+      </div>
+      <div class="card" id="r3-nach" style="max-width:230px;margin-left:auto">
+        <div class="card__head"><span class="dot dot--cards" id="r3-punkt"></span><span class="t-label c-3">Lernkarten</span></div>
+        <div class="zahlpaar"><span class="bw-zaehler" id="r3-zahl">23</span><span class="wort">Karten</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="steuer">
+    <button type="button" class="btn btn--primary btn--sm"
+            data-bw="uebergeben" data-bw-von="#r3-von" data-bw-nach="#r3-nach"
+            data-bw-zaehler="#r3-zahl" data-bw-punkt="#r3-punkt" data-bw-box="#r3-buehne">
+      Übergeben
+    </button>
+    <button type="button" class="btn btn--sm" data-reset="r3-buehne">Zurücksetzen</button>
+  </div>
+  <dl class="spec" data-spec="uebergeben"></dl>
+</section>
+
+<!-- ── BESTÄTIGEN ──────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>Bestätigen — erledigt, gespeichert, bewertet</h2>
+  <p class="warum">Der Haken zeichnet sich, weil das Zeichnen die Handlung wiederholt, die man
+     gerade gemacht hat. Danach steht die Zeile <b>eine volle Sekunde still</b>: diese Pause ist
+     das Rückgängig. Deshalb braucht Velum kein „Rückgängig"-Banner.</p>
+  <div class="buehne" data-buehne id="r4-buehne" style="max-width:760px">
+    <div class="card" style="max-width:460px">
+      <div class="row" id="r4-zeile">
+        <span class="bw-check" id="r4-check"></span>
+        <span class="row__main"><span class="t-body row__title">Protokoll Färbung abgeben</span>
+        <span class="t-sub c-3">Prof. Wendt · Freitag</span></span>
+      </div>
+      <div class="row"><span class="bw-check"></span><span class="row__main"><span class="t-body">Kapitel 4 lesen</span><span class="t-sub c-3">Montag</span></span></div>
+      <div class="row"><span class="bw-check"></span><span class="row__main"><span class="t-body">Seminarplatz eintragen</span><span class="t-sub c-3">nächste Woche</span></span></div>
+    </div>
+  </div>
+  <div class="steuer">
+    <button type="button" class="btn btn--primary btn--sm"
+            data-bw="erledigen" data-bw-zeile="#r4-zeile" data-bw-kreis="#r4-check">Erledigen</button>
+    <button type="button" class="btn btn--sm" data-reset="r4-buehne">Zurücksetzen</button>
+  </div>
+  <dl class="spec" data-spec="bestaetigen"></dl>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     DIE FÜNF MOMENTE
+     ══════════════════════════════════════════════════════════════════ -->
+<p class="gruppe">Die fünf Momente</p>
+
+<!-- ── MOMENT 1 ────────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>1 · Die Übergabe — Auswahl wird Lernkarte</h2>
+  <p class="warum">Der wichtigste Moment der App. Ein markierter Satz aus der Vorlesungsnotiz
+     verdichtet sich zur Karte, wandert zu den Lernkarten und der Zähler zählt hoch — und
+     dazwischen <b>wächst der Faden mit</b>, vom Ursprung zum Ziel. Er ist 60&nbsp;ms vor der
+     Karte da: erst liegt der Weg, dann kommt, was ihn geht.</p>
+  <div class="buehne" data-buehne id="m1-buehne" style="min-height:270px">
+    <div class="reihe2">
+      <div class="card" style="max-width:430px">
+        <div class="card__head">
+          <span class="dot dot--notes"></span>
+          <span class="t-label c-3">Zellbiologie · Vorlesung 7</span>
+        </div>
+        <p class="t-sub c-2" style="margin:0 0 10px">Die Membran ist selektiv permeabel. Was hindurch
+           darf, entscheidet nicht die Größe allein.</p>
+        <p class="t-body c-1 bw-markiert" id="m1-absatz" style="margin:0 0 10px">Osmose ist die
+           Diffusion von Wasser durch eine semipermeable Membran entlang des Wasserpotentials.</p>
+        <p class="t-sub c-2" style="margin:0">Prof. Wendt nennt das Potential in der Übung
+           „das eigentliche Gefälle".</p>
+      </div>
+      <div class="card" id="m1-ziel" style="margin-left:auto">
+        <div class="card__head">
+          <span class="dot dot--cards" id="m1-punkt"></span>
+          <span class="t-label c-3">Lernkarten · Zellbiologie</span>
+        </div>
+        <div class="zahlpaar"><span class="bw-zaehler" id="m1-zahl">23</span><span class="wort">Karten</span></div>
+        <p class="t-sub c-3" style="margin:8px 0 0">8 heute fällig</p>
+      </div>
+    </div>
+  </div>
+  <div class="steuer">
+    <button type="button" class="btn btn--primary btn--sm"
+            data-bw="uebergeben" data-bw-von="#m1-absatz" data-bw-nach="#m1-ziel"
+            data-bw-zaehler="#m1-zahl" data-bw-punkt="#m1-punkt" data-bw-box="#m1-buehne"
+            data-bw-kurve="34">In Lernkarten</button>
+    <button type="button" class="btn btn--sm" data-reset="m1-buehne">Zurücksetzen</button>
+  </div>
+  <dl class="spec">
+    <dt>Satz 1</dt><dd><b>0 – 180 ms</b> Verdichten · springQuick · Breite/Höhe der Auswahl → Kartenmaß, Absatz auf 0,32</dd>
+    <dt>Satz 2</dt><dd><b>120 – 600 ms</b> Flug · springBouncy · Ort auf dem Fadenpfad, Maßstab 1 → 0,42, Drehung −4° → 0°</dd>
+    <dt></dt><dd><b>120 – 540 ms</b> Faden · <code>--t-hand</code> 420 ms · Weglänge 0 → voll, Richtung Ursprung → Ziel</dd>
+    <dt>Satz 3</dt><dd><b>600 – 780 ms</b> Ankunft · springQuick · Zähler 23 → 24, Zielpunkt bekommt den Ink-Ring</dd>
+    <dt>Kurve</dt><dd class="kurve">cubic-bezier(.280,.224,.224,1.370)</dd>
+    <dt>Reduce</dt><dd class="rm"><b>360 ms.</b> Kein Flug, keine Bahn. Der Faden erscheint auf voller Länge (120 ms), 120 ms später zählt das Ziel hoch und bekommt seinen Ring. Die Reihenfolge Ursprung → Ziel bleibt, der Weg fällt weg.</dd>
+  </dl>
+</section>
+
+<!-- ── MOMENT 2 ────────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>2 · Erledigen — und das andere Ende weiß es</h2>
+  <p class="warum">Kreis wird Haken, Zeile verabschiedet sich, Nachbarn schließen die Lücke.
+     Dazu das, was keine reine Aufgaben-App kann: In derselben Sekunde wird am anderen Ende des
+     Herkunftsfadens — <b>in der Notiz, aus der die Aufgabe stammt</b> — sichtbar, dass sie erledigt
+     ist. Der Faden zwischen beiden Karten ist keine Zierde: es gibt diese Kante wirklich.</p>
+  <div class="buehne" data-buehne id="m2-buehne" style="min-height:260px">
+    <div class="reihe2">
+      <div class="card" style="max-width:400px">
+        <div class="card__head"><span class="dot dot--tasks"></span><span class="t-label c-3">Aufgaben · Heute</span></div>
+        <div class="row" id="m2-zeile">
+          <span class="bw-check" id="m2-check"></span>
+          <span class="row__main"><span class="t-body">Protokoll Färbung abgeben</span>
+          <span class="origin" style="margin-top:4px"><span class="ico" data-ico="link"></span>aus „Zellbiologie · Vorlesung 7"</span></span>
+        </div>
+        <div class="row"><span class="bw-check"></span><span class="row__main"><span class="t-body">Kapitel 4 lesen</span><span class="t-sub c-3">Montag</span></span></div>
+      </div>
+      <div class="card" style="max-width:400px;margin-left:auto">
+        <div class="card__head"><span class="dot dot--notes"></span><span class="t-label c-3">Zellbiologie · Vorlesung 7</span></div>
+        <p class="t-sub c-2" style="margin:0 0 10px">Färbeprotokoll: Fixierung 10 min, dann dreimal
+           spülen.</p>
+        <div class="row" id="m2-echo" style="background:var(--fill);border-radius:9px">
+          <span class="bw-check"></span>
+          <span class="row__main"><span class="t-sub c-1">Absatz 3 → Aufgabe „Protokoll Färbung abgeben"</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="steuer">
+    <button type="button" class="btn btn--primary btn--sm" data-tun="m2">Erledigen</button>
+    <button type="button" class="btn btn--sm" data-reset="m2-buehne">Zurücksetzen</button>
+  </div>
+  <dl class="spec">
+    <dt>Haken</dt><dd><b>0 – 180 ms</b> springQuick · <code>stroke-dashoffset</code> 15 → 0, Kreisfüllung 0,72 → 1, Ring 1,5 → 0 pt</dd>
+    <dt>Verweildauer</dt><dd><b>180 – 1180 ms</b> nichts bewegt sich. Die Pause <b>ist</b> das Rückgängig.</dd>
+    <dt>Abgang</dt><dd><b>1180 – 1420 ms</b> Deckkraft 1 → 0, 16 pt nach rechts</dd>
+    <dt>Lücke</dt><dd><b>1420 – 1680 ms</b> Höhe und Innenabstand auf 0, <code>--ease</code></dd>
+    <dt>Kurve</dt><dd class="kurve">cubic-bezier(.239,.071,.325,.913)</dd>
+    <dt>Reduce</dt><dd class="rm">Der Haken ist da statt gezeichnet (120 ms Deckkraft). Die 1000 ms Verweildauer <b>bleiben unverändert</b> — sie sind Bedienlogik, nicht Bewegung; ohne sie verlöre man das Rückgängig. Die Zeile blendet aus (120 ms), die Lücke schließt ohne Weg.</dd>
+  </dl>
+</section>
+
+<!-- ── MOMENT 3 ────────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>3 · Karte bewerten — Drehung, Wisch-Rückmeldung, Intervall</h2>
+  <p class="warum">Die Perspektive sitzt am Behälter (1200&nbsp;px), nicht an der Karte. Die Kurve
+     schwingt um 0,8&nbsp;% über: die Karte dreht 181,4° und kommt zurück — das macht sie zum
+     Gegenstand statt zur Textur. Die Intervall-Reihe darunter ist ein Faden mit Punkten und
+     aktualisiert sich, <b>während</b> man wischt. Die Karte lässt sich mit der Maus ziehen.</p>
+  <div class="buehne" data-buehne id="m3-buehne">
+    <div class="reihe2" style="align-items:center">
+      <div>
+        <div class="flipstapel">
+          <div class="bw-flip bw-wisch flipbox" id="m3-karte">
+            <div class="bw-flip__innen">
+              <div class="bw-flip__seite bw-flip__seite--vorn flipseite">
+                <div>
+                  <span class="t-label c-3">Frage</span>
+                  <p class="t-body c-1" style="margin:8px 0 0">Was beschreibt das Wasserpotential?</p>
+                </div>
+                <button type="button" class="chiptap" data-bw="drehen" data-bw-karte="#m3-karte"
+                        style="align-self:flex-start">
+                  <span class="origin"><span class="ico" data-ico="link"></span>aus „Zellbiologie · Vorlesung 7"</span>
+                </button>
+              </div>
+              <div class="bw-flip__seite bw-flip__seite--hinten flipseite">
+                <div>
+                  <span class="t-label c-3">Antwort</span>
+                  <p class="t-sub c-1" style="margin:8px 0 0">Die Summe aus osmotischem Potential und
+                     Druckpotential. Wasser läuft immer vom höheren zum niedrigeren.</p>
+                </div>
+                <p class="serif--quote c-2" style="margin:0">„das eigentliche Gefälle"</p>
+              </div>
+            </div>
+          </div>
+          <div class="flipseite" id="m3-naechste" hidden
+               style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <span class="t-label c-3">Frage</span>
+              <p class="t-body c-1" style="margin:8px 0 0">Wodurch unterscheidet sich Diffusion von
+                 aktivem Transport?</p>
+            </div>
+            <span class="t-sub c-3">Karte 8 von 23</span>
+          </div>
+        </div>
+        <p class="t-sub c-3" style="margin:10px 0 0"><span class="bw-zaehler" id="m3-zahl" style="font-weight:600">7</span> von 23 bearbeitet</p>
+      </div>
+      <div>
+        <span class="t-label c-3">Nächste Wiederholung</span>
+        <div class="threadrow bw-intervall" id="m3-intervall" style="margin:12px 0 6px;max-width:300px">
+          <span class="dot dot--cards"></span>
+          <svg class="thread thread--h"></svg>
+          <span class="dot dot--cards"></span>
+          <svg class="thread thread--h"></svg>
+          <span class="dot dot--cards dot--hollow"></span>
+          <svg class="thread thread--h"></svg>
+          <span class="dot dot--cards dot--hollow"></span>
+        </div>
+        <div style="display:flex;justify-content:space-between;max-width:300px">
+          <span class="t-label c-3">1 d</span><span class="t-label c-3">3 d</span>
+          <span class="t-label c-3">8 d</span><span class="t-label c-3">21 d</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="steuer">
+    <button type="button" class="btn btn--sm" data-bw="drehen" data-bw-karte="#m3-karte">Umdrehen</button>
+  </div>
+  <div class="steuer noten">
+    <button type="button" class="btn btn--sm" data-bw="bewerten" data-bw-karte="#m3-karte"
+            data-bw-note="nochmal" data-bw-intervalle="#m3-intervall" data-bw-zaehler="#m3-zahl" data-bw-naechste="#m3-naechste">Nochmal</button>
+    <button type="button" class="btn btn--sm" data-bw="bewerten" data-bw-karte="#m3-karte"
+            data-bw-note="schwer" data-bw-intervalle="#m3-intervall" data-bw-zaehler="#m3-zahl" data-bw-naechste="#m3-naechste">Schwer</button>
+    <button type="button" class="btn btn--primary" data-bw="bewerten" data-bw-karte="#m3-karte"
+            data-bw-note="gut" data-bw-intervalle="#m3-intervall" data-bw-zaehler="#m3-zahl" data-bw-naechste="#m3-naechste">Gut</button>
+    <button type="button" class="btn btn--sm" data-bw="bewerten" data-bw-karte="#m3-karte"
+            data-bw-note="leicht" data-bw-intervalle="#m3-intervall" data-bw-zaehler="#m3-zahl" data-bw-naechste="#m3-naechste">Leicht</button>
+    <button type="button" class="btn btn--sm" data-reset="m3-buehne">Zurücksetzen</button>
+  </div>
+  <dl class="spec">
+    <dt>Drehen</dt><dd><b>320 ms</b> springStandard · <code>rotateY</code> 0 → 180°, Perspektive 1200 px am Behälter</dd>
+    <dt>Wischen</dt><dd>1 : 1 ohne Übergangszeit, Drehung bis 8°; Schwelle 72 pt; die Vorschau aktualisiert sich ab 60 pt</dd>
+    <dt>Loslassen</dt><dd><b>260 – 480 ms</b>, aus der Wurfgeschwindigkeit gerechnet — eine Bézier kann sie nicht aufnehmen, also wandert sie in die Dauer</dd>
+    <dt>Intervall</dt><dd>Der Punkt, auf den die Note führt, bekommt den Ink-Ring; die Fadenstücke bis dorthin werden aktiv (180 ms)</dd>
+    <dt>Kurve</dt><dd class="kurve">cubic-bezier(.216,.052,.330,1.110)</dd>
+    <dt>Reduce</dt><dd class="rm">Keine Drehung: die Rückseite blendet an derselben Stelle über die Vorderseite (160 ms) — dass es dieselbe Karte ist, sagt der Ort. <b>Kein Wischen</b>: die Zeiger-Ereignisse werden gar nicht erst eingehängt, bewertet wird über die vier Knöpfe, die ohnehin da sind.</dd>
+  </dl>
+</section>
+
+<!-- ── MOMENT 4 ────────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>4 · Dokument öffnen — die Karte wird der Editor</h2>
+  <p class="warum">Ein Zwilling der Bibliothekskarte legt sich über die Seite und wechselt in
+     einem Zug Ort, Breite, Höhe und Eckradius. <b>Breite und Höhe statt Maßstab</b> — sonst
+     staucht das Coverbild und der Radius wächst mit. Das Regal dahinter tritt nur in der
+     Deckkraft zurück; zwei gleichzeitige Wege würden um dieselbe Aufmerksamkeit ringen.</p>
+  <div class="buehne buehne--hoch" data-buehne id="m4-buehne">
+    <div class="regal" id="m4-regal">
+      <div class="buch bw-tap bw-tap--karte" id="m4-buch">
+        <img src="../assets/bilder/cover/leinen-sand-560.jpg" alt="Notizbuch Zellbiologie, Leineneinband">
+        <div class="buch__fuss">
+          <span class="serif--cover-title">Zellbiologie</span>
+          <p class="t-sub c-3" style="margin:2px 0 0">Wintersemester</p>
+        </div>
+      </div>
+      <div class="buch">
+        <img src="../assets/bilder/cover/kraft-natur-560.jpg" alt="Notizbuch Laborjournal, Kraftpapier">
+        <div class="buch__fuss">
+          <span class="serif--cover-title">Laborjournal</span>
+          <p class="t-sub c-3" style="margin:2px 0 0">Praktikum</p>
+        </div>
+      </div>
+      <div class="buch">
+        <img src="../assets/bilder/cover/marmor-schiefer-560.jpg" alt="Notizbuch Seminar, Marmorpapier">
+        <div class="buch__fuss">
+          <span class="serif--cover-title">Seminar</span>
+          <p class="t-sub c-3" style="margin:2px 0 0">Prof. Wendt</p>
+        </div>
+      </div>
+    </div>
+    <div id="m4-editor" hidden>
+      <div class="card__head" style="margin-bottom:14px">
+        <span class="dot dot--notes"></span><span class="t-label c-3">Zellbiologie · Vorlesung 7</span>
+      </div>
+      <h3 class="serif--screen-title" style="margin:0 0 10px">Zellbiologie</h3>
+      <p class="t-body c-1" style="margin:0 0 8px">Osmose ist die Diffusion von Wasser durch eine
+         semipermeable Membran entlang des Wasserpotentials.</p>
+      <p class="t-sub c-2" style="margin:0">14 Seiten · zuletzt geändert gestern, 19:04</p>
+    </div>
+  </div>
+  <div class="steuer">
+    <button type="button" class="btn btn--primary btn--sm"
+            data-bw="oeffnen" data-bw-von="#m4-buch" data-bw-nach="#m4-editor"
+            data-bw-huelle="#m4-regal">Notizbuch öffnen</button>
+    <button type="button" class="btn btn--sm" data-reset="m4-buehne">Zurücksetzen</button>
+  </div>
+  <dl class="spec" data-spec="oeffnen"></dl>
+</section>
+
+<!-- ── MOMENT 5 ────────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>5 · Herkunft zeigen — der Rückweg ist eine Bewegung</h2>
+  <p class="warum">Tap auf den Herkunfts-Chip. <b>Erst zeichnet sich die Verbindung zum Ursprung</b>
+     (420 ms), dann weicht die Karte und der Quellabsatz kommt herein — der Satz, aus dem die
+     Karte geschnitten wurde, ist darin weiterhin markiert. Der Faden bleibt dabei gespannt und
+     wird Bild für Bild nachgeführt, weil der Chip auf der Karte sitzt, die gerade weicht.
+     Und: <b>der Sitzungszähler bewegt sich nicht.</b> Man behält die Hand am Faden, statt die
+     Sitzung zu verlassen. Gezeichnet wird mit <code>MOCK.thread().draw()</code> — es gibt keinen
+     zweiten Faden.</p>
+  <div class="buehne buehne--hoch" data-buehne id="m5-buehne" style="min-height:340px">
+    <span class="origin" id="m5-anker">
+      <span class="dot dot--node" style="--node-ring: var(--ground)"></span>Zellbiologie · Vorlesung 7
+    </span>
+    <div class="card bw-weicht" id="m5-karte">
+      <span class="t-label c-3">Frage</span>
+      <p class="t-body c-1" style="margin:8px 0 12px">Was beschreibt das Wasserpotential?</p>
+      <button type="button" class="chiptap" id="m5-chip"
+              data-bw="herkunft" data-bw-ursprung="#m5-anker" data-bw-karte="#m5-karte"
+              data-bw-quelle="#m5-quelle" data-bw-box="#m5-buehne" data-bw-kurve="26"
+              aria-expanded="false">
+        <span class="origin"><span class="ico" data-ico="link"></span>aus „Zellbiologie · Vorlesung 7"</span>
+      </button>
+    </div>
+    <p class="t-sub c-3" style="position:absolute;left:18px;bottom:18px;margin:0">
+      Sitzung: <b class="c-1">7 von 23</b> — steht still</p>
+    <div class="bw-quelle" id="m5-quelle">
+      <span class="t-label c-3">Notiz · Absatz 7</span>
+      <p class="t-sub c-2" style="margin:10px 0 8px">Die Membran ist selektiv permeabel.</p>
+      <p class="t-sub c-1 bw-markiert" style="margin:0 0 8px">Das Wasserpotential ist die Summe aus
+         osmotischem Potential und Druckpotential.</p>
+      <p class="t-sub c-2" style="margin:0">Prof. Wendt nennt es „das eigentliche Gefälle".</p>
+    </div>
+  </div>
+  <div class="steuer">
+    <button type="button" class="btn btn--primary btn--sm" data-tun="m5">Herkunft zeigen</button>
+    <button type="button" class="btn btn--sm" data-bw="zurueck">Loslassen</button>
+    <button type="button" class="btn btn--sm" data-reset="m5-buehne">Zurücksetzen</button>
+  </div>
+  <dl class="spec">
+    <dt>Faden</dt><dd><b>0 – 420 ms</b> <code>--t-hand</code> · Weglänge 0 → voll, Stärke 2,5 pt (Herkunft), aktiv</dd>
+    <dt>Halten</dt><dd><b>420 – 580 ms</b> nichts bewegt sich — der Weg soll gelesen werden, bevor er begangen wird</dd>
+    <dt>Weg</dt><dd><b>580 – 900 ms</b> springStandard · Karte −38 % nach links (0,5 Deckkraft), Quelle von rechts herein</dd>
+    <dt>Nachführen</dt><dd>Der Faden wird während dieser 320 ms Bild für Bild neu gerechnet</dd>
+    <dt>Zurück</dt><dd>Quelle hinaus (320 ms), dann <code>drawBack()</code> (420 ms): der Faden zieht sich zum Chip zurück, also dorthin, wo der Finger war</dd>
+    <dt>Kurve</dt><dd class="kurve">cubic-bezier(.216,.052,.330,1.110) · Faden <code>--ease-spring</code></dd>
+    <dt>Reduce</dt><dd class="rm">Nichts weicht, nichts kommt herein. Der Faden erscheint auf voller Länge (120 ms), die Quelle blendet an ihrem Platz auf (160 ms), die Karte wird nur ruhiger. Dieselbe Beziehung, ohne Weg.</dd>
+  </dl>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     KLEINBEWEGUNGEN
+     ══════════════════════════════════════════════════════════════════ -->
+<p class="gruppe">Kleinbewegungen</p>
+
+<section class="panel">
+  <h2>Zeigen, Drücken, Laden, Staffeln, Streak, Wellenform</h2>
+  <p class="warum">Sechs Bewegungen, die niemand bemerkt, solange sie stimmen. Fünf davon
+     verschwinden unter Reduce Motion nicht, sie wechseln ihr Mittel: Fläche statt Maßstab,
+     Ziffer statt Ausschlag, gemeinsames Erscheinen statt Staffelung.</p>
+
+  <div class="kachelraster">
+
+    <div class="kachel">
+      <h3>Zeigen und Drücken</h3>
+      <p>Zeigen 180 ms, nur Fläche. Drücken 120 ms, Maßstab 0,98 — die einzige Stelle, an der
+         etwas schrumpft, und der Finger ist der Grund.</p>
+      <div class="card" style="padding:6px 6px">
+        <div class="row bw-tap">
+          <span class="dot dot--tasks"></span>
+          <span class="row__main"><span class="t-body">Kapitel 4 lesen</span></span>
+          <span class="row__meta"><span class="ico" data-ico="chevR"></span></span>
+        </div>
+        <div class="row bw-tap">
+          <span class="dot dot--notes"></span>
+          <span class="row__main"><span class="t-body">Osmose-Notiz</span></span>
+          <span class="row__meta"><span class="ico" data-ico="chevR"></span></span>
+        </div>
+      </div>
+      <div class="card bw-tap bw-tap--karte" style="margin-top:12px;padding:12px 14px">
+        <span class="t-sub c-1">Karte — darf beim Zeigen 1,2 % wachsen</span>
+      </div>
+    </div>
+
+    <div class="kachel">
+      <h3>Laden: Skelett statt Spinner</h3>
+      <p>Das Skelett hat die Form dessen, was kommt — man sieht vorher, wie viel es ist. Der Puls
+         ist ein Atmen der Deckkraft, kein wandernder Glanz: ein Glanz behauptet einen Fortschritt,
+         den niemand kennt.</p>
+      <div data-bw-laden class="is-laden" id="k-laden">
+        <div class="bw-laden__skelett">
+          <div class="bw-skelett" style="height:14px;width:62%;margin-bottom:8px"></div>
+          <div class="bw-skelett" style="height:14px;width:88%;margin-bottom:8px"></div>
+          <div class="bw-skelett" style="height:14px;width:44%"></div>
+          <p class="t-sub c-3" style="margin:10px 0 0">Wird geladen</p>
+        </div>
+        <div class="bw-laden__inhalt bw-staffel">
+          <div class="t-sub c-1" style="margin-bottom:6px">Osmose · 8 Karten fällig</div>
+          <div class="t-sub c-1" style="margin-bottom:6px">Membranen · 6 Karten fällig</div>
+          <div class="t-sub c-1">Zellkern · 9 Karten fällig</div>
+        </div>
+      </div>
+      <div class="steuer">
+        <button type="button" class="btn btn--sm" data-tun="laden">Fertig laden</button>
+      </div>
+    </div>
+
+    <div class="kachel">
+      <h3>Listen erscheinen gestaffelt</h3>
+      <p>36 ms Schritt, höchstens zwölf Einträge weit. Bei zwanzig Zeilen wäre die letzte eine
+         halbe Sekunde zu spät — und eine Liste, die tröpfelt, kann man nicht überfliegen.</p>
+      <div class="bw-staffel" id="k-staffel">
+        <div class="row" style="background:var(--paper);margin-bottom:4px"><span class="dot dot--journal"></span><span class="row__main"><span class="t-sub">10. November · Färbung, dritter Versuch</span></span></div>
+        <div class="row" style="background:var(--paper);margin-bottom:4px"><span class="dot dot--journal"></span><span class="row__main"><span class="t-sub">11. November · Hörsaal, Reihe 4</span></span></div>
+        <div class="row" style="background:var(--paper);margin-bottom:4px"><span class="dot dot--journal"></span><span class="row__main"><span class="t-sub">12. November · Kaffee vor der Übung</span></span></div>
+        <div class="row" style="background:var(--paper)"><span class="dot dot--journal"></span><span class="row__main"><span class="t-sub">13. November · Seminarraum B</span></span></div>
+      </div>
+      <div class="steuer">
+        <button type="button" class="btn btn--sm" data-tun="staffel">Noch einmal</button>
+      </div>
+    </div>
+
+    <div class="kachel">
+      <h3>Der Streak-Punkt füllt sich</h3>
+      <p>Der Streak ist ein Faden aus Punkten: gefüllt = erledigter Tag. Der Punkt allein wäre eine
+         Zahl — der Faden macht daraus eine Folge.</p>
+      <div class="threadrow" id="k-streak" style="margin:6px 0 4px;max-width:190px">
+        <span class="dot bw-streak__tag is-voll" style="background:var(--ink-2)"></span>
+        <svg class="thread thread--h thread--weak is-active"></svg>
+        <span class="dot bw-streak__tag is-voll" style="background:var(--ink-2)"></span>
+        <svg class="thread thread--h thread--weak is-active"></svg>
+        <span class="dot bw-streak__tag is-voll" style="background:var(--ink-2)"></span>
+        <svg class="thread thread--h thread--weak"></svg>
+        <span class="dot dot--hollow bw-streak__tag"></span>
+      </div>
+      <p class="t-sub c-3" style="margin:0">3 Tage in Folge · heute offen</p>
+      <div class="steuer">
+        <button type="button" class="btn btn--sm" data-tun="streak">Heute füllen</button>
+      </div>
+    </div>
+
+    <div class="kachel">
+      <h3>Die Wellenform beim Aufnehmen</h3>
+      <p>Die einzige Dauerbewegung im System, und sie hat einen harten Grund: Sie sagt „das Mikrofon
+         hört gerade", und das muss ununterbrochen wahr bleiben.</p>
+      <div class="bw-welle" id="k-welle" data-balken="26"></div>
+      <p class="t-sub c-3" style="margin:8px 0 0">Vorlesung 7 · <span class="num" id="k-uhr">00:00</span></p>
+      <div class="steuer">
+        <button type="button" class="btn btn--sm" data-tun="welle">Aufnahme an / aus</button>
+      </div>
+    </div>
+
+    <div class="kachel">
+      <h3>Der Zähler rollt</h3>
+      <p>Und zwar nur, wo er sich <b>wegen einer Handlung</b> ändert. Zahlen, die sich beim Laden
+         hochzählen, behaupten eine Ursache, die es nicht gab.</p>
+      <div class="zahlpaar" style="margin-top:8px">
+        <span class="bw-zaehler" id="k-zahl">23</span><span class="wort">Karten</span>
+      </div>
+      <div class="steuer">
+        <button type="button" class="btn btn--sm" data-tun="zahl">Eine dazu</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     WAS ABSICHTLICH NICHT BEWEGT WIRD
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="panel">
+  <h2>Was absichtlich nicht bewegt wird</h2>
+  <p class="warum">Fünf Bewegungen, die man erwarten würde und die hier fehlen. Jede mit dem Grund,
+     aus dem sie fehlt.</p>
+  <ul class="liste">
+    <li><b>Der heutige Tag pulsiert nicht.</b> Velums März-Spec §8 sieht für den Kalenderpunkt
+        „scale 1.0 → 1.05, 2 s, repeat" vor. Eine Dauerbewegung, die keinen Zustandswechsel meldet,
+        ist Zierrat — sie zieht in jeder Sekunde Aufmerksamkeit ab, in der man liest. Dass heute
+        heute ist, sagt der Ink-Ring, ohne sich zu rühren.</li>
+    <li><b>Die Liste weicht beim Öffnen nicht zurück.</b> Sie tritt nur in der Deckkraft zurück.
+        Der Weg der Karte erklärt die Herkunft schon; ein zweiter gleichzeitiger Weg würde mit dem
+        ersten um dieselbe Aufmerksamkeit ringen.</li>
+    <li><b>Der Tab-Wechsel bewegt den Inhalt nicht.</b> Nur die Kreuzblende aus der Rolle
+        „Wechseln". Tabs sind Orte, keine Wege — wer zwischen zwei Orten hin und her schaltet, will
+        nicht jedes Mal reisen.</li>
+    <li><b>Kennzahlen zählen beim Laden nicht hoch.</b> „6 Aufgaben · 23 Karten · 12 Tage in Folge"
+        stehen sofort da. Der Zähler rollt nur, wo eine Handlung ihn geändert hat.</li>
+    <li><b>Trennlinien und Ränder animieren nie.</b> Sie sind keine Fäden — und was kein Faden ist,
+        wächst auch nicht. Ein Rahmen, der sich einzeichnet, sähe aus wie eine Beziehung und wäre
+        keine.</li>
+  </ul>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     DIE ÜBERSETZUNG
+     ══════════════════════════════════════════════════════════════════ -->
+<section class="panel">
+  <h2>Feder → Bézier, vorgerechnet</h2>
+  <p class="warum">Velums März-Spec §9 nennt vier Federn und zwei easeInOut-Werte. Für jede Feder
+     ist die Sprungantwort
+     <code>x(t) = 1 − e<sup>−ζωt</sup>·(cos ω<sub>d</sub>t + ζ/√(1−ζ²)·sin ω<sub>d</sub>t)</code>
+     mit <code>ω = 2π/response</code> ausgewertet, das Zeitfenster bei 2&nbsp;% Restweg beendet
+     und eine <code>cubic-bezier</code> mit vier freien Parametern angepasst (Nelder-Mead,
+     120&nbsp;Stützstellen). Der Fehler ist das quadratische Mittel über den ganzen Verlauf,
+     gemessen in Prozent des Weges.</p>
+  <div class="tabhuelle">
+    <table class="tab">
+      <thead><tr>
+        <th>Feder</th><th>response / damping</th><th>Fenster</th><th>cubic-bezier</th>
+        <th>Fehler</th><th>Überschwingen Feder → Bézier</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>springQuick</td><td class="num">0,25 / 0,85</td><td class="num">183,1 → 180 ms</td>
+            <td class="mono">.239, .071, .325, .913</td><td class="num">0,36 %</td>
+            <td class="num">0,63 % → 0 %</td></tr>
+        <tr><td>springStandard</td><td class="num">0,40 / 0,80</td><td class="num">311,3 → 320 ms</td>
+            <td class="mono">.216, .052, .330, 1.110</td><td class="num">0,33 %</td>
+            <td class="num">1,52 % → 0,80 %</td></tr>
+        <tr><td>springBouncy</td><td class="num">0,50 / 0,65</td><td class="num">478,9 → 480 ms</td>
+            <td class="mono">.280, .224, .224, 1.370</td><td class="num">0,76 %</td>
+            <td class="num">6,81 % → 7,30 %</td></tr>
+        <tr><td>springGentle</td><td class="num">0,60 / 0,90</td><td class="num">415,1 → 420 ms</td>
+            <td class="mono">.271, .115, .268, .755</td><td class="num">0,92 %</td>
+            <td class="num">0,15 % → 0 %</td></tr>
+        <tr><td>quick (easeInOut)</td><td class="num">— / —</td><td class="num">150 ms</td>
+            <td class="mono">.42, 0, .58, 1</td><td class="num">0 %</td><td>1 : 1 übernommen</td></tr>
+        <tr><td>standard (easeInOut)</td><td class="num">— / —</td><td class="num">300 ms</td>
+            <td class="mono">.42, 0, .58, 1</td><td class="num">0 %</td><td>1 : 1 übernommen</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="warum" style="margin-top:16px"><b>Wo die Übersetzung nicht aufgeht</b> — zwei Stellen,
+     beide benannt statt versteckt:</p>
+  <ul class="liste">
+    <li><b>Das Unterschwingen nach dem Überschwingen.</b> springBouncy schwingt um 6,8&nbsp;% über
+        und danach um 0,46&nbsp;% unter. Eine <code>cubic-bezier</code> bildet das Überschwingen ab,
+        das Unterschwingen nicht — sie kehrt einsinnig zurück. Zwei verkettete Animationen könnten
+        es. Sie werden hier bewusst nicht verkettet: das Unterschwingen fiele in dieselben 60&nbsp;ms,
+        in denen beim Übergeben der Zähler hochzählt, und zwei Bewegungen an einer Stelle heben
+        sich gegenseitig auf.</li>
+    <li><b>Die Geschwindigkeit beim Loslassen.</b> Eine Feder nimmt sie auf, eine Bézier hat eine
+        feste Anfangssteigung. Beim Wischen einer Lernkarte wandert sie deshalb in die
+        <b>Dauer</b>: 260&nbsp;ms bei schnellem Schnippen, 480&nbsp;ms bei ruhigem Loslassen,
+        dieselbe Kurve. Das ist keine Feder, aber es ist ehrlich — und der Unterschied zwischen
+        einem Wurf und einem Legen bleibt spürbar.</li>
+  </ul>
+</section>
+
+</div>
+
+<script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ── Die Schalter der Musterseite ──────────────────────────────────────
+     Reduce Motion hat drei Stellungen, und die Seite zeigt BEIDES: was das
+     Betriebssystem meldet und was gerade wirklich gilt. Das sind zwei
+     verschiedene Dinge — eine Seite, die nur eines davon zeigt, kann man
+     nicht prüfen. */
+  var rmSchalter = document.getElementById('rm-schalter');
+  var tempoSchalter = document.getElementById('tempo-schalter');
+  var lage = document.getElementById('lage');
+
+  rmSchalter.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (b) MOTION.modus(b.dataset.modus);
+  });
+  tempoSchalter.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (b) MOTION.tempo(+b.dataset.tempo);
+  });
+
+  MOTION.horchen(function (z) {
+    rmSchalter.querySelectorAll('button').forEach(function (b) {
+      b.classList.toggle('is-on', b.dataset.modus === z.modus);
+    });
+    tempoSchalter.querySelectorAll('button').forEach(function (b) {
+      b.classList.toggle('is-on', +b.dataset.tempo === z.tempo);
+    });
+    lage.innerHTML =
+      'System meldet: <b>' + (z.systemSagt ? 'Bewegung reduzieren' : 'keine Reduktion') + '</b> · ' +
+      'es gilt gerade: <b>' + (z.reduziert ? 'reduzierte Bewegung' : 'volle Bewegung') + '</b> · ' +
+      'Tempo <b>' + (z.tempo === 1 ? '1×' : '0,25×') + '</b>';
+    zeigeSpecs(z.tempo);
+  });
+
+  /* ── Die Steckbriefe der vier Rollen kommen aus MOTION.rollen ───────────
+     Damit steht neben jedem Knopf genau der Wert, gegen den gebaut ist —
+     und nicht eine abgeschriebene Zahl, die veralten kann. */
+  function zeigeSpecs(tempo) {
+    document.querySelectorAll('[data-spec]').forEach(function (dl) {
+      var r = MOTION.rollen[dl.dataset.spec];
+      if (!r) return;
+      var laufzeit = r.ms * tempo;
+      dl.innerHTML =
+        '<dt>Dauer</dt><dd><b>' + r.ms + ' ms</b>' +
+          (tempo !== 1 ? ' — bei 0,25× ' + laufzeit + ' ms' : '') + '</dd>' +
+        '<dt>Kurve</dt><dd class="kurve">' + r.kurve + '</dd>' +
+        '<dt>Feder</dt><dd>' + r.feder + '</dd>' +
+        '<dt>Bewegt sich</dt><dd>' + r.bewegt + '</dd>' +
+        '<dt>Reduce</dt><dd class="rm">' + r.reduce + '</dd>';
+    });
+  }
+
+  /* ── Bühnen merken, damit „Zurücksetzen" wirklich zurücksetzt ─────────── */
+  document.querySelectorAll('[data-buehne]').forEach(function (b) { MOTION.merken(b); });
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-reset]');
+    if (!b) return;
+    MOTION.zuruecksetzen(document.getElementById(b.dataset.reset));
+    nachbereiten();
+  });
+
+  /* ── Die Auslöser, die mehr als einen Aufruf brauchen ─────────────────── */
+  var wischAb = null;
+
+  function nachbereiten() {
+    /* Der Herkunftsfaden in Moment 2 ist eine echte Kante: die Aufgabe ist
+       aus Absatz 3 dieser Notiz entstanden. Deshalb steht er im Ruhezustand
+       da, nicht erst beim Erledigen. */
+    var m2b = document.getElementById('m2-buehne');
+    var echo = document.getElementById('m2-echo');
+    var zeile = document.getElementById('m2-zeile');
+    if (m2b && echo && zeile && !m2b.querySelector(':scope > svg.thread-layer')) {
+      m2Faden = MOTION.faden(echo, zeile, { strength: 'origin', curve: 30, box: m2b });
+    }
+    /* Wischen neu einhängen (die Karte kann ausgetauscht worden sein) */
+    if (wischAb) { wischAb(); wischAb = null; }
+    var karte = document.getElementById('m3-karte');
+    if (karte) {
+      wischAb = MOTION.wischen({
+        karte: karte, intervalle: '#m3-intervall',
+        zaehler: '#m3-zahl', naechste: '#m3-naechste',
+      });
+    }
+    if (document.getElementById('m3-intervall')) MOTION.intervallVorschau('#m3-intervall', 1);
+  }
+  var m2Faden = null;
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-tun]');
+    if (!b) return;
+    var t = b.dataset.tun;
+
+    if (t === 'r1') {
+      var blatt = document.getElementById('r1-blatt');
+      blatt.hidden = false;
+      blatt.classList.remove('bw-oeffnen-blatt');
+      void blatt.getBoundingClientRect();
+      blatt.classList.add('bw-oeffnen-blatt');
+    }
+    if (t === 'r2-vor' || t === 'r2-zurueck') wechseln(t === 'r2-vor' ? 1 : -1);
+    if (t === 'm2') {
+      MOTION.erledigen({
+        zeile: '#m2-zeile', kreis: '#m2-check', echo: '#m2-echo', faden: m2Faden,
+      });
+    }
+    if (t === 'm5') {
+      MOTION.herkunft({
+        chip: document.getElementById('m5-chip'), ursprung: '#m5-anker',
+        karte: '#m5-karte', quelle: '#m5-quelle', box: '#m5-buehne', kurve: 26,
+      });
+    }
+    if (t === 'laden') MOTION.laden('#k-laden', false);
+    if (t === 'staffel') MOTION.staffeln('#k-staffel');
+    if (t === 'streak') MOTION.streak('#k-streak', 3);
+    if (t === 'welle') {
+      var w = document.getElementById('k-welle');
+      MOTION.welle(w, !w.classList.contains('is-an'), '#k-uhr');
+    }
+    if (t === 'zahl') MOTION.zaehler('#k-zahl');
+  });
+
+  /* Wechseln: hinaus und herein sind zwei Bewegungen mit 60 ms Überlappung.
+     Die Richtung steckt in --bw-richtung, nicht in zwei Keyframe-Sätzen. */
+  function wechseln(richtung) {
+    var inhalt = document.getElementById('r2-inhalt');
+    var seiten = inhalt.querySelectorAll('[data-ansicht-inhalt]');
+    var alt = null, neu = null;
+    seiten.forEach(function (s) { if (s.hidden) neu = s; else alt = s; });
+    if (!alt || !neu) return;
+    var knoepfe = document.querySelectorAll('[data-ansicht]');
+    knoepfe.forEach(function (k) {
+      k.classList.toggle('is-on', k.dataset.ansicht === neu.dataset.ansichtInhalt);
+    });
+    alt.style.setProperty('--bw-richtung', richtung);
+    neu.style.setProperty('--bw-richtung', richtung);
+    alt.classList.remove('bw-wechseln-rein'); alt.classList.add('bw-wechseln-raus');
+    neu.hidden = false;
+    neu.classList.remove('bw-wechseln-raus'); void neu.getBoundingClientRect();
+    neu.classList.add('bw-wechseln-rein');
+    setTimeout(function () {
+      alt.hidden = true;
+      alt.classList.remove('bw-wechseln-raus');
+    }, MOTION.ms(MOTION.reduziert() ? 130 : 200));
+  }
+
+  document.querySelectorAll('[data-ansicht]').forEach(function (k) {
+    k.addEventListener('click', function () {
+      var inhalt = document.getElementById('r2-inhalt');
+      var ziel = inhalt.querySelector('[data-ansicht-inhalt="' + k.dataset.ansicht + '"]');
+      if (!ziel || !ziel.hidden) return;
+      wechseln(k.dataset.ansicht === 'planer' ? 1 : -1);
+    });
+  });
+
+  nachbereiten();
+})();
+</script>
+</body>
+</html>

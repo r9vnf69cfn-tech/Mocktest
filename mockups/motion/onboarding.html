@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die ersten 30 Sekunden — Velum stellt sich vor</title>
+<link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
+<style>
+/* Nur das Gerüst dieser Seite. Die Bewegungen selbst sind dieselben vier
+   Rollen aus shared/bewegung.css — das Onboarding erfindet keine eigenen. */
+
+[hidden] { display: none !important; }
+
+.probe   { max-width: 1120px; margin: 0 auto; padding: 0 30px 70px; }
+.panel   { background: var(--paper); border-radius: var(--r-card); box-shadow: var(--sh-card);
+           padding: 22px 26px 24px; margin-bottom: 18px; }
+.panel > h2 { font: 600 20px/26px var(--sans); letter-spacing: -.015em; margin: 0 0 4px; }
+.panel > p  { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0 0 14px; max-width: 80ch; }
+
+.bwbar   { position: sticky; top: 0; z-index: 150;
+           background: var(--chrome); backdrop-filter: blur(24px) saturate(180%);
+           border-bottom: 1px solid var(--line);
+           padding: 10px 340px 10px 30px; margin-bottom: 20px;
+           display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.bwbar__t { font: 600 13px/16px var(--sans); color: var(--ink-3); }
+.bwbar__lage { font: 400 13px/16px var(--sans); color: var(--ink-2); }
+.bwbar__lage b { font-weight: 600; color: var(--ink-1); }
+.bwbar__block { display: flex; align-items: center; gap: 10px; }
+
+/* Die Bühne: ein Schirm in Telefonmaß, aber ohne feste Breite — dadurch
+   stimmen die Rechtecke, aus denen der Faden gespannt wird, auf jedem
+   Fenster. Ein skalierter Rahmen (transform) täte das nicht. */
+.ablauf  { display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap; }
+/* Der Halter darf schmaler werden als der Schirm breit ist — sonst schiebt
+   das Telefonmaß von 393 pt auf einem 390-pt-Fenster die ganze Seite waagerecht. */
+.ob-halter { flex: 1 1 340px; min-width: 0; max-width: 393px; }
+.ob-screen {
+  position: relative;
+  width: 100%; height: 720px;
+  background: var(--ground);
+  border-radius: 34px;
+  box-shadow: var(--sh-float), 0 0 0 1px var(--line);
+  overflow: hidden;
+}
+.ob-bild { position: absolute; inset: 0; display: flex; flex-direction: column;
+           padding: 54px 26px 30px; }
+.ob-mitte { justify-content: center; align-items: center; text-align: center; gap: 22px; }
+
+.ob-satz { font: 400 17px/23px var(--sans); color: var(--ink-1); margin: 0; }
+.ob-satz--klein { font: 400 15px/20px var(--sans); color: var(--ink-2); }
+
+.ob-modul { display: flex; align-items: center; gap: 12px; padding: 11px 0; }
+.ob-modul .t-body { color: var(--ink-1); }
+.ob-modul__was { margin-left: auto; color: var(--ink-3); }
+
+.ob-notiz { background: var(--paper); border-radius: var(--r-card); box-shadow: var(--sh-card);
+            padding: 14px 16px; }
+.ob-ziel  { background: var(--paper); border-radius: var(--r-card); box-shadow: var(--sh-card);
+            padding: 14px 16px; display: flex; align-items: flex-end; gap: 8px; }
+.ob-ziel .bw-zaehler { font: 600 28px/32px var(--sans); font-variant-numeric: tabular-nums; height: 32px; }
+.ob-ziel .wort { font: 400 15px/20px var(--sans); color: var(--ink-3); padding-bottom: 4px; }
+/* Die Kachel behält ihre Papierfläche, bis sie etwas bekommen hat — danach
+   trägt sie den Auswahl-Ton. Ohne diese Zeile gewönne das .ob-ziel oben
+   gegen .bw-ziel-aktiv, weil dieser <style>-Block nach bewegung.css steht. */
+.ob-ziel.bw-ziel-aktiv { background: var(--accent-soft); }
+
+.ob-fuss { margin-top: auto; }
+
+.steuerung { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+.fortschritt { width: 100%; }
+.fortschritt .bar { margin: 12px 0 6px; }
+.fortschritt .bar__fill { width: 0; }
+.fortschritt .t-label { color: var(--ink-3); }
+
+.takte { margin: 0; padding: 0; list-style: none; max-width: 460px; }
+.takte li { display: flex; gap: 12px; align-items: baseline;
+            font: 400 15px/22px var(--sans); color: var(--ink-3);
+            padding: 6px 0; border-bottom: 1px solid var(--line); }
+.takte li .zeit { font: 600 13px/16px var(--sans); font-variant-numeric: tabular-nums;
+                  color: var(--ink-3); flex: none; width: 62px; }
+.takte li.is-jetzt { color: var(--ink-1); font-weight: 600; }
+.takte li.is-jetzt .zeit { color: var(--ink-1); }
+.takte li.is-vorbei { color: var(--ink-2); }
+
+.liste   { margin: 0; padding-left: 20px; }
+.liste li { font: 400 15px/23px var(--sans); color: var(--ink-2); margin-bottom: 8px; }
+.liste li b { color: var(--ink-1); font-weight: 600; }
+
+@media (max-width: 1000px) {
+  body { padding-top: 62px; }
+  .bwbar { position: static; padding: 12px 20px; }
+}
+@media (max-width: 720px) {
+  .probe { padding: 0 16px 50px; }
+  .panel { padding: 18px 16px 20px; }
+  .ob-screen { height: 640px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — „Die ersten 30 Sekunden"
+
+WAS DAS IST
+Kein Werbefilm, sondern der Ablauf, den ein Nutzer beim ersten Start wirklich
+sieht: 28 Sekunden, elf Takte. Er benutzt ausschließlich die vier Rollen und
+die Momente aus shared/bewegung.css — das Onboarding erfindet keine eigene
+Bewegung. Was es hier nicht gibt, gibt es in der App auch nicht.
+
+DAS ZEICHEN
+Der Ablauf beginnt mit dem echten App-Icon. Die drei PNG unter assets/brand/
+liegen nicht vor; der Baustein zeigt deshalb einen sichtbar leeren Rahmen mit
+dem Dateinamen. DAS IST RICHTIG SO und wird nicht repariert. Sobald die
+Dateien da sind, erscheint das Zeichen hier, ohne dass eine Zeile geändert
+wird. Nachgezeichnet wird nichts.
+
+DIE FORTSCHRITTSANZEIGE IST EIN BALKEN, KEIN FADEN
+Zwischen „Sekunde 4" und „Sekunde 9" besteht keine Beziehung im Datenmodell.
+Ein Faden wäre hier eine Zierlinie — und die sind verboten. Also ein
+gewöhnlicher Fortschrittsbalken (.bar aus system.css §5).
+
+REDUCE MOTION
+Der Ablauf hat dieselben Takte und dieselbe Länge. Nur die Mittel wechseln:
+Kreuzblenden statt Wege, Fäden erscheinen statt sich zu zeichnen, keine
+Staffelung. Er erzählt dann immer noch dieselbe Geschichte — das ist die
+Probe, ob die Bewegung geschmückt oder getragen hat.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Die ersten 30 Sekunden</h1>
+  <p>Elf Takte in 28 Sekunden. Velum stellt sich nicht mit Versprechen vor, sondern indem es
+     einmal vormacht, was es kann: aus einem Satz wird eine Lernkarte, und die Karte weiß, woher
+     sie kommt. Oben rechts hell/dunkel umschalten, hier links Reduce Motion und Tempo.</p>
+</div>
+
+<div class="bwbar">
+  <div class="bwbar__block">
+    <span class="bwbar__t">Reduce Motion</span>
+    <div class="segmented" id="rm-schalter" role="group" aria-label="Reduce Motion">
+      <button type="button" data-modus="system">System</button>
+      <button type="button" data-modus="full">Aus</button>
+      <button type="button" data-modus="reduce">An</button>
+    </div>
+  </div>
+  <div class="bwbar__block">
+    <span class="bwbar__t">Tempo</span>
+    <div class="segmented" id="tempo-schalter" role="group" aria-label="Tempo">
+      <button type="button" data-tempo="1">1×</button>
+      <button type="button" data-tempo="4">0,25×</button>
+    </div>
+  </div>
+  <p class="bwbar__lage" id="lage" aria-live="polite"></p>
+</div>
+
+<div class="probe">
+
+<section class="panel">
+  <h2>Der Ablauf</h2>
+  <p>Start, Pause und Zurück auf Anfang. <b>Pause hält den Ablauf zwischen den Takten an</b>; eine
+     gerade laufende Bewegung läuft zu Ende — die längste dauert 780&nbsp;ms.</p>
+
+  <div class="steuerung">
+    <button type="button" class="btn btn--primary btn--sm" id="k-start">Start</button>
+    <button type="button" class="btn btn--sm" id="k-pause">Pause</button>
+    <button type="button" class="btn btn--sm" id="k-anfang">Zurück auf Anfang</button>
+  </div>
+
+  <div class="ablauf">
+
+    <div class="ob-halter">
+      <!-- ══ DER SCHIRM ══════════════════════════════════════════════════ -->
+      <div class="ob-screen" id="ob">
+
+        <!-- Takt 1–2 · Das Zeichen -->
+        <div class="ob-bild ob-mitte" id="s1">
+          <span class="brandmark" style="flex-direction:column;gap:22px" id="s1-marke">
+            <span class="appicon appicon--lg" data-appicon></span>
+            <span class="serif--wordmark" id="s1-wort" hidden>Velum</span>
+          </span>
+        </div>
+
+        <!-- Takt 3–5 · Fünf Module, ein Bestand -->
+        <div class="ob-bild" id="s2" hidden>
+          <p class="ob-satz" id="s2-titel" hidden>Fünf Module, ein Bestand.</p>
+          <p class="ob-satz ob-satz--klein" id="s2-unter" hidden style="margin-top:6px">
+            Canvas, Notizen, Journal, Aufgaben und Lernkarten sind kein Bündel aus fünf Apps.
+            Sie teilen sich einen Datenbestand.</p>
+
+          <div id="s2-liste" style="margin-top:22px" hidden>
+            <div class="ob-modul"><span class="dot dot--canvas"></span><span class="t-body">Canvas</span><span class="t-sub ob-modul__was">Handschrift</span></div>
+            <div class="ob-modul" id="s2-notizen"><span class="dot dot--notes"></span><span class="t-body">Notizen</span><span class="t-sub ob-modul__was">Vorlesung 7</span></div>
+            <div class="ob-modul"><span class="dot dot--journal"></span><span class="t-body">Journal</span><span class="t-sub ob-modul__was">Laborjournal</span></div>
+            <div class="ob-modul"><span class="dot dot--tasks"></span><span class="t-body">Aufgaben</span><span class="t-sub ob-modul__was">6 heute</span></div>
+            <div class="ob-modul" id="s2-karten"><span class="dot dot--cards"></span><span class="t-body">Lernkarten</span><span class="t-sub ob-modul__was">23 Karten</span></div>
+          </div>
+
+          <p class="ob-satz ob-fuss" id="s2-faden" hidden>Und was aus etwas anderem entsteht,
+             bleibt damit verbunden.</p>
+        </div>
+
+        <!-- Takt 6–8 · Die Übergabe und der Rückweg -->
+        <div class="ob-bild" id="s3" hidden>
+          <p class="ob-satz" id="s3-titel">Aus einem Satz in der Vorlesungsnotiz wird eine
+             Lernkarte.</p>
+
+          <div class="ob-notiz" style="margin-top:20px">
+            <div class="card__head" style="margin-bottom:10px">
+              <span class="dot dot--notes"></span>
+              <span class="t-label c-3">Zellbiologie · Vorlesung 7</span>
+            </div>
+            <p class="t-sub c-2" style="margin:0 0 8px">Die Membran ist selektiv permeabel.</p>
+            <p class="t-sub c-1 bw-markiert" id="s3-absatz" style="margin:0">Osmose ist die
+               Diffusion von Wasser durch eine semipermeable Membran entlang des
+               Wasserpotentials.</p>
+          </div>
+
+          <div class="ob-ziel" id="s3-ziel" style="margin-top:30px">
+            <span class="dot dot--cards" id="s3-punkt" style="margin-bottom:10px"></span>
+            <span class="bw-zaehler" id="s3-zahl">0</span>
+            <span class="wort">Lernkarten</span>
+          </div>
+
+          <p class="ob-satz ob-fuss" id="s3-rueck" hidden>Der Weg gilt in beide Richtungen:
+             jede Karte weiß, aus welchem Absatz sie kommt.</p>
+          <div id="s3-chipzeile" hidden style="margin-top:10px">
+            <span class="origin"><span class="ico" data-ico="link"></span>aus „Zellbiologie · Vorlesung 7"</span>
+          </div>
+        </div>
+
+        <!-- Takt 9–11 · Der erste Schirm -->
+        <div class="ob-bild" id="s4" hidden>
+          <h2 class="serif--screen-title" style="margin:0 0 2px">Heute</h2>
+          <p class="t-sub c-3" style="margin:0 0 18px">Mittwoch, 19. November</p>
+
+          <div id="s4-liste" hidden>
+            <div class="row" style="background:var(--paper);margin-bottom:6px">
+              <span class="dot dot--cards"></span>
+              <span class="row__main"><span class="t-body">8 Karten fällig</span>
+              <span class="t-sub c-3">Zellbiologie</span></span>
+              <span class="row__meta"><span class="ico" data-ico="chevR"></span></span>
+            </div>
+            <div class="row" style="background:var(--paper);margin-bottom:6px">
+              <span class="dot dot--tasks"></span>
+              <span class="row__main"><span class="t-body">Protokoll Färbung abgeben</span>
+              <span class="t-sub c-3">Prof. Wendt · Freitag</span></span>
+              <span class="row__meta"><span class="ico" data-ico="chevR"></span></span>
+            </div>
+            <div class="row" style="background:var(--paper);margin-bottom:6px">
+              <span class="dot dot--notes"></span>
+              <span class="row__main"><span class="t-body">Vorlesung 7 weiterschreiben</span>
+              <span class="t-sub c-3">zuletzt gestern, 19:04</span></span>
+              <span class="row__meta"><span class="ico" data-ico="chevR"></span></span>
+            </div>
+            <div class="row" style="background:var(--paper)">
+              <span class="dot dot--journal"></span>
+              <span class="row__main"><span class="t-body">Journal offen</span>
+              <span class="t-sub c-3">12 Tage in Folge</span></span>
+              <span class="row__meta"><span class="ico" data-ico="chevR"></span></span>
+            </div>
+          </div>
+
+          <div class="ob-fuss" id="s4-knopf" hidden>
+            <button type="button" class="btn btn--primary" style="width:100%">Loslegen</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="fortschritt">
+        <div class="bar"><div class="bar__fill" id="balken"></div></div>
+        <span class="t-label" id="uhr">Sekunde 0 von 28</span>
+      </div>
+    </div>
+
+    <!-- ══ DIE TAKTE ═══════════════════════════════════════════════════ -->
+    <div style="flex:1 1 340px;min-width:300px">
+      <span class="t-label c-3">Die elf Takte</span>
+      <ol class="takte" id="taktliste" style="margin-top:10px"></ol>
+
+      <p class="t-sub c-2" style="margin:18px 0 0;max-width:52ch">
+        Kein Takt trägt eine Bewegung, die es nur hier gibt. Takt&nbsp;7 ist die Rolle
+        <b>Übergeben</b>, Takt&nbsp;8 der Moment <b>Herkunft zeigen</b>, Takt&nbsp;10 die
+        gestaffelte Liste. Wer den Ablauf gesehen hat, kennt die App.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Was Reduce Motion hier ändert — und was nicht</h2>
+  <p>Die elf Takte, ihre Reihenfolge und ihre Längen bleiben gleich. Der Ablauf dauert in beiden
+     Fassungen 28&nbsp;Sekunden und erzählt dasselbe. Nur die Mittel wechseln:</p>
+  <ul class="liste">
+    <li><b>Bildwechsel</b> — statt 8&nbsp;pt Versatz mit 60&nbsp;ms Überlappung eine reine
+        Kreuzblende in 120&nbsp;ms. Die Reihenfolge bleibt lesbar, weil der Text mit ihr wechselt.</li>
+    <li><b>Die fünf Modulzeilen</b> — erscheinen gemeinsam in 120&nbsp;ms statt gestaffelt.
+        Gestaffeltes Erscheinen ist die Bewegung, die bei vestibulärer Empfindlichkeit am
+        unangenehmsten ist: viele kleine Wege gleichzeitig im Blickfeld.</li>
+    <li><b>Der Faden zwischen Notizen und Lernkarten</b> — erscheint auf voller Länge statt sich
+        zu zeichnen. Die Beziehung ist dieselbe; verloren geht nur die Richtung, und die sagt in
+        dieser Fassung der Satz darunter.</li>
+    <li><b>Die Übergabe</b> — kein Flug. Der Faden erscheint, 120&nbsp;ms später zählt das Ziel
+        von 0 auf 1. Ursprung vor Ziel bleibt also erhalten, nur ohne Weg dazwischen.</li>
+    <li><b>Der Rückweg</b> — der Herkunfts-Chip erscheint, der Faden bleibt stehen statt sich
+        rückwärts abzuspulen.</li>
+    <li><b>Die vier Zeilen auf „Heute"</b> — blenden gemeinsam auf.</li>
+  </ul>
+  <p style="margin-top:12px">Was <b>nicht</b> wechselt: die Verweildauern. Ein Takt, der drei
+     Sekunden zum Lesen braucht, braucht sie in beiden Fassungen. Reduce Motion nimmt Wege weg,
+     keine Zeit.</p>
+</section>
+
+</div>
+
+<script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ── Schalter ───────────────────────────────────────────────────────── */
+  var rmSchalter = document.getElementById('rm-schalter');
+  var tempoSchalter = document.getElementById('tempo-schalter');
+  var lage = document.getElementById('lage');
+  rmSchalter.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (b) MOTION.modus(b.dataset.modus);
+  });
+  tempoSchalter.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (b) MOTION.tempo(+b.dataset.tempo);
+  });
+  MOTION.horchen(function (z) {
+    rmSchalter.querySelectorAll('button').forEach(function (b) {
+      b.classList.toggle('is-on', b.dataset.modus === z.modus); });
+    tempoSchalter.querySelectorAll('button').forEach(function (b) {
+      b.classList.toggle('is-on', +b.dataset.tempo === z.tempo); });
+    lage.innerHTML =
+      'System meldet: <b>' + (z.systemSagt ? 'Bewegung reduzieren' : 'keine Reduktion') + '</b> · ' +
+      'es gilt gerade: <b>' + (z.reduziert ? 'reduzierte Bewegung' : 'volle Bewegung') + '</b> · ' +
+      'Tempo <b>' + (z.tempo === 1 ? '1×' : '0,25×') + '</b>';
+  });
+
+  var ob = document.getElementById('ob');
+  MOTION.merken(ob);
+
+  function el(id) { return document.getElementById(id); }
+  function zeige(id) { var e = el(id); if (e) e.hidden = false; }
+
+  /* Bildwechsel benutzt die Rolle WECHSELN — nicht etwas Eigenes.
+     Richtung 1: das Neue kommt von rechts. */
+  function bildwechsel(vonId, nachId) {
+    var a = el(vonId), b = el(nachId);
+    if (!a || !b) return;
+    a.style.setProperty('--bw-richtung', 1);
+    b.style.setProperty('--bw-richtung', 1);
+    a.classList.remove('bw-wechseln-rein'); a.classList.add('bw-wechseln-raus');
+    b.hidden = false;
+    b.classList.remove('bw-wechseln-raus'); void b.getBoundingClientRect();
+    b.classList.add('bw-wechseln-rein');
+    setTimeout(function () { a.hidden = true; a.classList.remove('bw-wechseln-raus'); },
+      MOTION.ms(MOTION.reduziert() ? 130 : 200));
+  }
+
+  var faden25 = null, faden38 = null;
+
+  /* ── Die elf Takte ──────────────────────────────────────────────────────
+     ab   = Startzeit in ms
+     name = was der Takt zeigt (steht rechts in der Liste)
+     tun  = was passiert. Jeder Takt benutzt nur Bausteine aus bewegung.css. */
+  var TAKTE = [
+    { ab: 0,     name: 'Das Zeichen erscheint',
+      hinweis: 'App-Icon · 320 ms Öffnen',
+      tun: function () {
+        var m = el('s1-marke');
+        m.classList.remove('bw-oeffnen-blatt'); void m.getBoundingClientRect();
+        m.classList.add('bw-oeffnen-blatt');
+      } },
+
+    { ab: 1800,  name: 'Die Wortmarke setzt sich daneben',
+      hinweis: 'New York · 320 ms Öffnen',
+      tun: function () {
+        var w = el('s1-wort'); w.hidden = false;
+        w.classList.remove('bw-oeffnen-blatt'); void w.getBoundingClientRect();
+        w.classList.add('bw-oeffnen-blatt');
+      } },
+
+    { ab: 4200,  name: 'Fünf Module, ein Bestand',
+      hinweis: '180 ms Wechseln',
+      tun: function () { bildwechsel('s1', 's2'); zeige('s2-titel'); zeige('s2-unter'); } },
+
+    { ab: 6200,  name: 'Die fünf Punkte erscheinen',
+      hinweis: '36 ms Staffelung · 220 ms je Zeile',
+      tun: function () { zeige('s2-liste'); MOTION.staffeln('#s2-liste'); } },
+
+    { ab: 9000,  name: 'Der erste Faden — Notizen zu Lernkarten',
+      hinweis: '420 ms · --t-hand',
+      tun: function () {
+        zeige('s2-faden');
+        faden25 = MOTION.faden('#s2-notizen', '#s2-karten',
+          { strength: 'origin', curve: 30, box: ob });
+        MOTION.fadenZeigen(faden25);
+      } },
+
+    { ab: 12600, name: 'Die Vorlesungsnotiz',
+      hinweis: '180 ms Wechseln',
+      tun: function () {
+        if (faden25) { faden25.destroy(); faden25 = null; }
+        bildwechsel('s2', 's3');
+      } },
+
+    { ab: 14400, name: 'Die Übergabe — aus dem Satz wird eine Karte',
+      hinweis: '780 ms Übergeben · Reduce 360 ms',
+      tun: function () {
+        MOTION.uebergeben({
+          von: '#s3-absatz', nach: '#s3-ziel', zaehler: '#s3-zahl',
+          punkt: '#s3-punkt', box: ob, kurve: 30,
+          text: 'Osmose ist die Diffusion von Wasser durch eine semipermeable Membran.',
+        });
+      } },
+
+    { ab: 17400, name: 'Der Rückweg — die Karte weiß, woher sie kommt',
+      hinweis: '420 ms Faden rückwärts · Reduce: er bleibt stehen',
+      tun: function () {
+        zeige('s3-rueck'); zeige('s3-chipzeile');
+        faden38 = MOTION.faden('#s3-chipzeile', '#s3-absatz',
+          { strength: 'origin', curve: 22, box: ob, active: true });
+        MOTION.fadenZeigen(faden38);
+      } },
+
+    { ab: 21200, name: 'Der erste Schirm: Heute',
+      hinweis: '180 ms Wechseln',
+      tun: function () {
+        if (faden38) { faden38.destroy(); faden38 = null; }
+        bildwechsel('s3', 's4');
+      } },
+
+    { ab: 22600, name: 'Die vier Zeilen erscheinen gestaffelt',
+      hinweis: '36 ms Staffelung · Reduce: gemeinsam in 120 ms',
+      tun: function () { zeige('s4-liste'); MOTION.staffeln('#s4-liste'); } },
+
+    { ab: 25600, name: 'Loslegen',
+      hinweis: '320 ms Öffnen',
+      tun: function () {
+        var k = el('s4-knopf'); k.hidden = false;
+        k.classList.remove('bw-oeffnen-blatt'); void k.getBoundingClientRect();
+        k.classList.add('bw-oeffnen-blatt');
+      } },
+  ];
+  var ENDE = 28000;
+
+  /* ── Die Taktliste ──────────────────────────────────────────────────── */
+  var liste = document.getElementById('taktliste');
+  liste.innerHTML = TAKTE.map(function (t, i) {
+    return '<li data-takt="' + i + '"><span class="zeit">' +
+      (t.ab / 1000).toFixed(1).replace('.', ',') + ' s</span>' +
+      '<span>' + t.name + '<br><span class="t-sub c-3">' + t.hinweis + '</span></span></li>';
+  }).join('');
+
+  /* ── Der Ablauf ─────────────────────────────────────────────────────────
+     Eine Uhr, kein Stapel Timeouts: nur so lässt sich anhalten, ohne dass
+     ein Takt hinterherläuft. Der Verlangsamer geht über MOTION.ms in
+     dieselbe Uhr ein wie in die Bewegungen selbst. */
+  var zeit = 0, laeuft = false, letzterRahmen = 0, naechster = 0;
+  var balken = document.getElementById('balken');
+  var uhr = document.getElementById('uhr');
+
+  function anzeige() {
+    var p = Math.min(1, zeit / ENDE);
+    balken.style.width = (p * 100).toFixed(2) + '%';
+    uhr.textContent = 'Sekunde ' + Math.floor(zeit / 1000) + ' von ' + (ENDE / 1000);
+    liste.querySelectorAll('li').forEach(function (li, i) {
+      li.classList.toggle('is-jetzt', i === naechster - 1);
+      li.classList.toggle('is-vorbei', i < naechster - 1);
+    });
+  }
+
+  function rahmen(jetzt) {
+    if (!laeuft) return;
+    var dt = (jetzt - letzterRahmen) / (MOTION.zustand().tempo || 1);
+    letzterRahmen = jetzt;
+    zeit += dt;
+    while (naechster < TAKTE.length && zeit >= TAKTE[naechster].ab) {
+      try { TAKTE[naechster].tun(); } catch (e) { /* ein Takt hält den Ablauf nicht auf */ }
+      naechster++;
+    }
+    anzeige();
+    if (zeit >= ENDE) { laeuft = false; zeit = ENDE; anzeige(); knoepfe(); return; }
+    requestAnimationFrame(rahmen);
+  }
+
+  function knoepfe() {
+    /* Nicht nur ausgrauen: wirklich abschalten. Ein Knopf, der aussieht wie
+       aus und trotzdem etwas tut, ist schlimmer als gar keiner. */
+    var s = el('k-start'), pa = el('k-pause');
+    s.textContent = laeuft ? 'Läuft' : (zeit > 0 && zeit < ENDE ? 'Weiter' : 'Start');
+    s.disabled = laeuft; s.classList.toggle('is-disabled', laeuft);
+    pa.disabled = !laeuft; pa.classList.toggle('is-disabled', !laeuft);
+  }
+
+  function start() {
+    if (laeuft) return;
+    if (zeit >= ENDE) anfang();
+    laeuft = true; letzterRahmen = performance.now();
+    requestAnimationFrame(rahmen);
+    knoepfe();
+  }
+  function pause() { laeuft = false; knoepfe(); }
+  function anfang() {
+    laeuft = false; zeit = 0; naechster = 0;
+    if (faden25) { faden25.destroy(); faden25 = null; }
+    if (faden38) { faden38.destroy(); faden38 = null; }
+    MOTION.zuruecksetzen(ob);
+    anzeige(); knoepfe();
+  }
+
+  el('k-start').addEventListener('click', start);
+  el('k-pause').addEventListener('click', pause);
+  el('k-anfang').addEventListener('click', anfang);
+
+  anzeige(); knoepfe();
+})();
+</script>
+</body>
+</html>

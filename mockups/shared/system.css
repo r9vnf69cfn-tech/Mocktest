@@ -15,16 +15,27 @@
  *   3. Geräterahmen (iPad, iPhone) und Bühne
  *   4. Chrome: Sidebar, Tab-Bar, Navigationsleiste
  *   5. Bausteine: Zeile, Karte, Chip, Dot, Zähler, Feld, Segment
- *   6. Signatur: Übergabe-Leiste, Herkunfts-Chip, Ketten-Karte
+ *   6. Signatur: Übergabe-Leiste, Herkunfts-Chip — 6.1 die Ketten-Karte
  *   7. Zustände: leer, ausgewählt, deaktiviert, Fehler, Laden
  *   8. Steckbrief (Kommentarblock unter der Bühne)
  *   9. DER FADEN — die drei Primitive: Punkt, Faden, Knoten
- *  10. Die Serif in ihren sechs Rollen
+ *  10. Die Serif in ihren sieben Rollen
  *  11. Die Marke: App-Icon-Platz und Wortmarke
+ *  12. Das Notizbuch: Deckel, Rücken, Regal
+ *  13. Die Bewertungsknöpfe
  *
- * §9–11 kamen in Runde 2 dazu (Velum-DNA). Sie fügen nur neue Klassennamen
- * hinzu und verändern keine bestehende Regel — die 19 Schirme aus Runde 1
- * rendern pixelgleich weiter. Die Musterseite dazu ist shared/faden-probe.html.
+ * §9–11 kamen in der Fundament-Runde dazu (Velum-DNA), §12–13 in Runde 2.
+ * Sie fügen nur neue Klassennamen hinzu.
+ *
+ * DIE EINZIGE ÄNDERUNG AN BESTEHENDEM: §6.1, die Ketten-Karte. Sie war ein
+ * Breadcrumb und ist jetzt ein Faden (DNA-Nachtrag N2). Das verschiebt genau
+ * zwei Schirme — today.html und journal-entry.html —, und zwar genau um die
+ * 45°-Kerbe, die dort verschwindet. Alle übrigen Schirme rendern pixelgleich
+ * weiter; nachgewiesen mit je einem Bild vor und nach der Änderung bei
+ * 1440 × 1000 in beiden Modi.
+ *
+ * Musterseiten: shared/faden-probe.html (die Primitive),
+ *               app-next/library.html  (das Notizbuch-System).
  * ========================================================================== */
 
 /* ── 1. Tokens ────────────────────────────────────────────────────────── */
@@ -523,7 +534,65 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .origin .ico { width: 13px; height: 13px; color: var(--ink-3); }
 
-/* Ketten-Karte auf Today: Notiz → Karten → fällig */
+/* ── 6.1 Die Ketten-Karte — Notiz → Karten → heute fällig ─────────────────
+ *
+ * Runde 1 hat sie als Breadcrumb gebaut: border-left in --line plus eine um
+ * 45° gedrehte Kerbe. Das ist das Fortschritts-Breadcrumb aus jedem Kassen-
+ * ablauf im Web, und --line ist genau das Token, das die DNA §3 zum
+ * NICHT-Faden erklärt („Trennlinien bleiben --line und sind kein Faden").
+ * Der Signaturmoment der App verband seine drei Punkte also mit dem einen
+ * Mittel, das ihr Leitmotiv ausdrücklich ausschließt.
+ *
+ * Runde 2 (DNA-Nachtrag N2): Die Kette ist ein Faden. Drei Knoten auf einem
+ * Faden der Stärke --origin (2,5 pt), Richtung von der Notiz über die Karten
+ * zu „heute fällig". Die Kerbe entfällt ersatzlos. Es ist DERSELBE Baustein
+ * wie überall — <svg class="thread thread--h thread--origin"> aus §9.2 —,
+ * keine CSS-Nachahmung: sonst könnte er sich nicht zeichnen und nicht
+ * rückwärts wieder einlaufen.
+ *
+ * DAS MARKUP, das die nächste Runde setzen muss (Auszug, heute.html):
+ *
+ *   <div class="chain">
+ *     <button class="chain__link">
+ *       <span class="dot dot--node chain__knot"></span>
+ *       <span class="chain__eyebrow t-label"><span class="dot dot--notes"></span>Notiz</span>
+ *       <span class="t-section">Zellbiologie</span>
+ *       <span class="t-sub c-3">14 Absätze · gestern 16:20</span>
+ *     </button>
+ *     <button class="chain__link">
+ *       <svg class="thread thread--h thread--origin"></svg>
+ *       <span class="dot dot--node chain__knot"></span>
+ *       …
+ *     </button>
+ *     <button class="chain__link">
+ *       <svg class="thread thread--h thread--origin"></svg>
+ *       <span class="dot dot--node chain__knot"></span>
+ *       …
+ *     </button>
+ *   </div>
+ *
+ * Regeln dazu:
+ *   · Der erste Link trägt KEINEN Faden — ein Faden führt immer auf seinen
+ *     Knoten zu, und vor dem ersten Knoten liegt nichts.
+ *   · Ein Link, der kein Kettenglied ist (in heute.html der vierte, der nur
+ *     den „Lernen"-Knopf hält), bekommt weder Knoten noch Faden. Er läuft
+ *     mit .chain__link--end, damit er die Kopfhöhe der Kette nicht mitträgt.
+ *   · Sitzt ein Glied auf getönter Fläche (heute.html, drittes Glied,
+ *     background:var(--accent-soft)), braucht sein Knoten den passenden Ring:
+ *     style="--node-ring: color-mix(in srgb, var(--accent) 7%, var(--paper))"
+ *     — sonst schneidet ein papierweißer Ring ein Loch in die Tönung.
+ *
+ * Die Rechnung hinter der Fadenlage: Die Glieder sind gleich breit (flex:1 1 0).
+ * Der Knoten sitzt in jedem Glied bei --chain-x von der linken Kante; der
+ * Knoten des Vorgängers liegt also genau eine Gliedbreite weiter links. Der
+ * Faden startet deshalb bei calc(--chain-x - 100%) und ist 100% breit — er
+ * spannt von Knotenmitte zu Knotenmitte, unter beiden Ringen hindurch.
+ *
+ * RÜCKFALL: Solange ein Schirm noch das Runde-1-Markup trägt (kein .thread im
+ * .chain), bleibt die Kette eine schlichte Spaltenreihe mit Trennlinie — aber
+ * OHNE Kerbe. Ein halber Breadcrumb ist besser als ein nachgeahmter Faden.
+ * ────────────────────────────────────────────────────────────────────────── */
+
 .chain { display: flex; align-items: stretch; gap: 0; }
 .chain__link {
   flex: 1 1 0; min-width: 0;
@@ -531,13 +600,39 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   display: flex; flex-direction: column; gap: 4px;
   position: relative;
 }
-.chain__link + .chain__link { border-left: 1px solid var(--line); }
-.chain__link + .chain__link::before {
-  content: ""; position: absolute; left: -5px; top: 50%; transform: translateY(-50%) rotate(45deg);
-  width: 9px; height: 9px; background: var(--paper);
-  border-top: 1px solid var(--line); border-right: 1px solid var(--line);
-}
 .chain__eyebrow { display: flex; align-items: center; gap: 6px; color: var(--ink-3); }
+
+/* Rückfall — Runde-1-Markup ohne Faden. Die 45°-Kerbe ist ersatzlos weg. */
+.chain:not(:has(.thread)) .chain__link + .chain__link { border-left: 1px solid var(--line); }
+
+/* Die Fadenfassung greift, sobald ein Faden im Markup steht. */
+.chain:has(.thread) {
+  --chain-x: 16px;    /* Knotenmitte von der linken Gliedkante — deckt sich mit
+                         dem 16-pt-Innenrand der Karte darüber              */
+  --chain-y: 14px;    /* Knotenmitte von der Oberkante                       */
+}
+.chain:has(.thread) .chain__link { padding: 28px 16px 13px var(--chain-x); }
+.chain:has(.thread) .chain__link--end { padding-top: 13px; }
+
+.chain__knot {
+  position: absolute; left: var(--chain-x); top: var(--chain-y);
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+/* --chain-prev ist die Breite des VORGÄNGER-Glieds. Bei gleich breiten
+   Gliedern (flex:1 1 0) ist das 100 % des eigenen Glieds, deshalb der
+   Rückfallwert. Sind die Glieder ungleich — journal-entry.html setzt
+   flex:0.78 und flex:1.22 —, muss das breitere Glied es sagen:
+     <button class="chain__link" style="--chain-prev: 63.9%">
+   (0,78 / 1,22 = 0,639). Sonst hinge der Faden im Leeren, und ein Faden,
+   der nicht auf beiden Seiten an einem Punkt endet, ist keiner. */
+.chain__link > .thread {
+  position: absolute;
+  left: calc(var(--chain-x) - var(--chain-prev, 100%));
+  top: calc(var(--chain-y) - 5px);
+  width: var(--chain-prev, 100%); height: 10px;
+  z-index: 1;
+}
 
 /* Der Signature-Moment: die Übergabe fliegt.
    Im Mockup als eingefrorener Zwischenzustand sichtbar. */
@@ -844,17 +939,19 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
- * 10. Die Serif in ihren sechs Rollen
+ * 10. Die Serif in ihren sieben Rollen
  *
- * Die Serif ist Stimme, nicht Textur. Sechs Orte, abschließend (DNA §4.1);
- * nirgends sonst — kein Serif in Listen, Knöpfen, Chips, Zahlen, Leisten.
+ * Die Serif ist Stimme, nicht Textur. Sieben Orte, abschließend (DNA §4.1
+ * plus Nachtrag N1); nirgends sonst — kein Serif in Listen, Knöpfen, Chips,
+ * Zahlen, Leisten.
  *
  *   .serif--screen-title   28/34 600   Große Screen-Titel
  *   .serif--journal-date   20/26 600   Journal-Datumsmarken
  *   .serif--quote          17/23 400   Zitate, markierter Satz im Review
  *   .serif--empty-title    20/26 600   Titel leerer Zustände
- *   .serif--cover-title    17/23 600   Notizbuch-Titel auf dem Cover
+ *   .serif--cover-title    17/23 600   Notizbuch-Titel auf dem Deckel
  *   .serif--wordmark       28/34 400   Wortmarke (Onboarding, Über)
+ *   .serif--voice          17/23 400   Journal-EINTRAGSTEXT — und sonst nichts
  *
  * Jede Rolle setzt ihre Größe selbst, und jede dieser Größen steht in der
  * Fünferskala. Es kommt keine sechste Größe dazu; die Serif belegt dieselben.
@@ -889,19 +986,36 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
  * Fällt mock.js aus, ist --serif-adjust nicht gesetzt, der Rückfallwert
  * `none` greift, und es wird gar nicht korrigiert — nie falsch korrigiert.
  *
- * ── 10.2 Was mit dem blanken .serif ist ───────────────────────────────────
- * .serif (nur Schriftfamilie, ohne Korrektur) bleibt unverändert. In Runde 1
- * trägt es an rund 45 Stellen Fließtext im Notiz-Editor und im Journal —
- * Stellen, die DNA §4.1 nicht unter die sechs Orte zählt. Das ist ein Befund
- * für Runde 3 und wird hier nicht stillschweigend mitgeändert: eine
- * Korrektur auf .serif hätte 19 fertige Schirme verschoben. */
+ * ── 10.2 Die siebte Rolle: .serif--voice (DNA-Nachtrag N1) ────────────────
+ *
+ *   Durchgehende Prosa, die der Nutzer selbst verfasst hat und die als
+ *   Stimme gelesen wird, nicht als Arbeitsmaterial.
+ *
+ * Das ist der Journal-Eintragstext — und sonst nichts. Der Beweis dafür,
+ * dass es eine Velum-Begründung ist und keine von Day One geborgte, ist,
+ * was Velum dadurch NICHT tut: Der Notiz-Editor bekommt Sans. Eine Notiz
+ * ist Material — Blöcke, Verweise, Struktur, etwas, das man umbaut. Ein
+ * Journaleintrag ist eine Stimme, die man wieder liest. Velum hält beides
+ * im selben Datenmodell und muss sie deshalb unterscheiden können.
+ *
+ * Größe 17/23 400 — dieselbe Zeile wie .t-body. Die Serif belegt weiter
+ * keine eigene Größe; sie tauscht nur die Schrift, nicht das Maß. Deshalb
+ * darf .serif--voice neben .t-body stehen, ohne es zu überschreiben.
+ *
+ * ── 10.3 Das blanke .serif verschwindet ───────────────────────────────────
+ * .serif (nur Schriftfamilie) bleibt als Klasse bestehen, weil 51 Stellen in
+ * den Schirmen sie noch tragen; die Liste, welche Stelle auf welche Rolle
+ * wechselt, liegt in der Rückgabe dieser Runde. Sobald die Schirme
+ * umgestellt sind, ist .serif ersatzlos zu löschen — eine Schriftklasse ohne
+ * Rolle ist genau die Textur, die §4.1 verbietet. */
 
 .serif--screen-title,
 .serif--journal-date,
 .serif--quote,
 .serif--empty-title,
 .serif--cover-title,
-.serif--wordmark {
+.serif--wordmark,
+.serif--voice {
   font-family: var(--serif);
   letter-spacing: 0;
   font-size-adjust: var(--serif-adjust, none);
@@ -913,12 +1027,14 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .serif--empty-title  { font-size: 20px; line-height: 26px; font-weight: 600; }
 .serif--cover-title  { font-size: 17px; line-height: 23px; font-weight: 600; }
 .serif--wordmark     { font-size: 28px; line-height: 34px; font-weight: 400; }
+.serif--voice        { font-size: 17px; line-height: 23px; font-weight: 400; }
 
 /* Dynamic Type — dieselbe große Stufe wie die Sans-Skala in §2 */
 :root[data-type="gross"] .serif--screen-title { font-size: 34px; line-height: 41px; }
 :root[data-type="gross"] .serif--journal-date,
 :root[data-type="gross"] .serif--empty-title  { font-size: 24px; line-height: 30px; }
 :root[data-type="gross"] .serif--quote,
+:root[data-type="gross"] .serif--voice,
 :root[data-type="gross"] .serif--cover-title  { font-size: 21px; line-height: 28px; }
 :root[data-type="gross"] .serif--wordmark     { font-size: 34px; line-height: 41px; }
 
@@ -1025,3 +1141,459 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .brandmark--sm .appicon { --appicon-size: 28px; }
 .brandmark--sm .serif--wordmark { font-size: 20px; line-height: 26px; }
 :root[data-type="gross"] .brandmark--sm .serif--wordmark { font-size: 24px; line-height: 30px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 12. DAS NOTIZBUCH — Deckel, Rücken, Regal
+ *
+ * DER BEFUND AUS RUNDE 1, wörtlich: „Sechs identische orange Kacheln wurden
+ * durch sechs identische weiße ersetzt — unterschieden nur durch einen
+ * winzigen Dot. Bei 30 Notizbüchern ist das unbrauchbar."
+ *
+ * Er stimmt. Die Runde-1-Cover trugen ihre Unterscheidung in einem 6-pt-Punkt,
+ * also in genau dem Merkmal, das laut Zwei-Merkmal-Regel nie allein tragen
+ * darf. Die Antwort darf trotzdem keine Farbe sein — Farbe gehört dem Nutzer.
+ * Also muss sie aus Material, Satz und Struktur kommen.
+ *
+ * VIER MERKMALE, JEDES MIT EINER AUSSAGE. Kein einziges davon ist Dekor:
+ *
+ *   1 PAPIER      Zwölf Sorten, echte Bildpunkte (assets/bilder/cover/).
+ *                 Der Nutzer wählt sie beim Anlegen, sie bleibt. Sie trägt
+ *                 die gröbste Unterscheidung: Helligkeit und Textur.
+ *                 Gemessen reichen die Papiere von L=0,27 (kraft-graubraun)
+ *                 bis L=0,98 (millimeter-blass) — das ist ein echter
+ *                 Wertebereich, keine zwölf Grauabstufungen.
+ *
+ *   2 RÜCKEN      Der Buchrücken IST ein Faden (DNA §3). Senkrecht, Stärke
+ *                 --origin (2,5 pt), von oben nach unten: oben die erste
+ *                 Seite, unten die letzte. Er sitzt in einem eigenen
+ *                 Materialstreifen — dem Halbband —, damit Faden und Punkte
+ *                 auf jedem der zwölf Papiere denselben Grund haben und
+ *                 gerechnet werden können statt geschätzt.
+ *
+ *   3 PUNKTE      Auf dem Rücken sitzt jede Stelle, an der ETWAS AUS DEM BUCH
+ *                 ENTSTANDEN IST — eine Lernkarte, eine Aufgabe, ein
+ *                 Journaleintrag —, als 6-pt-Punkt in der Farbe des Moduls,
+ *                 in das es ging. Die Höhe des Punktes ist die Stelle im Buch
+ *                 (--at, in Prozent). Hohl = noch offen (eine Aufgabe, die
+ *                 niemand erledigt hat). Das ist eine echte Kante im
+ *                 Datenmodell, kein Muster: Ein Buch, aus dem nichts
+ *                 entstanden ist, hat einen glatten Rücken, und das sieht man.
+ *                 DAMIT TRÄGT DER DECKEL VELUMS ALLEINSTELLUNG SCHON IM REGAL:
+ *                 Herkunft ist sichtbar, bevor man das Buch aufschlägt.
+ *
+ *   4 TITELSATZ   Der Titel füllt den Satzspiegel. Kurz = groß, lang = klein.
+ *                 Die Stufe kommt aus der Titellänge, die Leiter aus der
+ *                 Deckelgröße. Alle vier Stufen stehen in der Fünferskala
+ *                 (28/20/17/15/13) — es kommt keine Größe dazu.
+ *                 Ein Buch trägt seinen Titel gesetzt, nicht beschriftet:
+ *                 deshalb steht er auf dem Deckel und NICHT noch einmal
+ *                 darunter. Die Bildunterschrift trägt, was der Deckel nicht
+ *                 sagen kann — Modul, Umfang, Zeit.
+ *
+ * Der 6-pt-Modulpunkt bleibt, aber er steht jetzt in der Bildunterschrift
+ * neben seinem Wort („● Notizen · 34 Seiten") und trägt die Unterscheidung
+ * nicht mehr allein: Papier, Rücken und Satz tun es vor ihm.
+ *
+ * ── 12.0 Warum der Deckel im Dunkelmodus hell bleibt ──────────────────────
+ * Ein Notizbuch ist ein Gegenstand, kein Bedienelement. Es dreht sich nachts
+ * nicht um. Deshalb definiert .book__cover die drei Tokens --thread,
+ * --dot-hollow und --node-ring lokal auf ihre Hellwerte zurück — dieselbe
+ * Sperre wie --brand-copper in §11.2, nur andersherum: hier hält sie den
+ * Modus draußen, statt eine Farbe drinnen.
+ *
+ * Der Deckel wird im Dunkeln lediglich um 6 % gedämpft (brightness .94),
+ * nicht mehr. Gerechnet auf den echten Bildpunkten der Titelzone
+ * (1. Perzentil, dunkelster Fall für dunkle Schrift):
+ *
+ *              hell   ×.94   ×.92   ×.88   ×.82
+ *   kraft-graubraun  5,66   5,17   4,84   4,46   3,94   ← der engste Fall
+ *   marmor-tinte     5,65   5,16   4,82   4,46   3,93
+ *   buetten-taupe    7,99   7,29   6,77   6,21   5,42
+ *   faser-alabaster 14,81  13,55  12,38  11,22   9,70
+ *
+ * Ab .88 fallen zwei der zwölf Papiere unter die 4,5:1 für Text. .94 hält
+ * jedes Papier über 5:1. Eine stärkere Dämpfung wäre hübscher und falsch.
+ *
+ * ── 12.1 Das Markup ───────────────────────────────────────────────────────
+ *
+ *   <article class="book">
+ *     <a class="book__cover paper--leinen-sand" href="#">
+ *       <span class="book__spine">
+ *         <svg class="thread thread--v thread--origin"></svg>
+ *         <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+ *         <span class="dot dot--cards  book__pt" style="--at:41%"></span>
+ *         <span class="dot dot--tasks  book__pt" style="--at:63%"></span>
+ *         <span class="dot dot--notes  book__pt" style="--at:95%"></span>
+ *       </span>
+ *       <span class="book__title serif--cover-title book__title--l">Genetik II</span>
+ *     </a>
+ *     <div class="book__cap">
+ *       <div class="book__meta t-label"><span class="dot dot--notes"></span>Notizen · 41 Seiten</div>
+ *       <div class="book__meta t-label">3 Karten · 1 offene Aufgabe</div>
+ *     </div>
+ *   </article>
+ *
+ * Foto-Deckel (Nutzerbild statt Papier):
+ *
+ *     <a class="book__cover book__cover--foto" href="#">
+ *       <img class="book__photo" src="../assets/bilder/journal/herbstweg-400.jpg" alt="">
+ *       <span class="book__scrim"></span>
+ *       <span class="book__spine"> … </span>
+ *       <span class="book__title serif--cover-title book__title--l">Exkursion Harz</span>
+ *     </a>
+ *
+ * Die zwölf Papierklassen (die Bildpfade stehen relativ zu dieser Datei und
+ * treffen deshalb aus shared/, app-next/, best-of/, platform/ und motion/
+ * gleichermaßen):
+ *   .paper--faser-alabaster  .paper--faser-hanf
+ *   .paper--leinen-nebel     .paper--leinen-sand
+ *   .paper--kraft-natur      .paper--kraft-graubraun
+ *   .paper--marmor-schiefer  .paper--marmor-tinte
+ *   .paper--buetten-elfenbein .paper--buetten-taupe
+ *   .paper--millimeter-blass .paper--millimeter-stein
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* ── 12.2 Das Regal ─────────────────────────────────────────────────────── */
+
+.shelf { display: grid; gap: 20px 16px; align-items: start; }
+.shelf--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.shelf--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.shelf--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.shelf--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.shelf--6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+/* Waagerechtes Regal (das angeschnittene „zuletzt geöffnet") */
+.shelf--row { display: flex; align-items: flex-start; gap: 18px; }
+.shelf--row > .book { flex: none; width: var(--book-w, 168px); }
+
+.book {
+  display: flex; flex-direction: column; gap: 9px;
+  min-width: 0; position: relative; text-align: left;
+}
+
+/* ── 12.3 Der Deckel ────────────────────────────────────────────────────── */
+
+.book__cover {
+  /* Der Gegenstand hält seine Hellwerte fest — siehe 12.0 */
+  --thread:     rgba(22,24,28,0.47);
+  --dot-hollow: rgba(22,24,28,0.47);
+  --book-band:  rgba(252,252,253,0.93);   /* der Halbband-Streifen */
+  --node-ring:  var(--book-band);
+
+  position: relative; display: block; width: 100%;
+  aspect-ratio: 14 / 19;                  /* das Maß der Papiere: 560 × 760 */
+  border-radius: var(--book-r, 9px);
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: var(--sh-cover);
+  color: #16181C;                         /* Tinte, unabhängig vom Modus */
+}
+
+/* Das Papier. Eigene Ebene, damit die Dämpfung im Dunkeln nur sie trifft
+   und nicht den Titel mit. */
+.book__cover::before {
+  content: ""; position: absolute; inset: 0;
+  background: var(--book-paper, none) center / var(--book-zoom, cover) no-repeat;
+  background-color: var(--paper);
+}
+/* Im kleinen Raster wird die Papierstruktur NICHT mitverkleinert. Bei 124 pt
+   Deckelbreite läge die Faser von faser-alabaster bei einem Fünftel ihrer
+   Größe und wäre weg — vier blasse Papiere sähen dann wieder gleich aus, und
+   genau das war der Befund. Derselbe Gedanke wie non-scaling-stroke beim
+   Faden (§9.2): das Merkmal behält sein Maß, auch wenn der Träger schrumpft. */
+.book--sm .book__cover { --book-zoom: 190%; }
+:root[data-theme="dark"] .book__cover::before,
+:root[data-theme="dark"] .book__photo { filter: brightness(.94); }
+
+/* Schnittkante rechts und die Haarlinie ringsum. Beides gehört zum
+   Gegenstand, nicht zum Motiv: es sind Kanten eines Papierblocks, keine
+   Fäden — sie verbinden nichts und sehen auch nicht so aus (0,5 pt bzw.
+   ein 5-pt-Verlauf, nie ein Strich mit runden Enden). */
+.book__cover::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(270deg, rgba(255,255,255,.50), rgba(255,255,255,0) 5px);
+  box-shadow: inset 0 0 0 1px rgba(22,24,28,.14);
+  pointer-events: none;
+}
+
+/* ── 12.4 Der Rücken ────────────────────────────────────────────────────── */
+
+/* Der Halbband: ein eigener Materialstreifen, in dem die Bindung sitzt.
+   Er ist leicht durchscheinend, damit die Papierstruktur durchkommt — und
+   er gibt Faden und Punkten auf allen zwölf Papieren denselben Grund.
+   Rechnung auf diesem Grund: Faden 3,05:1 · hohler Punkt 3,05:1 ·
+   Modulpunkte 2,74:1 (Journal) bis 4,95:1 (Canvas) — die Punkte stehen
+   deshalb nie allein, sondern auf dem Faden und neben dem Wort in der
+   Bildunterschrift (Zwei-Merkmal-Regel, §9.1). */
+.book__spine {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 12%; min-width: 13px; max-width: 26px;
+  /* Links der Falz, rechts der Bandstoff. Der Verlauf ist der Grund, warum der
+     Rücken auch auf faser-alabaster (fast weiß) noch ein Rücken ist und nicht
+     verschwindet — und auf kraft-graubraun (fast dunkel) trotzdem der helle
+     Streifen bleibt, auf dem Faden und Punkte gerechnet werden. */
+  background: linear-gradient(90deg,
+    rgba(22,24,28,.13), rgba(22,24,28,.03) 26%, var(--book-band) 46%, var(--book-band));
+  box-shadow: inset -1px 0 0 rgba(22,24,28,.15);
+  z-index: 1;
+}
+/* height: 90% und NICHT top+bottom+height:auto. Ein <svg> ist ein ersetztes
+   Element mit eigenem Seitenverhältnis (viewBox 0 0 100 100): bei height:auto
+   gewinnt die innere Höhe, bottom wird verworfen, und der Faden schrumpft auf
+   10 pt — ein Stummel unter dem obersten Punkt. Im Quelltext ist das nicht zu
+   sehen, im Bild sofort. */
+.book__spine > .thread {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  top: 5%; height: 90%; width: 10px;
+}
+.book__pt {
+  position: absolute; left: 50%; top: var(--at, 50%);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1.8px var(--book-band);
+}
+/* Der hohle Punkt behält seinen Ring UND bekommt den Bandring — zwei
+   Klassen schlagen eine, deshalb muss beides hier zusammenstehen. */
+.book__pt.dot--hollow {
+  box-shadow: inset 0 0 0 1.4px var(--dot-hollow), 0 0 0 1.8px var(--book-band);
+}
+
+/* ── 12.5 Der Titel auf dem Deckel ──────────────────────────────────────── */
+
+/* Der Satzspiegel: links an der Bandkante, rechts ein Steg. Kein
+   overflow-wrap:break-word — das zerlegt „Diagramme" zu „Diagram/me" und
+   sieht aus wie ein Fehler, weil es einer ist. Getrennt wird nur dort, wo
+   das Markup ein &shy; setzt; passt ein Wort dann immer noch nicht, ist die
+   Titelstufe falsch gewählt und muss eine Stufe kleiner. */
+.book__title {
+  position: absolute; z-index: 2;
+  left: 17%; right: 6.5%; top: 7.5%;
+  color: #16181C;
+  hyphens: auto;
+}
+
+/* Die Leiter. Vorgabe ist .serif--cover-title (17/23); die Stufe kommt aus
+   der Titellänge. Faustregel, mit der die Schirme gesetzt werden:
+     bis  11 Zeichen → --xl      bis 19 → --l      bis 30 → (Vorgabe)
+     darüber          → --s
+   Alle vier Werte stehen in der Fünferskala. */
+.book__title--xl { font-size: 28px; line-height: 34px; }
+.book__title--l  { font-size: 20px; line-height: 26px; }
+.book__title--s  { font-size: 15px; line-height: 20px; }
+
+/* Kleine Deckel rücken die ganze Leiter eine Stufe herunter. Die Reihenfolge
+   ist Absicht: .book--sm .book__title steht vor den Stufen, weil beide zwei
+   Klassen wiegen und sonst die Vorgabe die Stufe überschriebe. */
+.book--sm .book__title     { font-size: 15px; line-height: 20px; }
+.book--sm .book__title--xl { font-size: 20px; line-height: 26px; }
+.book--sm .book__title--l  { font-size: 17px; line-height: 23px; }
+.book--sm .book__title--s  { font-size: 13px; line-height: 16px; }
+.book--sm .book__cover     { --book-r: 8px; }
+
+/* Dynamic Type, große Stufe. Die Reihenfolge ist wieder Absicht: die
+   Vorgabezeile steht vor den Stufen, sonst platten die vier Größen der
+   Leiter auf eine ein — genau das ist beim ersten Anlauf passiert und war
+   erst im gerenderten Bild zu sehen, wo alle achtzehn Titel plötzlich
+   gleich groß waren. */
+:root[data-type="gross"] .book__title     { font-size: 21px; line-height: 28px; }
+:root[data-type="gross"] .book__title--xl { font-size: 34px; line-height: 41px; }
+:root[data-type="gross"] .book__title--l  { font-size: 24px; line-height: 30px; }
+:root[data-type="gross"] .book__title--s  { font-size: 19px; line-height: 25px; }
+:root[data-type="gross"] .book--sm .book__title     { font-size: 19px; line-height: 25px; }
+:root[data-type="gross"] .book--sm .book__title--xl { font-size: 24px; line-height: 30px; }
+:root[data-type="gross"] .book--sm .book__title--l  { font-size: 21px; line-height: 28px; }
+:root[data-type="gross"] .book--sm .book__title--s  { font-size: 17px; line-height: 23px; }
+
+/* Und das Regal rückt eine Spalte zurück. Ein größerer Titel in einem gleich
+   schmalen Deckel wäre keine Barrierefreiheit, sondern ein Überlauf: bei
+   XXL wachsen die Deckel mit, statt dass die Schrift eingeklemmt wird. Das
+   ist auch das Verhalten, das ein echtes Regal auf dem Gerät zeigt. */
+:root[data-type="gross"] .shelf--6 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+:root[data-type="gross"] .shelf--5 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+:root[data-type="gross"] .shelf--4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+:root[data-type="gross"] .shelf--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* ── 12.6 Foto-Deckel ───────────────────────────────────────────────────── */
+
+/* Das einzige Bild, das der Nutzer selbst mitbringt. Es ersetzt das Papier
+   ganz — der Titel wandert nach unten auf einen Verlauf, weil ein Foto oben
+   sein Motiv hat und unten meistens Grund. Gerechnet auf den echten
+   Bildpunkten der Titelzeile (99. Perzentil = hellster Fall, der schlechteste
+   für weiße Schrift) hält Weiß auf dem Verlauf über 4,5:1. Der erste Anlauf
+   mit einem 66-%-Verlauf zu .80 fiel dort auf 2,83:1 durch — gemessen, nicht
+   geschätzt; deshalb steht er jetzt auf 74 % und .94. */
+.book__cover--foto::before { background: none; background-color: #0E0F11; }
+.book__photo {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.book__scrim {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 74%;
+  background: linear-gradient(to top,
+    rgba(6,7,9,.94), rgba(6,7,9,.80) 26%, rgba(6,7,9,.46) 52%, rgba(6,7,9,0));
+  z-index: 1;
+}
+.book__cover--foto .book__title { top: auto; bottom: 8%; color: #FFFFFF; }
+
+/* ── 12.7 Marke auf dem Deckel (Stern, Aufnahme) ────────────────────────── */
+
+/* Die Marke sitzt dem Titel gegenüber: auf Papierdeckeln unten rechts (der
+   Titel steht oben), auf Foto-Deckeln oben rechts (der Titel steht unten).
+   Nicht Geschmack, sondern Kollisionsvermeidung: bei großer Dynamic-Type-
+   Stufe läuft ein kurzer, breiter Titel wie „Zellbiologie" sonst in den
+   Stern. Eine Regel ist besser als ein Sonderfall. */
+.book__mark {
+  position: absolute; z-index: 2; right: 7%; bottom: 5%;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--book-band);
+  box-shadow: 0 0 0 1px rgba(22,24,28,.13), 0 1px 2px rgba(22,24,28,.14);
+  display: flex; align-items: center; justify-content: center;
+  color: #16181C;
+}
+.book__mark .ico { width: 13px; height: 13px; }
+.book__cover--foto .book__mark { top: 5%; bottom: auto; }
+.book--sm .book__mark { width: 20px; height: 20px; }
+.book--sm .book__mark .ico { width: 11px; height: 11px; }
+
+/* ── 12.8 Bildunterschrift ──────────────────────────────────────────────── */
+
+/* Zwei Zeilen, beide einzeilig. Die erste nennt das Modul (Punkt + Wort,
+   Zwei-Merkmal-Regel), die zweite Umfang und Zeit. Der Titel steht NICHT hier —
+   er steht auf dem Deckel, das ist der ganze Punkt. Beide Zeilen laufen mit
+   Ellipse aus, statt umzubrechen: umbrechende Unterschriften machen die
+   Regalreihen unterschiedlich hoch, und dann steht das Regal schief. */
+.book__cap { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.book__meta {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--ink-3); min-width: 0;
+  font-weight: 400;                 /* .t-label wiegt 600 — die Zeile ist Beiwerk */
+  white-space: nowrap;
+}
+.book__meta > .dot { margin-right: 1px; }
+.book__meta > span:not(.dot) { overflow: hidden; text-overflow: ellipsis; }
+/* Modul links, Zeit rechts. Ein Mittelpunkt dazwischen kostet vier Zeichen,
+   die auf 124 pt fehlen — die Spalte sagt dasselbe umsonst. */
+.book__meta--split { justify-content: space-between; gap: 8px; }
+.book__mod {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ── 12.9 Zustände ──────────────────────────────────────────────────────── */
+
+/* ausgewählt = Fläche + Ring + Gewicht. Drei Merkmale, keines davon Farbe. */
+.book.is-selected::before {
+  content: ""; position: absolute; left: -8px; right: -8px; top: -7px; bottom: -8px;
+  border-radius: 15px; background: var(--accent-soft); z-index: 0;
+}
+.book.is-selected > * { position: relative; z-index: 1; }
+.book.is-selected .book__cover { box-shadow: var(--sh-float), 0 0 0 3px var(--accent-ring); }
+.book.is-selected .book__meta { color: var(--ink-2); font-weight: 600; }
+
+/* angehoben — der Zwischenzustand beim Aufnehmen. Der Sockel bleibt an der
+   alten Stelle stehen, der Deckel schwebt darüber. */
+.book.is-lifted .book__cover { transform: translateY(-12px); }
+.book.is-lifted .book__socket {
+  position: absolute; left: 0; right: 0; top: 0;
+  aspect-ratio: 14 / 19; border-radius: var(--book-r, 9px);
+  background: var(--fill-2); box-shadow: inset 0 0 0 1.5px var(--accent-ring);
+  z-index: 0;
+}
+
+/* lädt — Skelett statt Papier, das Wort dazu (Zwei-Merkmal) */
+.book__cover--laden {
+  box-shadow: inset 0 0 0 1px var(--line);
+  display: flex; align-items: center; justify-content: center;
+}
+.book__cover--laden::before,
+.book__cover--laden::after { content: none; }
+
+/* ── 12.10 Die zwölf Papiere ────────────────────────────────────────────── */
+
+.paper--faser-alabaster   { --book-paper: url("../assets/bilder/cover/faser-alabaster-560.jpg"); }
+.paper--faser-hanf        { --book-paper: url("../assets/bilder/cover/faser-hanf-560.jpg"); }
+.paper--leinen-nebel      { --book-paper: url("../assets/bilder/cover/leinen-nebel-560.jpg"); }
+.paper--leinen-sand       { --book-paper: url("../assets/bilder/cover/leinen-sand-560.jpg"); }
+.paper--kraft-natur       { --book-paper: url("../assets/bilder/cover/kraft-natur-560.jpg"); }
+.paper--kraft-graubraun   { --book-paper: url("../assets/bilder/cover/kraft-graubraun-560.jpg"); }
+.paper--marmor-schiefer   { --book-paper: url("../assets/bilder/cover/marmor-schiefer-560.jpg"); }
+.paper--marmor-tinte      { --book-paper: url("../assets/bilder/cover/marmor-tinte-560.jpg"); }
+.paper--buetten-elfenbein { --book-paper: url("../assets/bilder/cover/buetten-elfenbein-560.jpg"); }
+.paper--buetten-taupe     { --book-paper: url("../assets/bilder/cover/buetten-taupe-560.jpg"); }
+.paper--millimeter-blass  { --book-paper: url("../assets/bilder/cover/millimeter-blass-560.jpg"); }
+.paper--millimeter-stein  { --book-paper: url("../assets/bilder/cover/millimeter-stein-560.jpg"); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 13. DIE BEWERTUNGSKNÖPFE (DNA-Nachtrag N5)
+ *
+ * docs/01 hat es selbst entschieden: „‚Gut‘ bekommt mehr Fläche, weil es in
+ * den allermeisten Fällen richtig ist; die Tabelle mit vier gleich breiten
+ * Zellen ist Altlast, keine Entscheidung." In review-session.html standen
+ * trotzdem vier Knöpfe zu exakt 181 px — unterschieden allein durch die
+ * Füllung von „Gut". Damit trug der Entwurf Ankis HTML-Tabelle von 2006
+ * weiter, inklusive der Fläche, die ein Fehlgriff bekommt.
+ *
+ * Hier ist es korrigiert: „Gut" ist der primäre CTA und wiegt 1,9 Einheiten,
+ * die drei anderen je eine. In der Breite der iPad-Karte (726 px netto)
+ * ergibt das 285 px gegen 150 px — knapp das Doppelte, ohne dass die
+ * anderen drei unter das 44-pt-Ziel fallen.
+ *
+ * AFFORDANZ (DNA §6): „Gut" ist gefüllte Ink-Fläche mit hellem Text, die
+ * anderen drei tragen eine Umrandung — nie schwarzer Text neben schwarzem
+ * Text, nie Farbe als einziges Merkmal. Jeder Knopf nennt außerdem, was aus
+ * ihm folgt („in 5 Tagen"), weil ein Knopf, der die Zukunft ändert, die
+ * Änderung nennen muss.
+ *
+ * DAS MARKUP für review-session.html:
+ *
+ *   <div class="rate">
+ *     <button class="rate__btn">
+ *       <span class="rate__word">Nochmal</span>
+ *       <span class="rate__when num">in unter 1 Min.</span>
+ *     </button>
+ *     <button class="rate__btn">
+ *       <span class="rate__word">Schwer</span><span class="rate__when num">in 2 Tagen</span>
+ *     </button>
+ *     <button class="rate__btn rate__btn--primary">
+ *       <span class="rate__word">Gut</span><span class="rate__when num">in 5 Tagen</span>
+ *     </button>
+ *     <button class="rate__btn">
+ *       <span class="rate__word">Leicht</span><span class="rate__when num">in 12 Tagen</span>
+ *     </button>
+ *   </div>
+ *
+ * Auf dem iPhone (393 pt) wird daraus .rate--eng: „Gut" nimmt die erste
+ * Zeile allein, die drei anderen teilen sich die zweite. Vier Knöpfe
+ * nebeneinander wären dort je 84 pt breit — „in unter 1 Min." passt nicht,
+ * und ein Knopf, der sein Intervall verschweigt, ist genau der Fehler, den
+ * RemNote macht.
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+.rate { display: flex; align-items: stretch; gap: 10px; }
+
+.rate__btn {
+  flex: 1 1 0; min-width: 0;
+  height: 56px; padding: 0 10px;
+  border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  background: none; color: var(--ink-1);
+  box-shadow: inset 0 0 0 1px var(--line-2);   /* Umrandung = zweites Merkmal */
+}
+.rate__btn:hover { background: var(--fill); }
+.rate__word { font: 600 17px/23px var(--sans); letter-spacing: -.01em; }
+.rate__when { font: 400 13px/16px var(--sans); color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* Der primäre CTA: mehr Fläche UND Ink-Füllung. Beides, nicht eines. */
+.rate__btn--primary {
+  flex: 1.9 1 0;
+  background: var(--accent); color: var(--accent-on);
+  box-shadow: none;
+}
+.rate__btn--primary:hover { background: var(--accent); }
+.rate__btn--primary .rate__word { font-size: 20px; line-height: 26px; }
+/* 7,6:1 hell · 7,5:1 dunkel auf der Ink-Fläche — gerechnet, nicht geschätzt */
+.rate__btn--primary .rate__when { color: var(--accent-on); opacity: .78; }
+
+/* iPhone: „Gut" allein in der ersten Zeile */
+.rate--eng { flex-wrap: wrap; }
+.rate--eng .rate__btn { flex: 1 1 0; height: 52px; }
+.rate--eng .rate__btn--primary { flex: 1 0 100%; height: 56px; }

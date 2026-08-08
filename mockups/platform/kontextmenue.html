@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kontextmenü mit Vorschau — Velum im System</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* ══ PLATTFORM-KERN (inline, wie in allen Seiten dieses Ordners) ══════════ */
+.pfnav { display:flex; flex-wrap:wrap; gap:0 20px; align-items:center;
+         max-width:1100px; margin:34px auto -14px; padding:0 30px; }
+.pfnav a { display:inline-flex; align-items:center; gap:7px; min-height:44px;
+           font:600 15px/20px var(--sans); color:var(--ink-2); text-decoration:none; }
+.pfnav a span.u { border-bottom:1.5px solid var(--line-2); }
+.pfnav a:hover { color:var(--ink-1); }
+.pfnav a:hover span.u { border-bottom-color:var(--ink-1); }
+
+/* ══ SEITENEIGENES ═══════════════════════════════════════════════════════ */
+
+/* Die Vorschau schwebt: iOS hebt das gedrückte Objekt aus der Liste heraus,
+   legt es über den weichgezeichneten Schirm und stellt das Menü darunter. */
+.lift { position:absolute; z-index:30; border-radius:14px; overflow:hidden;
+        box-shadow:0 8px 24px rgba(0,0,0,.22), 0 28px 60px rgba(0,0,0,.26); }
+
+.menu { position:absolute; z-index:30; width:250px; border-radius:14px; overflow:hidden;
+        background:var(--paper); box-shadow:0 8px 24px rgba(0,0,0,.20), 0 28px 60px rgba(0,0,0,.22); }
+.mrow { display:flex; align-items:center; gap:12px; min-height:44px; padding:6px 14px;
+        position:relative; width:100%; text-align:left; color:var(--ink-1);
+        font:400 17px/23px var(--sans); }
+.mrow + .mrow::before { content:""; position:absolute; left:0; right:0; top:0; height:1px; background:var(--line); }
+.mrow .sp { flex:1 1 auto; }
+.mrow .ico { width:20px; height:20px; color:var(--ink-2); flex:none; }
+.mrow--danger { color:var(--danger); }
+.mrow--danger .ico { color:var(--danger); }
+.mgroup + .mgroup { border-top:6px solid var(--ground); }
+
+/* Notizbuch-Cover: der Buchrücken ist ein Faden (DNA §3). */
+.cover { position:relative; border-radius:10px; overflow:hidden; background:var(--paper);
+         box-shadow:var(--sh-cover); }
+.cover__img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+/* Der Buchrücken. Höhe aus top/bottom gerechnet, weil ein SVG als
+   ersetztes Element seine Höhe sonst aus dem viewBox-Verhältnis nimmt. */
+.cover__spine { position:absolute; left:9px; top:12px; width:10px; height:calc(100% - 24px); }
+.cover__body { position:relative; z-index:2; padding:14px 14px 12px 30px; height:100%;
+               display:flex; flex-direction:column; }
+
+.kette__lbl { display:flex; margin-top:7px; }
+.kette__lbl > div { flex:1 1 0; min-width:0; }
+.kette__lbl > div:nth-child(2) { text-align:center; }
+.kette__lbl > div:nth-child(3) { text-align:right; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — KONTEXTMENÜ MIT VORSCHAU
+
+WAS DAS IST
+Langes Drücken auf ein Notizbuch in der Bibliothek. iOS hebt das Objekt aus
+der Liste, zeichnet den Rest weich und stellt das Menü darunter. Zweimal
+gezeigt: auf dem iPhone (Menü unter der Vorschau) und auf dem iPad (Menü
+neben der Vorschau, weil dort Platz ist).
+
+Diese Seite gehört mit teilen.html zusammen — der Auftrag führt Teilen-Blatt
+und Kontextmenü unter einem Punkt. Getrennt wird es klarer: das eine ist ein
+Systemblatt von unten, das andere ein Menü am Objekt.
+
+DIE VORSCHAU IST NICHT NUR EIN GROSSES BILD
+iOS erlaubt für die Vorschau eine eigene Ansicht. Velum zeigt darin, was ein
+Notizbuch in dieser App ausmacht: den Titel, den Umfang — und die Kette, die
+aus ihm herausführt. Wer lange drückt, sieht vor dem Öffnen, was aus diesem
+Notizbuch geworden ist.
+
+DAS MENÜ — UND DER EINE EINTRAG, DEN NUR VELUM HAT
+  Öffnen · Umbenennen · Cover ändern · Teilen · Duplizieren · Löschen
+  sind die üblichen sechs. Dazu zwei, die eine Beziehung brauchen:
+  „Herkunft zeigen" (den Faden rückwärts ablaufen) und „Alle Karten daraus"
+  (dem Faden vorwärts folgen). Sie stehen in einer eigenen Gruppe, weil sie
+  nicht das Objekt verändern, sondern es verlassen.
+
+SYSTEMMASSE — ALLES GESCHÄTZT, MIT HERLEITUNG
+Kein Netzzugang zum Hersteller in diesem Lauf.
+  Menübreite 250 pt, Radius 14, Zeilenhöhe ≥ 44 pt, Innenabstand 14 pt.
+    Alles gesetzt, nicht gemessen.
+  Trennlinien laufen über die volle Menübreite (anders als in Listen, wo sie
+    beim Symbol beginnen) — so zeichnet iOS Menüs.
+  Gruppen sind durch eine 6-pt-Fuge in Grundfarbe getrennt, nicht durch eine
+    Linie. Geschätzt.
+  Vorschau: Radius 14 (der Karten-Radius aus system.css §1.5), Schatten
+    zweistufig. Der Rest des Schirms wird weichgezeichnet und abgedunkelt.
+
+WO DER FADEN STEHT
+  · In der Vorschau: Notiz „Zellbiologie" → 12 Karten → 8 heute fällig.
+    Drei Knoten auf 2,5 pt, echte Kanten.
+  · Auf dem Cover: der Buchrücken IST ein Faden (DNA §3, „Notizbuch-Cover").
+    Er verbindet den oberen und den unteren Rand des Buches — das ist die
+    Grenze des Motivs und wird deshalb im Steckbrief eigens begründet.
+  · KEIN Faden im Menü. Acht Einträge untereinander sind eine Liste.
+
+AFFORDANZ
+Jede Menüzeile ist ≥ 44 pt und trägt Text links, Symbol rechts. „Löschen"
+ist rot UND trägt den Papierkorb (zwei Merkmale). Die Gruppe „Beziehungen"
+ist durch eine Fuge abgesetzt, nicht durch Farbe.
+
+KONTRAST — Werte im Steckbrief unter der Bühne.
+TYPO: fünf Größen, zwei Gewichte, keine Ausnahme auf dieser Seite.
+============================================================================= -->
+
+<nav class="pfnav">
+  <a href="index.html"><span aria-hidden="true">‹</span><span class="u">Plattform-Übersicht</span></a>
+  <a href="../index.html"><span class="u">Alle Mockups</span></a>
+</nav>
+
+<div class="mocktitle">
+  <h1>Kontextmenü mit Vorschau</h1>
+  <p>Langes Drücken auf ein Notizbuch. Die Vorschau zeigt nicht nur ein größeres Cover, sondern die Kette, die aus dem Buch herausführt — und im Menü stehen zwei Einträge, die eine Beziehung voraussetzen: „Herkunft zeigen" und „Alle Karten daraus".</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════ 1 · iPhone ══════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone <span>Menü unter der Vorschau</span></div>
+    <div class="screen screen--iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body" style="position:relative">
+        <main class="content">
+          <div class="navbar"><div class="t-title">Bibliothek</div></div>
+          <div class="scroll" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; align-content:start">
+            <div class="cover" style="aspect-ratio:.78">
+              <img class="cover__img" src="../assets/bilder/cover/leinen-sand-560.jpg" alt="">
+              <svg class="thread thread--v cover__spine"></svg>
+              <div class="cover__body">
+                <span class="serif--cover-title">Zellbiologie</span>
+                <span class="t-label c-3" style="margin-top:auto">14 Notizen</span>
+              </div>
+            </div>
+            <div class="cover" style="aspect-ratio:.78">
+              <img class="cover__img" src="../assets/bilder/cover/millimeter-blass-560.jpg" alt="">
+              <svg class="thread thread--v cover__spine"></svg>
+              <div class="cover__body">
+                <span class="serif--cover-title">Analysis II</span>
+                <span class="t-label c-3" style="margin-top:auto">9 Notizen</span>
+              </div>
+            </div>
+            <div class="cover" style="aspect-ratio:.78">
+              <img class="cover__img" src="../assets/bilder/cover/kraft-natur-560.jpg" alt="">
+              <svg class="thread thread--v cover__spine"></svg>
+              <div class="cover__body">
+                <span class="serif--cover-title">Laborjournal</span>
+                <span class="t-label c-3" style="margin-top:auto">31 Einträge</span>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <!-- iOS zeichnet den Rest weich und dunkelt ihn ab. -->
+        <div style="position:absolute; inset:0; z-index:20; background:rgba(10,12,15,.30);
+                    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px)"></div>
+      </div>
+
+      <div class="tabbar" style="position:relative; z-index:10">
+        <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+        <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+        <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+        <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernkarten</span></button>
+      </div>
+      <div class="home-indicator"></div>
+
+      <!-- Die herausgehobene Vorschau -->
+      <div class="lift" style="left:20px; right:20px; top:96px; background:var(--paper)">
+        <div style="position:relative; height:128px">
+          <img src="../assets/bilder/cover/leinen-sand-560.jpg" alt=""
+               style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover">
+          <svg class="thread thread--v" style="position:absolute; left:14px; top:16px; width:10px; height:96px"></svg>
+          <div style="position:relative; z-index:2; padding:16px 16px 14px 38px; height:100%; display:flex; flex-direction:column">
+            <span class="serif--cover-title" style="font-size:20px; line-height:26px">Zellbiologie</span>
+            <span class="t-label c-3" style="margin-top:auto">Notizbuch · 14 Notizen · seit 6. Oktober</span>
+          </div>
+        </div>
+        <div style="padding:14px 16px 16px">
+          <div class="t-label c-3" style="margin-bottom:10px">Was daraus geworden ist</div>
+          <div class="threadrow" style="padding:0 4px">
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+          </div>
+          <div class="kette__lbl">
+            <div><div class="t-label c-3">Notiz</div><div class="t-sub is-strong">Vorlesung 9</div></div>
+            <div><div class="t-label c-3">wurde zu</div><div class="t-sub is-strong num">12 Karten</div></div>
+            <div><div class="t-label c-3">heute fällig</div><div class="t-sub is-strong num">8 Karten</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Das Menü darunter -->
+      <div class="menu" style="left:20px; top:410px">
+        <div class="mgroup">
+          <button class="mrow">Öffnen<span class="sp"></span><span class="ico" data-ico="chevR"></span></button>
+          <button class="mrow">Umbenennen<span class="sp"></span><span class="ico" data-ico="edit"></span></button>
+          <button class="mrow">Cover ändern<span class="sp"></span><span class="ico" data-ico="photo"></span></button>
+        </div>
+        <div class="mgroup">
+          <button class="mrow">Herkunft zeigen<span class="sp"></span><span class="ico" data-ico="undo"></span></button>
+          <button class="mrow">Alle Karten daraus<span class="sp"></span><span class="dot dot--cards"></span></button>
+        </div>
+        <div class="mgroup">
+          <button class="mrow">Teilen<span class="sp"></span><span class="ico" data-ico="share"></span></button>
+          <button class="mrow">Duplizieren<span class="sp"></span><span class="ico" data-ico="layers"></span></button>
+          <button class="mrow mrow--danger">Löschen<span class="sp"></span><span class="ico" data-ico="trash"></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ 2 · iPad ══════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad 11″ quer <span>Menü neben der Vorschau</span></div>
+    <div class="screen screen--ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body" style="position:relative">
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem is-active"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="navbar"><div class="t-title">Bibliothek</div></div>
+          <div class="scroll" style="display:grid; grid-template-columns:repeat(4,1fr); gap:22px; align-content:start">
+            <div class="cover" style="aspect-ratio:.78">
+              <img class="cover__img" src="../assets/bilder/cover/leinen-sand-560.jpg" alt="">
+              <svg class="thread thread--v cover__spine"></svg>
+              <div class="cover__body"><span class="serif--cover-title">Zellbiologie</span><span class="t-label c-3" style="margin-top:auto">14 Notizen</span></div>
+            </div>
+            <div class="cover" style="aspect-ratio:.78">
+              <img class="cover__img" src="../assets/bilder/cover/millimeter-blass-560.jpg" alt="">
+              <svg class="thread thread--v cover__spine"></svg>
+              <div class="cover__body"><span class="serif--cover-title">Analysis II</span><span class="t-label c-3" style="margin-top:auto">9 Notizen</span></div>
+            </div>
+            <div class="cover" style="aspect-ratio:.78">
+              <img class="cover__img" src="../assets/bilder/cover/kraft-natur-560.jpg" alt="">
+              <svg class="thread thread--v cover__spine"></svg>
+              <div class="cover__body"><span class="serif--cover-title">Laborjournal</span><span class="t-label c-3" style="margin-top:auto">31 Einträge</span></div>
+            </div>
+            <div class="cover" style="aspect-ratio:.78">
+              <img class="cover__img" src="../assets/bilder/cover/faser-hanf-560.jpg" alt="">
+              <svg class="thread thread--v cover__spine"></svg>
+              <div class="cover__body"><span class="serif--cover-title">Statistik</span><span class="t-label c-3" style="margin-top:auto">6 Notizen</span></div>
+            </div>
+          </div>
+        </main>
+
+        <div style="position:absolute; inset:0; z-index:20; background:rgba(10,12,15,.30);
+                    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px)"></div>
+      </div>
+
+      <!-- Vorschau links, Menü rechts daneben -->
+      <div class="lift" style="left:392px; top:150px; width:380px; background:var(--paper)">
+        <div style="position:relative; height:210px">
+          <img src="../assets/bilder/cover/leinen-sand-560.jpg" alt=""
+               style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover">
+          <svg class="thread thread--v" style="position:absolute; left:16px; top:20px; width:10px; height:170px"></svg>
+          <div style="position:relative; z-index:2; padding:20px 20px 18px 44px; height:100%; display:flex; flex-direction:column">
+            <span class="serif--screen-title">Zellbiologie</span>
+            <span class="t-label c-3" style="margin-top:auto">Notizbuch · 14 Notizen · seit 6. Oktober</span>
+          </div>
+        </div>
+        <div style="padding:16px 20px 20px">
+          <div class="t-label c-3" style="margin-bottom:12px">Was daraus geworden ist</div>
+          <div class="threadrow" style="padding:0 4px">
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+            <svg class="thread thread--h thread--origin"></svg>
+            <span class="dot dot--node"></span>
+          </div>
+          <div class="kette__lbl">
+            <div><div class="t-label c-3">Notiz</div><div class="t-sub is-strong">Vorlesung 9</div></div>
+            <div><div class="t-label c-3">wurde zu</div><div class="t-sub is-strong num">12 Karten</div></div>
+            <div><div class="t-label c-3">heute fällig</div><div class="t-sub is-strong num">8 Karten</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu" style="left:792px; top:150px">
+        <div class="mgroup">
+          <button class="mrow">Öffnen<span class="sp"></span><span class="ico" data-ico="chevR"></span></button>
+          <button class="mrow">In neuem Fenster<span class="sp"></span><span class="ico" data-ico="grid"></span></button>
+          <button class="mrow">Umbenennen<span class="sp"></span><span class="ico" data-ico="edit"></span></button>
+          <button class="mrow">Cover ändern<span class="sp"></span><span class="ico" data-ico="photo"></span></button>
+        </div>
+        <div class="mgroup">
+          <button class="mrow">Herkunft zeigen<span class="sp"></span><span class="ico" data-ico="undo"></span></button>
+          <button class="mrow">Alle Karten daraus<span class="sp"></span><span class="dot dot--cards"></span></button>
+          <button class="mrow">Im Graph zeigen<span class="sp"></span><span class="ico" data-ico="graph"></span></button>
+        </div>
+        <div class="mgroup">
+          <button class="mrow">Teilen<span class="sp"></span><span class="ico" data-ico="share"></span></button>
+          <button class="mrow">Duplizieren<span class="sp"></span><span class="ico" data-ico="layers"></span></button>
+          <button class="mrow mrow--danger">Löschen<span class="sp"></span><span class="ico" data-ico="trash"></span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sheetnote">
+  <h2>Steckbrief — Kontextmenü mit Vorschau</h2>
+
+  <h3>Systemmaße (geschätzt)</h3>
+  <table>
+    <tr><td>Menü</td><td>250 pt breit, Radius 14, Zeilenhöhe ≥ 44, Innenabstand 14. Trennlinien laufen über die volle Breite — so zeichnet iOS Menüs, anders als Listen.</td></tr>
+    <tr><td>Gruppenfuge</td><td>6 pt in Grundfarbe statt einer Linie.</td></tr>
+    <tr><td>Vorschau</td><td>Radius 14 (der Karten-Radius aus system.css §1.5), zweistufiger Schatten. Der Rest des Schirms wird weichgezeichnet (14 pt) und um 30 % abgedunkelt.</td></tr>
+    <tr><td>iPad</td><td>Menü NEBEN der Vorschau statt darunter, weil quer Platz ist. Dass iOS die Seite nach verfügbarem Raum wählt, ist Modellwissen.</td></tr>
+  </table>
+
+  <h3>Der Buchrücken als Faden — die Grenze des Motivs, begründet</h3>
+  <p>Die DNA nennt den Buchrücken als einen der elf Orte (§3). Er ist der einzige, bei dem der Faden nicht zwei benannte Objekte verbindet, sondern zwei Kanten desselben. Das ist zulässig, weil er nichts behauptet, was nicht stimmt: Ein Notizbuch <em>ist</em> ein gebundener Stapel, der Rücken hält ihn zusammen. Er trägt keine Knoten und keine Richtung — wäre er ein Verweis, müsste er beides haben. Wer meint, das sei zu nah an einer Zierlinie, hat einen Punkt; die Alternative wäre, ihn zu streichen. Er bleibt, weil das Cover sonst der einzige Ort der App ohne das Motiv wäre und weil er über die Cover hinweg unterschiedlich lang ist — er misst das Buch.</p>
+
+  <h3>Kontrast (gerechnet)</h3>
+  <table>
+    <tr><td>Menüzeile</td><td>ink-1 auf Papier 17,8:1 hell · 15,9:1 dunkel</td></tr>
+    <tr><td>„Löschen"</td><td>danger auf Papier 5,2:1 hell · 6,3:1 dunkel — plus Papierkorb-Symbol als zweites Merkmal</td></tr>
+    <tr><td>Faden in der Vorschau</td><td>thread auf Papier 3,10:1 hell · 3,13:1 dunkel</td></tr>
+    <tr><td>Buchrücken auf dem Cover</td><td>Die Cover-Papiere sind bewusst hell und ruhig (Werte in mockups/assets/bilder/kontrast.json). Der Rücken liegt in --thread und hält damit dieselbe Schwelle wie überall.</td></tr>
+    <tr><td>Cover-Titel</td><td>Serif in ink-1 auf hellem Papier — die Rolle .serif--cover-title aus DNA §4.1</td></tr>
+  </table>
+</div>
+
+<script src="../shared/mock.js"></script>
+</body>
+</html>
