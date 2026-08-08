@@ -18,6 +18,13 @@
  *   6. Signatur: Übergabe-Leiste, Herkunfts-Chip, Ketten-Karte
  *   7. Zustände: leer, ausgewählt, deaktiviert, Fehler, Laden
  *   8. Steckbrief (Kommentarblock unter der Bühne)
+ *   9. DER FADEN — die drei Primitive: Punkt, Faden, Knoten
+ *  10. Die Serif in ihren sechs Rollen
+ *  11. Die Marke: App-Icon-Platz und Wortmarke
+ *
+ * §9–11 kamen in Runde 2 dazu (Velum-DNA). Sie fügen nur neue Klassennamen
+ * hinzu und verändern keine bestehende Regel — die 19 Schirme aus Runde 1
+ * rendern pixelgleich weiter. Die Musterseite dazu ist shared/faden-probe.html.
  * ========================================================================== */
 
 /* ── 1. Tokens ────────────────────────────────────────────────────────── */
@@ -63,6 +70,16 @@
   /* 1.4 Semantik — nur diese beiden, sonst nichts Buntes */
   --danger:  #D02B20;   /* 5,19:1 — Löschen, Deadline */
   --success: #1D7F4E;   /* 5,00:1 — Erfolg */
+
+  /* 1.4b Die drei Primitive des Fadens (§9). Werte gerechnet, nicht geschätzt.
+     --thread ist der ruhende Faden, --dot-hollow der Ring des hohlen Punktes.
+     Beide liegen bewusst auf demselben Pegel: „gerade eben sichtbar, aber
+     gerechnet über 3:1". Die DNA nennt für beide --line-2 bzw. --ink-4; diese
+     halten 1,46:1 und 1,95:1 und fallen damit unter die 3:1-Schwelle, die
+     dieselbe DNA für Bedienoberfläche verlangt. Begründung siehe §9.0. */
+  --thread:      rgba(22,24,28,0.47);   /* 3,10:1 Papier · 3,03:1 Grund · 3,07:1 Papier-2 */
+  --dot-hollow:  rgba(22,24,28,0.47);   /* derselbe Pegel, andere Rolle    */
+  --node-ring:   var(--paper);          /* Ring des Knotens — auf Grund überschreiben */
 
   /* 1.5 Maße (1 px im Mockup = 1 pt auf dem Gerät) */
   --tap: 44px;              /* Mindestziel */
@@ -129,6 +146,13 @@
 
   --danger:  #FF6B5E;   /* 6,30:1 */
   --success: #4ED18B;   /* 9,07:1 */
+
+  /* Im Dunkeln reicht ein schwächerer Auftrag für dieselbe Sichtbarkeit:
+     0,36 statt 0,47. Bei 0,35 fiele der Faden auf dem dunklen Grund auf
+     2,99:1 — knapp darunter, deshalb 0,36. */
+  --thread:      rgba(242,243,245,0.36);  /* 3,13:1 Papier · 3,10:1 Grund · 3,11:1 Papier-2 */
+  --dot-hollow:  rgba(242,243,245,0.36);
+  --node-ring:   var(--paper);
 
   --sh-card:  0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.45);
   --sh-float: 0 2px 8px rgba(0,0,0,.5), 0 16px 40px rgba(0,0,0,.6);
@@ -620,3 +644,384 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 1ms !important; transition-duration: 1ms !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 9. DER FADEN — die drei Primitive
+ *
+ * Leitmotiv: Jede Verbindung in Velum ist ein Faden zwischen zwei Punkten,
+ * und man kann ihn in beide Richtungen ablaufen. Mehr Bausteine als diese
+ * drei gibt es nicht.
+ *
+ *   Punkt   = ein Objekt        → .dot  mit vier Zuständen
+ *   Faden   = eine Beziehung    → .thread (SVG)
+ *   Knoten  = wo Fäden sich treffen → .dot--node
+ *
+ * Die deutschen Namen der DNA und die Klassennamen hier hängen so zusammen:
+ * Punkt = .dot (der Name steht seit Runde 1 in 19 Schirmen und bleibt),
+ * Faden = .thread, Knoten = .dot--node. Die Datei spricht sonst durchweg
+ * englische Klassennamen (.row, .card, .chip, .check) — ein deutsches
+ * .faden neben einem englischen .dot wäre die schlechtere Uneinheitlichkeit.
+ *
+ * EIN VERBOT, DAS TRÄGT: Kein Faden ohne echte Kante. Wer einen Strich sieht,
+ * muss sagen können, welche zwei Objekte er verbindet. Trennlinien bleiben
+ * --line und sind kein Faden. .thread ist nie Rahmen, Unterstreichung oder
+ * Zierleiste.
+ * ──────────────────────────────────────────────────────────────────────────
+ * 9.0 WARUM --thread UND NICHT --line-2 (begründete Abweichung von DNA §2.2)
+ *
+ * Die DNA schreibt für den ruhenden Faden --line-2 vor. Gerechnet:
+ *
+ *   --line-2 auf Papier      hell 1,46:1   dunkel 1,82:1
+ *   --ink-4  auf Papier      hell 1,95:1   dunkel 2,56:1
+ *
+ * Beide liegen unter den 3:1, die dieselbe DNA (§5) für Bedienoberfläche
+ * verlangt. Ein Faden ist kein Dekor: er trägt die Aussage „diese beiden
+ * Objekte hängen zusammen" — genau der Fall, für den die Schwelle gilt.
+ * Zudem ist --line-2 der Wert der Trennlinien; ein Faden in Trennlinienfarbe
+ * sähe aus wie eine Trennlinie, und das ist ausdrücklich verboten.
+ *
+ * Deshalb --thread als kleinster Auftrag, der die Schwelle sicher hält:
+ *
+ *              Papier    Grund     Papier-2
+ *   hell  .47   3,10:1    3,03:1    3,07:1
+ *   dunkel .36   3,13:1    3,10:1    3,11:1
+ *
+ * Alles darunter wurde durchgerechnet: hell .45 → 2,92:1, dunkel .35 auf
+ * Grund → 2,99:1. Beide fallen durch. --line-2 bleibt unangetastet und
+ * weiter die Farbe der Trennlinien.
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 9.1 Der Punkt — vier Zustände ─────────────────────────────────────────
+ *
+ * gefüllt   6 pt, volle Modulfarbe   Objekt existiert       (Vorgabe, s. §5)
+ * hohl      6 pt, 1,4 pt Ring        geplant, offen         .dot--hollow
+ * Ring      6 pt Kern + 2 pt Ink     aktiv, heute, gewählt  .dot--ring
+ * Knoten    9 pt Ink + Papierring    hier treffen sich Fäden .dot--node
+ *
+ * Der heutige Zustand IST „gefüllt" — .dot und .dot--canvas … .dot--cards
+ * bleiben Zeichen für Zeichen wie in Runde 1. Die drei neuen Klassen kommen
+ * additiv dazu.
+ *
+ * Kontrast der gefüllten Punkte (unverändert aus §1.3, hier nur vollständig):
+ *              Papier hell / dunkel   Grund hell / dunkel
+ *   Canvas       5,11 / 3,45            4,57 / 3,75
+ *   Notizen      2,95 / 5,97            2,64 / 6,50
+ *   Journal      2,83 / 6,22            2,53 / 6,78
+ *   Aufgaben     3,09 / 5,70            2,77 / 6,20
+ *   Lernkarten   3,83 / 4,60            3,42 / 5,01
+ * Drei davon bleiben im Hellen unter 3:1. Genau deshalb gilt die
+ * Zwei-Merkmal-Regel ohne Ausnahme: ein Punkt steht nie allein, immer
+ * Punkt + Wort, Punkt + Position oder Punkt + Fläche. */
+
+/* hohl — der Ring liegt innen, der Punkt behält seine 6 pt Standfläche.
+   background:none steht hier absichtlich: die Regel kommt später als
+   .dot--canvas usw. und löscht deren Füllung, falls jemand beide setzt.
+   Kontrast Ring: hell 3,10:1 Papier / 3,03:1 Grund · dunkel 3,13 / 3,10. */
+.dot--hollow {
+  background: none;
+  box-shadow: inset 0 0 0 1.4px var(--dot-hollow);
+}
+
+/* Ring — 2 pt Ink außen um den 6-pt-Kern. Ohne Modulklasse bleibt der Kern
+   offen (Papier scheint durch), mit Modulklasse trägt er deren Farbe.
+   Der Ring ist Ink: hell 17,77:1 Papier / 15,90:1 Grund,
+                    dunkel 15,86:1 Papier / 17,27:1 Grund.
+   Der Ring wächst nach außen (box-shadow), verschiebt also nichts im
+   Layout — dafür überlappt er enge Nachbarn: mindestens 4 pt Luft lassen. */
+.dot--ring { box-shadow: 0 0 0 2px var(--accent); }
+
+/* ── 9.2 Der Faden ────────────────────────────────────────────────────────
+ *
+ * Strich, nie Fläche. SVG, nicht CSS-Rahmen — nur so kann er sich später
+ * zeichnen (stroke-dasharray) und in beide Richtungen laufen.
+ *
+ * SO BENUTZT MAN IHN (Markup, ohne JS-Aufruf):
+ *   <svg class="thread thread--h"></svg>          waagerecht, füllt die Breite
+ *   <svg class="thread thread--v"></svg>          senkrecht, füllt die Höhe
+ *   <svg class="thread thread--curve"></svg>      Winkel als quadratische Bézier
+ * mock.js füllt leere .thread-Elemente beim Start mit viewBox und Pfad —
+ * genauso wie es [data-ico] mit Symbolen füllt. Wer den Pfad selbst schreibt,
+ * behält ihn; hydrate() rührt gefüllte .thread nicht an.
+ *
+ * ZWISCHEN ZWEI ELEMENTEN (JS, führt bei Größenänderung nach):
+ *   const f = MOCK.thread('#notiz', '#karte', { strength:'origin', curve:26 });
+ *   f.draw();        // vom Ursprung zum Ergebnis
+ *   f.drawBack();    // rückwärts wieder ein
+ *   f.destroy();
+ *
+ * STÄRKE SAGT NÄHE (DNA §2.2):
+ *   1    pt  .thread--weak    schwache Beziehung (gleicher Tag)
+ *   1,5  pt  (Vorgabe)        normale Beziehung (Verweis)
+ *   2,5  pt  .thread--origin  starke Beziehung (Herkunft: A wurde zu B)
+ *
+ * FARBE: --thread im Ruhezustand, --accent wenn aktiv (.is-active).
+ * Niemals bunt — Modulfarben gehören dem Punkt, nicht dem Faden.
+ *   Ruhe   hell 3,10:1 Papier / 3,03:1 Grund · dunkel 3,13 / 3,10
+ *   aktiv  hell 17,77:1 Papier / 15,90:1 Grund · dunkel 15,86 / 17,27
+ *
+ * FORM: gerade oder eine quadratische Bézier. Keine S-Kurven, keine Schnörkel.
+ *
+ * Warum vector-effect statt fester Koordinaten: die Fäden werden in beliebig
+ * breite Lücken gespannt. preserveAspectRatio="none" lässt den Pfad die Lücke
+ * füllen, non-scaling-stroke hält die Strichstärke dabei exakt bei 1,5 pt —
+ * ohne das würde ein langer Faden dünn und ein kurzer fett. */
+
+.thread {
+  display: block;
+  overflow: visible;              /* runde Enden ragen 0,75 pt über die Box */
+  fill: none;
+  stroke: var(--thread);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.thread > * { vector-effect: non-scaling-stroke; }
+
+.thread--weak   { stroke-width: 1; }
+.thread--origin { stroke-width: 2.5; }
+
+/* aktiv — die Beziehung, der man gerade folgt */
+.thread.is-active { stroke: var(--accent); }
+
+/* Fertige Formen. Die Höhe/Breite von 10 pt ist nur der Kasten, in dem der
+   Strich mittig sitzt; sie kostet keinen sichtbaren Platz. */
+.thread--h     { width: 100%; height: 10px; }
+.thread--v     { width: 10px; height: 100%; }
+.thread--curve { width: 100%; height: 100%; min-height: 12px; }
+/* Spiegeln statt vier Kurvenvarianten */
+.thread--flip-x { transform: scaleX(-1); }
+.thread--flip-y { transform: scaleY(-1); }
+
+/* Fadenreihe — Punkte auf einer Linie, dazwischen Fadenstücke.
+   Trägt Streak, Intervall-Reihe (1 d · 3 d · 8 d) und Ketten. */
+.threadrow    { display: flex; align-items: center; }
+.threadrow--v { flex-direction: column; align-items: center; }
+/* flex-basis 0: die Länge kommt aus dem freien Platz, nicht aus width:100%.
+   Sonst rechnet der Flexkasten mit voller Containerbreite als Ausgangsmaß
+   und die Fadenstücke werden ungleich lang. */
+.threadrow > .thread { flex: 1 1 0; min-width: 10px; min-height: 10px; }
+.threadrow > .dot    { flex: none; }
+
+/* Richtung ist Kausalität: der Faden zeichnet sich immer vom Ursprung zum
+   Ergebnis. Beim Zurückgehen läuft er rückwärts wieder ein. --thread-len
+   setzt mock.js aus getTotalLength(); der Rückfallwert trägt kurze Fäden. */
+@keyframes thread-draw   { from { stroke-dashoffset: var(--thread-len, 400); } to   { stroke-dashoffset: 0; } }
+@keyframes thread-undraw { from { stroke-dashoffset: 0; } to { stroke-dashoffset: var(--thread-len, 400); } }
+.thread.is-drawing   > * { stroke-dasharray: var(--thread-len, 400); animation: thread-draw   var(--t-hand) var(--ease-spring) forwards; }
+.thread.is-undrawing > * { stroke-dasharray: var(--thread-len, 400); animation: thread-undraw var(--t-hand) var(--ease-spring) forwards; }
+
+/* Die Fläche, auf der MOCK.thread() zeichnet. Liegt über dem Inhalt, nimmt
+   keine Eingaben an und wird von mock.js selbst angelegt. */
+.thread-layer {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── 9.3 Der Knoten — wo Fäden sich treffen ───────────────────────────────
+   Wächst aus dem Punkt: 9 pt, Ink gefüllt, 2 pt papierfarbener Ring außen,
+   damit er auf einem Faden sitzen kann, ohne mit ihm zu verschmelzen.
+   Sitzt er nicht auf --paper, den Ring mitgeben:
+     <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+
+   Kontrast   Knotenfüllung gegen Papier   hell 17,77:1 · dunkel 15,86:1
+              Knotenfüllung gegen Faden    hell  5,74:1 · dunkel  5,07:1
+              Knotenring gegen Faden       hell  3,10:1 · dunkel  3,13:1
+   Der Ring ist das, was den Knoten auf dem Faden sichtbar macht — er hält
+   die Schwelle gegen den Faden, nicht gegen das Papier (gegen das Papier hat
+   er naturgemäß 1:1, er IST das Papier).
+
+   Der Knoten ist der einzige Ort, an dem der Ink-Akzent auf etwas sitzt, das
+   kein Bedienelement ist. Er markiert Auswahl — eine der drei erlaubten
+   Rollen des Akzents. */
+.dot--node {
+  width: 9px; height: 9px;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--node-ring);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 10. Die Serif in ihren sechs Rollen
+ *
+ * Die Serif ist Stimme, nicht Textur. Sechs Orte, abschließend (DNA §4.1);
+ * nirgends sonst — kein Serif in Listen, Knöpfen, Chips, Zahlen, Leisten.
+ *
+ *   .serif--screen-title   28/34 600   Große Screen-Titel
+ *   .serif--journal-date   20/26 600   Journal-Datumsmarken
+ *   .serif--quote          17/23 400   Zitate, markierter Satz im Review
+ *   .serif--empty-title    20/26 600   Titel leerer Zustände
+ *   .serif--cover-title    17/23 600   Notizbuch-Titel auf dem Cover
+ *   .serif--wordmark       28/34 400   Wortmarke (Onboarding, Über)
+ *
+ * Jede Rolle setzt ihre Größe selbst, und jede dieser Größen steht in der
+ * Fünferskala. Es kommt keine sechste Größe dazu; die Serif belegt dieselben.
+ * Deshalb genügt eine Klasse: <h1 class="serif--screen-title">Heute</h1>.
+ *
+ * ── 10.1 Die optische Korrektur ───────────────────────────────────────────
+ * New York und SF Pro haben verschiedene x-Höhen. 28 px Serif wirken neben
+ * 28 px Sans kleiner. Gemessen im Browser (Canvas-TextMetrics, 28 px, 400):
+ *
+ *              x-Höhe   Versalhöhe   (Anteil der Schriftgröße)
+ *   Sans        0,5714     0,7500
+ *   Serif       0,4643     0,6429
+ *   Faktor      1,2308     1,1667
+ *
+ * Diese Zahlen stammen aus dem Container, in dem gebaut wurde — dort steht
+ * weder New York noch SF Pro zur Verfügung; die Stapel fallen auf DejaVu Sans
+ * und eine Times-metrische Serif zurück. Genau deshalb steht die Korrektur
+ * NICHT als feste Zahl in dieser Datei: mock.js misst beide Stapel beim Start
+ * und schreibt das Ergebnis nach --serif-adjust. Auf einem Gerät mit New York
+ * und SF Pro misst er New York und SF Pro.
+ *
+ * Korrigiert wird auf das geometrische Mittel aus x-Höhen- und
+ * Versalhöhen-Faktor (im Container 1,1983). Reine x-Höhen-Angleichung wurde
+ * gerendert und angesehen: die Versalien der Serif überschießen dann sichtbar
+ * die der Sans. Deutsch schreibt jedes Substantiv groß — eine Korrektur, die
+ * nur die Kleinbuchstaben trifft, ist für diese Sprache die falsche.
+ *
+ * font-size-adjust verändert die *benutzte* Schriftgröße, nicht die
+ * angegebene: getComputedStyle meldet weiter 28px. Die Fünfer-Regel bleibt
+ * also nicht nur dem Sinn nach, sondern buchstäblich in Kraft.
+ *
+ * Fällt mock.js aus, ist --serif-adjust nicht gesetzt, der Rückfallwert
+ * `none` greift, und es wird gar nicht korrigiert — nie falsch korrigiert.
+ *
+ * ── 10.2 Was mit dem blanken .serif ist ───────────────────────────────────
+ * .serif (nur Schriftfamilie, ohne Korrektur) bleibt unverändert. In Runde 1
+ * trägt es an rund 45 Stellen Fließtext im Notiz-Editor und im Journal —
+ * Stellen, die DNA §4.1 nicht unter die sechs Orte zählt. Das ist ein Befund
+ * für Runde 3 und wird hier nicht stillschweigend mitgeändert: eine
+ * Korrektur auf .serif hätte 19 fertige Schirme verschoben. */
+
+.serif--screen-title,
+.serif--journal-date,
+.serif--quote,
+.serif--empty-title,
+.serif--cover-title,
+.serif--wordmark {
+  font-family: var(--serif);
+  letter-spacing: 0;
+  font-size-adjust: var(--serif-adjust, none);
+}
+
+.serif--screen-title { font-size: 28px; line-height: 34px; font-weight: 600; }
+.serif--journal-date { font-size: 20px; line-height: 26px; font-weight: 600; }
+.serif--quote        { font-size: 17px; line-height: 23px; font-weight: 400; }
+.serif--empty-title  { font-size: 20px; line-height: 26px; font-weight: 600; }
+.serif--cover-title  { font-size: 17px; line-height: 23px; font-weight: 600; }
+.serif--wordmark     { font-size: 28px; line-height: 34px; font-weight: 400; }
+
+/* Dynamic Type — dieselbe große Stufe wie die Sans-Skala in §2 */
+:root[data-type="gross"] .serif--screen-title { font-size: 34px; line-height: 41px; }
+:root[data-type="gross"] .serif--journal-date,
+:root[data-type="gross"] .serif--empty-title  { font-size: 24px; line-height: 30px; }
+:root[data-type="gross"] .serif--quote,
+:root[data-type="gross"] .serif--cover-title  { font-size: 21px; line-height: 28px; }
+:root[data-type="gross"] .serif--wordmark     { font-size: 34px; line-height: 41px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 11. Die Marke
+ *
+ * ── 11.1 Das Zeichen ──────────────────────────────────────────────────────
+ * .appicon lädt genau eine der drei Dateien per <img>:
+ *   assets/brand/velum-appicon-light.png
+ *   assets/brand/velum-appicon-dark.png
+ *   assets/brand/velum-appicon-tinted.png
+ * Die Dateien liegen NICHT vor. Nachzeichnen ist verboten. Fällt das Bild
+ * aus, erscheint ein sichtbar leerer Rahmen mit dem Dateinamen daneben —
+ * kein gezeichnetes V, kein Ersatzzeichen, keine Andeutung. Sobald die drei
+ * PNG abgelegt werden, erscheinen sie überall gleichzeitig, ohne dass eine
+ * Zeile geändert wird.
+ *
+ *   <span class="appicon" data-appicon></span>              64 pt, folgt dem Modus
+ *   <span class="appicon appicon--sm" data-appicon></span>  28 pt
+ *   <span class="appicon appicon--lg" data-appicon></span>  120 pt
+ *   <span class="appicon" data-appicon="tinted"></span>     erzwingt die getönte Fassung
+ *
+ * mock.js setzt den Pfad (relativ zur Seite), hängt den onerror-Fall ein und
+ * wechselt die Datei mit dem Hell/Dunkel-Umschalter mit.
+ *
+ * Wo das Zeichen erscheint: Onboarding · Einstellungen → Über ·
+ * Widget-Vorschau · Sperrbildschirm · Spotlight · Teilen-Blatt · Store.
+ * NICHT im laufenden Betrieb — eine App, die ihr Logo in der Navigationsleiste
+ * trägt, misstraut ihrer Gestaltung.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* flex-wrap: auf schmalen Schirmen rutscht die Beschriftung des fehlenden
+   Bildes unter den Rahmen, statt aus der Zeile zu laufen. */
+.appicon {
+  --appicon-size: 64px;
+  display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  vertical-align: middle;
+}
+.appicon--sm { --appicon-size: 28px; }
+.appicon--lg { --appicon-size: 120px; }
+
+.appicon > img,
+.appicon__frame {
+  width: var(--appicon-size); height: var(--appicon-size);
+  flex: none; display: block;
+  border-radius: 22.37%;          /* Apples Squircle-Radius, gerundet */
+}
+
+/* Der reservierte, sichtbar leere Platz. Gestrichelt, damit er sich von jeder
+   echten Fläche unterscheidet, und in --thread, also gerechnet über 3:1
+   (hell 3,10:1 · dunkel 3,13:1). Innerhalb von .brandmark wird daraus Kupfer
+   (4,44:1 hell · 3,96:1 dunkel) — siehe 11.2. */
+.appicon__frame {
+  border: 1.5px dashed var(--brand-copper, var(--thread));
+  background: none;
+}
+.appicon__missing {
+  font: 400 13px/16px var(--sans);
+  color: var(--ink-2);            /* 5,3:1 hell · 7,1:1 dunkel */
+  max-width: 26ch; min-width: 0;
+}
+.appicon__missing code {
+  font: 400 13px/16px var(--mono);
+  color: var(--ink-1);
+  overflow-wrap: anywhere;
+}
+/* Der Pfad bleibt in jeder Größe stehen. Ein Platzhalter, der sich klein
+   macht, wird übersehen — er soll stören, bis die Datei da ist. */
+
+/* ── 11.2 Wortmarke und Kupfer ────────────────────────────────────────────
+ * .brandmark ist Zeichen + Wortmarke „Velum" in der Serif.
+ *
+ *   <span class="brandmark">
+ *     <span class="appicon" data-appicon></span>
+ *     <span class="serif--wordmark">Velum</span>
+ *   </span>
+ *
+ * --brand-copper (#B5621A) ist HIER definiert und nirgends sonst. Das ist
+ * keine Bitte, sondern die Sperre: außerhalb von .brandmark existiert die
+ * Variable nicht, ein var(--brand-copper) fällt dort auf seinen Rückfallwert
+ * zurück. Kein Knopf, kein Chip, keine Fläche, kein Zustand kann sie
+ * versehentlich erben.
+ *
+ * VORLÄUFIG. #B5621A ist Velums eigener Journal-Akzent aus der März-Spec,
+ * also kein erfundener Wert — aber er wird ersetzt, sobald die drei PNG
+ * vorliegen und der Ton aus dem echten Zeichen gemessen werden kann.
+ *
+ * Der Ton trägt heute genau eine Sache: den Rahmen des reservierten Platzes.
+ * Als Textfarbe wäre er unzulässig — gerechnet 4,44:1 auf Papier hell und
+ * 3,96:1 dunkel, beides unter den 4,5:1 für Text. Als Rahmen (Bedienoberfläche,
+ * 3:1) hält er in beiden Modi. Die Wortmarke steht deshalb in Ink, nicht in
+ * Kupfer. Mit dem ersten echten PNG verschwindet der Rahmen und mit ihm der
+ * einzige heutige Gebrauch der Farbe: das Kupfer lebt dann dort, wo es
+ * hingehört — im Zeichen. */
+
+.brandmark {
+  --brand-copper: #B5621A;
+  display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  color: var(--ink-1);
+}
+/* --appicon-size steht auf .appicon selbst und wird deshalb nicht geerbt —
+   die kleine Fassung muss die Regel dort überschreiben, nicht am Elter. */
+.brandmark--sm { gap: 10px; }
+.brandmark--sm .appicon { --appicon-size: 28px; }
+.brandmark--sm .serif--wordmark { font-size: 20px; line-height: 26px; }
+:root[data-type="gross"] .brandmark--sm .serif--wordmark { font-size: 24px; line-height: 30px; }

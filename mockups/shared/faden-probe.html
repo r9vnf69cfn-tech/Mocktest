@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Der Faden — Musterseite</title>
+<link rel="stylesheet" href="../shared/system.css">
+<style>
+/* Nur das Gerüst dieser Musterseite. Alles, was ein Primitiv AUSMACHT, steht
+   in system.css §9–11 — hier steht nichts, was ein Entwurf übernehmen soll. */
+.probe      { max-width: 1120px; margin: 0 auto; padding: 0 30px 40px; }
+.panel      { background: var(--paper); border-radius: var(--r-card); box-shadow: var(--sh-card);
+              padding: 26px 30px 30px; margin-bottom: 22px; }
+.panel > h2 { font: 600 20px/26px var(--sans); letter-spacing: -.015em; margin: 0 0 4px; }
+.panel > p  { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0 0 18px; max-width: 76ch; }
+.panel h3   { font: 600 13px/16px var(--sans); letter-spacing: .05em; text-transform: uppercase;
+              color: var(--ink-3); margin: 26px 0 12px; }
+
+.grid       { display: grid; grid-template-columns: 190px 1fr; gap: 16px 24px; align-items: center; }
+.grid--3    { grid-template-columns: 190px 1fr 1fr; }
+.gl         { font: 400 13px/16px var(--sans); color: var(--ink-3); }
+.gl b       { display: block; font: 600 13px/16px var(--sans); color: var(--ink-1); }
+
+.flaeche    { background: var(--ground); border-radius: 11px; padding: 18px 20px; }
+.flaeche--papier { background: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+
+.reihe      { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.paar       { display: inline-flex; align-items: center; gap: 8px;
+              font: 400 15px/20px var(--sans); color: var(--ink-1); }
+
+/* Die Tabelle hat sechs Spalten mit Zahlen, die nicht umbrechen dürfen.
+   Auf schmalen Schirmen rollt sie in ihrem eigenen Kasten — die Seite
+   selbst rollt nie waagerecht. */
+.tabhuelle  { overflow-x: auto; }
+.tab        { width: 100%; min-width: 600px; border-collapse: collapse; }
+.tab th     { font: 600 13px/16px var(--sans); color: var(--ink-3); text-align: left;
+              padding: 0 12px 8px 0; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tab td     { font: 400 15px/20px var(--sans); color: var(--ink-2); padding: 7px 12px 7px 0;
+              border-bottom: 1px solid var(--line); vertical-align: top; }
+.tab td:first-child { color: var(--ink-1); font-weight: 600; }
+.tab .num   { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.durch      { color: var(--danger); font-weight: 600; }
+.haelt      { color: var(--success); font-weight: 600; }
+
+.buehne     { position: relative; height: 190px; background: var(--ground);
+              border-radius: 11px; padding: 20px; overflow: hidden; }
+.buehne .card { position: absolute; width: 190px; }
+#karte-a    { left: 20px;  top: 22px; }
+#karte-b    { right: 20px; bottom: 22px; }
+/* Zwei Wege auf einmal: die Bühne wird schmaler (ResizeObserver) und die
+   zweite Karte rutscht (Klassenwechsel). Der Faden muss beides mitmachen. */
+.buehne--eng { max-width: 620px; }
+.buehne--eng #karte-b { right: 20px; bottom: 76px; }
+
+.messung    { font: 400 13px/16px var(--mono); color: var(--ink-2); white-space: pre-wrap; margin: 0; }
+/* Bezeichner, Pfade, Eigenschaftsnamen. NICHT die Serif — die hat sechs
+   Rollen und „Dateiname" ist keine davon. */
+.tok        { font-family: var(--mono); font-size: .92em; color: var(--ink-1); }
+
+/* Schiene mit Beschriftung. Die 9-pt-Spalte ist die Achse: der Knoten (9 pt),
+   der hohle Punkt (6 pt) und das Fadenstück (9 pt breit) liegen alle mittig
+   darin. Das ist ein Muster für Runde 3, kein Primitiv — deshalb hier und
+   nicht in system.css. */
+.schiene    { display: flex; align-items: center; gap: 12px; flex: none; }
+.marke      { width: 9px; display: inline-flex; justify-content: center; flex: none; }
+
+@media (max-width: 720px) {
+  .probe { padding: 0 16px 32px; }
+  .panel { padding: 20px 18px 24px; }
+  .grid, .grid--3 { grid-template-columns: 1fr; gap: 10px 0; }
+  .gl { margin-top: 14px; }
+  .buehne { height: 320px; padding: 14px; }
+  .buehne .card { width: 158px; }
+  #karte-a { left: 14px;  top: 14px; }
+  #karte-b { right: 14px; bottom: 14px; }
+  .buehne--eng { max-width: none; }
+  .buehne--eng #karte-b { right: 14px; bottom: 110px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Musterseite „Der Faden"
+
+WOZU DIESE SEITE
+Sie ist die Referenz, gegen die Runde 3 baut: jedes der drei Primitive in
+jedem Zustand, hell und dunkel, mit den gerechneten Kontrastwerten daneben.
+Wer sie öffnet, sieht in einem Bild, was ein Faden ist und was keiner ist.
+
+DIE ZAHLEN RECHNET DIE SEITE SELBST
+Die Kontrasttabelle unten ist nicht abgeschrieben. Ein kurzes Skript am Fuß
+liest die tatsächlichen Token-Werte aus system.css, komponiert die
+Alpha-Farben auf ihren echten Untergrund und rechnet WCAG-Kontraste — für
+beide Modi, indem es data-theme kurz umschaltet und wieder zurückstellt.
+Ändert jemand ein Token, ändern sich die Zahlen hier mit. Eine Tabelle, die
+lügen kann, ist keine Prüfung.
+
+WAS HIER NICHT STEHT
+Kein Entwurf, kein Schirm, keine Geschichte. Die Seite ist Werkzeug, nicht
+Bildschirm. Die Bausteine selbst stehen vollständig in
+shared/system.css §9 (Faden), §10 (Serif) und §11 (Marke).
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Der Faden — die drei Primitive</h1>
+  <p>Jede Verbindung in Velum ist ein Faden zwischen zwei Punkten, und man kann ihn in beide
+     Richtungen ablaufen. Mehr Bausteine als Punkt, Faden und Knoten gibt es nicht. Diese Seite
+     zeigt jeden in jedem Zustand — oben rechts auf Dunkel umschalten, die Zahlen rechnen mit.</p>
+</div>
+
+<div class="probe">
+
+<!-- ── 1 · DER PUNKT ─────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>1 · Der Punkt — ein Objekt</h2>
+  <p>Vier Zustände. Der gefüllte ist die Vorgabe und unverändert aus Runde 1.
+     Kein Punkt steht je allein: immer Punkt&nbsp;+&nbsp;Wort, Punkt&nbsp;+&nbsp;Position oder
+     Punkt&nbsp;+&nbsp;Fläche. Drei der fünf Modulfarben bleiben im Hellen unter 3:1 — deshalb
+     tragen sie nie eine Aussage für sich.</p>
+
+  <h3>Gefüllt — das Objekt existiert</h3>
+  <div class="grid">
+    <div class="gl"><b>.dot .dot--canvas</b>auf Papier</div>
+    <div class="flaeche flaeche--papier reihe">
+      <span class="paar"><span class="dot dot--canvas"></span>Canvas</span>
+      <span class="paar"><span class="dot dot--notes"></span>Notizen</span>
+      <span class="paar"><span class="dot dot--journal"></span>Journal</span>
+      <span class="paar"><span class="dot dot--tasks"></span>Aufgaben</span>
+      <span class="paar"><span class="dot dot--cards"></span>Lernkarten</span>
+    </div>
+    <div class="gl"><b>dieselben Punkte</b>auf dem Grund</div>
+    <div class="flaeche reihe">
+      <span class="paar"><span class="dot dot--canvas"></span>Canvas</span>
+      <span class="paar"><span class="dot dot--notes"></span>Notizen</span>
+      <span class="paar"><span class="dot dot--journal"></span>Journal</span>
+      <span class="paar"><span class="dot dot--tasks"></span>Aufgaben</span>
+      <span class="paar"><span class="dot dot--cards"></span>Lernkarten</span>
+    </div>
+  </div>
+
+  <h3>Hohl · Ring · Knoten</h3>
+  <div class="grid">
+    <div class="gl"><b>.dot .dot--hollow</b>geplant, offen, noch nicht da</div>
+    <div class="flaeche flaeche--papier reihe">
+      <span class="paar"><span class="dot dot--hollow"></span>Kapitel 7 — noch nicht gelesen</span>
+      <span class="paar"><span class="dot dot--hollow"></span>Freitag</span>
+    </div>
+
+    <div class="gl"><b>.dot .dot--ring</b>aktiv, heute, ausgewählt</div>
+    <div class="flaeche flaeche--papier reihe" style="gap:26px">
+      <span class="paar" style="gap:11px"><span class="dot dot--ring"></span>Heute</span>
+      <span class="paar" style="gap:11px"><span class="dot dot--notes dot--ring"></span>Notiz ausgewählt</span>
+      <span class="paar" style="gap:11px"><span class="dot dot--cards dot--ring"></span>Karte fällig</span>
+    </div>
+
+    <div class="gl"><b>.dot .dot--node</b>hier treffen sich Fäden</div>
+    <div class="flaeche flaeche--papier reihe" style="gap:26px">
+      <span class="paar" style="gap:10px"><span class="dot dot--node"></span>Knoten auf Papier</span>
+      <span class="paar" style="gap:10px"><span class="dot dot--node" style="--node-ring: var(--fill-2)"></span>Ring mitgegeben</span>
+    </div>
+    <div class="gl"><b>--node-ring</b>der Ring zeigt sich erst auf einem Faden — hier auf dem Grund</div>
+    <div class="flaeche" style="display:flex; gap:40px; flex-wrap:wrap">
+      <div style="flex:1 1 220px; min-width:220px">
+        <div class="threadrow">
+          <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+          <svg class="thread thread--h"></svg>
+          <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+          <svg class="thread thread--h"></svg>
+          <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+        </div>
+        <div class="t-sub c-3" style="margin-top:10px">richtig — Ring in der Farbe des Untergrunds</div>
+      </div>
+      <div style="flex:1 1 220px; min-width:220px">
+        <div class="threadrow">
+          <span class="dot dot--node"></span>
+          <svg class="thread thread--h"></svg>
+          <span class="dot dot--node"></span>
+          <svg class="thread thread--h"></svg>
+          <span class="dot dot--node"></span>
+        </div>
+        <div class="t-sub c-3" style="margin-top:10px">falsch — Papierring reißt den Faden auf</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 2 · DER FADEN ─────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>2 · Der Faden — eine Beziehung</h2>
+  <p>Strich, nie Fläche. SVG, nicht CSS-Rahmen — nur so kann er sich zeichnen und rückwärts wieder
+     einlaufen. Die Stärke sagt, wie nah sich zwei Objekte stehen. Die Farbe sagt, ob man ihm gerade
+     folgt. Bunt wird er nie: Modulfarben gehören dem Punkt.</p>
+
+  <h3>Drei Stärken — Nähe</h3>
+  <div class="grid">
+    <div class="gl"><b>.thread--weak</b>1 pt · schwach (gleicher Tag)</div>
+    <div class="flaeche flaeche--papier">
+      <div class="threadrow">
+        <span class="dot dot--notes"></span>
+        <svg class="thread thread--weak thread--h"></svg>
+        <span class="dot dot--tasks"></span>
+      </div>
+    </div>
+    <div class="gl"><b>.thread</b>1,5 pt · normal (Verweis)</div>
+    <div class="flaeche flaeche--papier">
+      <div class="threadrow">
+        <span class="dot dot--notes"></span>
+        <svg class="thread thread--h"></svg>
+        <span class="dot dot--cards"></span>
+      </div>
+    </div>
+    <div class="gl"><b>.thread--origin</b>2,5 pt · Herkunft (A wurde zu B)</div>
+    <div class="flaeche flaeche--papier">
+      <div class="threadrow">
+        <span class="dot dot--notes"></span>
+        <svg class="thread thread--origin thread--h"></svg>
+        <span class="dot dot--cards"></span>
+      </div>
+    </div>
+    <div class="gl"><b>.is-active</b>Ink — der Faden, dem man gerade folgt</div>
+    <div class="flaeche flaeche--papier">
+      <div class="threadrow">
+        <span class="dot dot--notes dot--ring"></span>
+        <svg class="thread thread--origin thread--h is-active"></svg>
+        <span class="dot dot--cards dot--ring"></span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Drei Formen</h3>
+  <div class="grid grid--3">
+    <div class="gl"><b>.thread--h</b>waagerecht</div>
+    <div class="flaeche flaeche--papier">
+      <div class="threadrow">
+        <span class="dot dot--node"></span>
+        <svg class="thread thread--h"></svg>
+        <span class="dot dot--node"></span>
+      </div>
+    </div>
+    <div class="flaeche">
+      <div class="threadrow">
+        <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+        <svg class="thread thread--h"></svg>
+        <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+      </div>
+    </div>
+
+    <div class="gl"><b>.thread--v</b>senkrecht — die Journal-Zeitachse</div>
+    <div class="flaeche flaeche--papier">
+      <div style="display:flex; flex-direction:column; height:158px">
+        <span class="schiene"><span class="marke"><span class="dot dot--node"></span></span><span class="serif--journal-date">8. August</span></span>
+        <svg class="thread thread--v" style="flex:1 1 0; width:9px"></svg>
+        <span class="schiene"><span class="marke"><span class="dot dot--node"></span></span><span class="serif--journal-date">6. August</span></span>
+        <svg class="thread thread--v" style="flex:1 1 0; width:9px"></svg>
+        <span class="schiene"><span class="marke"><span class="dot dot--hollow"></span></span><span class="t-sub c-3">5. August — kein Eintrag</span></span>
+      </div>
+    </div>
+    <div class="flaeche">
+      <div class="threadrow threadrow--v" style="height:158px">
+        <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+        <svg class="thread thread--v thread--origin"></svg>
+        <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+        <svg class="thread thread--v thread--weak"></svg>
+        <span class="dot dot--hollow"></span>
+      </div>
+    </div>
+
+    <div class="gl"><b>.thread--curve</b>ein Winkel als quadratische Bézier · rechts mit <b>.thread--flip-x</b> gespiegelt</div>
+    <div class="flaeche flaeche--papier">
+      <div style="position:relative; width:220px; height:104px">
+        <span class="dot dot--notes" style="position:absolute; left:3px; top:3px"></span>
+        <svg class="thread thread--curve" style="position:absolute; left:6px; top:6px; width:186px; height:86px"></svg>
+        <span class="dot dot--node" style="position:absolute; left:187.5px; top:87.5px"></span>
+      </div>
+      <div class="t-sub c-3">Notiz → Wiki-Link in der Marginalspalte</div>
+    </div>
+    <div class="flaeche">
+      <div style="position:relative; width:220px; height:104px">
+        <span class="dot dot--journal" style="position:absolute; right:3px; top:3px"></span>
+        <svg class="thread thread--curve thread--flip-x" style="position:absolute; right:6px; top:6px; width:186px; height:86px"></svg>
+        <span class="dot dot--node" style="position:absolute; right:187.5px; top:87.5px; --node-ring: var(--ground)"></span>
+      </div>
+      <div class="t-sub c-3">derselbe Faden, gespiegelt</div>
+    </div>
+  </div>
+
+  <h3>Zwischen zwei Elementen — <b>MOCK.thread()</b> mit Nachführung</h3>
+  <p style="margin-bottom:12px">Der Faden hängt an den Kästen, nicht an Koordinaten. „Breite ändern"
+     verschiebt die zweite Karte; ein <span class="tok">ResizeObserver</span> zieht den Faden nach.
+     „Zeichnen" läuft vom Ursprung zum Ergebnis, „Zurück" wieder herein — Richtung ist Kausalität.</p>
+  <div class="buehne" id="buehne">
+    <div class="card card--flat" id="karte-a">
+      <div class="paar" style="gap:8px; margin-bottom:6px"><span class="dot dot--notes"></span><span class="t-label c-3">NOTIZ</span></div>
+      <div class="t-sub">Zellatmung — Mitochondrium</div>
+    </div>
+    <div class="card card--flat" id="karte-b">
+      <div class="paar" style="gap:8px; margin-bottom:6px"><span class="dot dot--cards"></span><span class="t-label c-3">LERNKARTE</span></div>
+      <div class="t-sub">Wo entsteht ATP?</div>
+    </div>
+  </div>
+  <div class="reihe" style="margin-top:14px; gap:10px">
+    <button class="btn btn--sm btn--primary" id="btn-draw">Zeichnen</button>
+    <button class="btn btn--sm" id="btn-back">Zurück</button>
+    <button class="btn btn--sm" id="btn-size">Breite ändern</button>
+    <span class="t-sub c-3">Herkunft — 2,5 pt, gekrümmt</span>
+  </div>
+
+  <h3>Wo der Faden auftritt — zwei Fälle</h3>
+  <div class="grid">
+    <div class="gl"><b>Streak</b>gefüllte Punkte sind erledigte Tage</div>
+    <div class="flaeche flaeche--papier">
+      <div class="threadrow" style="max-width:360px">
+        <span class="dot dot--tasks"></span><svg class="thread thread--weak thread--h"></svg>
+        <span class="dot dot--tasks"></span><svg class="thread thread--weak thread--h"></svg>
+        <span class="dot dot--tasks"></span><svg class="thread thread--weak thread--h"></svg>
+        <span class="dot dot--tasks dot--ring"></span><svg class="thread thread--weak thread--h"></svg>
+        <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
+        <span class="dot dot--hollow"></span>
+      </div>
+      <div class="t-sub c-3" style="margin-top:10px">4 Tage in Folge · heute offen</div>
+    </div>
+    <div class="gl"><b>Leerer Zustand</b>ein Faden, der ins Leere läuft</div>
+    <div class="flaeche flaeche--papier" style="text-align:center; padding:26px 20px">
+      <div class="threadrow" style="max-width:220px; margin:0 auto 14px">
+        <span class="dot dot--node"></span>
+        <svg class="thread thread--h"></svg>
+        <span class="dot dot--hollow"></span>
+      </div>
+      <div class="serif--empty-title">Noch nichts verknüpft</div>
+      <div class="t-sub c-3" style="margin-top:4px">Markiere einen Satz und lege eine Karte an.</div>
+    </div>
+  </div>
+
+  <h3>Was ein Faden <em>nicht</em> ist</h3>
+  <div class="grid">
+    <div class="gl"><b>Trennlinie</b>--line, 1 pt, kein Faden</div>
+    <div class="flaeche flaeche--papier">
+      <div class="t-sub">Zellbiologie</div>
+      <div style="height:1px; background:var(--line); margin:10px 0"></div>
+      <div class="t-sub">Semester 3</div>
+      <div class="t-sub c-3" style="margin-top:10px">Zwei Zeilen, keine Beziehung. Hier gehört kein Faden hin.</div>
+    </div>
+    <div class="gl"><b>Faden</b>--thread, 1,5 pt, mit zwei Enden</div>
+    <div class="flaeche flaeche--papier">
+      <div class="threadrow" style="max-width:300px">
+        <span class="paar" style="gap:8px"><span class="dot dot--notes"></span>Notiz</span>
+        <svg class="thread thread--h" style="margin:0 12px"></svg>
+        <span class="paar" style="gap:8px"><span class="dot dot--cards"></span>Karte</span>
+      </div>
+      <div class="t-sub c-3" style="margin-top:10px">Man kann sagen, welche zwei Objekte er verbindet. Nur dann ist es ein Faden.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3 · DIE SERIF ─────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>3 · Die Serif — sechs Rollen, keine sechste Größe</h2>
+  <p>New York, an genau sechs Orten. Sie belegt dieselben fünf Größen wie die Sans; jede Rolle setzt
+     ihre eigene und keine neue. Weil beide Schriften verschiedene x-Höhen haben, wirkt gleiche
+     Punktzahl nicht gleich groß — mock.js misst beide beim Start und gleicht über
+     <span class="tok">font-size-adjust</span> an. Die angegebene Größe bleibt dabei 28 px,
+     nur die benutzte wandert.</p>
+
+  <div class="grid grid--3">
+    <div class="gl">&nbsp;</div>
+    <div class="gl"><b>Sans — zum Vergleich</b></div>
+    <div class="gl"><b>Serif — die Rolle</b></div>
+
+    <div class="gl"><b>.serif--screen-title</b>28/34 · 600 · Screen-Titel</div>
+    <div class="t-title">Zellbiologie</div>
+    <div class="serif--screen-title">Zellbiologie</div>
+
+    <div class="gl"><b>.serif--journal-date</b>20/26 · 600 · Journal-Datumsmarke</div>
+    <div class="t-section">Freitag, 8. August</div>
+    <div class="serif--journal-date">Freitag, 8. August</div>
+
+    <div class="gl"><b>.serif--quote</b>17/23 · 400 · Zitat, markierter Satz</div>
+    <div class="t-body">Die innere Membran ist gefaltet — das vergrößert die Fläche.</div>
+    <div class="serif--quote">Die innere Membran ist gefaltet — das vergrößert die Fläche.</div>
+
+    <div class="gl"><b>.serif--empty-title</b>20/26 · 600 · Titel leerer Zustände</div>
+    <div class="t-section">Hier ist noch nichts</div>
+    <div class="serif--empty-title">Hier ist noch nichts</div>
+
+    <div class="gl"><b>.serif--cover-title</b>17/23 · 600 · Notizbuch-Cover</div>
+    <div class="t-body is-strong">Zellbiologie — Prof. Wendt</div>
+    <div class="serif--cover-title">Zellbiologie — Prof. Wendt</div>
+
+    <div class="gl"><b>.serif--wordmark</b>28/34 · 400 · Wortmarke</div>
+    <div class="t-title" style="font-weight:400">Velum</div>
+    <div class="serif--wordmark">Velum</div>
+  </div>
+
+  <h3>Die Messung</h3>
+  <p style="margin-bottom:10px">Gerendert und gemessen in dem Browser, der diese Seite gerade
+     anzeigt — nicht abgeschrieben. Steht New York nicht zur Verfügung, misst sie die
+     Rückfallschrift und gleicht diese an; die Korrektur ist deshalb nie falsch, höchstens
+     überflüssig.</p>
+  <pre class="messung" id="serif-messung">wird gemessen …</pre>
+</section>
+
+<!-- ── 4 · DIE MARKE ─────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>4 · Die Marke — reservierter Platz, kein Ersatzzeichen</h2>
+  <p>Die drei PNG liegen nicht vor. Nachzeichnen ist verboten, deshalb steht hier ein sichtbar
+     leerer Rahmen mit dem fehlenden Dateinamen. Sobald die Dateien in
+     <span class="tok">assets/brand/</span> liegen, erscheinen sie überall gleichzeitig,
+     ohne dass eine Zeile geändert wird. Was hier hingehört, steht in
+     <span class="tok">assets/brand/LIESMICH.md</span>.</p>
+
+  <div class="grid">
+    <div class="gl"><b>.appicon--lg</b>120 pt · Onboarding</div>
+    <div><span class="appicon appicon--lg" data-appicon></span></div>
+    <div class="gl"><b>.appicon</b>64 pt · Über</div>
+    <div><span class="appicon" data-appicon></span></div>
+    <div class="gl"><b>.appicon--sm</b>28 pt · Listenzeile</div>
+    <div><span class="appicon appicon--sm" data-appicon></span></div>
+    <div class="gl"><b>data-appicon="tinted"</b>erzwingt die getönte Fassung</div>
+    <div><span class="appicon appicon--sm" data-appicon="tinted"></span></div>
+
+    <div class="gl"><b>.brandmark</b>Zeichen + Wortmarke</div>
+    <div><span class="brandmark"><span class="appicon" data-appicon></span><span class="serif--wordmark">Velum</span></span></div>
+    <div class="gl"><b>.brandmark--sm</b>kleine Fassung</div>
+    <div><span class="brandmark brandmark--sm"><span class="appicon" data-appicon></span><span class="serif--wordmark">Velum</span></span></div>
+  </div>
+
+  <h3>Kupfer</h3>
+  <p style="margin:0">Der gestrichelte Rahmen im <b>.brandmark</b> steht in
+     <span class="tok">--brand-copper</span>, außerhalb in <span class="tok">--thread</span>.
+     Die Variable ist auf <b>.brandmark</b> definiert und existiert außerhalb nicht — die Sperre ist
+     keine Bitte, sondern der Geltungsbereich. Als Textfarbe wäre Kupfer unzulässig: 4,44:1 hell,
+     3,96:1 dunkel, beides unter 4,5:1. Die Wortmarke steht deshalb in Ink.</p>
+</section>
+
+<!-- ── 5 · DIE ZAHLEN ────────────────────────────────────────────────────── -->
+<section class="panel">
+  <h2>5 · Kontrast — gerechnet, nicht geschätzt</h2>
+  <p>Diese Tabelle wird beim Laden aus den tatsächlichen Token-Werten gerechnet: Alpha-Farben werden
+     auf ihren echten Untergrund komponiert, beide Modi werden gemessen, indem <b>data-theme</b> kurz
+     umgeschaltet und wieder zurückgestellt wird. Schwelle: Text&nbsp;≥&nbsp;4,5:1,
+     Bedienoberfläche&nbsp;≥&nbsp;3:1.</p>
+  <div class="tabhuelle">
+  <table class="tab">
+    <thead><tr>
+      <th style="width:32%">Element</th>
+      <th>hell · Papier</th><th>hell · Grund</th>
+      <th>dunkel · Papier</th><th>dunkel · Grund</th>
+      <th style="width:16%">Schwelle</th>
+    </tr></thead>
+    <tbody id="kontrast"></tbody>
+  </table>
+  </div>
+  <p style="margin:16px 0 0">Drei der fünf Modulfarben bleiben im Hellen unter 3:1. Das ist kein
+     Befund, sondern der Grund für die Zwei-Merkmal-Regel: ein Punkt trägt nie eine Aussage für
+     sich, es steht immer ein Wort, eine Position oder eine Fläche daneben. Die beiden mit
+     <b>nicht benutzt</b> bezeichneten Zeilen sind Belege, keine Bausteine — sie zeigen, warum der
+     Faden nicht in <span class="tok">--line-2</span> und der hohle Punkt nicht in
+     <span class="tok">--ink-4</span> steht, obwohl die DNA diese Namen nennt.</p>
+</section>
+
+</div>
+
+<script src="../shared/mock.js"></script>
+<script>
+/* ── Die Musterseite prüft sich selbst ──────────────────────────────────────
+   Nichts hier gehört zum Entwurf. Drei Aufgaben:
+   1. den Faden zwischen den beiden Karten spannen und bewegen,
+   2. die Schriftmessung sichtbar machen,
+   3. die Kontrasttabelle aus den echten Token rechnen.                      */
+(function () {
+  'use strict';
+
+  /* 1 · Faden zwischen zwei Karten — Herkunft, gekrümmt, mit Nachführung */
+  var faden = MOCK.thread('#karte-a', '#karte-b', {
+    box: '#buehne', strength: 'origin', curve: 26, active: true
+  });
+  document.getElementById('btn-draw').addEventListener('click', function () { faden.draw(); });
+  document.getElementById('btn-back').addEventListener('click', function () { faden.drawBack(); });
+  document.getElementById('btn-size').addEventListener('click', function () {
+    document.getElementById('buehne').classList.toggle('buehne--eng');
+  });
+
+  /* 2 · Was mock.js gemessen hat, im Klartext */
+  function messungZeigen() {
+    var m = MOCK.tuneSerif();
+    var ziel = document.getElementById('serif-messung');
+    if (!m) { ziel.textContent = 'Messung nicht möglich — es wird nicht korrigiert.'; return; }
+    var f = function (n) { return n.toFixed(4).replace('.', ','); };
+    ziel.textContent =
+      'bei 400/100 px gemessen        x-Höhe    Versalhöhe\n' +
+      'Sans   (--sans)                ' + f(m.sans.x)  + '    ' + f(m.sans.cap)  + '\n' +
+      'Serif  (--serif)               ' + f(m.serif.x) + '    ' + f(m.serif.cap) + '\n' +
+      'Faktor Sans/Serif              ' + f(m.sans.x / m.serif.x) + '    ' + f(m.sans.cap / m.serif.cap) + '\n' +
+      '\n' +
+      'geometrisches Mittel  k =      ' + f(m.faktor) + '\n' +
+      'gesetzt: font-size-adjust: ex-height ' + f(m.exHeight) + '\n' +
+      'angegebene Größe des Titels:   ' +
+        getComputedStyle(document.querySelector('.serif--screen-title')).fontSize +
+        '  (unverändert — nur die benutzte wandert)';
+  }
+  messungZeigen();
+
+  /* 3 · Kontrast aus den echten Token */
+  function kanal(c) { return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+  function leucht(rgb) {
+    return 0.2126 * kanal(rgb[0] / 255) + 0.7152 * kanal(rgb[1] / 255) + 0.0722 * kanal(rgb[2] / 255);
+  }
+  function kontrast(a, b) {
+    var x = leucht(a), y = leucht(b), hi = Math.max(x, y), lo = Math.min(x, y);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+  function lies(name) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    var m = v.match(/rgba?\(([^)]+)\)/);
+    if (m) {
+      var t = m[1].split(/[\s,\/]+/).filter(Boolean).map(parseFloat);
+      return [t[0], t[1], t[2], t.length > 3 ? t[3] : 1];
+    }
+    if (v[0] === '#') {
+      var h = v.length === 4
+        ? v.slice(1).split('').map(function (c) { return parseInt(c + c, 16); })
+        : [parseInt(v.slice(1, 3), 16), parseInt(v.slice(3, 5), 16), parseInt(v.slice(5, 7), 16)];
+      return [h[0], h[1], h[2], 1];
+    }
+    return null;
+  }
+  function auf(farbe, grund) {
+    if (!farbe) return null;
+    var a = farbe[3];
+    return [0, 1, 2].map(function (i) { return a * farbe[i] + (1 - a) * grund[i]; });
+  }
+
+  /* Was geprüft wird.
+       name · Token · Schwelle · Regel
+     regel 'muss'      — muss die Schwelle halten
+           'zwei'      — darf darunter liegen, weil der Punkt nie allein steht
+           'verworfen' — steht hier als Beleg, warum er nicht benutzt wird */
+  var ZEILEN = [
+    ['Faden · Ruhe (--thread)',        '--thread',      3,   'muss'],
+    ['Faden · aktiv (Ink)',            '--accent',      3,   'muss'],
+    ['--line-2 (DNA-Wortlaut)',        '--line-2',      3,   'verworfen'],
+    ['Punkt hohl (--dot-hollow)',      '--dot-hollow',  3,   'muss'],
+    ['--ink-4 (DNA-Wortlaut)',         '--ink-4',       3,   'verworfen'],
+    ['Punkt Ring · Knoten (Ink)',      '--accent',      3,   'muss'],
+    ['Punkt gefüllt · Canvas',         '--mod-canvas',  3,   'zwei'],
+    ['Punkt gefüllt · Notizen',        '--mod-notes',   3,   'zwei'],
+    ['Punkt gefüllt · Journal',        '--mod-journal', 3,   'zwei'],
+    ['Punkt gefüllt · Aufgaben',       '--mod-tasks',   3,   'zwei'],
+    ['Punkt gefüllt · Lernkarten',     '--mod-cards',   3,   'zwei'],
+    ['Kupfer als Rahmen (#B5621A)',    'kupfer',        3,   'muss'],
+    ['Kupfer als Text — unzulässig',   'kupfer',        4.5, 'verworfen'],
+    ['Beschriftung „fehlt" (--ink-2)', '--ink-2',       4.5, 'muss']
+  ];
+  var URTEIL = { muss: '', zwei: 'trägt nie allein', verworfen: 'nicht benutzt' };
+
+  var beobachter = null;
+
+  function messen() {
+    /* Der Moduswechsel unten löst denselben Beobachter aus, der diese
+       Funktion aufruft. Ohne Abmelden liefe das im Kreis. */
+    if (beobachter) beobachter.disconnect();
+    var vorher = document.documentElement.dataset.theme;
+    var out = {};
+    ['light', 'dark'].forEach(function (modus) {
+      document.documentElement.dataset.theme = modus;
+      var papier = lies('--paper'), grund = lies('--ground');
+      out[modus] = ZEILEN.map(function (z) {
+        var farbe = z[1] === 'kupfer' ? [181, 98, 26, 1] : lies(z[1]);
+        return [kontrast(auf(farbe, papier), papier), kontrast(auf(farbe, grund), grund)];
+      });
+    });
+    document.documentElement.dataset.theme = vorher;
+    if (beobachter) beobachter.observe(document.documentElement,
+      { attributes: true, attributeFilter: ['data-theme', 'data-type'] });
+    return out;
+  }
+
+  function zeichnen() {
+    var w = messen();
+    var tb = document.getElementById('kontrast');
+    tb.textContent = '';
+    ZEILEN.forEach(function (z, i) {
+      var werte = [w.light[i][0], w.light[i][1], w.dark[i][0], w.dark[i][1]];
+      var haelt = werte.every(function (v) { return v >= z[2]; });
+      var tr = document.createElement('tr');
+      var zellen = [z[0]];
+      werte.forEach(function (v) { zellen.push(v.toFixed(2).replace('.', ',') + ':1'); });
+      zellen.push((z[2] === 4.5 ? '4,5:1 Text' : '3:1 UI') +
+                  (URTEIL[z[3]] ? ' · ' + URTEIL[z[3]] : ''));
+      zellen.forEach(function (t, k) {
+        var td = document.createElement('td');
+        td.textContent = t;
+        if (k > 0 && k < 5) {
+          td.className = 'num';
+          /* Rot nur dort, wo ein Wert etwas verspricht, das er nicht hält.
+             Verworfene Werte und die Modulpunkte sind kein Befund. */
+          if (z[3] === 'muss' && werte[k - 1] < z[2]) td.classList.add('durch');
+        }
+        if (k === 5) td.className = z[3] === 'muss' ? (haelt ? 'haelt' : 'durch') : 'gl';
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+  }
+
+  beobachter = new MutationObserver(function () { zeichnen(); faden.update(); });
+  zeichnen();
+  beobachter.observe(document.documentElement,
+    { attributes: true, attributeFilter: ['data-theme', 'data-type'] });
+})();
+</script>
+</body>
+</html>

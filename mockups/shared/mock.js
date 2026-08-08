@@ -8,6 +8,18 @@
 (function (global) {
   'use strict';
 
+  /* Woher diese Datei geladen wurde. Daraus leitet §B den Pfad zu
+     assets/brand/ ab — unabhängig davon, wie tief die aufrufende Seite im
+     Baum liegt. document.currentScript steht nur beim Auswerten bereit,
+     deshalb hier oben und nicht erst in der Funktion. */
+  const SELF_URL = (document.currentScript && document.currentScript.src) ||
+    (function () {
+      const t = document.querySelector('script[src$="mock.js"]');
+      return t ? t.src : location.href;
+    })();
+
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
   const s = (body, opts) =>
     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${(opts && opts.w) || 1.7}"` +
     ` stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
@@ -81,6 +93,345 @@
         el.dataset.done = n;
       }
     });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * A · DER FADEN — Formen, Verbinder, Bewegung
+   *
+   * Zu system.css §9. Drei Dinge stehen hier:
+   *   threads()      füllt leere <svg class="thread"> mit viewBox und Pfad,
+   *                  so wie hydrate() [data-ico] mit Symbolen füllt.
+   *   MOCK.thread()  spannt einen Faden zwischen zwei Elementen und führt
+   *                  ihn bei jeder Größenänderung nach (ResizeObserver).
+   *   draw/drawBack  zeichnen ihn vom Ursprung zum Ergebnis und zurück.
+   * ==================================================================== */
+
+  /* Alle Formen laufen über preserveAspectRatio="none": der Pfad füllt die
+     Lücke, egal wie breit sie ist. Die Strichstärke bleibt trotzdem exakt,
+     dafür sorgt vector-effect:non-scaling-stroke in system.css §9.2. */
+  const THREAD_SHAPES = {
+    h:     'M0 50H100',           /* waagerecht */
+    v:     'M50 0V100',           /* senkrecht  */
+    curve: 'M0 0Q0 100 100 100',  /* ein Winkel als quadratische Bézier —
+                                     keine S-Kurve, kein Schnörkel */
+  };
+
+  function threads(root) {
+    (root || document).querySelectorAll('svg.thread').forEach((el) => {
+      /* Wer den Pfad selbst geschrieben hat, behält ihn. */
+      if (el.dataset.threadDone === '1' || el.firstElementChild) return;
+      let kind = el.dataset.thread;
+      if (!THREAD_SHAPES[kind]) {
+        kind = el.classList.contains('thread--v') ? 'v'
+             : el.classList.contains('thread--curve') ? 'curve' : 'h';
+      }
+      el.setAttribute('viewBox', '0 0 100 100');
+      el.setAttribute('preserveAspectRatio', 'none');
+      el.setAttribute('aria-hidden', 'true');
+      el.setAttribute('focusable', 'false');
+      const p = document.createElementNS(SVG_NS, 'path');
+      p.setAttribute('d', THREAD_SHAPES[kind]);
+      el.appendChild(p);
+      el.dataset.threadDone = '1';
+    });
+  }
+
+  const el = (x) => (typeof x === 'string' ? document.querySelector(x) : x);
+
+  /* Die Zeichenfläche. Eine je Bezugselement, angelegt beim ersten Faden.
+     Sie liegt über dem Inhalt und nimmt keine Eingaben an. Steht das
+     Bezugselement auf position:static, bekommt es relative — das verschiebt
+     nichts, macht es aber erst zum Bezugsrahmen. */
+  function layerFor(box) {
+    let svg = box.querySelector(':scope > svg.thread-layer');
+    if (!svg) {
+      if (getComputedStyle(box).position === 'static') box.style.position = 'relative';
+      svg = document.createElementNS(SVG_NS, 'svg');
+      svg.setAttribute('class', 'thread-layer');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      box.insertBefore(svg, box.firstChild);
+    }
+    return svg;
+  }
+
+  const SIDES = {
+    top:    (r) => [r.left + r.width / 2, r.top],
+    bottom: (r) => [r.left + r.width / 2, r.bottom],
+    left:   (r) => [r.left, r.top + r.height / 2],
+    right:  (r) => [r.right, r.top + r.height / 2],
+    center: (r) => [r.left + r.width / 2, r.top + r.height / 2],
+  };
+
+  /* „auto" heißt: die Seite, die dem anderen Punkt zugewandt ist. Waagerecht
+     oder senkrecht entscheidet, welcher Abstand größer ist — so läuft der
+     Faden nie quer durch das Element, aus dem er kommt. */
+  function pickSide(from, to) {
+    const dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+    const dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+    if (Math.abs(dx) >= Math.abs(dy)) return dx >= 0 ? 'right' : 'left';
+    return dy >= 0 ? 'bottom' : 'top';
+  }
+
+  const STRENGTH = { weak: 'thread--weak', normal: '', origin: 'thread--origin' };
+
+  /**
+   * Spannt einen Faden zwischen zwei Elementen.
+   *
+   *   MOCK.thread('#notiz', '#karte', { strength: 'origin', curve: 26 })
+   *
+   * @param a       Ursprung — Element oder Selektor
+   * @param b       Ergebnis — Element oder Selektor
+   * @param o.box       Bezugsfläche (Vorgabe: nächster gemeinsamer Vorfahr)
+   * @param o.strength  'weak' | 'normal' | 'origin'   (1 / 1,5 / 2,5 pt)
+   * @param o.curve     Auslenkung in pt senkrecht zur Sehne; 0 = gerade
+   * @param o.active    true = Ink statt --thread
+   * @param o.fromSide  'auto' | top | right | bottom | left | center
+   * @param o.toSide    dito
+   * @returns { node, path, update(), draw(), drawBack(), destroy() }
+   *
+   * Regel ohne Ausnahme: nur aufrufen, wo im Datenmodell wirklich eine
+   * Beziehung besteht. Kein Faden ohne Kante.
+   */
+  function thread(a, b, o) {
+    const A = el(a), B = el(b);
+    o = o || {};
+    if (!A || !B) return null;
+
+    let box = el(o.box);
+    if (!box) {
+      box = A.parentElement;
+      while (box && !box.contains(B)) box = box.parentElement;
+    }
+    if (!box) box = document.body;
+
+    const svg = layerFor(box);
+    const g = document.createElementNS(SVG_NS, 'g');
+    g.setAttribute('class', ['thread', STRENGTH[o.strength] || '', o.active ? 'is-active' : '']
+      .filter(Boolean).join(' '));
+    const path = document.createElementNS(SVG_NS, 'path');
+    g.appendChild(path);
+    svg.appendChild(g);
+
+    let frame = 0;
+    function update() {
+      frame = 0;
+      const rb = box.getBoundingClientRect();
+      const ra = A.getBoundingClientRect();
+      const rc = B.getBoundingClientRect();
+      if (!rb.width || !rb.height) return;
+      /* Die Fläche bekommt ihre Pixelmaße als viewBox — dadurch ist eine
+         Nutzereinheit genau ein Punkt, und die Koordinaten unten sind
+         dieselben Zahlen wie im Layout. */
+      svg.setAttribute('viewBox', '0 0 ' + rb.width + ' ' + rb.height);
+      const sa = o.fromSide && o.fromSide !== 'auto' ? o.fromSide : pickSide(ra, rc);
+      const sb = o.toSide   && o.toSide   !== 'auto' ? o.toSide   : pickSide(rc, ra);
+      const p1 = (SIDES[sa] || SIDES.center)(ra);
+      const p2 = (SIDES[sb] || SIDES.center)(rc);
+      const x1 = p1[0] - rb.left, y1 = p1[1] - rb.top;
+      const x2 = p2[0] - rb.left, y2 = p2[1] - rb.top;
+      const bend = +o.curve || 0;
+      let d;
+      if (!bend) {
+        d = 'M' + x1 + ' ' + y1 + 'L' + x2 + ' ' + y2;
+      } else {
+        /* Kontrollpunkt auf der Mittelsenkrechten — genau eine quadratische
+           Bézier, wie die DNA sie vorschreibt. */
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        const dx = x2 - x1, dy = y2 - y1;
+        const len = Math.hypot(dx, dy) || 1;
+        d = 'M' + x1 + ' ' + y1 + 'Q' + (mx - (dy / len) * bend) + ' ' +
+            (my + (dx / len) * bend) + ' ' + x2 + ' ' + y2;
+      }
+      path.setAttribute('d', d);
+      g.style.setProperty('--thread-len', pathLen());
+    }
+    function pathLen() {
+      try { return Math.ceil(path.getTotalLength()) + 1; } catch (e) { return 400; }
+    }
+    function later() { if (!frame) frame = requestAnimationFrame(update); }
+
+    let ro = null;
+    if (global.ResizeObserver) {
+      ro = new ResizeObserver(later);
+      [box, A, B].forEach((n) => ro.observe(n));
+    }
+    /* Ein ResizeObserver sieht nur Größen, keine Orte: verschiebt eine
+       Klasse die Karte, ohne sie zu verändern, bliebe der Faden hängen.
+       Deshalb zusätzlich auf Klassen- und Stilwechsel im Bezugsrahmen hören —
+       das ist in Mockups der übliche Weg, etwas zu bewegen. Ausgenommen sind
+       Änderungen in der Zeichenfläche selbst, sonst löste das Nachführen sich
+       endlos wieder aus. */
+    let mo = null;
+    if (global.MutationObserver) {
+      mo = new MutationObserver(function (liste) {
+        for (let i = 0; i < liste.length; i++) {
+          const ziel = liste[i].target;
+          if (ziel.nodeType === 1 && ziel.closest && ziel.closest('svg.thread-layer')) continue;
+          later();
+          return;
+        }
+      });
+      mo.observe(box, { attributes: true, subtree: true, attributeFilter: ['class', 'style'] });
+    }
+    /* Nach einer Bewegung steht das Ziel woanders als beim Start. */
+    box.addEventListener('transitionend', later);
+    box.addEventListener('animationend', later);
+    global.addEventListener('resize', later);
+    update();
+
+    function run(cls) {
+      g.classList.remove('is-drawing', 'is-undrawing');
+      void g.getBoundingClientRect();          /* Umbruch erzwingen, sonst
+                                                  startet die Bewegung nicht neu */
+      g.style.setProperty('--thread-len', pathLen());
+      g.classList.add(cls);
+      return api;
+    }
+
+    const api = {
+      node: g,
+      path: path,
+      update: update,
+      draw:      function () { return run('is-drawing'); },    /* Ursprung → Ergebnis */
+      drawBack:  function () { return run('is-undrawing'); },  /* rückwärts wieder ein */
+      active: function (on) { g.classList.toggle('is-active', on !== false); return api; },
+      destroy: function () {
+        if (ro) ro.disconnect();
+        if (mo) mo.disconnect();
+        box.removeEventListener('transitionend', later);
+        box.removeEventListener('animationend', later);
+        global.removeEventListener('resize', later);
+        g.remove();
+        if (!svg.querySelector('g')) svg.remove();
+      },
+    };
+    return api;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * B · DIE MARKE — App-Icon-Platz
+   *
+   * Zu system.css §11. Die drei PNG liegen NICHT vor. Nachzeichnen ist
+   * verboten. Fehlt die Datei, erscheint ein sichtbar leerer Rahmen mit dem
+   * Dateinamen — kein gezeichnetes V, kein Ersatzzeichen, keine Andeutung.
+   * Sobald die Dateien da sind, erscheinen sie überall gleichzeitig, ohne
+   * dass hier eine Zeile geändert werden muss.
+   * ==================================================================== */
+
+  const BRAND_DIR = 'assets/brand/';
+
+  function appiconName(node) {
+    const forced = (node.dataset.appicon || '').trim();
+    if (forced === 'light' || forced === 'dark' || forced === 'tinted') {
+      return 'velum-appicon-' + forced + '.png';
+    }
+    const dark = document.documentElement.dataset.theme === 'dark';
+    return 'velum-appicon-' + (dark ? 'dark' : 'light') + '.png';
+  }
+
+  function appiconMissing(node, rel) {
+    node.classList.add('is-missing');
+    node.setAttribute('role', 'img');
+    node.setAttribute('aria-label', 'App-Icon fehlt — ' + rel);
+    node.textContent = '';
+    const frame = document.createElement('span');
+    frame.className = 'appicon__frame';
+    frame.setAttribute('aria-hidden', 'true');
+    const text = document.createElement('span');
+    text.className = 'appicon__missing';
+    text.setAttribute('aria-hidden', 'true');
+    text.appendChild(document.createTextNode('App-Icon fehlt — '));
+    const code = document.createElement('code');
+    code.textContent = rel;
+    text.appendChild(code);
+    node.appendChild(frame);
+    node.appendChild(text);
+  }
+
+  function appicon(node) {
+    const file = appiconName(node);
+    const rel = BRAND_DIR + file;
+    if (node.dataset.appiconShown === file) return;
+    node.dataset.appiconShown = file;
+    node.classList.remove('is-missing');
+    node.removeAttribute('role');
+    node.removeAttribute('aria-label');
+    node.textContent = '';
+    const img = document.createElement('img');
+    img.alt = 'Velum';
+    img.addEventListener('error', function () {
+      if (node.dataset.appiconShown === file) appiconMissing(node, rel);
+    }, { once: true });
+    node.appendChild(img);
+    /* Absolut auflösen: die Seiten liegen verschieden tief, mock.js nicht. */
+    img.src = new URL('../../' + rel, SELF_URL).href;
+  }
+
+  function appicons(root) {
+    (root || document).querySelectorAll('.appicon[data-appicon]').forEach(appicon);
+  }
+
+  /* Der Hell/Dunkel-Umschalter setzt data-theme am <html>. Das Zeichen zieht
+     mit — ohne dass der Umschalter davon wissen muss. */
+  function watchTheme() {
+    if (!global.MutationObserver) return;
+    /* appicon() vergleicht selbst und tut nichts, wenn dieselbe Datei schon
+       steht — deshalb kostet ein Moduswechsel ohne Wirkung auch nichts, und
+       ein kurzes Hin und Her (etwa beim Nachrechnen der Kontrasttabelle)
+       lässt das Bild nicht flackern. */
+    new MutationObserver(function () {
+      document.querySelectorAll('.appicon[data-appicon]').forEach(appicon);
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * C · DIE SERIF — optische Angleichung, gemessen statt geschätzt
+   *
+   * Zu system.css §10.1. New York und SF Pro haben verschiedene x-Höhen;
+   * 28 px Serif wirken neben 28 px Sans kleiner. Hier wird beim Start
+   * gemessen, was auf DIESEM Gerät wirklich rendert, und daraus
+   * --serif-adjust gesetzt. Auf einem iPhone misst das New York und SF Pro,
+   * im Container die jeweiligen Rückfallschriften.
+   *
+   * Korrigiert wird auf das geometrische Mittel aus x-Höhen- und
+   * Versalhöhen-Faktor. Reine x-Höhen-Angleichung überschießt sichtbar bei
+   * den Versalien — und Deutsch schreibt jedes Substantiv groß.
+   *
+   * font-size-adjust ändert die benutzte, nicht die angegebene Größe:
+   * getComputedStyle meldet weiter 28px. Die Fünfer-Skala bleibt buchstäblich
+   * in Kraft. Misslingt die Messung, wird nichts gesetzt — der Rückfallwert
+   * `none` in system.css lässt die Schrift dann unkorrigiert. Lieber gar
+   * keine Korrektur als eine falsche.
+   * ==================================================================== */
+
+  function tuneSerif() {
+    try {
+      const root = document.documentElement;
+      const cs = getComputedStyle(root);
+      const sans = cs.getPropertyValue('--sans').trim();
+      const serif = cs.getPropertyValue('--serif').trim();
+      if (!sans || !serif) return null;
+      const ctx = document.createElement('canvas').getContext('2d');
+      if (!ctx) return null;
+      const messen = function (stack) {
+        ctx.font = '400 100px ' + stack;
+        const x = ctx.measureText('x');
+        const h = ctx.measureText('H');
+        if (!x || typeof x.actualBoundingBoxAscent !== 'number') return null;
+        return { x: x.actualBoundingBoxAscent / 100, cap: h.actualBoundingBoxAscent / 100 };
+      };
+      const a = messen(sans), b = messen(serif);
+      if (!a || !b || !(a.x > 0 && a.cap > 0 && b.x > 0 && b.cap > 0)) return null;
+      const k = Math.sqrt((a.x / b.x) * (a.cap / b.cap));
+      const ziel = k * b.x;
+      /* Absurde Werte verwerfen — dann lieber unkorrigiert. */
+      if (!isFinite(ziel) || ziel < 0.25 || ziel > 0.95) return null;
+      root.style.setProperty('--serif-adjust', 'ex-height ' + ziel.toFixed(4));
+      return { sans: a, serif: b, faktor: k, exHeight: ziel };
+    } catch (e) {
+      return null;
+    }
   }
 
   function controls() {
@@ -402,7 +753,11 @@ body.has-screennav { padding-bottom: 104px; }
   }
 
   function boot() {
+    tuneSerif();          /* zuerst: bestimmt die Schriftgröße der Serif-Rollen */
     hydrate(document);
+    threads(document);
+    appicons(document);
+    watchTheme();
     controls();
     screennav();
   }
@@ -410,5 +765,5 @@ body.has-screennav { padding-bottom: 104px; }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 
-  global.MOCK = { hydrate, ICONS };
+  global.MOCK = { hydrate, ICONS, threads, thread, appicons, tuneSerif };
 })(window);
