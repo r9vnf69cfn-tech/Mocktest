@@ -299,10 +299,22 @@ async function ganzeSeite(browser, datei, name, breite, modus, bericht) {
 }
 
 /* ── Die zwei Bewegungsseiten ───────────────────────────────────────────
-   Aufgenommen wird die Rolle ÜBERGEBEN in Satz 2: die Karte fliegt auf dem
-   Faden, der Faden ist halb gezeichnet, der Zähler hat noch nicht gezählt.
-   Tempo 0,25× macht das Fenster viermal so breit; angehalten wird über
-   die Web-Animations-API, sobald .bw-flug lange genug unterwegs ist. */
+   Ein Standbild einer Bewegung muss zeigen, dass sich etwas bewegt. Deshalb
+   wird hier nicht der Ruhezustand aufgenommen, sondern ein Zwischenbild —
+   und zwar an der Stelle, an der man es auch SIEHT.
+
+   motion/index → die Rolle ÜBERGEBEN (Feld „Übergeben — Modul zu Modul").
+   Nicht Moment 1, obwohl der der wichtigere ist: dort stehen Ursprung und
+   Ziel 21 pt auseinander, der Faden ist 88 pt lang und die Flugkarte
+   134 pt breit — sie deckt ihn vollständig zu. In der Rollen-Bühne liegen
+   rund 380 pt dazwischen, dort sind Faden UND Karte zu sehen.
+
+   motion/onboarding → Takt 5, „Der erste Faden — Notizen zu Lernkarten",
+   halb gezeichnet. Die Übergabe in Takt 7 fällt aus demselben Grund aus:
+   im 393 pt breiten Schirm ist der Faden 57 pt lang, die Karte deckt ihn zu.
+
+   Angehalten wird über die Web-Animations-API im Schirm selbst, nicht durch
+   Abzählen von außen — ein Aufruf über die Leitung kostet Millisekunden. */
 async function bewegung(browser, welche, modus, bericht) {
   const notiz = [];
   const ctx = await browser.newContext({
@@ -322,40 +334,91 @@ async function bewegung(browser, welche, modus, bericht) {
   await thema(page, modus);
   await bereit(page, notiz);
 
-  await page.evaluate(() => { if (window.MOTION) MOTION.tempo(0.25); });
-
+  /* MOTION.tempo(4) heißt 0,25× — der Wert ist der Faktor, mit dem jede Dauer
+     multipliziert wird (bewegung.js: ms(x) = x · tempo). */
+  /* Der Maßstab der Flugkarte läuft von 1 auf 0,42 und ist damit der Weg
+     selbst: 0,76 heißt gut 40 % der Bahn zurückgelegt, der Faden ist dann
+     zu drei Vierteln gezeichnet — der Weg liegt sichtbar vor dem, was ihn
+     geht. Für den Faden-Takt zählt der Fortschritt der CSS-Animation
+     thread-draw. */
+  let stand;
   if (welche === 'index') {
-    await page.locator('[data-bw="uebergeben"][data-bw-von="#m1-absatz"]').first().click();
+    await page.evaluate(() => { if (window.MOTION) MOTION.tempo(4); });
+    await page.locator('[data-bw="uebergeben"][data-bw-von="#r3-von"]').first().click();
+    stand = await page.evaluate(async (schwelle) => {
+      const maßstab = (el) => {
+        const m = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+        return Math.hypot(m.a, m.b);
+      };
+      return await new Promise((fertig) => {
+        const t0 = performance.now();
+        (function schritt() {
+          const k = document.querySelector('.bw-flug');
+          if (k && maßstab(k) <= schwelle) {
+            document.getAnimations().forEach((a) => { try { a.pause(); } catch (e) {} });
+            const p = document.querySelector('svg.thread-layer path');
+            const cs = p ? getComputedStyle(p) : null;
+            const len = cs ? parseFloat(cs.strokeDasharray) : 0;
+            const off = cs ? parseFloat(cs.strokeDashoffset) : 0;
+            return fertig({ ok: true, was: 'Flug', maßstab: +maßstab(k).toFixed(3),
+                            fadenLaenge: len, faden: len ? +(1 - off / len).toFixed(2) : null });
+          }
+          if (performance.now() - t0 > 30000) return fertig({ ok: false, was: 'Flug' });
+          requestAnimationFrame(schritt);
+        })();
+      });
+    }, 0.76);
   } else {
+    /* Das Onboarding läuft an seiner eigenen Uhr; sie bei 0,25× von Anfang
+       an mitlaufen zu lassen hieße 112 statt 28 Sekunden. Also volle
+       Geschwindigkeit bis Sekunde 8 und erst dann verlangsamen — Takt 5
+       liegt bei 9,0 s. */
     await page.locator('#k-start').click();
+    try {
+      await page.waitForFunction(() => {
+        const u = document.getElementById('uhr');
+        return u && /Sekunde ([8-9]|[1-9]\d)/.test(u.textContent);
+      }, null, { timeout: 40000 });
+    } catch (e) { notiz.push('Onboarding-Uhr erreichte Sekunde 8 nicht'); }
+    await page.evaluate(() => { if (window.MOTION) MOTION.tempo(4); });
+    stand = await page.evaluate(async (ziel) => {
+      return await new Promise((fertig) => {
+        const t0 = performance.now();
+        (function schritt() {
+          const a = document.getAnimations().find((x) =>
+            x.animationName === 'thread-draw' && x.playState === 'running');
+          if (a) {
+            const d = a.effect.getTiming().duration;
+            if (d && a.currentTime / d >= ziel) {
+              const anteil = +(a.currentTime / d).toFixed(2);
+              document.getAnimations().forEach((x) => { try { x.pause(); } catch (e) {} });
+              const p = document.querySelector('svg.thread-layer path');
+              const cs = p ? getComputedStyle(p) : null;
+              const len = cs ? parseFloat(cs.strokeDasharray) : 0;
+              const off = cs ? parseFloat(cs.strokeDashoffset) : 0;
+              return fertig({ ok: true, was: 'Faden', zeit: anteil,
+                              fadenLaenge: len, faden: len ? +(1 - off / len).toFixed(2) : null });
+            }
+          }
+          if (performance.now() - t0 > 40000) return fertig({ ok: false, was: 'Faden' });
+          requestAnimationFrame(schritt);
+        })();
+      });
+    }, 0.42);
   }
 
-  /* Auf die Flugkarte warten — sie entsteht in Satz 1 und fliegt in Satz 2.
-     Bei Tempo 0,25×: 480 ms bis der Flug beginnt, 1920 ms Flug. */
-  try {
-    await page.waitForSelector('.bw-flug', { timeout: welche === 'index' ? 8000 : 80000 });
-  } catch (e) { notiz.push('Flugkarte erschien nicht — Aufnahme zeigt keine Bewegung'); }
-  await page.waitForTimeout(480 + 960);
+  if (!stand.ok) notiz.push(stand.was + ' nicht abgepasst — die Aufnahme zeigt keine Bewegung');
+  else if (stand.faden == null || stand.faden < 0.15 || stand.faden > 0.97) {
+    notiz.push('Faden steht bei ' + stand.faden + ' (Länge ' + stand.fadenLaenge + ') — nicht im Wachsen zu sehen');
+  }
   await einfrieren(page);
   if (welche !== 'index') await page.evaluate(() => {
     const p = document.getElementById('k-pause'); if (p && !p.disabled) p.click();
   });
 
-  const stand = await page.evaluate(() => {
-    const k = document.querySelector('.bw-flug');
-    const f = document.querySelector('svg.thread-layer g.thread path, svg.thread-layer path');
-    return {
-      flug: !!k, transform: k ? getComputedStyle(k).transform : null,
-      fadenOffset: f ? getComputedStyle(f).strokeDashoffset : null,
-      fadenArray: f ? getComputedStyle(f).strokeDasharray : null,
-    };
-  });
-  if (!stand.flug) notiz.push('keine Flugkarte im Bild');
-  else notiz.push('Flugkarte: ' + stand.transform + ' · Faden ' + stand.fadenOffset + ' von ' + stand.fadenArray);
-
   /* Den Moment ins Bild rücken. Der Ausschnitt hat das Seitenverhältnis der
      Kachel (1194×834), es wird also nichts weggeschnitten. */
-  const anker = welche === 'index' ? '#m1-buehne' : '#ob';
+  const anker = welche === 'index' ? '#r3-buehne' : '#ob';
   await page.evaluate((sel) => {
     const e = document.querySelector(sel);
     if (!e) return;
