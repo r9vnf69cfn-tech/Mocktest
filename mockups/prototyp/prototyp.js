@@ -758,14 +758,18 @@
     var muster = null;
     kacheln.forEach(function (b) { muster = muster || b.querySelector('.ico[data-ico="check"]'); });
     if (muster) {
-      var zeileStil = muster.parentElement.getAttribute('style') || '';
+      // Den Stil der Musterzeile NICHT uebernehmen: die gewaehlte Kachel und die
+      // nicht gewaehlten haben auf dem iPhone verschiedene Bauform, und der
+      // fremde Stil nahm den beiden anderen Vorschau und Karte. Der Haken wird
+      // angehaengt, die Zeile bleibt, wie ihr Schirm sie gebaut hat.
+      var zeileStil = null;
       kacheln.forEach(function (b) {
         var haken = b.querySelector('.ico[data-ico="check"]');
         if (!haken) {
           var kopf = b.querySelector('.t-sub');
           if (!kopf) return;
           var zeile = kopf.parentElement;
-          zeile.setAttribute('style', zeileStil);
+          if (zeileStil) zeile.setAttribute('style', zeileStil);
           var luecke = DOK.createElement('div');
           luecke.style.flex = '1';
           haken = muster.cloneNode(true);
@@ -880,8 +884,47 @@
   }
 
   /* Der ganze Aufbau in einem Zug — beim Start und bei jeder neuen Karte. */
+
+  /* ── Kästchen ohne Zeile ────────────────────────────────────────────────
+   *
+   * Die Erledigen-Bewegung braucht eine Zeile, die sich verabschieden kann
+   * (data-bw-zeile). Steht ein Kästchen in einem Kasten, der keine ist — im
+   * Notiz-Editor etwa in einem MERKEN-Block —, findet closest() nichts, und
+   * der Tap tut gar nichts. Ein Klickfinger, der nichts bewirkt und nichts
+   * sagt, ist genau das, was dieser Prototyp nicht haben darf.
+   *
+   * Inhaltlich wäre die Bewegung dort ohnehin falsch: Ein Häkchen in einer
+   * Notiz hakt ab, es räumt die Zeile nicht weg. Solche Kästchen werden hier
+   * deshalb zum reinen Umschalter — der Haken zeichnet sich, das Verschwinden
+   * entfällt.
+   * ───────────────────────────────────────────────────────────────────────── */
+  function kaestchenOhneZeile(wurzel) {
+    wurzel.querySelectorAll('[data-bw="erledigen"]').forEach(function (knopf) {
+      var wahl = knopf.getAttribute('data-bw-zeile') || '';
+      var ziel = null;
+      try {
+        ziel = wahl.charAt(0) === '^' ? knopf.closest(wahl.slice(1)) : wurzel.querySelector(wahl);
+      } catch (e) { ziel = null; }
+      if (ziel) return;
+      knopf.removeAttribute('data-bw');
+      knopf.removeAttribute('data-bw-zeile');
+      knopf.setAttribute('data-pv-haken', '');
+      knopf.setAttribute('aria-pressed', 'false');
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var k = e.target && e.target.closest && e.target.closest('[data-pv-haken]');
+    if (!k) return;
+    var an = k.getAttribute('aria-pressed') !== 'true';
+    k.setAttribute('aria-pressed', String(an));
+    var haken = k.querySelector('.bw-check');
+    if (haken) haken.classList.toggle('is-an', an);
+  });
+
   function aufbauen() {
     alleRahmen(frischAufbauen);
+    alleRahmen(kaestchenOhneZeile);
     rueckwegPruefen();
   }
 
