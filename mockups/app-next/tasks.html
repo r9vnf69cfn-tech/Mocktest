@@ -6,6 +6,58 @@
 <title>Aufgaben — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
 <link rel="stylesheet" href="../shared/bewegung.css">
+<style>
+/* ──────────────────────────────────────────────────────────────────────────
+   Nur für diesen Schirm: DIE HERKUNFTS-KLAMMER.
+
+   Herkunft hört hier auf, ein Chip an jeder Zeile zu sein. Die Quelle wird
+   EINMAL genannt — oben im Knoten —, und von ihm läuft ein 2,5-pt-Faden
+   senkrecht nach unten durch eine 20-pt-Rinne; auf ihm sitzt je Aufgabe ein
+   6-pt-Modulpunkt. Damit trägt der Faden die Gruppierung, statt sie zu
+   begleiten.
+
+   Warum ein Raster und keine absoluten Maße: jede Zeile ist eine eigene
+   Rasterzeile mit zwei Zellen (Rinne · Inhalt). Die Rinnenzelle ist ein
+   Flex-Streifen aus Faden · Punkt · Faden — der Punkt landet dadurch immer
+   exakt auf der Mitte SEINER Zeile, gleich wie hoch die Zeile wird. Es gibt
+   keinen geschätzten Wert und keine freien Fadenenden: jedes Fadenstück
+   grenzt oben und unten an einen Punkt (Abstand = Punktradius 3,0 pt) oder
+   endet an einem Knoten.
+
+   Richtung (N6): Quelle oben, Ergebnisse unten. Der Knoten trägt zwei Fäden
+   (senkrecht nach unten, waagerecht zur Quellzeile) und ist damit nach N7
+   ein Knoten. Die Zeilen tragen Modulpunkte, keine Knoten.
+   ────────────────────────────────────────────────────────────────────────── */
+.klammer            { display: grid; grid-template-columns: 20px minmax(0,1fr); align-items: stretch; }
+.klammer__rinne     { position: relative; }
+/* Der Punkt sitzt auf der Mitte SEINER Zeile — gleich wie hoch sie wird. */
+.klammer__marke     { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 1; }
+/* Das Fadenstück. Drei Fassungen: vom Punkt abwärts (Kopfzeile), durch die
+   Zeile hindurch (Punkt sitzt darauf), bis zum Punkt hin (letzte Zeile).
+   Die Stücke grenzen an den Zeilengrenzen exakt aneinander — dazwischen
+   liegt kein Zwischenraum, deshalb steht dort auch kein sichtbares Ende. */
+/* Stumpfe Enden: an den Nähten zwischen zwei Stücken desselben Zuges lägen
+   sonst zwei runde Köpfe übereinander und sähen aus wie ein Punkt. */
+.klammer .thread > * { stroke-linecap: butt; }
+.klammer__zug       { position: absolute; left: 50%; margin-left: -5px; width: 10px; }
+.klammer__zug--ab   { top: 50%; height: 50%; }
+.klammer__zug--durch{ top: 0;   height: 100%; }
+.klammer__zug--an   { top: 0;   height: 50%; }
+.klammer__quelle    { display: flex; align-items: center; gap: 8px; width: 100%;
+                      min-height: 44px; padding: 3px 10px 3px 0; text-align: left;
+                      border-radius: 9px; }
+.klammer__quelle:hover { background: var(--fill); }
+/* Der waagerechte Stummel vom Knoten zum Modulpunkt der Quellzeile. Er ist
+   der zweite Faden am Knoten und macht ihn nach N7 erst zu einem. */
+.klammer__stummel   { width: 10px; height: 10px; flex: none; margin-left: -10px; margin-right: -8px; }
+
+/* Der gekappte Faden (die Quelle liegt im Papierkorb): 2,5 pt, 12 pt lang,
+   endet OHNE Punkt. Das ist das einzige zulässige freie Fadenende des
+   Entwurfs — es steht da, weil der Verlust der Herkunft eine Aussage ist,
+   und es trägt deshalb immer das Wort „Quelle im Papierkorb" neben sich. */
+.klammer__kapp      { position: absolute; right: -3px; top: 50%; transform: translateY(-50%);
+                      width: 12px; height: 10px; }
+</style>
 </head>
 <body>
 
@@ -36,10 +88,21 @@ KOMMENTARBLOCK — Aufgaben
   wurde. Hier stehen die erkannten Werte als eigene Chips UNTER dem Feld
   („Morgen 14:00 · #labor · Hohe Priorität · Bereich Biologie"), jeder einzeln
   antippbar und korrigierbar. Bewertung: die stärkste Einzelidee im Feld.
-· TickTick — Ansichtsvielfalt auf denselben Daten. Übernommen als vier Segmente
-  (Liste · Planer · Matrix · Board) plus Kalender. Bewertung: richtig gedacht,
+· TickTick — Ansichtsvielfalt auf denselben Daten. Übernommen als FÜNF Segmente
+  (Liste · Planer · Matrix · Board · Kalender). Bewertung: richtig gedacht,
   bei TickTick aber über drei Menüs verstreut; hier steht die Wahl an einer
   Stelle im Kopf und wechselt nur die Darstellung, nie den Datenbestand.
+  Runde 3: „Kalender" stand als eigener Knopf daneben — eine zweite Bedienzone
+  für dieselbe Entscheidung. Die frei gewordene Breite trägt jetzt die
+  Gruppierungsachse („Bereich ▾": Bereich · Herkunft · Frist · Ort). Herkunft
+  ist damit eine Ordnung, keine sechste Ansicht.
+· Notion — Gruppierung als berechnete Ordnung, nicht als Ordnerbaum. Übernommen
+  für die Achse; die Achse „Herkunft" kann Notion nicht anbieten, weil bei
+  Notion nichts aus etwas anderem entsteht.
+· Todoist — „every" gegen „every!" (absolute gegen abschlussbasierte Wiederkehr).
+  Der Unterschied ist richtig erkannt und dann in einem Ausrufezeichen versteckt.
+  Übernommen als zwei Wörter — und um einen dritten Modus ergänzt, den keine
+  Aufgaben-App haben kann: „wenn das Deck fällig ist".
 · Amazing Marvin / Sorted — die Trennung von Termin und Frist. Übernommen als
   zwei Chips mit verschiedener Grammatik: grau „Geplant 16:00" (wann ich es tue)
   gegen rot mit Flagge „noch 0 Tage" (wann es zu spät ist).
@@ -63,16 +126,38 @@ Zwei Dinge, die keine der drei Vorlagen zusammen hat:
    Flagge und Resttagen, wann es weg sein muss. Aufgaben-Apps werfen das
    üblicherweise in ein Feld „Fällig am" und erzeugen damit jeden Abend ein
    schlechtes Gewissen für Termine, die nie Fristen waren.
-2. Der Herkunfts-Chip, und zwar als FADEN. „Laborprotokoll Zellkultur schreiben"
-   weiß, dass es aus der Notiz „Zellbiologie" entstanden ist, „Übungsblatt 5
-   fertig rechnen" weiß, dass es aus dem Canvas kommt. Der Chip steht nicht
-   allein: davor sitzt ein Knoten (die Aufgabe) und dazwischen ein Faden von
-   2,5 pt (die Stärke für „A wurde zu B"). Man sieht die Beziehung, bevor man
-   das Wort liest. Eine Aufgabe ist hier nie ein Zettel ohne Vorgeschichte.
-3. Teilschritte hängen als Faden unter der Aufgabe. „Rückmeldung an Prof.
-   Wendt" trägt zwei Schritte an einem senkrechten Faden: gefüllter Punkt =
-   erledigt, hohler = offen. Der Chip „1 von 2 Schritten" und die Punkte sagen
-   dasselbe auf zwei Wegen; keiner der beiden trägt es allein.
+2. DIE HERKUNFTS-KLAMMER. Bis Runde 3 stand an jeder Zeile ein Chip
+   „● — ● Zellbiologie" — bei zwei Aufgaben aus derselben Notiz zweimal
+   dasselbe, je ~140 pt breit, und beide Fäden berührten an beiden Enden
+   nichts. Jetzt wird die Quelle EINMAL genannt: oben in einem 9-pt-Knoten,
+   daneben „Zellbiologie · Notiz · 3 Aufgaben · 1 erledigt". Von dem Knoten
+   läuft ein 2,5-pt-Faden senkrecht durch eine 20-pt-Rinne, und auf ihm sitzt
+   je Aufgabe ein 6-pt-Modulpunkt. Damit trägt der Faden die Gruppierung,
+   statt sie zu begleiten — und er behält seine Länge, wenn eine Zeile
+   erledigt ist und die Liste verlässt. Am Abend ist die Klammer eine Bilanz.
+   Der Schirm wird dadurch leerer, nicht voller: ein Chip weniger je Zeile,
+   mehr Breite für den Aufgabentitel.
+3. DER GEKAPPTE FADEN. „Statistik-Blatt 4 abgeben" ist aus einem Canvas-Blatt
+   entstanden, das Emil gelöscht hat. Die Aufgabe wird deshalb nicht
+   stillschweigend zur Waise: aus der Zeile läuft ein 2,5-pt-Faden heraus und
+   endet nach 12 pt OHNE Punkt, daneben steht „Quelle im Papierkorb". Das ist
+   das einzige zulässige freie Fadenende im ganzen Entwurf — und es
+   unterscheidet sich von einem Fehler dadurch, dass es dasteht und benannt
+   ist. Herkunft ist nur dann eine Zusage, wenn auch ihr Verlust angezeigt wird.
+4. WIEDERKEHR AM FADEN. „Karteikarten Anatomie nacharbeiten" trug bis Runde 3
+   den Chip „↺ Wöchentlich". „Wöchentlich" war eine Kalenderkrücke für eine
+   Bedingung, die die App kennt — bei Todoist die beste erreichbare Näherung,
+   bei Velum eine Notlüge. Jetzt steht dort „↺ wenn das Deck ● fällig ist".
+5. Teilschritte hängen als Faden unter der Aufgabe. „Rückmeldung an Prof.
+   Wendt" trägt zwei Schritte an einem senkrechten 1,5-pt-Faden: gefüllter
+   Punkt = erledigt, hohler = offen. Neu in Runde 3: die Elternzeile trägt
+   selbst einen Punkt — vorher lief der Faden dort ins Nichts.
+6. „WOHER HEUTE KOMMT" statt „GESPEICHERTE FILTER". Zwei Quellen, je eine
+   2,5-pt-Kurve auf EINEN Knoten „heute · 3 von 6", darunter die zwei Fälle
+   ohne Kante: der gekappte Faden und „ohne Herkunft" als hohler Punkt ohne
+   Faden — Abwesenheit einer Beziehung ist keine Beziehung und bekommt
+   deshalb keinen Strich. Gespeicherte Suchen hat jede App; sie liegen jetzt
+   hinter dem Filtersymbol, das ohnehin im Kopf steht.
 
 ADA-KATEGORIE: Interaktion (fünf Ansichten auf einem Datenbestand, Erfassen in
 einem Satz, Mehrfachauswahl mit Übergabe-Leiste) und Inklusion (jeder Zustand
@@ -101,7 +186,7 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
 
 <div class="mocktitle">
   <h1>Aufgaben</h1>
-  <p>Die Liste, die weiß, woher jede Aufgabe kommt. Fünf Ansichten auf denselben Daten, ein Erfassungsfeld, das ganze Sätze versteht — und zwei Chips, die den Unterschied zwischen „heute geplant" und „heute fällig" endlich sichtbar machen.</p>
+  <p>Die Liste, in der Herkunft die Ordnung trägt: die Quelle steht einmal oben im Knoten, und ein Faden hält zusammen, was aus ihr entstanden ist. Fünf Ansichten auf denselben Daten, ein Erfassungsfeld, das ganze Sätze versteht, zwei Chips für den Unterschied zwischen „heute geplant" und „heute fällig" — und ein gekappter Faden für die eine Aufgabe, deren Quelle im Papierkorb liegt.</p>
 </div>
 
 <div class="stage">
@@ -151,25 +236,28 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
         <!-- Inhalt -->
         <main class="content">
           <div class="navbar" style="padding-top:6px; padding-bottom:6px">
-            <div style="min-width:0">
-              <div class="serif--screen-title">Heute</div>
-              <div class="t-sub c-3" style="white-space:nowrap">Donnerstag, 13. November</div>
+            <div style="flex:none">
+              <div class="serif--screen-title">Aufgaben</div>
+              <div class="t-sub c-3" style="white-space:nowrap">Heute · 13. November</div>
             </div>
 
-            <!-- Ansichten: vier Segmente auf derselben Liste … -->
+            <!-- Fünf Ansichten, eine Zelle je Ansicht. „Kalender" stand bis
+                 Runde 3 als eigener Knopf daneben — das war eine vierte
+                 Bedienzone im Kopf für dieselbe Entscheidung. Die frei
+                 gewordene Breite trägt jetzt den Gruppieren-Aufklapper. -->
             <div class="segmented" style="margin-left:12px">
-              <button class="is-on">Liste</button>
-              <button>Planer</button>
-              <button>Matrix</button>
-              <button>Board</button>
-            </div>
-            <!-- … die fünfte Ansicht mischt Termine dazu und verlässt damit die
-                 Liste. Deshalb steht sie abgesetzt daneben, nicht im Segment. -->
-            <div class="segmented" style="margin-left:4px">
-              <button><span class="ico" data-ico="calendar" style="width:15px;height:15px;margin-right:6px;vertical-align:-3px"></span>Kalender</button>
+              <button class="is-on" style="padding:0 10px">Liste</button>
+              <button style="padding:0 10px">Planer</button>
+              <button style="padding:0 10px">Matrix</button>
+              <button style="padding:0 10px">Board</button>
+              <button style="padding:0 10px">Kalender</button>
             </div>
 
             <div class="navbar__spacer"></div>
+            <!-- Die Achse, nach der gruppiert wird. Vier fertige Achsen, und
+                 „Herkunft" ist eine davon — keine sechste Ansicht: Herkunft
+                 ist eine Ordnung, kein Ort. -->
+            <button class="btn btn--sm" style="padding:0 10px; gap:6px; white-space:nowrap" aria-label="Gruppieren nach Bereich"><span class="ico" data-ico="sort" style="width:16px;height:16px"></span>Bereich<span class="ico" data-ico="chevD" style="width:15px;height:15px;margin-left:-3px"></span></button>
             <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
             <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neu</button>
           </div>
@@ -202,7 +290,7 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
             </section>
 
             <!-- ══ Zweispaltig: links die Arbeit, rechts der Überblick ══ -->
-            <div style="display:grid; grid-template-columns:1fr 200px; gap:16px; align-items:start">
+            <div style="display:grid; grid-template-columns:minmax(0,1fr) 232px; gap:16px; align-items:start">
 
               <!-- ── Liste, gruppiert nach Bereich ── -->
               <div style="display:flex; flex-direction:column; gap:8px">
@@ -216,35 +304,68 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
                     <span class="t-label c-3 num">2</span>
                   </div>
 
-                  <!-- Die Checkbox IST der Knopf für die Erledigen-Bewegung.
-                       Sie behält ihre 22 pt, bekommt aber über negative Ränder
-                       eine 44-pt-Trefferfläche — das Zeichen wächst nicht, das
-                       Ziel schon. Ausgelöst wird über data-Attribute, ohne eine
-                       Zeile JavaScript in diesem Schirm. data-bw-echo zeigt auf
-                       den Herkunfts-Chip: erledigt ist auch dort sichtbar, wo
-                       die Aufgabe herkam — das andere Ende des Fadens. -->
-                  <div class="row is-selected" id="a-labor">
-                    <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" data-bw-echo="#h-labor" aria-label="Laborprotokoll erledigen"><span class="bw-check"></span></button>
-                    <div class="row__main">
-                      <span class="t-body row__title">Laborprotokoll Zellkultur schreiben</span>
-                      <span class="t-sub c-2">Messwerte von Tag 3 eintragen</span>
-                    </div>
-                    <!-- Herkunft als Faden: Knoten = diese Aufgabe, Faden 2,5 pt
-                         = „A wurde zu B", Chip = die Notiz, aus der sie kam. -->
-                    <div class="row__meta">
-                      <span class="dot dot--node" style="--node-ring: color-mix(in srgb, var(--accent) 7%, var(--paper))"></span>
-                      <svg class="thread thread--h thread--origin" style="width:18px; margin:0 -2px"></svg>
-                      <span class="origin" id="h-labor"><span class="dot dot--notes"></span>Zellbiologie</span>
-                    </div>
-                  </div>
+                  <!-- ══ DIE HERKUNFTS-KLAMMER ══
+                       Beide Aufgaben dieser Gruppe sind aus derselben Notiz
+                       entstanden. Bis Runde 3 stand deshalb an jeder Zeile
+                       derselbe Chip „● — ● Zellbiologie"; jetzt steht die
+                       Quelle einmal oben im Knoten, und der Faden hält die
+                       Zeilen zusammen. Er behält seine Länge, wenn eine Zeile
+                       erledigt ist und die Liste verlässt — die Punkte gehören
+                       der Quelle, nicht der Zeile. Am Abend ist die Klammer
+                       eine Bilanz: „3 Aufgaben · 1 erledigt".
 
-                  <div class="row is-selected">
-                    <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Karteikarten erledigen"><span class="bw-check"></span></button>
-                    <div class="row__main">
-                      <span class="t-body row__title">Karteikarten Anatomie nacharbeiten</span>
+                       Die Checkbox IST der Knopf für die Erledigen-Bewegung.
+                       Sie behält ihre 22 pt, bekommt aber über negative Ränder
+                       eine 44-pt-Trefferfläche. data-bw-echo zeigt auf die
+                       Quellzeile: erledigt ist auch dort sichtbar, wo die
+                       Aufgabe herkam — das andere Ende des Fadens. -->
+                  <div class="klammer">
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab"></svg>
+                      <span class="dot dot--node klammer__marke"></span>
                     </div>
-                    <div class="row__meta">
-                      <span class="chip"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>Wöchentlich</span>
+                    <button class="klammer__quelle" id="h-labor">
+                      <svg class="thread thread--h thread--origin klammer__stummel"></svg>
+                      <span class="dot dot--notes"></span>
+                      <span class="t-sub is-strong">Zellbiologie</span>
+                      <span class="t-label c-3">Notiz</span>
+                      <span style="flex:1"></span>
+                      <span class="t-label c-3"><span class="num">3</span> Aufgaben · <span class="num">1</span> erledigt</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                    </button>
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--durch"></svg>
+                      <span class="dot dot--notes klammer__marke"></span>
+                    </div>
+                    <div class="row is-selected" id="a-labor">
+                      <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" data-bw-echo="#h-labor" aria-label="Laborprotokoll erledigen"><span class="bw-check"></span></button>
+                      <div class="row__main">
+                        <span class="t-body row__title">Laborprotokoll Zellkultur schreiben</span>
+                        <span class="t-sub c-2">Messwerte von Tag 3 eintragen</span>
+                      </div>
+                      <div class="row__meta">
+                        <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Geplant 14:00</span>
+                      </div>
+                    </div>
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                      <span class="dot dot--notes klammer__marke"></span>
+                    </div>
+                    <div class="row is-selected">
+                      <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Karteikarten erledigen"><span class="bw-check"></span></button>
+                      <div class="row__main">
+                        <span class="t-body row__title">Karteikarten Anatomie nacharbeiten</span>
+                      </div>
+                      <!-- Wiederkehr am Faden statt im Kalender: „Wöchentlich"
+                           war eine Krücke für eine Bedingung, die die App
+                           kennt. Der Modulpunkt sagt, welches Deck gemeint
+                           ist — Punkt und Wort, nie der Punkt allein. -->
+                      <div class="row__meta">
+                        <span class="chip"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>wenn das Deck<span class="dot dot--cards"></span>fällig ist</span>
+                      </div>
                     </div>
                   </div>
 
@@ -269,35 +390,69 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
                     <span class="t-label c-3 num">2</span>
                   </div>
 
-                  <!-- Die Zeile, an der die getrennte Semantik hängt:
-                       grau = wann ich es tue · rot = wann es zu spät ist -->
-                  <div class="row">
-                    <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Statistik-Blatt erledigen"><span class="bw-check"></span></button>
-                    <div class="row__main">
-                      <span class="t-body row__title">Statistik-Blatt 4 abgeben</span>
-                      <span class="t-sub c-3">Abgabe heute 18:00</span>
+                  <!-- Klammer mit genau einem Ergebnis: dasselbe Bauteil, nur
+                       kürzer. Der Faden endet an dem einen Punkt, an dem er
+                       endet — er wird nicht länger gezeichnet, als er trägt.
+
+                       Zwischenzustand, eingefroren: der Haken wächst gerade.
+                       Diese eine Zeile behält .check.is-checking statt der
+                       auslösbaren .bw-check — ein Haken mitten im Zeichnen ist
+                       ein Bild, kein Knopf. Alle anderen Zeilen sind auslösbar. -->
+                  <div class="klammer">
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab"></svg>
+                      <span class="dot dot--node klammer__marke"></span>
                     </div>
-                    <div class="row__meta">
-                      <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Geplant 16:00</span>
-                      <span class="chip chip--danger"><span class="ico" data-ico="flag" style="width:13px;height:13px"></span>noch 0 Tage</span>
+                    <button class="klammer__quelle">
+                      <svg class="thread thread--h thread--origin klammer__stummel"></svg>
+                      <span class="dot dot--canvas"></span>
+                      <span class="t-sub is-strong">Übungen 12. Nov.</span>
+                      <span class="t-label c-3">Canvas</span>
+                      <span style="flex:1"></span>
+                      <span class="t-label c-3"><span class="num">1</span> Aufgabe</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                    </button>
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                      <span class="dot dot--canvas klammer__marke"></span>
+                    </div>
+                    <div class="row">
+                      <span class="check is-checking"></span>
+                      <div class="row__main">
+                        <span class="t-body row__title">Übungsblatt 5 fertig rechnen</span>
+                      </div>
+                      <div class="row__meta">
+                        <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Geplant morgen</span>
+                      </div>
                     </div>
                   </div>
 
-                  <!-- Zwischenzustand, eingefroren: der Haken wächst gerade.
-                       Diese eine Zeile behält .check.is-checking statt der
-                       auslösbaren .bw-check — ein Haken mitten im Zeichnen ist
-                       ein Bild, kein Knopf, und der Schirm soll den Moment auch
-                       im Standbild zeigen. Alle anderen Zeilen sind auslösbar. -->
-                  <div class="row">
-                    <span class="check is-checking"></span>
-                    <div class="row__main">
-                      <span class="t-body row__title">Übungsblatt 5 fertig rechnen</span>
+                  <!-- ══ DER GEKAPPTE FADEN ══
+                       Die Quelle dieser Aufgabe ist gelöscht. Velum macht die
+                       Aufgabe daraufhin nicht stillschweigend zur Waise: der
+                       2,5-pt-Faden läuft aus der Zeile heraus und endet nach
+                       12 pt OHNE Punkt. Zwei Merkmale — die Form und das Wort
+                       daneben —, keine Farbe. Dies ist das einzige freie
+                       Fadenende im ganzen Entwurf, und es steht da, weil es
+                       etwas sagt.
+
+                       An derselben Zeile hängt die getrennte Semantik:
+                       grau = wann ich es tue · rot = wann es zu spät ist. -->
+                  <div class="klammer">
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--h thread--origin klammer__kapp"></svg>
                     </div>
-                    <div class="row__meta">
-                      <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Geplant morgen</span>
-                      <span class="dot dot--node"></span>
-                      <svg class="thread thread--h thread--origin" style="width:18px; margin:0 -2px"></svg>
-                      <span class="origin"><span class="dot dot--canvas"></span>Canvas</span>
+                    <div class="row">
+                      <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Statistik-Blatt erledigen"><span class="bw-check"></span></button>
+                      <div class="row__main">
+                        <span class="t-body row__title">Statistik-Blatt 4 abgeben</span>
+                        <span class="t-sub c-3">Quelle im Papierkorb</span>
+                      </div>
+                      <div class="row__meta">
+                        <span class="chip"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Geplant 16:00</span>
+                        <span class="chip chip--danger"><span class="ico" data-ico="flag" style="width:13px;height:13px"></span>noch 0 Tage</span>
+                      </div>
                     </div>
                   </div>
                 </section>
@@ -310,33 +465,49 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
                     <span style="flex:1"></span>
                     <span class="t-label c-3 num">1</span>
                   </div>
-                  <div class="row" style="padding-bottom:2px">
-                    <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Rückmeldung erledigen"><span class="bw-check"></span></button>
-                    <div class="row__main">
-                      <span class="t-body row__title">Rückmeldung an Prof. Wendt</span>
-                    </div>
-                    <div class="row__meta">
-                      <span class="chip"><span class="ico" data-ico="list" style="width:13px;height:13px"></span><span class="num">1</span> von <span class="num">2</span> Schritten</span>
-                    </div>
-                  </div>
-                  <!-- TEILSCHRITTE HÄNGEN ALS FADEN unter der Aufgabe.
-                       Der senkrechte Faden läuft von der Checkbox der Aufgabe
-                       zu jedem Schritt; die Kante ist „Schritt gehört zu dieser
-                       Aufgabe", nicht Herkunft — deshalb 1,5 pt und nicht 2,5.
+                  <!-- TEILSCHRITTE HÄNGEN ALS FADEN unter der Aufgabe —
+                       dasselbe Raster wie die Herkunfts-Klammer, nur mit
+                       1,5 pt statt 2,5: die Kante ist „Schritt gehört zu
+                       dieser Aufgabe", nicht Herkunft. Oben sitzt jetzt der
+                       Punkt der AUFGABE; bis Runde 3 lief der Faden dort ins
+                       Nichts, weil die Elternzeile keinen Punkt trug.
                        Punkt gefüllt = erledigt, hohl = offen. Die Schrittzahl
-                       im Chip oben („1 von 2") und die Punkte sagen dasselbe
-                       auf zwei Wegen. -->
-                  <div style="display:flex; gap:12px; padding:0 12px 5px">
-                    <div style="width:22px; flex:none; display:flex; flex-direction:column; align-items:center">
-                      <svg class="thread thread--v" style="height:12px; flex:none"></svg>
-                      <span class="dot dot--tasks"></span>
-                      <svg class="thread thread--v" style="flex:1 1 0; min-height:12px"></svg>
-                      <span class="dot dot--hollow"></span>
-                      <span style="flex:0 0 2px"></span>
+                       im Chip („1 von 2") und die Punkte sagen dasselbe auf
+                       zwei Wegen.
+
+                       Die Durchstreichung ist eine text-decoration in 1 pt und
+                       --line-tap, kein eigenes Element: ein 1,5-pt-Strich in
+                       Ink neben einem Faden derselben Stärke wäre ein Faden,
+                       der durch die Wörter läuft. -->
+                  <div class="klammer">
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v klammer__zug klammer__zug--ab"></svg>
+                      <span class="dot dot--tasks klammer__marke"></span>
                     </div>
-                    <div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
-                      <span class="t-sub c-3" style="line-height:20px; text-decoration:line-through">Termin mit Wendt abgestimmt</span>
-                      <span class="t-sub c-2" style="line-height:20px; margin-top:6px">Jana und Milan zusagen</span>
+                    <div class="row">
+                      <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Rückmeldung erledigen"><span class="bw-check"></span></button>
+                      <div class="row__main">
+                        <span class="t-body row__title">Rückmeldung an Prof. Wendt</span>
+                      </div>
+                      <div class="row__meta">
+                        <span class="chip"><span class="ico" data-ico="list" style="width:13px;height:13px"></span><span class="num">1</span> von <span class="num">2</span> Schritten</span>
+                      </div>
+                    </div>
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v klammer__zug klammer__zug--durch"></svg>
+                      <span class="dot dot--tasks klammer__marke"></span>
+                    </div>
+                    <div style="display:flex; align-items:center; min-height:26px; padding:0 12px">
+                      <span class="t-sub c-3" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Termin mit Wendt abgestimmt</span>
+                    </div>
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v klammer__zug klammer__zug--an"></svg>
+                      <span class="dot dot--hollow klammer__marke"></span>
+                    </div>
+                    <div style="display:flex; align-items:center; min-height:26px; padding:0 12px 4px">
+                      <span class="t-sub c-2">Jana und Milan zusagen</span>
                     </div>
                   </div>
                 </section>
@@ -427,35 +598,73 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
                   <button class="btn btn--sm" style="width:100%; margin-top:10px">Jetzt sortieren</button>
                 </section>
 
-                <section class="card" style="padding:14px 8px 8px">
-                  <div class="card__head" style="margin:0 6px 4px">
-                    <span class="t-label c-3">GESPEICHERTE FILTER</span>
+                <!-- ══ WOHER HEUTE KOMMT ══
+                     An dieser Stelle stand „GESPEICHERTE FILTER" — fünf
+                     gespeicherte Suchen, die jede App hat und die ohnehin
+                     hinter dem Filtersymbol im Kopf liegen. Was jetzt hier
+                     steht, kann keine Aufgaben-App: die zwei Quellen des
+                     Tages, jede mit einem 2,5-pt-Faden auf EINEN Knoten.
+                     Der Knoten trägt zwei Fäden (N7), die Richtung läuft von
+                     oben nach unten (N6), und jede Kurve ist die Menge echter
+                     Kanten im Datenmodell — dieselben zwei Quellen, die links
+                     die Klammern tragen.
+
+                     „Ohne Herkunft" bekommt keinen Faden: Abwesenheit einer
+                     Beziehung ist keine Beziehung. Die gelöschte Quelle
+                     bekommt denselben gekappten Faden wie ihre Zeile links.
+
+                     Die Maße sind gemessen, nicht geschätzt: Rinnenmitte
+                     x = 16, Quellpunkte x = 36 auf y = 15 und y = 51,
+                     Knoten auf 16 / 91. -->
+                <section class="card" style="padding:14px">
+                  <div class="card__head" style="margin-bottom:10px">
+                    <span class="t-label c-3" style="flex:1">WOHER HEUTE KOMMT</span>
+                    <span class="t-label c-3 num">6</span>
                   </div>
-                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
-                    <span class="ico c-3" data-ico="flag" style="width:16px;height:16px"></span>
-                    <span class="t-sub" style="flex:1; text-align:left">Alle Fristen</span>
-                    <span class="t-label c-3 num">2</span>
-                  </button>
-                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
-                    <span class="ico c-3" data-ico="tag" style="width:16px;height:16px"></span>
-                    <span class="t-sub" style="flex:1; text-align:left">#labor</span>
-                    <span class="t-label c-3 num">5</span>
-                  </button>
-                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
-                    <span class="ico c-3" data-ico="tag" style="width:16px;height:16px"></span>
-                    <span class="t-sub" style="flex:1; text-align:left">#prüfung</span>
-                    <span class="t-label c-3 num">7</span>
-                  </button>
-                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
-                    <span class="ico c-3" data-ico="calendar" style="width:16px;height:16px"></span>
-                    <span class="t-sub" style="flex:1; text-align:left">Ohne Datum</span>
-                    <span class="t-label c-3 num">4</span>
-                  </button>
-                  <button class="row" style="min-height:36px; padding:5px 8px; width:100%">
-                    <span class="ico c-3" data-ico="location" style="width:16px;height:16px"></span>
-                    <span class="t-sub" style="flex:1; text-align:left">Unterwegs</span>
+
+                  <div style="position:relative; height:112px">
+                    <!-- Zwei Kurven, zwei Krümmungen: die lange bleibt rechts
+                         und biegt erst unten ab, die kurze geht sofort nach
+                         links und fällt dann. Dadurch laufen sie nicht als ein
+                         Strang, sondern treffen sich am Knoten aus zwei
+                         Richtungen. Beide sind quadratische Bézier. -->
+                    <svg class="thread thread--origin" viewBox="0 0 204 112" width="204" height="112" aria-hidden="true" focusable="false" style="position:absolute; left:0; top:0">
+                      <path d="M44 15 Q44 95 14 95"></path>
+                      <path d="M44 55 Q14 55 14 95"></path>
+                    </svg>
+
+                    <button style="position:absolute; left:41px; top:5px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                      <span class="dot dot--notes"></span>
+                      <span class="t-sub c-1" style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">Zellbiologie</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
+                    </button>
+                    <div class="t-label c-3" style="position:absolute; left:54px; top:25px; white-space:nowrap">Notiz · <span class="num">2</span> Aufgaben</div>
+
+                    <button style="position:absolute; left:41px; top:45px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                      <span class="dot dot--canvas"></span>
+                      <span class="t-sub c-1" style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">Übungen 12. Nov.</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
+                    </button>
+                    <div class="t-label c-3" style="position:absolute; left:54px; top:65px; white-space:nowrap">Canvas · <span class="num">1</span> Aufgabe</div>
+
+                    <div style="position:absolute; left:9.5px; top:85px; height:20px; display:flex; align-items:center; gap:9px">
+                      <span class="dot dot--node"></span>
+                      <span class="t-sub is-strong" style="white-space:nowrap">heute · <span class="num">3</span> von <span class="num">6</span></span>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; align-items:center; gap:9px; min-height:22px; margin-top:2px">
+                    <svg class="thread thread--h thread--origin" style="width:12px; height:10px; flex:none; margin-left:11px; margin-right:-6px" aria-hidden="true"></svg>
+                    <span class="t-label c-2" style="flex:1">Quelle im Papierkorb</span>
                     <span class="t-label c-3 num">1</span>
-                  </button>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:9px; min-height:22px">
+                    <span class="dot dot--hollow" style="margin-left:13px"></span>
+                    <span class="t-label c-2" style="flex:1">ohne Herkunft</span>
+                    <span class="t-label c-3 num">2</span>
+                  </div>
+
+                  <div class="t-sub c-3" style="margin-top:8px">Drei von sechs sind gestern in der Vorlesung entstanden.</div>
                 </section>
 
               </div>
@@ -477,20 +686,26 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
 
       <div class="content">
         <div class="navbar" style="border:0; padding:6px var(--pad-iphone) 0">
-          <div class="serif--screen-title">Heute</div>
+          <div style="flex:none">
+            <div class="serif--screen-title">Aufgaben</div>
+            <div class="t-sub c-3" style="white-space:nowrap">Heute · 13. November</div>
+          </div>
           <div class="navbar__spacer"></div>
-          <button class="iconbtn"><span class="ico" data-ico="calendar"></span></button>
+          <button class="btn btn--sm" style="padding:0 9px; gap:5px" aria-label="Gruppieren nach Bereich"><span class="ico" data-ico="sort" style="width:15px;height:15px"></span>Bereich<span class="ico" data-ico="chevD" style="width:14px;height:14px;margin-left:-4px"></span></button>
           <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
         </div>
 
         <div class="scroll" style="padding-top:4px; padding-bottom:3px; display:flex; flex-direction:column; gap:4px">
 
           <!-- Dieselben fünf Ansichten: vier im Segment, Kalender oben rechts -->
+          <!-- Dieselben fünf Ansichten wie am iPad, eine Zelle je Ansicht.
+               Der eigene Kalender-Knopf im Kopf ist entfallen. -->
           <div class="segmented" style="display:flex">
             <button class="is-on" style="flex:1; padding:0">Liste</button>
             <button style="flex:1; padding:0">Planer</button>
             <button style="flex:1; padding:0">Matrix</button>
             <button style="flex:1; padding:0">Board</button>
+            <button style="flex:1; padding:0">Kalender</button>
           </div>
 
           <!-- Biologie -->
@@ -501,18 +716,44 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
               <span style="flex:1"></span>
               <span class="t-label c-3 num">2</span>
             </div>
-            <div class="row" style="padding:4px 12px">
-              <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" data-bw-echo="#h-labor-p" aria-label="Laborprotokoll erledigen"><span class="bw-check"></span></button>
-              <div class="row__main" style="gap:4px">
-                <span class="t-body">Laborprotokoll Zellkultur schreiben</span>
-                <span style="display:flex; align-items:center; gap:6px"><span class="dot dot--node"></span><svg class="thread thread--h thread--origin" style="width:16px; margin:0 -3px"></svg><span class="origin" id="h-labor-p" style="height:20px"><span class="dot dot--notes"></span>Zellbiologie</span><span class="chip" style="height:20px"><span class="ico" data-ico="clock" style="width:12px;height:12px"></span>Geplant 14:00</span></span>
+            <!-- Dieselbe Herkunfts-Klammer wie am iPad: die Quelle steht
+                 einmal oben, der Faden trägt die zwei Aufgaben. -->
+            <div class="klammer">
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab"></svg>
+                <span class="dot dot--node klammer__marke"></span>
               </div>
-            </div>
-            <div class="row" style="padding:4px 12px">
-              <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Karteikarten erledigen"><span class="bw-check"></span></button>
-              <div class="row__main" style="gap:4px">
-                <span class="t-body">Karteikarten Anatomie nacharbeiten</span>
-                <span><span class="chip" style="height:20px"><span class="ico" data-ico="undo" style="width:12px;height:12px"></span>Wöchentlich</span></span>
+              <button class="klammer__quelle" id="h-labor-p">
+                <svg class="thread thread--h thread--origin klammer__stummel"></svg>
+                <span class="dot dot--notes"></span>
+                <span class="t-sub is-strong">Zellbiologie</span>
+                <span class="t-label c-3">Notiz</span>
+                <span style="flex:1"></span>
+                <span class="t-label c-3"><span class="num">1</span> von <span class="num">3</span> erledigt</span>
+                <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+              </button>
+
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--durch"></svg>
+                <span class="dot dot--notes klammer__marke"></span>
+              </div>
+              <div class="row" style="padding:4px 12px">
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" data-bw-echo="#h-labor-p" aria-label="Laborprotokoll erledigen"><span class="bw-check"></span></button>
+                <div class="row__main" style="gap:4px">
+                  <span class="t-body">Laborprotokoll Zellkultur schreiben</span>
+                </div>
+              </div>
+
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                <span class="dot dot--notes klammer__marke"></span>
+              </div>
+              <div class="row" style="padding:4px 12px">
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Karteikarten erledigen"><span class="bw-check"></span></button>
+                <div class="row__main" style="gap:4px">
+                  <span class="t-body">Karteikarten Anatomie nacharbeiten</span>
+                  <span><span class="chip" style="height:20px"><span class="ico" data-ico="undo" style="width:12px;height:12px"></span>wenn das Deck<span class="dot dot--cards"></span>fällig ist</span></span>
+                </div>
               </div>
             </div>
           </section>
@@ -525,50 +766,48 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
               <span style="flex:1"></span>
               <span class="t-label c-3 num">2</span>
             </div>
-            <div class="row" style="padding:4px 12px">
-              <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Statistik-Blatt erledigen"><span class="bw-check"></span></button>
-              <div class="row__main" style="gap:4px">
-                <span class="t-body">Statistik-Blatt 4 abgeben</span>
-                <span style="display:flex; gap:6px"><span class="chip" style="height:20px"><span class="ico" data-ico="clock" style="width:12px;height:12px"></span>Geplant 16:00</span><span class="chip chip--danger" style="height:20px"><span class="ico" data-ico="flag" style="width:12px;height:12px"></span>noch 0 Tage</span></span>
+            <!-- Klammer mit einem Ergebnis. Zwischenzustand: der Haken
+                 wächst gerade. -->
+            <div class="klammer">
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab"></svg>
+                <span class="dot dot--node klammer__marke"></span>
               </div>
-            </div>
-            <!-- Zwischenzustand: der Haken wächst gerade -->
-            <div class="row" style="padding:4px 12px">
-              <span class="check is-checking"></span>
-              <div class="row__main" style="gap:4px">
-                <span class="t-body">Übungsblatt 5 fertig rechnen</span>
-                <span style="display:flex; align-items:center; gap:0"><span class="dot dot--node"></span><svg class="thread thread--h thread--origin" style="width:16px; margin:0 -3px"></svg><span class="origin" style="height:20px"><span class="dot dot--canvas"></span>Canvas</span></span>
-              </div>
-            </div>
-          </section>
+              <button class="klammer__quelle">
+                <svg class="thread thread--h thread--origin klammer__stummel"></svg>
+                <span class="dot dot--canvas"></span>
+                <span class="t-sub is-strong">Übungen 12. Nov.</span>
+                <span class="t-label c-3">Canvas</span>
+                <span style="flex:1"></span>
+                <span class="t-label c-3"><span class="num">1</span></span>
+                <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+              </button>
 
-          <!-- Uni -->
-          <section class="card" style="padding:4px">
-            <div style="display:flex; align-items:center; gap:8px; padding:1px 10px 0">
-              <span class="dot" style="background:var(--ink-2)"></span>
-              <span class="t-label c-2">Uni</span>
-              <span style="flex:1"></span>
-              <span class="t-label c-3 num">1</span>
-            </div>
-            <div class="row" style="padding:4px 12px 2px">
-              <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Rückmeldung erledigen"><span class="bw-check"></span></button>
-              <div class="row__main" style="gap:4px">
-                <span class="t-body">Rückmeldung an Prof. Wendt</span>
-                <span><span class="chip" style="height:20px"><span class="ico" data-ico="list" style="width:12px;height:12px"></span><span class="num">1</span> von <span class="num">2</span> Schritten</span></span>
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                <span class="dot dot--canvas klammer__marke"></span>
+              </div>
+              <div class="row" style="padding:4px 12px">
+                <span class="check is-checking"></span>
+                <div class="row__main" style="gap:4px">
+                  <span class="t-body">Übungsblatt 5 fertig rechnen</span>
+                  <span><span class="chip" style="height:20px"><span class="ico" data-ico="clock" style="width:12px;height:12px"></span>Geplant morgen</span></span>
+                </div>
               </div>
             </div>
-            <!-- Dieselben Teilschritte am Faden wie am iPad -->
-            <div style="display:flex; gap:12px; padding:0 12px 6px">
-              <div style="width:22px; flex:none; display:flex; flex-direction:column; align-items:center">
-                <svg class="thread thread--v" style="height:8px; flex:none"></svg>
-                <span class="dot dot--tasks"></span>
-                <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
-                <span class="dot dot--hollow"></span>
-                <span style="flex:0 0 2px"></span>
+
+            <!-- Der gekappte Faden: die Quelle liegt im Papierkorb. -->
+            <div class="klammer">
+              <div class="klammer__rinne">
+                <svg class="thread thread--h thread--origin klammer__kapp"></svg>
               </div>
-              <div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
-                <span class="t-sub c-3" style="line-height:20px; text-decoration:line-through">Termin mit Wendt abgestimmt</span>
-                <span class="t-sub c-2" style="line-height:20px; margin-top:4px">Jana und Milan zusagen</span>
+              <div class="row" style="padding:4px 12px">
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Statistik-Blatt erledigen"><span class="bw-check"></span></button>
+                <div class="row__main" style="gap:4px">
+                  <span class="t-body">Statistik-Blatt 4 abgeben</span>
+                  <span class="t-label c-3">Quelle im Papierkorb</span>
+                  <span style="display:flex; align-items:center; gap:6px"><span class="chip" style="height:20px"><span class="ico" data-ico="clock" style="width:12px;height:12px"></span>Geplant 16:00</span><span class="chip chip--danger" style="height:20px"><span class="ico" data-ico="flag" style="width:12px;height:12px"></span>noch 0 Tage</span></span>
+                </div>
               </div>
             </div>
           </section>
@@ -599,6 +838,48 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
               </div>
             </div>
           </section>
+          <!-- Uni -->
+          <section class="card" style="padding:4px">
+            <div style="display:flex; align-items:center; gap:8px; padding:1px 10px 0">
+              <span class="dot" style="background:var(--ink-2)"></span>
+              <span class="t-label c-2">Uni</span>
+              <span style="flex:1"></span>
+              <span class="t-label c-3 num">1</span>
+            </div>
+            <!-- Dieselben Teilschritte am Faden wie am iPad — und derselbe
+                 Punkt an der Elternzeile, damit der Faden dort nicht ins
+                 Nichts läuft. -->
+            <div class="klammer">
+              <div class="klammer__rinne">
+                <svg class="thread thread--v klammer__zug klammer__zug--ab"></svg>
+                <span class="dot dot--tasks klammer__marke"></span>
+              </div>
+              <div class="row" style="padding:4px 12px 2px">
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" data-bw="erledigen" data-bw-zeile="^.row" aria-label="Rückmeldung erledigen"><span class="bw-check"></span></button>
+                <div class="row__main" style="gap:4px">
+                  <span class="t-body">Rückmeldung an Prof. Wendt</span>
+                  <span><span class="chip" style="height:20px"><span class="ico" data-ico="list" style="width:12px;height:12px"></span><span class="num">1</span> von <span class="num">2</span> Schritten</span></span>
+                </div>
+              </div>
+
+              <div class="klammer__rinne">
+                <svg class="thread thread--v klammer__zug klammer__zug--durch"></svg>
+                <span class="dot dot--tasks klammer__marke"></span>
+              </div>
+              <div style="display:flex; align-items:center; min-height:24px; padding:0 12px">
+                <span class="t-sub c-3" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Termin mit Wendt abgestimmt</span>
+              </div>
+
+              <div class="klammer__rinne">
+                <svg class="thread thread--v klammer__zug klammer__zug--an"></svg>
+                <span class="dot dot--hollow klammer__marke"></span>
+              </div>
+              <div style="display:flex; align-items:center; min-height:24px; padding:0 12px 4px">
+                <span class="t-sub c-2">Jana und Milan zusagen</span>
+              </div>
+            </div>
+          </section>
+
         </div>
 
         <!-- Schnellerfassung in der Daumenzone: direkt über der Tab-Bar -->
@@ -626,13 +907,15 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
 <!-- Steckbrief -->
 <div class="sheetnote">
   <h2>Aufgaben — Steckbrief</h2>
-  <p>Eine Liste, die nach Bereich gruppiert, ihre Herkunft kennt und zwischen „heute geplant" und „heute fällig" unterscheidet. Fünf Ansichten liegen auf denselben Daten; gewechselt wird im Kopf, nicht im Menü.</p>
+  <p>Eine Liste, die nach Bereich gruppiert, ihre Herkunft als Faden trägt und zwischen „heute geplant" und „heute fällig" unterscheidet. Fünf Ansichten liegen auf denselben Daten; gewechselt wird im Kopf, nicht im Menü. Gruppiert wird über eine Achse mit vier Werten — einer davon ist Herkunft.</p>
 
   <h3>Der Faden auf diesem Schirm</h3>
   <table>
-    <tr><td>Teilschritte</td><td><strong>Aufgabe → Schritt 1 → Schritt 2</strong>, senkrecht, 1,5 pt. Nicht 2,5: ein Schritt ist kein Ergebnis der Aufgabe, er gehört zu ihr. Die Schritte sind geordnet und umsortierbar — deshalb ist die Reihenfolge selbst eine Kante und der Faden keine Zierleiste. Gefüllter Punkt = erledigt, hohler = offen.</td></tr>
-    <tr><td>Herkunft</td><td><strong>Aufgabe → Quelle</strong>, waagerecht, 2,5 pt (<span class="num">--origin</span>: „A wurde zu B"). Knoten = die Aufgabe, Chip = Notiz „Zellbiologie" bzw. Canvas. Zwei Objekte, beide benannt — sonst stünde dort kein Faden.</td></tr>
-    <tr><td>kein Faden</td><td>Die Wochenreihe rechts (Mo–So mit Balken) bekommt keinen: sieben Tagesbalken sind eine Messreihe, keine Beziehung. Die Gruppentrenner und die Zeilenlinien bleiben <span class="num">--line</span>.</td></tr>
+    <tr><td>Herkunfts-Klammer</td><td><strong>Quelle → n Aufgaben</strong>, senkrecht, 2,5 pt (<span class="num">--origin</span>: „A wurde zu B"). Oben der 9-pt-Knoten mit der Quellzeile, darunter je Aufgabe ein 6-pt-Modulpunkt auf dem Faden. <strong>Richtung:</strong> Quelle oben, Ergebnis unten — dieselbe Leserichtung wie auf <span class="num">flashcards-home</span> und <span class="num">today</span>, und dieselbe, in der <span class="num">bewegung.js</span> ihn zeichnet. <strong>Knotengrad:</strong> am Knoten treffen zwei Fäden zusammen (senkrecht abwärts, waagerecht zur Quellzeile); die Zeilen selbst tragen Modulpunkte, keine Knoten. <strong>Enden:</strong> jedes Fadenstück endet auf einem Punkt (0,0 pt) oder grenzt nahtlos an das nächste Stück desselben Zuges — gemessen, nicht geschätzt.</td></tr>
+    <tr><td>der gekappte Faden</td><td><strong>Aufgabe → nichts.</strong> 2,5 pt, 12 pt lang, endet ohne Punkt: die Quelle liegt im Papierkorb. Zwei Merkmale — Form und Wort —, keine Farbe. Der einzige Ort im System, an dem ein freies Fadenende zulässig ist; er gehört deshalb in <span class="num">system.css §9.2</span> notiert.</td></tr>
+    <tr><td>Teilschritte</td><td><strong>Aufgabe → Schritt 1 → Schritt 2</strong>, senkrecht, 1,5 pt. Nicht 2,5: ein Schritt ist kein Ergebnis der Aufgabe, er gehört zu ihr. Die Schritte sind geordnet und umsortierbar — deshalb ist die Reihenfolge selbst eine Kante und der Faden keine Zierleiste. Gefüllter Punkt = erledigt, hohler = offen. Dasselbe Raster wie die Klammer, nur mit der schwächeren Stärke.</td></tr>
+    <tr><td>Fächer „Woher heute kommt"</td><td><strong>Zwei Quellen → ein Tag.</strong> Je eine quadratische Bézier mit 2,5 pt von den zwei Quellpunkten auf den 9-pt-Knoten „heute · 3 von 6". Die Krümmungen sind gestaffelt (die lange bleibt rechts und biegt unten ab, die kurze geht sofort nach links), damit sie nicht als ein Strang lesen, sondern aus zwei Richtungen am Knoten ankommen. Jede Kurve ist die Menge echter Kanten — es sind dieselben zwei Quellen, die links die Klammern tragen.</td></tr>
+    <tr><td>kein Faden</td><td>Die Wochenreihe rechts (Mo–So mit Balken) bekommt keinen: sieben Tagesbalken sind eine Messreihe, keine Beziehung. „ohne Herkunft <span class="num">2</span>" bekommt keinen: Abwesenheit einer Beziehung ist keine Beziehung. Die Durchstreichung erledigter Teilschritte ist eine <span class="num">text-decoration</span> in 1 pt und <span class="num">--line-tap</span>, kein eigenes Element — ein 1,5-pt-Strich in Ink neben einem Faden derselben Stärke wäre ein Faden, der durch die Wörter läuft. Die Gruppentrenner und die Zeilenlinien bleiben <span class="num">--line</span>.</td></tr>
   </table>
 
   <h3>Woher die Ideen stammen</h3>
@@ -641,7 +924,9 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
     <tr><td>Things 3 — Checkbox</td><td>Großes rundes Ziel, ruhiger Ring, wachsender Haken. Übernommen als <strong>.check.is-checking</strong> — der Moment, den man täglich zwanzigmal sieht, verdient Sorgfalt.</td></tr>
     <tr><td>Things 3 — Magic Plus</td><td>Erfassen ohne Modus. Übernommen, aber verlegt: iPhone unten über der Tab-Bar, iPad über der Liste. Bewertung: die Idee stimmt, der schwebende Ziehpunkt versteckt seine Funktion — ein sichtbares Feld nicht.</td></tr>
     <tr><td>Todoist — Sprache</td><td>„Laborprotokoll morgen 14 Uhr #labor !!!" in einem Zug. Übernommen und verschärft: die erkannten Werte stehen als eigene Chips unter dem Feld und sind einzeln antippbar. Todoist färbt nur ein und lässt raten.</td></tr>
-    <tr><td>TickTick — Ansichten</td><td>Liste · Planer · Matrix · Board (+ Kalender) auf demselben Datenbestand. Übernommen, aber an eine Stelle geholt; bei TickTick liegt die Wahl über drei Menüs verstreut.</td></tr>
+    <tr><td>TickTick — Ansichten</td><td>Liste · Planer · Matrix · Board · Kalender auf demselben Datenbestand — fünf Zellen in einem Segment. Übernommen, aber an eine Stelle geholt; bei TickTick liegt die Wahl über drei Menüs verstreut.</td></tr>
+    <tr><td>Notion — Gruppierungsachse</td><td>Gruppieren ist eine berechnete Ordnung, kein Ordnerbaum. Übernommen als „Bereich ▾" mit vier fertigen Achsen (Bereich · Herkunft · Frist · Ort). Die Achse <strong>Herkunft</strong> kann Notion nicht anbieten — dort entsteht nichts aus etwas anderem.</td></tr>
+    <tr><td>Todoist — Wiederkehr</td><td><strong>„every" gegen „every!"</strong> — absolut gegen abschlussbasiert. Richtig erkannt und dann in einem Ausrufezeichen versteckt. Übernommen als zwei Wörter statt eines Satzzeichens, plus einen dritten Modus, den keine Aufgaben-App haben kann: „wenn das Deck fällig ist".</td></tr>
     <tr><td>Sorted / Amazing Marvin</td><td>Termin und Frist sind zwei Felder. Übernommen als zwei Chips mit verschiedener Grammatik — grau mit Uhr, rot mit Flagge und Resttagen.</td></tr>
   </table>
 
@@ -669,11 +954,11 @@ Aufgabenliste ist Arbeitsmaterial und spricht durchgehend Sans.
 
   <h3>Warum award-würdig</h3>
   <p><strong>Interaktion:</strong> Ein Satz genügt — „Laborprotokoll morgen 14 Uhr #labor !!!" wird zu Datum, Uhrzeit, Tag, Priorität und Bereich, und jede dieser fünf Entscheidungen ist als eigener Chip sichtbar und mit einem Tipp korrigierbar. Kein Formular, kein Nachkontrollieren.</p>
-  <p><strong>Innovation:</strong> Der Herkunfts-Chip. Eine Aufgabe ist hier kein Zettel ohne Vorgeschichte: „Laborprotokoll Zellkultur schreiben" trägt die Notiz „Zellbiologie", „Übungsblatt 5 fertig rechnen" trägt das Canvas. Ein Tipp führt zurück an die Stelle, an der die Aufgabe entstand — das kann keine reine Aufgaben-App.</p>
+  <p><strong>Innovation:</strong> Die Herkunfts-Klammer. Herkunft ist hier kein Etikett an der Zeile, sondern die Ordnung der Liste: die Quelle steht einmal oben im Knoten, und der Faden hält alles zusammen, was aus ihr entstanden ist. Rechts führt derselbe Gedanke zwei Quellen auf einen Tagesknoten zusammen — „Drei von sechs sind gestern in der Vorlesung entstanden." Things hat keine Notizen, Todoist keine Herkunft, TickTick fünf Module ohne eine Kante dazwischen. Und weil Herkunft eine Zusage ist, zeigt Velum auch ihren Verlust: der gekappte Faden an „Statistik-Blatt 4 abgeben".</p>
   <p><strong>Inklusion:</strong> Frist und Termin sind ohne jede Farbwahrnehmung zu unterscheiden — verschiedene Wörter („Geplant 16:00" / „noch 0 Tage"), verschiedene Symbole (Uhr / Flagge) und verschiedene Umrisse (gefüllt / umrandet). Rot ist die dritte Bestätigung, nie die einzige. Alle Ziele sind mindestens <span class="num">44</span> pt hoch, die Checkbox trägt zusätzlich den weichen Hof.</p>
 
   <h3>Zwei-Merkmal-Regel</h3>
-  <p>Kein Zustand hängt an Farbe allein. <strong>Aktiv</strong> = Fläche + Gewicht (+ Balken in der Sidebar). <strong>Ausgewählt</strong> = Fläche + Ring + fetter Titel. <strong>Frist</strong> = rotes Wort + Flaggen-Symbol + Umriss statt Füllung. <strong>Geplant</strong> = graue Fläche + Uhr-Symbol + das Wort „Geplant". <strong>Wiederholung</strong> = Kreispfeil + das Wort „Wöchentlich". <strong>Ortserinnerung</strong> = Nadel-Symbol + der Ort im Klartext. <strong>Erledigt</strong> = gefüllte Fläche + Haken. Modul-Dots sind 6 pt und stehen nie ohne ihr Wort.</p>
+  <p>Kein Zustand hängt an Farbe allein. <strong>Aktiv</strong> = Fläche + Gewicht (+ Balken in der Sidebar). <strong>Ausgewählt</strong> = Fläche + Ring + fetter Titel. <strong>Frist</strong> = rotes Wort + Flaggen-Symbol + Umriss statt Füllung. <strong>Geplant</strong> = graue Fläche + Uhr-Symbol + das Wort „Geplant". <strong>Wiederholung</strong> = Kreispfeil + der Satz „wenn das Deck fällig ist" + der Lernkarten-Punkt. <strong>Verlorene Herkunft</strong> = gekappter Faden + das Wort „Quelle im Papierkorb". <strong>Ortserinnerung</strong> = Nadel-Symbol + der Ort im Klartext. <strong>Erledigt</strong> = gefüllte Fläche + Haken. Modul-Dots sind 6 pt und stehen nie ohne ihr Wort.</p>
   <p><strong>Was inline ergänzt wurde</strong> (system.css blieb unangetastet): der Bereichs-Dot ist ein <strong>.dot</strong> mit Ink-Füllung statt Modul-Farbe — Bereiche sind keine Module und bekommen deshalb keine eigene Buntfarbe, das unterscheidende Merkmal ist das Wort; die Hinterlegung der erkannten Wörter im Erfassungsfeld ist <strong>accent-soft</strong> mit feiner Randlinie; die Swipe-Aktion ist eine Ink-Fläche mit <strong>accent-on</strong>-Text unter der verschobenen Zeile; die zweite <strong>.segmented</strong>-Gruppe („Kalender") ist dieselbe Komponente, nur abgesetzt, weil diese Ansicht Termine hinzumischt und damit die Liste verlässt.</p>
 </div>
 

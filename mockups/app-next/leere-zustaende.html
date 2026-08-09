@@ -41,15 +41,31 @@ Drei Entscheidungen dazu, die keine Selbstverständlichkeiten sind:
    Stärke sagt Nähe. Eine Beziehung, die es noch gar nicht gibt, darf nicht
    „stark" behaupten. Erst wenn die Karte wirklich aus dem Absatz entstanden
    ist, wird derselbe Faden zum Herkunftsfaden (.thread--origin) — nachzusehen
-   auf flashcards-home.html.
+   auf flashcards-home.html. Das gilt auch für die Absatzschiene in der
+   Lernkarten-Karte: sie trägt dieselben 1,5 pt wie die Schiene am
+   ausgewählten Knoten in graph.html.
 
-3. DER PAPIERKORB LÄUFT ANDERSHERUM. Fünf Fäden gehen vom Vorhandenen zum
-   Fehlenden. Beim Papierkorb ist das Fehlende der ANFANG: gelöscht wird immer
-   etwas, das aus einem Modul kommt. Der hohle Punkt steht deshalb links, der
-   Knoten „Papierkorb" rechts — Richtung ist Kausalität, und die kehrt sich
-   hier um. Es ist der einzige Ort, an dem der hohle Punkt eine gute Nachricht
-   ist, und der einzige mit einem Knoten: im Papierkorb treffen Fäden aus
-   allen fünf Modulen zusammen.
+3. ALLE SECHS LAUFEN JETZT GLEICH — auch der Papierkorb. Er tat es bis
+   Runde 2 nicht: dort stand der hohle Punkt links und ein 9-pt-Knoten rechts,
+   mit der Begründung, gelöscht werde immer etwas, das aus einem Modul kommt.
+   Zwei Fehler in einem Bild, ausgerechnet auf dem Schirm, dessen einzige
+   Aufgabe es ist, die Konvention vorzuführen (Befund M8): die Richtung war
+   gedreht, und der Knoten hatte genau einen Faden — einen Knoten gibt es aber
+   erst, wo zwei zusammenlaufen. Jetzt steht auch hier das Vorhandene links
+   („Zellbiologie") und das Fehlende rechts („nicht gelöscht"). Die Kante
+   bleibt echt und bleibt dieselbe: aus dem Bestand wandert Gelöschtes in den
+   Korb — es ist nur noch nichts gewandert. Der Papierkorb bleibt der einzige
+   Ort, an dem der hohle Punkt eine gute Nachricht ist.
+
+4. DER ZWISCHENZUSTAND — WOCHE 2, NICHT TAG 1. Velums Wert wächst mit dem
+   Bestand; die Konkurrenz ist am ersten Tag fertig. Ein Leerschirm, der nur
+   „noch keine Karte" sagt, ist deshalb für den falschen Zeitpunkt entworfen.
+   Die Lernkarten-Karte zeigt jetzt die Wochen 1 bis 3: die Absatzschiene der
+   Notiz „Zellbiologie" — oben der gefüllte Notizpunkt, darunter drei HOHLE
+   Absatzpunkte. Drei Stellen sind markiert, aus keiner ist etwas geworden.
+   Es ist dasselbe Bauteil wie am ausgewählten Knoten in graph.html, nur klein,
+   und der hohle Punkt ist dort wie hier ein GRIFF: daran ziehen erzeugt die
+   Karte.
 
 KEINE BEWEGUNG AUF DIESEM SCHIRM — begründet, nicht vergessen
 bewegung.css und bewegung.js sind hier NICHT eingebunden, und das ist eine
@@ -172,9 +188,9 @@ beginnt).
 
         <main class="content">
           <div class="navbar">
-            <div class="serif--screen-title">Erster Tag</div>
+            <div class="serif--screen-title">Die ersten Wochen</div>
             <div class="navbar__spacer"></div>
-            <span class="t-sub c-3">So sieht die App aus, bevor etwas darin steht</span>
+            <span class="t-sub c-3">So sieht die App aus, bevor etwas daraus geworden ist</span>
           </div>
 
           <!-- KEIN RASTER MIT FESTER HÖHE. Die Runde-1-Fassung war ein
@@ -283,23 +299,38 @@ beginnt).
                 <span class="dot dot--cards"></span>
                 <span class="t-label c-3">LERNKARTEN</span>
               </div>
-              <div class="empty__title serif--empty-title">Noch keine Karten</div>
-              <p class="t-sub c-2" style="margin:0">Karten entstehen beim Schreiben. „Zellbiologie" hat 14 Absätze — markiere einen Satz.</p>
+              <div class="empty__title serif--empty-title">Drei Stellen warten</div>
+              <p class="t-sub c-2" style="margin:0">Aus „Zellbiologie" ist noch keine Karte geworden — markiert ist schon.</p>
               <div style="flex:1 1 auto; min-height:6px"></div>
 
-              <!-- FADEN 3 · Notiz „Zellbiologie", Absatz → (noch keine Karte).
-                   Kante: Herkunft. Genau dieser Faden wird auf
-                   flashcards-home.html zum 2,5-pt-Herkunftsfaden, sobald die
-                   erste Karte existiert. -->
-              <div class="threadrow">
-                <span class="dot dot--notes"></span>
-                <svg class="thread thread--h"></svg>
-                <span class="dot dot--hollow"></span>
+              <!-- ══ DER ZWISCHENZUSTAND · WOCHE 2, NICHT TAG 1 ══
+                   Velums Wert wächst mit dem Bestand, und die Konkurrenz ist am
+                   ersten Tag fertig. Ein Leerschirm, der nur „noch keine Karte"
+                   sagt, ist deshalb für den falschen Zeitpunkt entworfen: Die
+                   Wochen 1 bis 3 sehen anders aus — es ist schon Material da,
+                   nur ist noch nichts daraus geworden. Genau das steht hier:
+                   die Absatzschiene der Notiz (dasselbe Bauteil wie am
+                   ausgewählten Knoten in graph.html, nur klein), oben der
+                   gefüllte Notizpunkt, darunter drei HOHLE Absatzpunkte — drei
+                   markierte Stellen, aus denen noch nichts entstanden ist.
+                   Der hohle Punkt ist dabei nicht nur Anzeige, sondern GRIFF:
+                   daran ziehen erzeugt die Karte. -->
+              <div style="display:flex; gap:11px; align-items:flex-start">
+                <span style="position:relative; width:10px; flex:none; height:72px">
+                  <svg class="thread thread--v" style="position:absolute; left:0; top:3px; width:10px; height:66px"></svg>
+                  <span class="dot dot--notes"  style="position:absolute; left:2px; top:0"></span>
+                  <span class="dot dot--hollow" style="position:absolute; left:2px; top:22px"></span>
+                  <span class="dot dot--hollow" style="position:absolute; left:2px; top:44px"></span>
+                  <span class="dot dot--hollow" style="position:absolute; left:2px; top:66px"></span>
+                </span>
+                <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:6px">
+                  <span class="t-label c-3" style="line-height:16px">Notiz „Zellbiologie"</span>
+                  <span class="t-label c-3" style="line-height:16px">Absatz 3 — markiert</span>
+                  <span class="t-label c-3" style="line-height:16px">Absatz 7 — markiert</span>
+                  <span class="t-label c-3" style="line-height:16px">Absatz 11 — markiert</span>
+                </span>
               </div>
-              <div style="display:flex; justify-content:space-between; gap:8px">
-                <span class="t-label c-3">Notiz „Zellbiologie"</span>
-                <span class="t-label c-3">keine Karte</span>
-              </div>
+              <div class="t-label c-3" style="margin-top:1px">Zieh an einem hohlen Punkt — daraus wird eine Karte.</div>
               <button class="btn btn--sm" style="width:100%; margin-top:3px"><span class="ico" data-ico="notes" style="width:16px;height:16px"></span>Notiz öffnen</button>
             </section>
 
@@ -343,19 +374,25 @@ beginnt).
               <p class="t-sub c-2" style="margin:0">Gelöschtes bliebe 30 Tage hier liegen.</p>
               <div style="flex:1 1 auto; min-height:6px"></div>
 
-              <!-- FADEN 5 · GEGENRICHTUNG. Gelöschtes kommt aus einem Modul in
-                   den Papierkorb; das Fehlende ist hier der Anfang, nicht das
-                   Ende. Deshalb steht der hohle Punkt links und der Knoten
-                   rechts — im Papierkorb treffen Fäden aus allen fünf Modulen
-                   zusammen, und genau das ist ein Knoten. -->
+              <!-- FADEN 5 · Bis Runde 2 stand hier die GEGENRICHTUNG: hohler
+                   Punkt links, 9-pt-Knoten rechts. Das war auf dem einen
+                   Schirm, dessen ganze Aufgabe es ist, die Konvention
+                   vorzuführen, zweimal daneben (Befund M8) — die Richtung
+                   gedreht, und ein Knoten, an dem sich nichts trifft. Jetzt
+                   liest er wie die fünf anderen: was da ist links, was fehlt
+                   rechts, der Faden von der Ursache zur Wirkung. Die Kante ist
+                   echt: aus dem Bestand wandert Gelöschtes in den Papierkorb —
+                   nur ist bisher nichts gewandert, deshalb ist das rechte Ende
+                   hohl. Ein Knoten steht hier nicht mehr: an dieser Stelle
+                   trifft genau ein Faden ein, und ein Knoten braucht zwei. -->
               <div class="threadrow">
-                <span class="dot dot--hollow"></span>
+                <span class="dot dot--notes"></span>
                 <svg class="thread thread--h"></svg>
-                <span class="dot dot--node"></span>
+                <span class="dot dot--hollow"></span>
               </div>
               <div style="display:flex; justify-content:space-between; gap:8px">
-                <span class="t-label c-3">nichts gelöscht</span>
-                <span class="t-label c-3">Papierkorb</span>
+                <span class="t-label c-3">Notiz „Zellbiologie"</span>
+                <span class="t-label c-3">nicht gelöscht</span>
               </div>
               <div class="t-label c-3" style="margin-top:2px; padding:2px 0">Der einzige Ort, an dem das gut ist.</div>
             </section>
@@ -464,16 +501,26 @@ beginnt).
 
           <div class="divider" style="margin:2px 0 0"><span class="t-label c-3">LERNKARTEN</span></div>
           <section class="card">
-            <div class="empty__title serif--empty-title">Noch keine Karten</div>
-            <p class="t-sub c-2" style="margin:4px 0 10px">Markiere einen Satz in einer Notiz — daraus wird eine Karte.</p>
-            <div class="threadrow">
-              <span class="dot dot--notes"></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot dot--hollow"></span>
-            </div>
-            <div style="display:flex; justify-content:space-between; gap:8px; margin:2px 0 11px">
-              <span class="t-label c-3">„Zellbiologie" · 14 Absätze</span>
-              <span class="t-label c-3">keine Karte</span>
+            <div class="empty__title serif--empty-title">Drei Stellen warten</div>
+            <p class="t-sub c-2" style="margin:4px 0 10px">Aus „Zellbiologie" ist noch keine Karte geworden — markiert ist schon. Zieh an einem hohlen Punkt.</p>
+            <!-- Derselbe Zwischenzustand wie auf dem iPad: die Absatzschiene
+                 der Notiz, oben der gefüllte Punkt, darunter drei hohle. Nicht
+                 „noch keine Karte", sondern „aus dieser Notiz ist noch nichts
+                 geworden — drei Stellen sind schon markiert". -->
+            <div style="display:flex; gap:12px; align-items:flex-start; margin-bottom:11px">
+              <span style="position:relative; width:10px; flex:none; height:72px">
+                <svg class="thread thread--v" style="position:absolute; left:0; top:3px; width:10px; height:66px"></svg>
+                <span class="dot dot--notes"  style="position:absolute; left:2px; top:0"></span>
+                <span class="dot dot--hollow" style="position:absolute; left:2px; top:22px"></span>
+                <span class="dot dot--hollow" style="position:absolute; left:2px; top:44px"></span>
+                <span class="dot dot--hollow" style="position:absolute; left:2px; top:66px"></span>
+              </span>
+              <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:6px">
+                <span class="t-label c-3" style="line-height:16px">Notiz „Zellbiologie" · 14 Absätze</span>
+                <span class="t-label c-3" style="line-height:16px">Absatz 3 — markiert</span>
+                <span class="t-label c-3" style="line-height:16px">Absatz 7 — markiert</span>
+                <span class="t-label c-3" style="line-height:16px">Absatz 11 — markiert</span>
+              </span>
             </div>
             <!-- Der erste Schritt fehlte hier: die Karte nannte den Weg nur im
                  Satz („markiere einen Satz in einer Notiz"), ohne ihn gehbar
@@ -506,7 +553,7 @@ beginnt).
     <tr><td>Bibliothek</td><td>Fach „Biologie" (steht in der Sidebar) <strong>→</strong> hohler Punkt „kein Notizbuch". Kante: Ein Notizbuch gehört zu genau einem Fach.</td></tr>
     <tr><td>Lernkarten</td><td>Notiz „Zellbiologie", 14 Absätze <strong>→</strong> hohler Punkt „keine Karte". Kante: Herkunft — dieselbe, die auf <span class="num">flashcards-home.html</span> als 2,5-pt-Faden wiederkommt, sobald die Karte existiert.</td></tr>
     <tr><td>Aufgaben</td><td>Aufgabe „Protokoll abgeben", morgen fällig <strong>→</strong> hohler Punkt „heute nichts". Kante: Eine Aufgabe hängt an einem Tag; die Aufgabe gibt es, ihre Verbindung zu heute nicht.</td></tr>
-    <tr><td>Papierkorb</td><td><strong>Gegenrichtung.</strong> Hohler Punkt „nichts gelöscht" <strong>→</strong> Knoten „Papierkorb". Gelöschtes kommt aus einem Modul <em>in</em> den Korb; das Fehlende ist hier der Anfang. Einziger Knoten des Schirms, weil hier Fäden aus allen fünf Modulen zusammenlaufen — und der einzige hohle Punkt, der eine gute Nachricht ist.</td></tr>
+    <tr><td>Papierkorb</td><td><strong>Seit Runde 3 dieselbe Richtung wie die fünf anderen.</strong> Modulpunkt „Zellbiologie" <strong>→</strong> hohler Punkt „nicht gelöscht". Vorher lief er umgekehrt und endete auf einem 9-pt-Knoten — auf dem Schirm, der die Konvention vorführt, zweimal daneben: gedrehte Richtung, und ein Knoten mit nur einem Faden. Die Kante ist unverändert echt (aus dem Bestand wandert Gelöschtes in den Korb), nur ist noch nichts gewandert. Er bleibt der einzige hohle Punkt, der eine gute Nachricht ist.</td></tr>
     <tr><td>Graph</td><td>Notiz „Zellbiologie" <strong>→</strong> hohler Punkt „zweite fehlt". Kante: Eine Graph-Kante verbindet zwei Notizen; genau eine davon gibt es.</td></tr>
   </table>
 
@@ -546,7 +593,8 @@ beginnt).
     <tr><td>leer</td><td>Sechs Varianten: Heute, Bibliothek, Lernkarten, Aufgaben, Papierkorb, Graph.</td></tr>
     <tr><td>gefüllt</td><td>Die Vorschlagskarten sind echte Inhalte — der leere Screen ist nie ganz leer.</td></tr>
     <tr><td>aktiv</td><td>„Heute" in der Sidebar: Fläche + Gewicht + Ink-Balken. Der Tagespunkt trägt den Ink-Ring.</td></tr>
-    <tr><td>Sonderfall</td><td>Der Papierkorb ist der einzige Ort, an dem Leere eine gute Nachricht ist — und der einzige, an dem der Faden andersherum läuft.</td></tr>
+    <tr><td>Sonderfall</td><td>Der Papierkorb ist der einzige Ort, an dem Leere eine gute Nachricht ist. Andersherum läuft sein Faden seit Runde 3 nicht mehr.</td></tr>
+    <tr><td>Zwischenzustand</td><td><strong>Die Lernkarten-Karte zeigt Woche 2, nicht Tag 1.</strong> Nicht „noch keine Karte", sondern „aus dieser Notiz ist noch nichts geworden — drei Stellen sind schon markiert". Gezeichnet als kleine Absatzschiene: oben der gefüllte Notizpunkt, darunter drei hohle Absatzpunkte, dazwischen der 2,5-pt-Faden. Das ist der Zustand, in dem Velum am schwächsten dasteht und in dem der Nutzer entscheidet, ob er bleibt — und es ist der einzige Schirm im Bestand, der ihn zeichnet.</td></tr>
   </table>
 
   <h3>Warum award-würdig</h3>

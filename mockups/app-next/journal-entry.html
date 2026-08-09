@@ -6,6 +6,36 @@
 <title>Journal-Eintrag — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
 <link rel="stylesheet" href="../shared/bewegung.css">
+<style>
+/* ──────────────────────────────────────────────────────────────────────────
+   Nur für diesen Schirm.
+
+   1) Die Kette am iPhone (.jek) — dieselbe Grammatik wie die .chain am iPad,
+      nur um 90° gedreht: drei beschriftete Stationen auf einem senkrechten
+      2,5-pt-Faden. Jede Zeile ist eine eigene Rasterzeile mit zwei Zellen
+      (Rinne · Inhalt); das Fadenstück füllt die Rinnenzelle, der Punkt sitzt
+      absolut auf ihrer Mitte. Dadurch trifft der Punkt immer die Mitte SEINER
+      Zeile, und kein Fadenende hängt frei.
+   2) Die anspringbaren Kettenglieder am iPad (.chain__link--tap) bekommen
+      eine Fläche beim Zeigen — die ruhende Auskunft trägt der Chevron.
+   ────────────────────────────────────────────────────────────────────────── */
+.jek              { display: grid; grid-template-columns: 20px minmax(0,1fr); align-items: stretch; }
+.jek__rinne       { position: relative; }
+.jek__marke       { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 1; }
+/* Stumpfe Enden: an den Nähten zwischen zwei Stücken desselben Zuges
+   würden zwei runde Köpfe übereinanderliegen und wie ein Punkt aussehen. */
+.jek .thread > *  { stroke-linecap: butt; }
+.jek__zug         { position: absolute; left: 50%; margin-left: -5px; width: 10px; }
+.jek__zug--ab     { top: 50%; height: 50%; }
+.jek__zug--durch  { top: 0;   height: 100%; }
+.jek__zug--an     { top: 0;   height: 50%; }
+.jek__stat        { display: flex; flex-direction: column; gap: 2px; align-items: flex-start;
+                    width: 100%; min-height: 44px; padding: 5px 8px 5px 6px; text-align: left; }
+.jek__zeile       { display: flex; align-items: center; gap: 7px; width: 100%; }
+.jek__stat:hover  { background: var(--fill); border-radius: 9px; }
+
+.chain__link--tap:hover { background: var(--fill); }
+</style>
 </head>
 <body>
 
@@ -203,52 +233,59 @@ Schirm im ganzen Entwurf, an dem er gilt. Blankes .serif kommt nicht mehr vor.
                   </div>
                 </div>
 
-                <!-- Sprachnotiz — läuft gerade (Zwischenzustand) -->
-                <div class="card card--flat" style="margin-top:11px; padding:9px 14px">
-                <div style="display:flex; align-items:center; gap:14px">
-                  <button style="width:44px; height:44px; flex:none; border-radius:50%; background:var(--accent); box-shadow:0 0 0 6px var(--accent-soft); display:flex; align-items:center; justify-content:center; gap:4px">
-                    <i style="width:3.5px; height:15px; border-radius:1px; background:var(--accent-on)"></i>
-                    <i style="width:3.5px; height:15px; border-radius:1px; background:var(--accent-on)"></i>
-                  </button>
-                  <div style="flex:1 1 auto; min-width:0">
-                    <div style="display:flex; align-items:center; gap:7px; margin-bottom:7px; white-space:nowrap">
-                      <span class="ico c-3" data-ico="mic" style="width:14px;height:14px"></span>
-                      <span class="t-label c-2">Sprachnotiz aus dem Labor</span>
-                      <span class="t-label c-3">· spielt</span>
-                      <div style="flex:1"></div>
-                      <span class="t-label c-3 num">0:47 / 1:24</span>
-                    </div>
-                    <div style="position:relative; display:flex; align-items:center; gap:2px; height:30px">
-                      <i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:27px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:23px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:26px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:26px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:16px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:13px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:23px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:27px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:6px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:7px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:27px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:24px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:25px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:16px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:28px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--fill-3)"></i>
-                      <span style="position:absolute; left:56%; top:-4px; bottom:-4px; width:2px; border-radius:1px; background:var(--ink-1)"></span>
-                    </div>
-                  </div>
-                </div>
+                <!-- ══ EINE TONSPUR, ZWEI MARKEN ══
+                     Bis Runde 3 standen hier zwei gestapelte Wellenform-
+                     Kästen — das Vokabular von Sprachmemos, zweimal
+                     untereinander. Jetzt ist es EINE Spur: eine durchgehende
+                     1-px-Grundlinie, und darauf zwei Marken, dort wo Ton
+                     aufgenommen wurde. Zwischen ihnen läuft die Grundlinie
+                     ohne Marke weiter — der Nachmittag, in dem nichts
+                     aufgenommen wurde, ist damit sichtbar.
 
-                <!-- Nachtrag — wird JETZT aufgenommen. Die laufende Wellenform
-                     ist die einzige Dauerbewegung im ganzen System und hat einen
-                     harten Grund: sie sagt „das Mikrofon hört gerade", und das
-                     muss ununterbrochen wahr bleiben. Ein stehendes Bild kann
-                     das nicht. Sie läuft ohne eine Zeile JavaScript in diesem
-                     Schirm: .bw-welle.is-an aus bewegung.css, die Balken baut
-                     bewegung.js beim Start aus data-balken.
-                     Zwei-Merkmal: laufende Balken + das Wort „nimmt auf" +
-                     die mitlaufende Zeit. Kein Rot — Rot gehört Frist und
-                     Löschen, nicht dem Mikrofon. -->
-                <div style="display:flex; align-items:center; gap:14px; margin-top:8px; padding-top:8px; border-top:1px solid var(--line)">
-                  <button style="width:44px; height:44px; flex:none; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center" aria-label="Aufnahme beenden">
-                    <i style="width:14px; height:14px; border-radius:3px; background:var(--accent-on)"></i>
-                  </button>
-                  <div style="flex:1 1 auto; min-width:0">
-                    <div style="display:flex; align-items:center; gap:7px; margin-bottom:3px; white-space:nowrap">
-                      <span class="ico c-3" data-ico="mic" style="width:14px;height:14px"></span>
-                      <span class="t-label c-2">Nachtrag · nimmt auf</span>
-                      <div style="flex:1"></div>
-                      <span class="t-label c-3 num">0:12</span>
-                    </div>
-                    <div class="bw-welle is-an" data-balken="38" style="height:20px"></div>
+                     Ausdrücklich KEIN Faden: die Spur verbindet keine zwei
+                     Objekte, sie misst Zeit. Sie trägt deshalb nichts vom
+                     Faden-Vokabular — keine Fadenfarbe, keine runde
+                     Strichkappe, keinen 6-pt-Punkt am Ende, keinen Ring; die
+                     Marken sind Balkenfelder, und eine Fläche wird nie mit
+                     einem Strich verwechselt (dieselbe Prüfung, die N8 dem
+                     Stimmungsverlauf auferlegt).
+
+                     Die zweite Marke nimmt gerade auf. Sie ist die einzige
+                     Dauerbewegung im System und hat einen harten Grund: sie
+                     sagt „das Mikrofon hört gerade", und das muss
+                     ununterbrochen wahr bleiben. .bw-welle.is-an aus
+                     bewegung.css, ohne eine Zeile JavaScript in diesem
+                     Schirm. Kein Rot — Rot gehört Frist und Löschen. -->
+                <div class="card card--flat" style="margin-top:11px; padding:9px 14px 10px">
+                  <div style="display:flex; align-items:center; gap:7px; margin-bottom:8px; white-space:nowrap">
+                    <span class="ico c-3" data-ico="mic" style="width:14px;height:14px"></span>
+                    <span class="t-label c-2">TON</span>
+                    <span class="t-label c-3">· eine Spur, zwei Marken</span>
+                    <div style="flex:1"></div>
+                    <span class="t-label c-3 num">1:36 aufgenommen</span>
                   </div>
-                </div>
+                  <div style="display:flex; align-items:center; gap:12px">
+                    <button style="width:44px; height:44px; flex:none; border-radius:50%; background:var(--accent); box-shadow:0 0 0 6px var(--accent-soft); display:flex; align-items:center; justify-content:center; gap:4px" aria-label="Sprachnotiz anhalten">
+                      <i style="width:3.5px; height:15px; border-radius:1px; background:var(--accent-on)"></i>
+                      <i style="width:3.5px; height:15px; border-radius:1px; background:var(--accent-on)"></i>
+                    </button>
+                    <div style="flex:1 1 auto; min-width:0">
+                      <div style="position:relative; display:flex; align-items:center; gap:14px; height:30px">
+                        <span style="position:absolute; left:0; right:0; top:50%; height:1px; background:var(--line)"></span>
+                        <div style="flex:64 1 0; min-width:0; position:relative; display:flex; align-items:center; gap:2px; height:30px"><i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:27px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:23px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:26px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:26px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:16px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:10px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:13px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:23px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:27px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:6px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:7px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:19px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i>
+                          <span style="position:absolute; left:56%; top:-4px; bottom:-4px; width:2px; border-radius:1px; background:var(--ink-1)"></span>
+                        </div>
+                        <div style="flex:22 1 0; min-width:0"><div class="bw-welle is-an" data-balken="20" style="height:22px"></div></div>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; gap:12px; margin-top:5px; white-space:nowrap">
+                        <span class="t-label c-3" style="min-width:0; overflow:hidden; text-overflow:ellipsis">Sprachnotiz · <span class="num">0:47 / 1:24</span></span>
+                        <span class="t-label c-3" style="flex:none">Nachtrag · nimmt auf · <span class="num">0:12</span></span>
+                      </div>
+                    </div>
+                    <button style="width:44px; height:44px; flex:none; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center" aria-label="Aufnahme beenden">
+                      <i style="width:14px; height:14px; border-radius:3px; background:var(--accent-on)"></i>
+                    </button>
+                  </div>
                 </div>
 
                 <!-- Der Fluss: DREI Knoten auf einem Faden der Stärke --origin.
@@ -262,9 +299,17 @@ Schirm im ganzen Entwurf, an dem er gilt. Blankes .serif kommt nicht mehr vor.
                 <div class="divider" style="margin:8px 0 4px"><span class="t-label c-3">VERBUNDEN</span></div>
                 <div class="card" style="padding:0; overflow:hidden">
                   <div class="chain">
-                    <button class="chain__link" style="text-align:left">
-                      <span class="dot dot--node chain__knot"></span>
-                      <span class="chain__eyebrow t-label">ENTSTANDEN AUS</span>
+                    <!-- Die beiden äußeren Stationen tragen genau EINEN Faden.
+                         Nach N7 ist das kein Knoten, sondern ein gefüllter
+                         Modulpunkt; der Knoten steht nur in der Mitte, wo
+                         zwei Fäden zusammenlaufen. Und jede der beiden
+                         anspringbaren Stationen trägt jetzt einen Chevron —
+                         dasselbe Bauteil trug ihn auf today.html längst, hier
+                         fehlte er, und damit war das Signaturbauteil des
+                         Schirms sein leisestes. -->
+                    <button class="chain__link chain__link--tap" style="text-align:left">
+                      <span class="dot dot--notes chain__knot"></span>
+                      <span class="chain__eyebrow t-label" style="white-space:nowrap">ENTSTANDEN AUS</span><span class="ico c-3" data-ico="chevR" style="width:14px;height:14px; position:absolute; right:10px; top:26px"></span>
                       <span style="margin:2px 0 2px"><span class="origin"><span class="dot dot--notes"></span>Zellbiologie</span></span>
                       <span class="t-sub c-3">Notiz · 12. Nov</span>
                     </button>
@@ -275,10 +320,10 @@ Schirm im ganzen Entwurf, an dem er gilt. Blankes .serif kommt nicht mehr vor.
                       <span class="t-sub is-strong clamp-1" style="margin:2px 0 2px">12. November</span>
                       <span class="t-sub c-3">Journal · 22:10</span>
                     </div>
-                    <button class="chain__link" style="text-align:left">
+                    <button class="chain__link chain__link--tap" style="text-align:left">
                       <svg class="thread thread--h thread--origin"></svg>
-                      <span class="dot dot--node chain__knot"></span>
-                      <span class="chain__eyebrow t-label">DARAUS WURDE</span>
+                      <span class="dot dot--tasks chain__knot"></span>
+                      <span class="chain__eyebrow t-label" style="white-space:nowrap">DARAUS WURDE</span><span class="ico c-3" data-ico="chevR" style="width:14px;height:14px; position:absolute; right:10px; top:26px"></span>
                       <span style="margin:2px 0 2px"><span class="chip"><span class="dot dot--tasks"></span>Laborprotokoll</span></span>
                       <span class="t-sub c-3">Aufgabe · offen</span>
                     </button>
@@ -455,7 +500,7 @@ Schirm im ganzen Entwurf, an dem er gilt. Blankes .serif kommt nicht mehr vor.
           <div style="margin-top:7px">
             <p class="serif--voice" style="margin:0">Die Woche war voll, aber heute hat die Laborgruppe mich getragen — Jana und Milan haben das Protokoll auseinandergenommen.</p>
             <p class="serif--voice" style="margin:4px 0 0">Kurz vor fünf erklärte ich die Färbung noch einmal von vorn, und Jana hat den Satz vor mir zu Ende gebracht. Milan malte die Skizze frei an die Tafel.</p>
-            <p class="serif--voice" style="margin:4px 0 0">Prof. Wendt kam vorbei und korrigierte nichts. Auf dem Rückweg über den Campus war ich zum ersten Mal seit September ruhig.</p>
+            <p class="serif--voice" style="margin:4px 0 0">Prof. Wendt kam vorbei und korrigierte nichts. Auf dem Rückweg war ich zum ersten Mal seit September ruhig.</p>
           </div>
 
           <!-- Fotos als Reihe — dieselben drei Aufnahmen, 400er Fassung -->
@@ -471,50 +516,73 @@ Schirm im ganzen Entwurf, an dem er gilt. Blankes .serif kommt nicht mehr vor.
             </div>
           </div>
 
-          <!-- Sprachnotiz — läuft gerade -->
-          <div class="card card--flat" style="margin-top:7px; padding:5px 11px; display:flex; align-items:center; gap:10px">
-            <button style="width:44px; height:44px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Sprachnotiz anhalten">
-              <span style="width:36px; height:36px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 5px var(--accent-soft); display:flex; align-items:center; justify-content:center; gap:3.5px">
-                <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
-                <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
-              </span>
-            </button>
-            <div style="flex:1 1 auto; min-width:0">
-              <div style="display:flex; align-items:center; gap:6px; margin-bottom:5px; white-space:nowrap">
-                <span class="ico c-3" data-ico="mic" style="width:13px;height:13px"></span>
-                <span class="t-label c-2">Sprachnotiz · spielt</span>
-                <div style="flex:1"></div>
-                <span class="t-label c-3 num">0:47 / 1:24</span>
+          <!-- Dieselbe eine Spur mit zwei Marken wie am iPad. -->
+          <div class="card card--flat" style="margin-top:7px; padding:6px 11px 8px">
+            <div style="display:flex; align-items:center; gap:10px">
+              <button style="width:44px; height:44px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Sprachnotiz anhalten">
+                <span style="width:34px; height:34px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); display:flex; align-items:center; justify-content:center; gap:3.5px">
+                  <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
+                  <i style="width:3px; height:12px; border-radius:1px; background:var(--accent-on)"></i>
+                </span>
+              </button>
+              <div style="flex:1 1 auto; min-width:0">
+                <div style="position:relative; display:flex; align-items:center; gap:10px; height:22px">
+                  <span style="position:absolute; left:0; right:0; top:50%; height:1px; background:var(--line)"></span>
+                  <div style="flex:64 1 0; min-width:0; position:relative; display:flex; align-items:center; gap:2px; height:22px"><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:4px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:4px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:13px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:13px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--fill-3)"></i>
+                    <span style="position:absolute; left:56%; top:-3px; bottom:-3px; width:2px; border-radius:1px; background:var(--ink-1)"></span>
+                  </div>
+                  <div style="flex:22 1 0; min-width:0"><div class="bw-welle is-an" data-balken="12" style="height:18px"></div></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; gap:8px; margin-top:3px; white-space:nowrap">
+                  <span class="t-label c-3" style="min-width:0; overflow:hidden; text-overflow:ellipsis">Sprachnotiz · <span class="num">0:47 / 1:24</span></span>
+                  <span class="t-label c-3" style="flex:none">Nachtrag · <span class="num">0:12</span></span>
+                </div>
               </div>
-              <div style="position:relative; display:flex; align-items:center; gap:2px; height:20px">
-                <i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:4px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:4px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:13px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--ink-1)"></i><i style="flex:1 1 0; min-width:0; height:13px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:14px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:21px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:8px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:11px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:9px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:12px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:18px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:22px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:17px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:15px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:4px; border-radius:1.5px; background:var(--fill-3)"></i><i style="flex:1 1 0; min-width:0; height:5px; border-radius:1.5px; background:var(--fill-3)"></i>
-                <span style="position:absolute; left:56%; top:-3px; bottom:-3px; width:2px; border-radius:1px; background:var(--ink-1)"></span>
-              </div>
+              <button style="width:38px; height:38px; flex:none; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center" aria-label="Aufnahme beenden">
+                <i style="width:12px; height:12px; border-radius:3px; background:var(--accent-on)"></i>
+              </button>
             </div>
           </div>
 
-          <!-- Derselbe laufende Nachtrag wie am iPad, eine Zeile hoch -->
-          <div class="card card--flat" style="margin-top:6px; padding:3px 10px; display:flex; align-items:center; gap:9px">
-            <button style="width:44px; height:44px; flex:none; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center" aria-label="Aufnahme beenden">
-              <i style="width:12px; height:12px; border-radius:3px; background:var(--accent-on)"></i>
+          <!-- Dieselbe Kette wie am iPad, nur senkrecht — und mit derselben
+               Grammatik: drei beschriftete Stationen auf EINEM Faden, die
+               mittlere ist dieser Eintrag. Bis Runde 3 stand hier
+               Chip · Faden · nackter Knoten · Faden · Chip: die Mittelstation
+               ohne Beschriftung, der Knoten ohne Bedeutung, und alle vier
+               Fadenenden frei in der Luft (gemessen 42,8 / 11,5 / 11,5 /
+               20,0 pt). Jetzt sitzt jedes Ende auf einem Punkt. -->
+          <div class="jek" style="margin-top:8px">
+            <div class="jek__rinne">
+              <svg class="thread thread--v thread--origin jek__zug jek__zug--ab"></svg>
+              <span class="dot dot--notes jek__marke"></span>
+            </div>
+            <button class="jek__stat">
+              <span class="t-label c-3">ENTSTANDEN AUS</span>
+              <span class="jek__zeile"><span class="origin"><span class="dot dot--notes"></span>Zellbiologie</span><span class="t-label c-3">Notiz · 12. Nov</span><span style="flex:1"></span><span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span></span>
             </button>
-            <span class="t-label c-2" style="flex:none; white-space:nowrap">Nachtrag · nimmt auf</span>
-            <div class="bw-welle is-an" data-balken="16" style="flex:1 1 auto; min-width:0; height:20px"></div>
-            <span class="t-label c-3 num" style="flex:none">0:12</span>
-          </div>
 
-          <!-- Der Fluss — derselbe Faden wie am iPad, nur in einer Zeile.
-               Der Knoten in der Mitte ist dieser Eintrag; erst dadurch sind
-               beide Fadenstücke echte Kanten und nicht eine erfundene
-               Verbindung von der Notiz zur Aufgabe. -->
-          <div class="threadrow" style="margin-top:8px">
-            <button style="flex:none; height:44px; display:inline-flex; align-items:center; padding:0"><span class="origin"><span class="dot dot--notes"></span>Zellbiologie</span></button>
-            <svg class="thread thread--h thread--origin" style="margin:0 7px"></svg>
-            <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
-            <svg class="thread thread--h thread--origin" style="margin:0 7px"></svg>
-            <button style="flex:none; height:44px; display:inline-flex; align-items:center; padding:0"><span class="chip"><span class="dot dot--tasks"></span>Laborprotokoll</span></button>
+            <div class="jek__rinne">
+              <!-- Zwei Stücke, die sich AUF dem Knoten treffen: erst dadurch
+                   ist er nach N7 einer. Ein durchlaufendes Stück wäre ein
+                   Faden, an dem ein Punkt hängt — kein Treffpunkt. -->
+              <svg class="thread thread--v thread--origin jek__zug jek__zug--an"></svg>
+              <svg class="thread thread--v thread--origin jek__zug jek__zug--ab"></svg>
+              <span class="dot dot--node jek__marke" style="--node-ring: var(--ground)"></span>
+            </div>
+            <div class="jek__stat" style="background:var(--accent-soft); border-radius:9px">
+              <span class="t-label c-3"><span class="dot dot--journal"></span> DIESER EINTRAG</span>
+              <span class="jek__zeile"><span class="t-sub is-strong">12. November</span><span class="t-label c-3">Journal · 22:10</span></span>
+            </div>
+
+            <div class="jek__rinne">
+              <svg class="thread thread--v thread--origin jek__zug jek__zug--an"></svg>
+              <span class="dot dot--tasks jek__marke"></span>
+            </div>
+            <button class="jek__stat">
+              <span class="t-label c-3">DARAUS WURDE</span>
+              <span class="jek__zeile"><span class="chip"><span class="dot dot--tasks"></span>Laborprotokoll</span><span class="t-label c-3">Aufgabe · offen</span><span style="flex:1"></span><span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span></span>
+            </button>
           </div>
-          <div class="t-label c-3" style="margin-top:4px">Aus der Notiz wurde dieser Eintrag, daraus die Aufgabe.</div>
 
           <!-- Kontext-Leiste, halb aufgeklappt (Zwischenzustand) -->
           <section class="card" style="margin-top:7px; padding:0; overflow:hidden">
@@ -583,9 +651,9 @@ Schirm im ganzen Entwurf, an dem er gilt. Blankes .serif kommt nicht mehr vor.
 
   <h3>Der Faden auf diesem Schirm</h3>
   <table>
-    <tr><td>Die Kette unten</td><td><strong>Notiz → dieser Eintrag → Aufgabe</strong>, zwei Fäden der Stärke <span class="num">--origin</span> (2,5 pt), drei Knoten. Beide Fäden sind echte Kanten. Runde 1 hatte zwei Glieder; ein Strich dazwischen hätte <em>Notiz → Aufgabe</em> behauptet — eine Kante, die das Datenmodell nicht kennt. Deshalb ist der Eintrag selbst das mittlere Glied, getönt und als einziges kein Knopf.</td></tr>
+    <tr><td>Die Kette unten</td><td><strong>Notiz → dieser Eintrag → Aufgabe</strong>, zwei Fäden der Stärke <span class="num">--origin</span> (2,5 pt), links nach rechts bzw. am iPhone oben nach unten. Beide Fäden sind echte Kanten. Runde 1 hatte zwei Glieder; ein Strich dazwischen hätte <em>Notiz → Aufgabe</em> behauptet — eine Kante, die das Datenmodell nicht kennt. Deshalb ist der Eintrag selbst das mittlere Glied, getönt und als einziges kein Knopf. <strong>Drei Korrekturen aus Runde 3:</strong> (1) Die beiden äußeren Stationen trugen einen 9-pt-Knoten, obwohl dort genau ein Faden endet — nach N7 ist das keiner; sie tragen jetzt ihren gefüllten Modulpunkt, der Knoten steht nur noch in der Mitte, wo sich zwei Fäden treffen. (2) Am iPhone war das Bauteil ein anderes: Chip · Faden · <em>nackter</em> Knoten · Faden · Chip — die Mittelstation ohne Beschriftung, und alle vier Fadenenden frei (gemessen 42,8 / 11,5 / 11,5 / 20,0 pt). Jetzt steht dort dieselbe Kette senkrecht, mit denselben drei Beschriftungen, und jedes Ende sitzt auf einem Punkt: <strong>null freie Fadenenden auf diesem Schirm</strong>. (3) Die beiden anspringbaren Glieder trugen keinen Chevron, obwohl dasselbe Bauteil ihn auf <span class="num">today.html</span> längst hatte — das Signaturbauteil des Schirms war sein leisestes. Jetzt tragen beide einen, auf beiden Geräten.</td></tr>
     <tr><td>iPhone</td><td>Derselbe Faden in einer Zeile: Chip · Faden · Knoten · Faden · Chip. Der Knoten in der Mitte ist wieder dieser Eintrag; die Zeile darunter sagt es aus, damit der Punkt nicht allein steht.</td></tr>
-    <tr><td>kein Faden</td><td>Weder der Foto-Streifen noch die Wellenform noch der Stimmungs-Regler bekommen einen. Drei Fotos nebeneinander sind keine Beziehung, und ein Regler verbindet keine zwei Objekte. Die Trennlinien bleiben <span class="num">--line</span>.</td></tr>
+    <tr><td>kein Faden</td><td>Weder der Foto-Streifen noch die Tonspur noch der Stimmungs-Regler bekommen einen. Drei Fotos nebeneinander sind keine Beziehung, ein Regler verbindet keine zwei Objekte — und die Tonspur misst Zeit, statt zwei Objekte zu verbinden. Sie trägt deshalb <em>nichts</em> vom Faden-Vokabular: keine Fadenfarbe, keine runde Strichkappe, keinen 6-pt-Punkt am Ende, keinen Ring. Ihre Marken sind Balkenfelder, und eine Fläche wird nie mit einem Strich verwechselt. Das ist dieselbe Prüfung, die N8 dem Stimmungsverlauf auferlegt, hier von vornherein bestanden. Die Trennlinien bleiben <span class="num">--line</span>.</td></tr>
   </table>
 
   <h3>Woher die Ideen stammen</h3>
@@ -610,8 +678,9 @@ Schirm im ganzen Entwurf, an dem er gilt. Blankes .serif kommt nicht mehr vor.
     <tr><td>gefüllt</td><td>Der gezeigte Zustand: Titel, drei Absätze, drei Fotos, eine Sprachnotiz, Stimmung 3, Energie 4, Ort und Wetter, zwei Kategorien, zwei Tags.</td></tr>
     <tr><td>ausgewählt</td><td>Stimmungsstufe 3: getönte Fläche + Ring + Balken in Ink + Zahl in 600 + das Wort „Ausgeglichen". Energie 4: Füllung bis 75 % + Reglerknopf + „4" in 600 auf der Skala.</td></tr>
     <tr><td>aktiv</td><td>„Journal" in der Sidebar (Fläche + Gewicht + Ink-Balken), „Bibliothek" in der Tab-Bar, der Stern in der Navigationsleiste (Fläche + Ink statt Grau).</td></tr>
-    <tr><td>Zwischenzustand 1</td><td><strong>Die Sprachnotiz läuft.</strong> Die Wellenform ist bis 0:47 in Ink gefüllt, dahinter grau; die Abspielposition steht als Ink-Strich im Bild; der Knopf zeigt Pause und trägt den weichen Ring, den auch die Checkbox in der Erledigen-Animation trägt.</td></tr>
-    <tr><td>Zwischenzustand 2</td><td><strong>Der Nachtrag wird aufgenommen.</strong> Die Wellenform läuft — 38 Balken, Maßstab 0,35 ↔ 1 in 900 ms, je Balken um 70 ms versetzt. Es ist die einzige Dauerbewegung im System, und sie hat einen harten Grund: sie sagt „das Mikrofon hört gerade", und das muss ununterbrochen wahr bleiben. Sie braucht keine Zeile JavaScript in diesem Schirm — <span class="num">.bw-welle.is-an</span> genügt. Unter <em>Bewegung reduzieren</em> stehen die Balken auf ihrem Grundprofil still; dann trägt die mitlaufende Zeit den Beweis. Kein Rot: Rot gehört Frist und Löschen, nicht dem Mikrofon.</td></tr>
+    <tr><td>Ton: eine Spur, zwei Marken</td><td>Bis Runde 3 standen hier <strong>zwei gestapelte Wellenform-Kästen</strong> — das Vokabular von Sprachmemos, zweimal untereinander, und die Lautstärke ist die einzige Eigenschaft einer Vorlesungsaufnahme, die über den Eintrag nichts aussagt. Jetzt ist es <strong>eine Spur</strong>: eine durchgehende 1-px-Grundlinie, darauf zwei Marken — dort, wo Ton aufgenommen wurde. Zwischen ihnen läuft die Grundlinie ohne Marke weiter; die Stunden, in denen nichts aufgenommen wurde, sind damit sichtbar. Das spart am iPhone genau die Höhe, die die Kette braucht, um ganz ins Bild zu kommen.</td></tr>
+    <tr><td>Zwischenzustand 1</td><td><strong>Die Sprachnotiz läuft.</strong> Die erste Marke ist bis 0:47 in Ink gefüllt, dahinter grau; die Abspielposition steht als Ink-Strich im Bild; der Knopf zeigt Pause und trägt den weichen Ring, den auch die Checkbox in der Erledigen-Animation trägt.</td></tr>
+    <tr><td>Zwischenzustand 2</td><td><strong>Der Nachtrag wird aufgenommen.</strong> Die zweite Marke läuft — 20 Balken, Maßstab 0,35 ↔ 1 in 900 ms, je Balken um 70 ms versetzt. Es ist die einzige Dauerbewegung im System, und sie hat einen harten Grund: sie sagt „das Mikrofon hört gerade", und das muss ununterbrochen wahr bleiben. Sie braucht keine Zeile JavaScript in diesem Schirm — <span class="num">.bw-welle.is-an</span> genügt. Unter <em>Bewegung reduzieren</em> stehen die Balken auf ihrem Grundprofil still; dann trägt die mitlaufende Zeit den Beweis. Kein Rot: Rot gehört Frist und Löschen, nicht dem Mikrofon.</td></tr>
     <tr><td>Zwischenzustand 3</td><td><strong>Die Kontext-Leiste auf dem iPhone klappt gerade auf.</strong> Sie sagt es selbst („klappt auf …"), das Winkelzeichen zeigt schon nach oben, die Stimmung steht vollständig da — und „Energie · 4 von 5" verläuft am unteren Rand noch im Papier. Wer wartet, sieht auch Ort, Wetter und Tags.</td></tr>
     <tr><td>leer</td><td>Ein Eintrag ohne Fotos, ohne Sprachnotiz und ohne Verknüpfung zeigt nur Datum, Titel und Text; die Kontext-Spalte behält Ort, Wetter und Zeiten, weil die automatisch anfallen. Es gibt keinen leeren Eintrag ohne Text — dann ist es ein Entwurf (siehe Journal-Home).</td></tr>
   </table>

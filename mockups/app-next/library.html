@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bibliothek — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
+<style>
+/* R4 (docs/05): ein Knopf, der nur aus einem Wort besteht, bekommt dasselbe
+   unsichtbare 44-pt-Ziel wie die sieben Bausteine in system.css §5.9.
+   Das Ziel wächst, das Zeichen nicht. */
+.tap44 { position: relative; }
+.tap44::after { content: ""; position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%; min-width: var(--tap); height: 100%; min-height: var(--tap); }
+</style>
 </head>
 <body>
 
@@ -32,7 +41,7 @@ Aussage, keines Dekor:
                 Punkte auf jedem Papier denselben Grund haben.
   3 PUNKTE      Auf dem Rücken sitzt jede Stelle, an der ETWAS AUS DEM BUCH
                 ENTSTANDEN IST — als 6-pt-Punkt in der Farbe des Moduls, in das
-                es ging, auf der Höhe der Stelle im Buch. Hohl = noch offen.
+                es ging, auf der Höhe der Stelle im Buch. Hohl = geplant, noch nicht da — und sonst nichts.
                 Ein Buch, aus dem nichts entstanden ist, hat einen glatten
                 Rücken, und das sieht man. Damit trägt der Deckel Velums
                 Alleinstellung schon im Regal: Herkunft ist sichtbar, bevor man
@@ -205,13 +214,19 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                   </span>
                   <span class="count__n num">3</span>
                 </button>
+                <!-- Ein BLICK aus dem Graphen — Filter + Zeitfenster +
+                     Wurzelknoten — ist derselbe Gegenstand wie ein
+                     Smart-Ordner. Deshalb steht er hier in derselben Form,
+                     mit demselben Wort und demselben Zähler wie im Kopf von
+                     graph.html. Es kommt nichts hinzu, zwei Dinge fallen
+                     zusammen. -->
                 <button class="card card--flat" style="height:58px; padding:0 10px; display:flex; align-items:center; gap:8px; text-align:left">
-                  <span class="ico c-2" data-ico="share" style="width:20px;height:20px"></span>
+                  <span class="ico c-2" data-ico="graph" style="width:20px;height:20px"></span>
                   <span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
-                    <span class="t-body is-strong clamp-1">Geteilt</span>
-                    <span class="t-label c-3 clamp-1" style="font-weight:400">Jana, Milan</span>
+                    <span class="t-body is-strong clamp-1">Prüfung Februar</span>
+                    <span class="t-label c-3 clamp-1" style="font-weight:400">aus dem Graphen</span>
                   </span>
-                  <span class="count__n num">2</span>
+                  <span class="count__n num">14</span>
                 </button>
               </div>
             </section>
@@ -232,8 +247,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                   <div class="book__socket"></div>
                   <a class="book__cover paper--faser-alabaster" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:31%; height:64%"></svg>
                       <span class="dot dot--cards book__pt" style="--at:31%"></span>
                       <span class="dot dot--cards book__pt" style="--at:46%"></span>
                       <span class="dot dot--tasks book__pt" style="--at:64%"></span>
@@ -252,8 +266,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--kraft-natur" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:28%; height:67%"></svg>
                       <span class="dot dot--journal book__pt" style="--at:28%"></span>
                       <span class="dot dot--tasks dot--hollow book__pt" style="--at:52%"></span>
                       <span class="dot dot--journal book__pt" style="--at:72%"></span>
@@ -272,8 +285,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--marmor-tinte" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:42%; height:53%"></svg>
                       <span class="dot dot--cards book__pt" style="--at:42%"></span>
                       <span class="dot dot--notes book__pt" style="--at:95%"></span>
                     </span>
@@ -289,8 +301,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--leinen-nebel" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:22%; height:73%"></svg>
                       <span class="dot dot--cards book__pt" style="--at:22%"></span>
                       <span class="dot dot--cards book__pt" style="--at:36%"></span>
                       <span class="dot dot--cards book__pt" style="--at:50%"></span>
@@ -312,8 +323,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                     <img class="book__photo" src="../assets/bilder/journal/labor-400.jpg" alt="Laborbank mit Pipette und Petrischalen">
                     <span class="book__scrim"></span>
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:38%; height:57%"></svg>
                       <span class="dot dot--journal book__pt" style="--at:38%"></span>
                       <span class="dot dot--cards book__pt" style="--at:60%"></span>
                       <span class="dot dot--journal book__pt" style="--at:95%"></span>
@@ -330,8 +340,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--millimeter-blass" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:26%; height:69%"></svg>
                       <span class="dot dot--tasks book__pt" style="--at:26%"></span>
                       <span class="dot dot--tasks dot--hollow book__pt" style="--at:44%"></span>
                       <span class="dot dot--tasks dot--hollow book__pt" style="--at:58%"></span>
@@ -350,8 +359,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--buetten-taupe" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:30%; height:65%"></svg>
                       <span class="dot dot--cards book__pt" style="--at:30%"></span>
                       <span class="dot dot--cards book__pt" style="--at:50%"></span>
                       <span class="dot dot--cards book__pt" style="--at:70%"></span>
@@ -369,9 +377,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--millimeter-stein" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
-                      <span class="dot dot--canvas book__pt" style="--at:95%"></span>
+                      <span class="dot dot--canvas book__pt" style="--at:62%"></span>
                     </span>
                     <span class="book__title serif--cover-title book__title--xl">Statistik</span>
                   </a>
@@ -385,9 +391,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--buetten-elfenbein" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
-                      <span class="dot dot--notes book__pt" style="--at:95%"></span>
+                      <span class="dot dot--notes dot--hollow book__pt" style="--at:50%"></span>
                     </span>
                     <span class="book__title serif--cover-title book__title--xl">Zitate</span>
                   </a>
@@ -403,8 +407,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                     <img class="book__photo" src="../assets/bilder/journal/herbstweg-400.jpg" alt="Herbstlicher Waldweg im Gegenlicht">
                     <span class="book__scrim"></span>
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:58%; height:37%"></svg>
                       <span class="dot dot--journal book__pt" style="--at:58%"></span>
                       <span class="dot dot--journal book__pt" style="--at:95%"></span>
                     </span>
@@ -421,8 +424,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--leinen-sand" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:47%; height:48%"></svg>
                       <span class="dot dot--tasks book__pt" style="--at:47%"></span>
                       <span class="dot dot--canvas book__pt" style="--at:95%"></span>
                     </span>
@@ -451,9 +453,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--marmor-schiefer" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
-                      <span class="dot dot--canvas book__pt" style="--at:95%"></span>
+                      <span class="dot dot--canvas book__pt" style="--at:78%"></span>
                     </span>
                     <span class="book__title serif--cover-title book__title--l">Diagramme</span>
                   </a>
@@ -467,8 +467,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--faser-hanf" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:38%; height:57%"></svg>
                       <span class="dot dot--cards book__pt" style="--at:38%"></span>
                       <span class="dot dot--canvas book__pt" style="--at:95%"></span>
                     </span>
@@ -484,9 +483,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--kraft-graubraun" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
-                      <span class="dot dot--notes book__pt" style="--at:95%"></span>
+                      <span class="dot dot--notes book__pt" style="--at:40%"></span>
                     </span>
                     <span class="book__title serif--cover-title">Lese&shy;notizen Sozio&shy;logie</span>
                   </a>
@@ -500,8 +497,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--faser-alabaster" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:40%; height:55%"></svg>
                       <span class="dot dot--tasks dot--hollow book__pt" style="--at:40%"></span>
                       <span class="dot dot--tasks dot--hollow book__pt" style="--at:62%"></span>
                       <span class="dot dot--tasks book__pt" style="--at:95%"></span>
@@ -518,8 +514,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--leinen-nebel" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                      <svg class="thread thread--v thread--origin" style="top:66%; height:29%"></svg>
                       <span class="dot dot--journal book__pt" style="--at:66%"></span>
                       <span class="dot dot--journal book__pt" style="--at:95%"></span>
                     </span>
@@ -535,9 +530,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <article class="book book--sm">
                   <a class="book__cover paper--millimeter-stein" href="#">
                     <span class="book__spine">
-                      <svg class="thread thread--v thread--origin"></svg>
-                      <span class="dot dot--hollow book__pt" style="--at:5%"></span>
-                      <span class="dot dot--canvas book__pt" style="--at:95%"></span>
+                      <span class="dot dot--canvas book__pt" style="--at:55%"></span>
                     </span>
                     <span class="book__title serif--cover-title book__title--l">Skizzen Mikro&shy;skop</span>
                   </a>
@@ -556,20 +549,20 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
                 <div style="padding:4px 10px 7px; display:flex; align-items:center; gap:7px">
                   <span class="dot dot--notes"></span><span class="t-label c-3">Zellbiologie</span>
                 </div>
-                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left">
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:44px; padding:0 10px; border-radius:9px; text-align:left">
                   <span class="ico c-2" data-ico="edit" style="width:18px;height:18px"></span><span class="t-body">Umbenennen</span>
                 </button>
-                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left">
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:44px; padding:0 10px; border-radius:9px; text-align:left">
                   <span class="ico c-2" data-ico="layers" style="width:18px;height:18px"></span><span class="t-body">Duplizieren</span>
                 </button>
-                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left">
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:44px; padding:0 10px; border-radius:9px; text-align:left">
                   <span class="ico c-2" data-ico="folder" style="width:18px;height:18px"></span><span class="t-body">Verschieben</span>
                 </button>
-                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left">
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:44px; padding:0 10px; border-radius:9px; text-align:left">
                   <span class="ico c-2" data-ico="star" style="width:18px;height:18px"></span><span class="t-body">Zu Favoriten</span>
                 </button>
                 <div style="height:1px; background:var(--line); margin:5px 10px"></div>
-                <button style="display:flex; align-items:center; gap:11px; width:100%; height:36px; padding:0 10px; border-radius:9px; text-align:left; color:var(--danger)">
+                <button style="display:flex; align-items:center; gap:11px; width:100%; height:44px; padding:0 10px; border-radius:9px; text-align:left; color:var(--danger)">
                   <span class="ico" data-ico="trash" style="width:18px;height:18px"></span><span class="t-body">Löschen</span>
                 </button>
               </div>
@@ -639,7 +632,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
               <span class="t-label c-3">ALLE NOTIZBÜCHER</span>
               <span class="t-label c-3 num">18</span>
               <span style="flex:1 1 auto; height:1px; background:var(--line)"></span>
-              <button class="t-label c-3" style="display:inline-flex; align-items:center; gap:4px">Geändert<span class="ico" data-ico="chevD" style="width:13px;height:13px"></span></button>
+              <button class="t-label c-3 tap44" style="display:inline-flex; align-items:center; gap:4px">Geändert<span class="ico" data-ico="chevD" style="width:13px;height:13px"></span></button>
             </div>
 
             <div class="shelf shelf--2" style="gap:18px 16px">
@@ -647,8 +640,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
               <article class="book is-selected">
                 <a class="book__cover paper--faser-alabaster" href="#">
                   <span class="book__spine">
-                    <svg class="thread thread--v thread--origin"></svg>
-                    <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                    <svg class="thread thread--v thread--origin" style="top:31%; height:64%"></svg>
                     <span class="dot dot--cards book__pt" style="--at:31%"></span>
                     <span class="dot dot--cards book__pt" style="--at:46%"></span>
                     <span class="dot dot--tasks book__pt" style="--at:64%"></span>
@@ -666,8 +658,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
               <article class="book">
                 <a class="book__cover paper--kraft-natur" href="#">
                   <span class="book__spine">
-                    <svg class="thread thread--v thread--origin"></svg>
-                    <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                    <svg class="thread thread--v thread--origin" style="top:28%; height:67%"></svg>
                     <span class="dot dot--journal book__pt" style="--at:28%"></span>
                     <span class="dot dot--tasks dot--hollow book__pt" style="--at:52%"></span>
                     <span class="dot dot--journal book__pt" style="--at:72%"></span>
@@ -685,8 +676,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
               <article class="book">
                 <a class="book__cover paper--marmor-tinte" href="#">
                   <span class="book__spine">
-                    <svg class="thread thread--v thread--origin"></svg>
-                    <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                    <svg class="thread thread--v thread--origin" style="top:42%; height:53%"></svg>
                     <span class="dot dot--cards book__pt" style="--at:42%"></span>
                     <span class="dot dot--notes book__pt" style="--at:95%"></span>
                   </span>
@@ -701,8 +691,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
               <article class="book">
                 <a class="book__cover paper--leinen-nebel" href="#">
                   <span class="book__spine">
-                    <svg class="thread thread--v thread--origin"></svg>
-                    <span class="dot dot--hollow book__pt" style="--at:5%"></span>
+                    <svg class="thread thread--v thread--origin" style="top:22%; height:73%"></svg>
                     <span class="dot dot--cards book__pt" style="--at:22%"></span>
                     <span class="dot dot--cards book__pt" style="--at:36%"></span>
                     <span class="dot dot--cards book__pt" style="--at:50%"></span>
@@ -751,14 +740,15 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
   <h3>Das Cover-System — vier Merkmale, jedes mit einer Aussage</h3>
   <table>
     <tr><td>Papier</td><td>Zwölf Sorten aus echten Bildpunkten (Faser, Leinen, Kraft, Marmor, Bütten, Millimeter). Der Nutzer wählt beim Anlegen, die Wahl bleibt. Der Wertebereich ist gemessen: von <span class="num">L=0,27</span> (kraft-graubraun) bis <span class="num">L=0,98</span> (millimeter-blass) — kein Satz aus zwölf Grautönen, sondern hell, mittel, dunkel, gemustert und gerastert.</td></tr>
-    <tr><td>Rücken</td><td><strong>Der Buchrücken ist ein Faden.</strong> Senkrecht, Stärke <code>--origin</code> (2,5 pt), oben die erste Seite, unten die letzte — der Faden hat eine Richtung, und die Richtung ist die Seitenfolge. Er sitzt in einem eigenen Materialstreifen (Halbband), damit Faden und Punkte auf allen zwölf Papieren denselben Grund haben und gerechnet statt geschätzt werden können.</td></tr>
-    <tr><td>Punkte</td><td>Auf dem Rücken sitzt jede Stelle, an der <strong>etwas aus dem Buch entstanden ist</strong> — eine Lernkarte, eine Aufgabe, ein Journaleintrag —, als 6-pt-Punkt in der Farbe des Moduls, in das es ging, auf der Höhe der Stelle im Buch. Hohl = noch offen. Das ist eine echte Kante im Datenmodell, kein Muster: „Wendt · Vorlesung" trägt fünf rosa Punkte, weil daraus Lernkarten wurden; „Zitate" trägt nur die beiden Enden seines Fadens, weil daraus noch nichts geworden ist. Damit trägt der Deckel Velums Alleinstellung schon im Regal.</td></tr>
+    <tr><td>Rücken</td><td><strong>Der Buchrücken ist ein Faden.</strong> Senkrecht, Stärke <code>--origin</code> (2,5 pt), von oben nach unten — die Richtung ist die Seitenfolge. Er beginnt und endet <em>an den Punkten selbst</em>: am ersten und am letzten Ereignis des Buches. Bis Runde 2 lief er von 5 auf 95 Prozent und trug oben einen <em>hohlen</em> Punkt als Seitenanfang — damit hieß hohl auf demselben Rücken zweierlei (Buchanfang und offene Aufgabe), und das obere Ende war ohne Grund anders gebaut als das untere. Beides ist behoben: <strong>hohl heißt hier nur noch „geplant, noch nicht da"</strong>, und ein Buch mit genau einem Ereignis trägt den Punkt allein — kein Faden ohne zweiten Punkt. Er sitzt in einem eigenen Materialstreifen (Halbband), damit Faden und Punkte auf allen zwölf Papieren denselben Grund haben und gerechnet statt geschätzt werden können.</td></tr>
+    <tr><td>Punkte</td><td>Auf dem Rücken sitzt jede Stelle, an der <strong>etwas aus dem Buch entstanden ist</strong> — eine Lernkarte, eine Aufgabe, ein Journaleintrag —, als 6-pt-Punkt in der Farbe des Moduls, in das es ging, auf der Höhe der Stelle im Buch. Hohl = geplant, noch nicht da. Das ist eine echte Kante im Datenmodell, kein Muster: „Wendt · Vorlesung" trägt fünf rosa Punkte, weil daraus Lernkarten wurden; „Zitate" trägt einen einzigen <em>hohlen</em> Notizen-Punkt und keinen Faden, weil dort zwar eine Stelle markiert ist, daraus aber noch nichts geworden ist. Vier weitere Bücher tragen genau einen Punkt und ebenfalls keinen Faden. Damit trägt der Deckel Velums Alleinstellung schon im Regal.</td></tr>
     <tr><td>Titelsatz</td><td>Der Titel füllt den Satzspiegel: <span class="num">28</span> für „Zitate", <span class="num">20</span> für „Prüfungsfragen", <span class="num">17</span> für „Lesenotizen Soziologie" — kurz wird groß, lang wird klein. Vier Stufen, alle aus der Fünferskala; es kommt keine Größe dazu. Ein Buch trägt seinen Titel gesetzt, nicht beschriftet — deshalb steht er auf dem Deckel und <em>nicht</em> noch einmal darunter.</td></tr>
+    <tr><td>Blick = Smart-Ordner</td><td>Der vierte Smart-Ordner heißt „Prüfung Februar · 14" und ist <strong>derselbe Gegenstand</strong> wie der Blick im Kopf von <span class="num">graph.html</span>: Filter + Zeitfenster + Wurzelknoten. Ein gespeicherter Ausschnitt aus Zoom und Koordinaten wäre beim ersten Umbau falsch; ein Ausschnitt aus Filter und Herkunft bleibt richtig — und er darf selbst im Graphen liegen und selbst Herkunft haben. Deshalb steht er hier in der Form, die dieser Schirm für Sichten schon hatte, mit demselben Wort und demselben Zähler. Es kommt kein Bauteil hinzu, zwei Dinge fallen zusammen.</td></tr>
     <tr><td>Foto-Deckel</td><td>Zwei Bücher tragen statt Papier ein Bild des Nutzers („Praktikum Zellkultur", „Exkursion Harz"). Der Titel wandert dann nach unten auf einen Verlauf, weil ein Foto oben sein Motiv hat und unten meist Grund. Der Rücken bleibt derselbe — die Grammatik ändert sich nicht, nur das Material.</td></tr>
   </table>
 
   <h3>Der Prüfstein: „Genetik II" finden, ohne zu lesen</h3>
-  <p>Das Buch steht in der ersten Reihe an dritter Stelle. Es ist das einzige mit <strong>dunkel marmoriertem Papier</strong>, dazu einer der vier ganz kurzen Titel in der größten Stufe und ein Rücken mit nur drei Punkten. Drei unabhängige Merkmale, und keines davon ist Farbe. Zum Vergleich der Härtefall: „Fragen an Wendt" (Reihe 3) benutzt <em>dasselbe</em> Papier wie „Zellbiologie" (Reihe 1) — unterschieden sind sie durch Titelgröße, Zeilenzahl und vier hohle grüne gegen fünf gemischte Punkte am Rücken. Auch bei wiederholtem Papier trägt das System.</p>
+  <p>Das Buch steht in der ersten Reihe an dritter Stelle. Es ist das einzige mit <strong>dunkel marmoriertem Papier</strong>, dazu einer der vier ganz kurzen Titel in der größten Stufe und ein Rücken mit nur drei Punkten. Drei unabhängige Merkmale, und keines davon ist Farbe. Zum Vergleich der Härtefall: „Fragen an Wendt" (Reihe 3) benutzt <em>dasselbe</em> Papier wie „Zellbiologie" (Reihe 1) — unterschieden sind sie durch Titelgröße, Zeilenzahl und zwei hohle grüne gegen vier gemischte Punkte am Rücken. Auch bei wiederholtem Papier trägt das System.</p>
 
   <h3>Woher die Ideen stammen</h3>
   <table>
@@ -783,7 +773,7 @@ die vier Stufen des Deckeltitels stehen sämtlich in dieser Skala.
     <tr><td>ausgewählt</td><td>„Zellbiologie": getönte Fläche unter der ganzen Kachel, 3-pt-Ring um den Deckel und die Bildunterschrift in 600 — drei Merkmale, keines davon Farbe.</td></tr>
     <tr><td>Zwischenzustand</td><td>Das ausgewählte Buch ist <strong>angehoben</strong>: der Sockel liegt noch an der alten Stelle, <span class="num">12</span> pt tiefer, der Deckel schwebt darüber, und das Kontextmenü ist darunter aufgefahren.</td></tr>
     <tr><td>Laden</td><td>„Klausur Februar" lädt aus iCloud — Skelettfläche, das Wort „wird geladen", Balken bei <span class="num">62 %</span>. Nur hier steht der Titel ausnahmsweise unter dem Deckel: der Deckel ist noch nicht da und kann ihn nicht tragen.</td></tr>
-    <tr><td>offen</td><td>Hohle Punkte am Rücken sind noch nicht erledigte Aufgaben — bei „Semesterplanung" zwei, bei „Fragen an Wendt" zwei von dreien.</td></tr>
+    <tr><td>offen</td><td>Hohle Punkte am Rücken sind noch nicht erledigte Aufgaben — bei „Semesterplanung" zwei von fünf, bei „Fragen an Wendt" zwei von dreien. Auf diesem Schirm bedeutet hohl seit Runde 3 <em>nur</em> das.</td></tr>
     <tr><td>leer</td><td>Ohne Notizbücher zeigt die Bibliothek <code>.empty</code>: „Noch kein Notizbuch. Leg eins an — das Papier wählst du beim Öffnen." mit dem Knopf „Neues Notizbuch".</td></tr>
   </table>
 

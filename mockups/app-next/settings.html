@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Einstellungen — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
+<style>
+/* Bei der großen Schriftstufe passen zwei Karten nicht mehr nebeneinander:
+   die Beschriftungen der Geräte-Karte liefen über die rechte Kante des
+   Schirms hinaus (gemessen: Karte endet bei 1231 pt auf 1194 pt Breite).
+   Statt die Wörter zu kürzen, bricht die Zeile um — dieselbe Antwort, die
+   iOS bei Dynamic Type überall gibt. min-width:0 dazu, damit die linke
+   Spalte überhaupt schrumpfen darf. */
+.set2 > * { min-width: 0; }
+:root[data-type="gross"] .set2 { grid-template-columns: 1fr !important; }
+</style>
 <link rel="stylesheet" href="../shared/bewegung.css">
 <style>
 /* ──────────────────────────────────────────────────────────────────────────
@@ -265,7 +275,7 @@ Skala selbst, keine Simulation.
                    dort, wo man ihn sucht, und nicht an siebter Stelle. -->
               <div class="bl__liste">
               <div class="sidebar__grouptitle t-label bl__titel">DEINE SACHEN</div>
-              <button class="navitem"><span class="ico" data-ico="cloud"></span><span class="t-body">Sync</span><span class="navitem__count" style="color:var(--danger);display:flex;align-items:center"><span class="ico" data-ico="alert" style="width:17px;height:17px"></span></span></button>
+              <button class="navitem"><span class="ico" data-ico="cloud"></span><span class="t-body">Synchronisierung</span><span class="navitem__count" style="color:var(--danger);display:flex;align-items:center"><span class="ico" data-ico="alert" style="width:17px;height:17px"></span></span></button>
               <button class="navitem"><span class="ico" data-ico="box"></span><span class="t-body">Speicher</span><span class="navitem__count t-label num">4,2 GB</span></button>
               <button class="navitem"><span class="ico" data-ico="share"></span><span class="t-body">Export &amp; Backup</span></button>
               <button class="navitem"><span class="ico" data-ico="lock"></span><span class="t-body">Datenschutz</span></button>
@@ -427,8 +437,85 @@ Skala selbst, keine Simulation.
                   </div>
                 </section>
 
+
+                <!-- ══ Sync-Fehler ══ -->
+                <div class="notice notice--error" style="align-items:center; padding:8px 14px">
+                  <span class="ico" data-ico="alert"></span>
+                  <div class="notice__text" style="flex:1; min-width:0">
+                    <div class="t-body is-strong">Letzte Synchronisierung fehlgeschlagen</div>
+                    <div class="t-sub c-2 clamp-1">Verbindung prüfen · 3 Änderungen warten</div>
+                  </div>
+                  <button class="btn btn--sm" style="flex:none">Erneut versuchen</button>
+                </div>
+
+                <!-- ══ Speicher und Geräte — zwei Antworten auf dieselbe Frage ══ -->
+                <div class="set2" style="display:grid; grid-template-columns:1fr 300px; gap:12px; align-items:start">
+                <section class="card" style="padding:12px 14px">
+                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:7px">
+                    <span class="t-label c-3" style="flex:1">SPEICHER</span>
+                    <span class="t-sub c-3 num">4,2 GB belegt · 128 GB im Gerät</span>
+                  </div>
+                  <div class="bar" style="height:10px; display:flex; gap:0">
+                    <span style="width:45%; height:100%; background:var(--ink-1)"></span>
+                    <span style="width:33%; height:100%; background:var(--ink-1); opacity:.62"></span>
+                    <span style="width:14%; height:100%; background:var(--ink-1); opacity:.38"></span>
+                    <span style="width:8%;  height:100%; background:var(--ink-1); opacity:.22"></span>
+                  </div>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 14px; margin-top:7px">
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Notizen</span><span class="t-label num" style="white-space:nowrap">1,9 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.62;flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Fotos</span><span class="t-label num" style="white-space:nowrap">1,4 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.38;flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Audio</span><span class="t-label num" style="white-space:nowrap">0,6 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.22;flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Karten</span><span class="t-label num" style="white-space:nowrap">0,3 GB</span></span>
+                  </div>
+                  <!-- KEIN FADEN. Der Balkenabschnitt und seine Beschriftung
+                       sind dasselbe Objekt, zweimal gezeigt — zwischen einem
+                       Ding und seinem eigenen Etikett gibt es keine Kante.
+                       Ein Strich wäre hier hübsch und gelogen. -->
+                </section>
+
+                <!-- ══ GERÄTE UND KONTO — der einzige Faden auf diesem Schirm ══
+                     Ein Knoten, drei Fäden, drei Gerätepunkte. Die Kante ist
+                     echt und in beide Richtungen begehbar: jedes Gerät hängt
+                     an genau diesem Konto — das ist dieselbe Beziehung, die
+                     der Sync-Fehler oben meldet, nur als Bild. Der Punkt des
+                     iPad ist HOHL, weil seine drei Änderungen noch nicht
+                     angekommen sind; hohl heißt in dieser DNA „noch nicht
+                     da", und mehr behauptet er nicht. Die Farbe trägt die
+                     Aussage nicht: Form (hohl) + Wort („wartet") + die Zeile
+                     darunter sagen dasselbe dreimal. -->
+                <section class="card" style="padding:10px 14px; overflow:hidden">
+                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:8px">
+                    <span class="t-label c-3" style="flex:1 1 auto; min-width:0">GERÄTE UND KONTO</span>
+                    <span class="t-label c-3" style="flex:none">hohl = wartet</span>
+                  </div>
+                  <div style="position:relative">
+                    <div style="display:flex; align-items:center; gap:8px; height:16px; padding-left:11px">
+                      <span class="dot dot--node"></span>
+                      <span class="t-label c-2">Emils iCloud</span>
+                    </div>
+                    <svg class="thread thread--curve dev__f dev__f1"></svg>
+                    <svg class="thread thread--curve dev__f dev__f2"></svg>
+                    <svg class="thread thread--curve dev__f dev__f3"></svg>
+                    <div class="dev__row">
+                      <span class="dot dot--hollow" title="drei Änderungen noch nicht angekommen"></span>
+                      <span class="t-sub is-strong" class="clamp-1" style="flex:1 1 auto; min-width:0">iPad 11″</span>
+                      <span class="t-label" style="color:var(--danger); flex:none">3 warten</span>
+                    </div>
+                    <div class="dev__row">
+                      <span class="dot" style="background:var(--ink-2)"></span>
+                      <span class="t-sub" class="clamp-1" style="flex:1 1 auto; min-width:0">iPhone 15</span>
+                      <span class="t-label c-3 num">22:14</span>
+                    </div>
+                    <div class="dev__row">
+                      <span class="dot" style="background:var(--ink-2)"></span>
+                      <span class="t-sub" class="clamp-1" style="flex:1 1 auto; min-width:0">MacBook Air</span>
+                      <span class="t-label c-3 num">21:50</span>
+                    </div>
+                  </div>
+                </section>
+                </div>
                 <!-- ══ Zwei Spalten ══ -->
-                <div style="display:grid; grid-template-columns:1fr 292px; gap:12px; align-items:start">
+                <div class="set2" style="display:grid; grid-template-columns:1fr 292px; gap:12px; align-items:start">
 
                   <div style="display:flex; flex-direction:column; gap:12px">
 
@@ -471,15 +558,65 @@ Skala selbst, keine Simulation.
 
                     <!-- Modul-Farben -->
                     <section class="card" style="padding:10px 14px">
+                      <!-- Die Hausregel dieses Schirms lautet: JEDE EINSTELLUNG
+                           ZEIGT IHRE FOLGE IM MASSSTAB. Drei Karten taten das
+                           bereits (Darstellung, Schriftgröße, Papier); diese
+                           trug Velums Haltung als Prosa („6 pt, immer neben dem
+                           Wort — nie als Fläche, nie als Text"). Jetzt sitzt
+                           jeder der fünf Punkte auf einer Miniatur des Ortes, an
+                           dem er wirklich vorkommt: Sidebar-Zeile, Listenzeile,
+                           Buchrücken, Chip, Graph-Knoten. Der Satz ist damit
+                           überflüssig — man sieht ihn. -->
                       <div class="t-label c-3" style="margin-bottom:8px">MODUL-FARBEN</div>
-                      <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px 12px">
-                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--canvas"></span><span class="t-sub">Canvas</span></span>
-                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--tasks"></span><span class="t-sub">Aufgaben</span></span>
-                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--notes"></span><span class="t-sub">Notizen</span></span>
-                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--cards"></span><span class="t-sub">Lernkarten</span></span>
-                        <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--journal"></span><span class="t-sub">Journal</span></span>
+                      <div style="display:flex; flex-direction:column; gap:7px">
+
+                        <!-- Sidebar-Zeile -->
+                        <div style="display:flex; align-items:center; gap:9px">
+                          <span style="display:flex; align-items:center; gap:8px; width:132px; flex:none; height:26px; padding:0 8px; border-radius:8px; background:var(--accent-soft)">
+                            <span class="ico c-2" data-ico="canvas" style="width:15px;height:15px"></span>
+                            <span class="t-label" style="flex:1">Canvas</span>
+                            <span class="dot dot--canvas"></span>
+                          </span>
+                          <span class="t-label c-3">Seitenleiste</span>
+                        </div>
+
+                        <!-- Listenzeile -->
+                        <div style="display:flex; align-items:center; gap:9px">
+                          <span style="display:flex; align-items:center; gap:7px; width:132px; flex:none; height:26px; padding:0 8px; border-radius:8px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line)">
+                            <span class="dot dot--notes"></span>
+                            <span class="t-label clamp-1">Zellbiologie</span>
+                          </span>
+                          <span class="t-label c-3">Listenzeile</span>
+                        </div>
+
+                        <!-- Buchrücken -->
+                        <div style="display:flex; align-items:center; gap:9px">
+                          <span style="position:relative; width:132px; flex:none; height:26px; border-radius:8px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line); overflow:hidden">
+                            <span style="position:absolute; left:0; top:0; bottom:0; width:14px; background:linear-gradient(90deg, rgba(22,24,28,.12), rgba(22,24,28,.03) 40%, var(--fill) 70%)"></span>
+                            <span class="dot dot--journal" style="position:absolute; left:4px; top:7px"></span>
+                            <span class="dot dot--journal" style="position:absolute; left:4px; top:15px"></span>
+                            <span class="serif--cover-title" style="position:absolute; left:22px; top:4px; font-size:13px; line-height:18px">Labor</span>
+                          </span>
+                          <span class="t-label c-3">Buchrücken</span>
+                        </div>
+
+                        <!-- Chip -->
+                        <div style="display:flex; align-items:center; gap:9px">
+                          <span style="width:132px; flex:none; display:flex; align-items:center">
+                            <span class="chip" style="height:26px; color:var(--ink-1)"><span class="dot dot--tasks"></span>Aufgaben</span>
+                          </span>
+                          <span class="t-label c-3">Filter-Chip</span>
+                        </div>
+
+                        <!-- Graph-Knoten -->
+                        <div style="display:flex; align-items:center; gap:9px">
+                          <span style="width:132px; flex:none; height:26px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border-radius:8px; background:var(--ground)">
+                            <span class="dot dot--cards"></span>
+                            <span class="t-label c-3" style="line-height:12px">Osmose</span>
+                          </span>
+                          <span class="t-label c-3">Graph</span>
+                        </div>
                       </div>
-                      <p class="t-sub c-2" style="margin:8px 0 0">6 pt, immer neben dem Wort — nie als Fläche, nie als Text.</p>
                     </section>
                   </div>
 
@@ -522,6 +659,31 @@ Skala selbst, keine Simulation.
                           <span style="position:absolute;top:1px;left:13px;width:29px;height:29px;border-radius:50%;background:var(--paper);box-shadow:0 2px 7px rgba(22,24,28,.32), inset 0 0 0 .5px var(--line)"></span>
                         </span>
                       </div>
+                      <!-- Die Folge im Maßstab, wie bei den drei Karten daneben.
+                           Links, was der Schalter abschaltet: der Faden wächst
+                           vom Ursprung zum Ergebnis. Rechts, was stattdessen
+                           passiert: das Ergebnis blendet über, ohne Weg. Das ist
+                           der einzige Ort in der App, an dem das Motiv sich
+                           selbst erklären darf — und es ist Zugänglichkeit,
+                           nicht Zierrat. -->
+                      <div style="display:flex; gap:8px; padding:0 0 9px">
+                        <div style="flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 4px; border-radius:9px; background:var(--fill)">
+                          <span class="threadrow" style="width:60px">
+                            <span class="dot dot--notes"></span>
+                            <svg class="thread thread--h thread--origin"></svg>
+                            <span class="dot dot--cards"></span>
+                          </span>
+                          <span class="t-label c-3" style="text-align:center; line-height:15px">aus:<br>Faden wächst</span>
+                        </div>
+                        <div style="flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; gap:5px; padding:8px 4px; border-radius:9px; background:var(--fill)">
+                          <span style="position:relative; width:60px; height:10px; display:block">
+                            <span class="dot dot--notes" style="position:absolute; left:0; top:2px"></span>
+                            <span class="dot dot--cards" style="position:absolute; right:0; top:2px; opacity:.5"></span>
+                            <span class="dot dot--cards" style="position:absolute; right:11px; top:2px; opacity:.18"></span>
+                          </span>
+                          <span class="t-label c-3" style="text-align:center; line-height:15px">an:<br>Überblenden</span>
+                        </div>
+                      </div>
                       <div class="row" style="padding:5px 0">
                         <div class="row__main">
                           <span class="t-body">Fett gedruckter Text</span>
@@ -542,83 +704,6 @@ Skala selbst, keine Simulation.
                       </div>
                     </section>
                   </div>
-                </div>
-
-                <!-- ══ Sync-Fehler ══ -->
-                <div class="notice notice--error" style="align-items:center; padding:8px 14px">
-                  <span class="ico" data-ico="alert"></span>
-                  <div class="notice__text" style="flex:1; min-width:0">
-                    <div class="t-body is-strong">Letzte Synchronisierung fehlgeschlagen</div>
-                    <div class="t-sub c-2 clamp-1">Verbindung prüfen · 3 Änderungen warten</div>
-                  </div>
-                  <button class="btn btn--sm" style="flex:none">Erneut versuchen</button>
-                </div>
-
-                <!-- ══ Speicher und Geräte — zwei Antworten auf dieselbe Frage ══ -->
-                <div style="display:grid; grid-template-columns:1fr 300px; gap:12px; align-items:start">
-                <section class="card" style="padding:12px 14px">
-                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:7px">
-                    <span class="t-label c-3" style="flex:1">SPEICHER</span>
-                    <span class="t-sub c-3 num">4,2 GB belegt · 128 GB im Gerät</span>
-                  </div>
-                  <div class="bar" style="height:10px; display:flex; gap:0">
-                    <span style="width:45%; height:100%; background:var(--ink-1)"></span>
-                    <span style="width:33%; height:100%; background:var(--ink-1); opacity:.62"></span>
-                    <span style="width:14%; height:100%; background:var(--ink-1); opacity:.38"></span>
-                    <span style="width:8%;  height:100%; background:var(--ink-1); opacity:.22"></span>
-                  </div>
-                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 14px; margin-top:7px">
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Notizen</span><span class="t-label num" style="white-space:nowrap">1,9 GB</span></span>
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.62;flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Fotos</span><span class="t-label num" style="white-space:nowrap">1,4 GB</span></span>
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.38;flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Audio</span><span class="t-label num" style="white-space:nowrap">0,6 GB</span></span>
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.22;flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Karten</span><span class="t-label num" style="white-space:nowrap">0,3 GB</span></span>
-                  </div>
-                  <!-- KEIN FADEN. Der Balkenabschnitt und seine Beschriftung
-                       sind dasselbe Objekt, zweimal gezeigt — zwischen einem
-                       Ding und seinem eigenen Etikett gibt es keine Kante.
-                       Ein Strich wäre hier hübsch und gelogen. -->
-                </section>
-
-                <!-- ══ GERÄTE UND KONTO — der einzige Faden auf diesem Schirm ══
-                     Ein Knoten, drei Fäden, drei Gerätepunkte. Die Kante ist
-                     echt und in beide Richtungen begehbar: jedes Gerät hängt
-                     an genau diesem Konto — das ist dieselbe Beziehung, die
-                     der Sync-Fehler oben meldet, nur als Bild. Der Punkt des
-                     iPad ist HOHL, weil seine drei Änderungen noch nicht
-                     angekommen sind; hohl heißt in dieser DNA „noch nicht
-                     da", und mehr behauptet er nicht. Die Farbe trägt die
-                     Aussage nicht: Form (hohl) + Wort („wartet") + die Zeile
-                     darunter sagen dasselbe dreimal. -->
-                <section class="card" style="padding:10px 14px">
-                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:8px">
-                    <span class="t-label c-3" style="flex:1">GERÄTE UND KONTO</span>
-                    <span class="t-label c-3" style="white-space:nowrap">hohl = wartet</span>
-                  </div>
-                  <div style="position:relative">
-                    <div style="display:flex; align-items:center; gap:8px; height:16px; padding-left:11px">
-                      <span class="dot dot--node"></span>
-                      <span class="t-label c-2">Emils iCloud</span>
-                    </div>
-                    <svg class="thread thread--curve dev__f dev__f1"></svg>
-                    <svg class="thread thread--curve dev__f dev__f2"></svg>
-                    <svg class="thread thread--curve dev__f dev__f3"></svg>
-                    <div class="dev__row">
-                      <span class="dot dot--hollow" title="drei Änderungen noch nicht angekommen"></span>
-                      <span class="t-sub is-strong" style="flex:1; min-width:0; white-space:nowrap">iPad 11″</span>
-                      <span class="t-label" style="color:var(--danger); white-space:nowrap">3 warten</span>
-                    </div>
-                    <div class="dev__row">
-                      <span class="dot" style="background:var(--ink-2)"></span>
-                      <span class="t-sub" style="flex:1; min-width:0; white-space:nowrap">iPhone 15</span>
-                      <span class="t-label c-3 num">22:14</span>
-                    </div>
-                    <div class="dev__row">
-                      <span class="dot" style="background:var(--ink-2)"></span>
-                      <span class="t-sub" style="flex:1; min-width:0; white-space:nowrap">MacBook Air</span>
-                      <span class="t-label c-3 num">21:50</span>
-                    </div>
-                  </div>
-                </section>
                 </div>
 
               </div>
@@ -651,8 +736,8 @@ Skala selbst, keine Simulation.
           <div class="notice notice--error" style="align-items:center; padding:8px 12px">
             <span class="ico" data-ico="alert" style="width:20px;height:20px"></span>
             <div class="notice__text" style="flex:1; min-width:0">
-              <div class="t-sub is-strong clamp-1">Sync fehlgeschlagen</div>
-              <div class="t-sub c-2 clamp-1">Verbindung prüfen</div>
+              <div class="t-sub is-strong clamp-1">Synchronisierung</div>
+              <div class="t-sub c-2 clamp-1">fehlgeschlagen · Verbindung prüfen</div>
             </div>
             <button class="btn btn--sm" style="flex:none; height:30px; padding:0 11px">Erneut</button>
           </div>
@@ -669,7 +754,7 @@ Skala selbst, keine Simulation.
             <div class="card" style="padding:2px 14px">
               <div class="row" style="padding:5px 0">
                 <span class="ico c-2" data-ico="cloud"></span>
-                <div class="row__main"><span class="t-body">Sync</span></div>
+                <div class="row__main"><span class="t-body">Synchronisierung</span></div>
                 <div class="row__meta"><span class="t-sub" style="color:var(--danger)">Fehler</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
               </div>
               <div class="row" style="padding:5px 0">
@@ -724,8 +809,8 @@ Skala selbst, keine Simulation.
               <svg class="thread thread--curve dev__f dev__f3"></svg>
               <div class="dev__row">
                 <span class="dot dot--hollow" title="drei Änderungen noch nicht angekommen"></span>
-                <span class="t-sub is-strong" style="flex:1; min-width:0; white-space:nowrap">iPad 11″</span>
-                <span class="t-label" style="color:var(--danger); white-space:nowrap">3 warten</span>
+                <span class="t-sub is-strong" class="clamp-1" style="flex:1 1 auto; min-width:0">iPad 11″</span>
+                <span class="t-label" style="color:var(--danger); flex:none">3 warten</span>
               </div>
               <div class="dev__row">
                 <span class="dot" style="background:var(--ink-2)"></span>
@@ -734,7 +819,7 @@ Skala selbst, keine Simulation.
               </div>
               <div class="dev__row">
                 <span class="dot" style="background:var(--ink-2)"></span>
-                <span class="t-sub" style="flex:1; min-width:0; white-space:nowrap">MacBook Air</span>
+                <span class="t-sub" class="clamp-1" style="flex:1 1 auto; min-width:0">MacBook Air</span>
                 <span class="t-label c-3 num">21:50</span>
               </div>
             </div>

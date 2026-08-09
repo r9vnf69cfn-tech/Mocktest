@@ -10,16 +10,22 @@
 /* ──────────────────────────────────────────────────────────────────────────
    Nur für diesen Schirm: die Geometrie des Herkunftsfadens auf der Karte.
 
-   Der Faden läuft in der Rinne der Kartenrückseite von der Antwort (oben,
-   Punkt in Lernkarten-Farbe) zum Absatz aus der Notiz (unten, Punkt in
-   Notizen-Farbe). Er besteht aus drei Abschnitten, weil er drei Zeilenblöcke
-   überspannt — sie liegen auf derselben Achse (x = 13 pt bzw. 11 pt am
-   iPhone) und stoßen ohne Lücke aneinander, weil die Blöcke keine Ränder
-   zwischen sich haben; der Abstand steht als Innenabstand IM Textblock.
+   RICHTUNG (Nachtrag 2, N6): Der Faden läuft vom Ursprung zum Ergebnis, oben
+   nach unten. Der Ursprung ist der Absatz aus der Notiz — er steht deshalb
+   OBEN, mit dem Punkt in Notizen-Farbe; das Ergebnis ist diese Lernkarte, ihr
+   Punkt in Lernkarten-Farbe sitzt UNTEN an der Etikettzeile „ANTWORT". Bis
+   Runde 3 war es umgekehrt: derselbe Faden, spiegelverkehrt zu dem auf
+   flashcards-home, und rückwärts zu der Richtung, in der bewegung.js ihn
+   zeichnet (stroke-dashoffset von voll auf null).
+
+   Er besteht aus zwei Abschnitten, weil er zwei Zeilenblöcke überspannt — sie
+   liegen auf derselben Achse (x = 13 pt bzw. 11 pt am iPhone) und stoßen ohne
+   Lücke aneinander, weil die Blöcke keine Ränder zwischen sich haben; der
+   Abstand steht als Innenabstand IM Block.
 
    Gemessen im Browser bei 1440 pt Fensterbreite:
-     Etikettzeile 16 pt hoch  → Punktmitte 8 pt
      Zitatkasten  11 pt Innenabstand + 8 pt halbe Etikettzeile → 19 pt
+     Etikettzeile „ANTWORT" mit 14 pt Vorlauf → Punktmitte 22 pt
    Bei „Aa groß" wachsen Etikett und Innenabstand mit; die Werte stehen
    deshalb ein zweites Mal in der großen Stufe.
    ────────────────────────────────────────────────────────────────────────── */
@@ -29,15 +35,18 @@
 .hk--sm .hk__pt,
 .hk--sm .hk__f { left: 11px; }
 .hk__f     { position: absolute; left: 13px; width: 10px; transform: translateX(-50%); }
-.hk__pt--a { top: 8px; }              /* Mitte der Etikettzeile „ANTWORT"      */
-.hk__f--a  { top: 8px; height: 8px; } /* Stummel bis zur Blockunterkante       */
-.hk__f--b  { top: 0; height: 100%; }  /* über den ganzen Antwortabsatz          */
-.hk__f--c  { top: 0; height: 19px; }  /* bis zur Etikettzeile im Zitatkasten   */
-.hk__pt--c { top: 19px; }
-:root[data-type="gross"] .hk__pt--a { top: 10px; }
-:root[data-type="gross"] .hk__f--a  { top: 10px; height: 10px; }
-:root[data-type="gross"] .hk__f--c  { height: 21px; }
-:root[data-type="gross"] .hk__pt--c { top: 21px; }
+/* oben: die QUELLE — Punkt auf der Etikettzeile im Zitatkasten, Faden ab da
+   abwärts über den ganzen Kasten */
+.hk__pt--q { top: 19px; }
+.hk__f--q  { top: 19px; height: calc(100% - 19px); }
+/* unten: das ERGEBNIS — Faden durch den Vorlauf bis zur Etikettmitte, dort
+   endet er auf dem Lernkarten-Punkt */
+.hk__f--r  { top: 0; height: 22px; }
+.hk__pt--r { top: 22px; }
+:root[data-type="gross"] .hk__pt--q { top: 21px; }
+:root[data-type="gross"] .hk__f--q  { top: 21px; height: calc(100% - 21px); }
+:root[data-type="gross"] .hk__f--r  { height: 24px; }
+:root[data-type="gross"] .hk__pt--r { top: 24px; }
 
 /* Die Intervall-Leiter: unter jedem Punkt steht, wofür er steht. Die
    Beschriftung hängt aus dem Fluss, damit die Fadenreihe eine Fadenreihe
@@ -301,21 +310,8 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
                                den Zeilen, damit der Faden nicht reißt. -->
                           <div style="display:flex">
                             <div class="hk">
-                              <span class="dot dot--cards hk__pt hk__pt--a" title="diese Lernkarte"></span>
-                              <svg class="thread thread--v thread--origin hk__f hk__f--a"></svg>
-                            </div>
-                            <span class="t-label c-3">ANTWORT</span>
-                          </div>
-                          <div style="display:flex">
-                            <div class="hk"><svg class="thread thread--v thread--origin hk__f hk__f--b"></svg></div>
-                            <p class="t-body c-1" style="margin:0; padding:6px 0 16px; flex:1 1 auto; max-width:60ch">
-                              Das raue ER trägt Ribosomen auf seiner Membran und faltet die dort entstehenden Proteine, bevor sie zum Golgi-Apparat weiterwandern. Das glatte ER hat keine Ribosomen: es baut Lipide auf und hält den Calcium-Vorrat der Zelle bereit.
-                            </p>
-                          </div>
-                          <div style="display:flex">
-                            <div class="hk">
-                              <svg class="thread thread--v thread--origin hk__f hk__f--c"></svg>
-                              <span class="dot dot--notes hk__pt hk__pt--c" title="Absatz 7 der Notiz „Zellbiologie"" style="z-index:1"></span>
+                              <span class="dot dot--notes hk__pt hk__pt--q" title="Absatz 7 der Notiz „Zellbiologie"" style="z-index:1"></span>
+                              <svg class="thread thread--v thread--origin hk__f hk__f--q"></svg>
                             </div>
                             <div style="flex:1 1 auto; padding:11px 14px; border-radius:10px;
                                         background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line)">
@@ -323,11 +319,58 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
                               <p class="serif--quote c-2" style="margin:0; max-width:62ch">„Das ER ist das größte Membransystem der Zelle — raues ER mit Ribosomen für die Faltung, glattes ER für Lipide und den Calcium-Speicher."</p>
                             </div>
                           </div>
+                          <div style="display:flex">
+                            <div class="hk">
+                              <svg class="thread thread--v thread--origin hk__f hk__f--r"></svg>
+                              <span class="dot dot--cards hk__pt hk__pt--r" title="diese Lernkarte"></span>
+                            </div>
+                            <span class="t-label c-3" style="padding-top:14px">ANTWORT</span>
+                          </div>
+                          <div style="display:flex">
+                            <div class="hk"></div>
+                            <p class="t-body c-1" style="margin:0; padding:6px 0 0; flex:1 1 auto; max-width:60ch">
+                              Das raue ER trägt Ribosomen auf seiner Membran und faltet die dort entstehenden Proteine, bevor sie zum Golgi-Apparat weiterwandern. Das glatte ER hat keine Ribosomen: es baut Lipide auf und hält den Calcium-Vorrat der Zelle bereit.
+                            </p>
+                          </div>
 
                           <div style="flex:1"></div>
 
+                          <!-- ══ DIE KARTE SPIELT DIE SEKUNDE AB, IN DER SIE ENTSTAND ══
+                               Der Herkunfts-Chip trägt die Uhrzeit und einen
+                               zweiten Griff. Gedrückt halten spielt sechs
+                               Sekunden Vorlesung ab — kein Schirmwechsel, kein
+                               Abspieler, der Sitzungszähler oben bleibt auf
+                               „7 von 23". Gezeigt ist der laufende Zustand:
+                               der Chip ist gedrückt (Fläche + Ring), und der
+                               2,5-pt-Herkunftsfaden steht zwischen dem Beginn
+                               der Stelle und ihrem Ende gespannt. Die Punkte
+                               folgen der Legende dieses Schirms —
+                               gefüllt = gelaufen · Ring = hier · hohl = noch
+                               nicht. Zwei Merkmale: der Ring auf dem Faden und
+                               die Sekundenangabe daneben. -->
+                          <div style="display:flex; align-items:center; gap:14px; margin-bottom:10px; padding:9px 12px;
+                                      border-radius:12px; background:var(--fill); box-shadow:inset 0 0 0 1px var(--line)">
+                            <button aria-pressed="true" aria-label="Gedrückt halten: sechs Sekunden Vorlesung ab 16:42"
+                                    style="display:flex; align-items:center; gap:7px; flex:none; height:34px; padding:0 11px;
+                                           border-radius:var(--r-pill); background:var(--accent-soft);
+                                           box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                              <span class="dot dot--notes"></span>
+                              <span class="t-label is-strong">aus „Zellbiologie"</span>
+                              <span class="t-label c-3 num">16:42</span>
+                              <span class="ico" data-ico="play" style="width:13px;height:13px"></span>
+                            </button>
+                            <span class="threadrow" style="flex:1 1 auto; min-width:80px">
+                              <span class="dot dot--notes"></span>
+                              <svg class="thread thread--h thread--origin is-active" style="flex:62 1 0"></svg>
+                              <span class="dot dot--ring"></span>
+                              <svg class="thread thread--h thread--origin" style="flex:38 1 0"></svg>
+                              <span class="dot dot--hollow"></span>
+                            </span>
+                            <span class="t-label c-2" style="flex:none; white-space:nowrap">läuft · <span class="num">0:04</span> von <span class="num">0:06</span></span>
+                          </div>
+
                           <div style="display:flex; align-items:center; gap:8px">
-                            <button style="display:flex; align-items:center; min-height:44px" aria-label="Zur Stelle in der Notiz Zellbiologie springen"><span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie"<span class="ico" data-ico="chevR" style="width:13px;height:13px"></span></span></button>
+                            <button style="display:flex; align-items:center; min-height:44px" aria-label="Zur Stelle in der Notiz Zellbiologie springen"><span class="origin"><span class="dot dot--notes"></span>Zur Stelle in der Notiz<span class="ico" data-ico="chevR" style="width:13px;height:13px"></span></span></button>
                             <span class="chip">#uni/bio</span>
                             <div style="flex:1"></div>
                             <span class="chip chip--ghost"><span class="ico" data-ico="link" style="width:13px;height:13px"></span>Golgi-Apparat</span>
@@ -634,37 +677,60 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
 
                   <div style="flex:none; margin:7px 0 8px; height:1px; background:var(--line)"></div>
 
-                  <!-- Derselbe Herkunftsfaden, nur enger: Punkt an der Antwort,
-                       Punkt am Absatz aus der Notiz, --origin dazwischen. -->
+                  <!-- Derselbe Herkunftsfaden, nur enger: Punkt am Absatz aus
+                       der Notiz oben, Punkt an der Antwort unten, --origin
+                       dazwischen — Quelle zuerst, wie überall. -->
                   <div style="flex:none; display:flex">
                     <div class="hk hk--sm">
-                      <span class="dot dot--cards hk__pt hk__pt--a" title="diese Lernkarte"></span>
-                      <svg class="thread thread--v thread--origin hk__f hk__f--a"></svg>
+                      <span class="dot dot--notes hk__pt hk__pt--q" style="z-index:1" title="Absatz 7 der Notiz „Zellbiologie""></span>
+                      <svg class="thread thread--v thread--origin hk__f hk__f--q"></svg>
                     </div>
-                    <span class="t-label c-3">ANTWORT</span>
-                  </div>
-                  <div style="flex:none; display:flex">
-                    <div class="hk hk--sm"><svg class="thread thread--v thread--origin hk__f hk__f--b"></svg></div>
-                    <p class="t-body c-1" style="margin:0; padding:3px 0 7px; flex:1 1 auto">
-                      Das raue ER faltet die Proteine, die an seinen Ribosomen entstehen. Das glatte ER baut Lipide und speichert Calcium.
-                    </p>
-                  </div>
-                  <div style="flex:none; display:flex">
-                    <div class="hk hk--sm">
-                      <svg class="thread thread--v thread--origin hk__f hk__f--c"></svg>
-                      <span class="dot dot--notes hk__pt hk__pt--c" style="z-index:1" title="Absatz 7 der Notiz „Zellbiologie""></span>
-                    </div>
-                    <div style="flex:1 1 auto; min-width:0; padding:11px 12px 10px; border-radius:10px;
+                    <div style="flex:1 1 auto; min-width:0; padding:11px 12px 7px; border-radius:10px;
                                 background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line)">
-                      <div class="t-label c-3" style="margin-bottom:2px">SO STAND ES IN DEINER NOTIZ</div>
+                      <div class="t-label c-3" style="margin-bottom:1px">SO STAND ES IN DEINER NOTIZ</div>
                       <p class="serif--quote c-2 clamp-1" style="margin:0">„Größtes Membransystem."</p>
                     </div>
+                  </div>
+                  <div style="flex:none; display:flex">
+                    <div class="hk hk--sm">
+                      <svg class="thread thread--v thread--origin hk__f hk__f--r"></svg>
+                      <span class="dot dot--cards hk__pt hk__pt--r" title="diese Lernkarte"></span>
+                    </div>
+                    <span class="t-label c-3" style="padding-top:14px">ANTWORT</span>
+                  </div>
+                  <div style="flex:none; display:flex">
+                    <div class="hk hk--sm"></div>
+                    <p class="t-body c-1" style="margin:0; padding:3px 0 0; flex:1 1 auto">
+                      Raues ER: faltet Proteine. Glattes ER: baut Lipide, speichert Calcium.
+                    </p>
                   </div>
 
                   <div style="flex:1 1 auto; min-height:0"></div>
 
+                  <!-- Derselbe Moment am Telefon: gedrückt halten spielt die
+                       sechs Sekunden ab, der Faden trägt den Fortschritt. -->
+                  <div style="flex:none; display:flex; align-items:center; gap:9px; margin-bottom:5px; padding:5px 9px;
+                              border-radius:11px; background:var(--fill); box-shadow:inset 0 0 0 1px var(--line)">
+                    <button aria-pressed="true" aria-label="Gedrückt halten: sechs Sekunden Vorlesung ab 16:42"
+                            style="display:flex; align-items:center; gap:6px; flex:none; height:30px; padding:0 9px;
+                                   border-radius:var(--r-pill); background:var(--accent-soft);
+                                   box-shadow:inset 0 0 0 1.5px var(--accent-ring)">
+                      <span class="dot dot--notes"></span>
+                      <span class="t-label is-strong num">16:42</span>
+                      <span class="ico" data-ico="play" style="width:13px;height:13px"></span>
+                    </button>
+                    <span class="threadrow" style="flex:1 1 auto; min-width:40px">
+                      <span class="dot dot--notes"></span>
+                      <svg class="thread thread--h thread--origin is-active" style="flex:62 1 0"></svg>
+                      <span class="dot dot--ring"></span>
+                      <svg class="thread thread--h thread--origin" style="flex:38 1 0"></svg>
+                      <span class="dot dot--hollow"></span>
+                    </span>
+                    <span class="t-label c-2" style="flex:none; white-space:nowrap"><span class="num">0:04</span> von <span class="num">0:06</span></span>
+                  </div>
+
                   <div style="flex:none; display:flex; align-items:center; gap:8px">
-                    <button style="display:flex; align-items:center; min-height:44px" aria-label="Zur Stelle in der Notiz Zellbiologie springen"><span class="origin"><span class="dot dot--notes"></span>aus „Zellbiologie"<span class="ico" data-ico="chevR" style="width:13px;height:13px"></span></span></button>
+                    <button style="display:flex; align-items:center; min-height:44px" aria-label="Zur Stelle in der Notiz Zellbiologie springen"><span class="origin"><span class="dot dot--notes"></span>Zur Stelle<span class="ico" data-ico="chevR" style="width:13px;height:13px"></span></span></button>
                     <div style="flex:1"></div>
                     <button class="btn btn--quiet btn--sm" data-bw="drehen" data-bw-karte="#rev-karte-p" style="padding:0 8px; height:44px">
                       <span class="ico" data-ico="layers" style="width:16px;height:16px"></span>Frage
@@ -824,7 +890,8 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
 
   <h3>Der Faden auf diesem Schirm — zwei Stellen, zwei echte Kanten</h3>
   <table>
-    <tr><td>Der Herkunftsfaden auf der Karte</td><td>Zwei Objekte, eine Kante aus dem Datenmodell: <em>Absatz 7 der Notiz „Zellbiologie"</em> und <em>diese Lernkarte</em>. Die Karte ist aus diesem Absatz gemacht — deshalb Stärke <span class="num">--origin</span> (2,5 pt), die starke Beziehung. Der Faden läuft in der Rinne der Rückseite vom Punkt an der Antwort (Lernkarten-Farbe) zum Punkt am Zitatkasten (Notizen-Farbe); die Modulfarbe gehört dem Punkt, der Faden bleibt <span class="num">--thread</span>. Er besteht aus drei Abschnitten, weil er drei Zeilenblöcke überspannt — sie stoßen ohne Rand aneinander, die Abstände stehen im Textblock, und die Enden sind stumpf, damit an den Nähten kein doppelter Rundkopf wie ein Knoten aussieht. Gemessen: Punktmitten bei y = 452 und y = 593, die drei Abschnitte 452→460, 460→574, 574→593 — sie enden auf den Punktmitten, nicht daneben.</td></tr>
+    <tr><td>Der Herkunftsfaden auf der Karte</td><td>Zwei Objekte, eine Kante aus dem Datenmodell: <em>Absatz 7 der Notiz „Zellbiologie"</em> und <em>diese Lernkarte</em>. Die Karte ist aus diesem Absatz gemacht — deshalb Stärke <span class="num">--origin</span> (2,5 pt), die starke Beziehung. <strong>Richtung (Nachtrag 2, N6):</strong> der Ursprung steht oben. Der Zitatkasten mit dem Notizen-Punkt ist nach Runde 3 der obere Block, die Etikettzeile „ANTWORT" mit dem Lernkarten-Punkt der untere; der Faden liest von der Notiz zur Karte. Bis dahin war es umgekehrt — dasselbe Bauteil wie auf <span class="num">flashcards-home</span>, spiegelverkehrt, und rückwärts zu der Richtung, in der <span class="num">bewegung.js</span> jeden Faden zeichnet. Die Modulfarbe gehört dem Punkt, der Faden bleibt <span class="num">--thread</span>. Er besteht aus zwei Abschnitten, weil er zwei Zeilenblöcke überspannt — sie stoßen ohne Rand aneinander, die Abstände stehen im Block, und die Enden sind stumpf, damit an der Naht kein doppelter Rundkopf wie ein Knoten aussieht. Gemessen: Punktmitte im Zitatkasten 19 pt unter dessen Oberkante, Punktmitte an „ANTWORT" 22 pt unter dessen Oberkante; beide Abschnitte enden auf den Punktmitten, kein freies Ende auf diesem Schirm.</td></tr>
+    <tr><td>Die sechs Sekunden am Faden</td><td><strong>Die Karte spielt die Sekunde ab, in der sie entstand.</strong> Der Herkunfts-Chip trägt die Uhrzeit der Stelle (<span class="num">16:42</span>) und ein Abspielzeichen; gedrückt halten spielt sechs Sekunden Vorlesung. Kein Schirmwechsel, kein Abspieler, der Sitzungszähler bleibt auf „<span class="num">7</span> von <span class="num">23</span>". Gezeigt ist der laufende Zustand: der Chip gedrückt (Fläche + Ring), daneben der 2,5-pt-Faden zwischen Anfang und Ende der Stelle. Die Punkte folgen der Legende dieses Schirms — <strong>gefüllt = gelaufen · Ring = hier · hohl = noch nicht</strong> —, und daneben steht die Sekundenangabe. Zwei Merkmale, keine Farbe. Der Satz „Diese Lernkarte kann die Sekunde abspielen, in der sie entstand" ist in keinem der geprüften Produkte sagbar: Notability besitzt die Kante Strich ↔ Sekunde, aber bei Notability entsteht aus einer Seite nichts, also kann die Sekunde nirgendwohin weiterwandern.</td></tr>
     <tr><td>Die Intervall-Leiter</td><td>Sechs Punkte auf einem Faden: <span class="num">gleich · 1 d · 3 d · 8 d · 21 d · 55 d</span>. Jede Kante heißt „diese Wiederholung folgt auf jene" — das ist die stärkste Idee, die Anki hat, und sie ist hier zum ersten Mal sichtbar statt nur ausgerechnet. <strong>Gefüllt</strong> = schon gelaufen (drei Wiederholungen), <strong>Ring</strong> = jetzt fällig (8 d), <strong>hohl</strong> = noch geplant. Die gelaufenen Fadenstücke sind Ink, die geplanten <span class="num">--thread</span>: der Weg, den die Karte wirklich genommen hat, gegen den, der ihr bevorsteht. Jeder der vier Knöpfe nennt den Punkt, auf den er führt, und beim Tippen wandert der Ring wirklich dorthin (<span class="num">data-bw="bewerten"</span>).</td></tr>
   </table>
   <p><strong>Wo bewusst kein Faden steht:</strong> zwischen den vier Bewertungsknöpfen (sie sind Alternativen, keine Kette), zwischen den Zeilen unter „Zuletzt bewertet" (eine Liste ist keine Beziehung), in der Zeichenfläche (die Skizze ist Handschrift, kein Datenmodell) und zwischen Karte und Kartenstapel. Die Falzkante auf dem Blatt und die Trennlinien in der Seitenspalte bleiben <span class="num">--line</span> und sehen deshalb anders aus als ein Faden.</p>
@@ -857,6 +924,9 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
 
   <h3>Was sich gegenüber Runde 1 geändert hat</h3>
   <ul>
+    <li><strong>Der Herkunftsfaden lief rückwärts</strong> — oben die Karte (das Ergebnis), unten die Notiz (die Quelle). Damit stand dasselbe Bauteil auf <span class="num">flashcards-home</span> und hier spiegelverkehrt. Nach N6 läuft er jetzt von oben nach unten, von der Quelle zum Ergebnis: der Zitatkasten ist der obere Block, „ANTWORT" der untere.</li>
+    <li><strong>„Zurücklegen · Aussetzen · Bearbeiten" (iPhone) und „Leeren" (iPad) waren unsichtbar</strong> — <span class="num">.btn--quiet</span> ohne Fläche und ohne Rand, also Farbe als einziges Merkmal. Das war der einzige Durchfaller des Affordanz-Tests. Der Befund ist an der Wurzel behoben: <span class="num">system.css §5.1</span> gibt der Klasse jetzt den Ring in <span class="num">--line-tap</span> (3,29:1 hell / 3,34:1 dunkel, gerechnet). Auf diesem Schirm erreicht damit jedes Bedienelement <span class="num">44</span> pt Trefferfläche und trägt mindestens zwei Merkmale.</li>
+    <li><strong>Die Karte konnte ihre Stelle nur zeigen, nicht hören lassen.</strong> Neu: der Herkunfts-Chip trägt die Uhrzeit und ein Abspielzeichen, und gedrückt halten spielt sechs Sekunden Vorlesung ab, während der Fortschritt auf dem Faden steht.</li>
     <li><strong>Die vier Bewertungsknöpfe waren exakt gleich breit</strong> (4 × 181 px) — gegen die eigene Anweisung in <span class="num">docs/01</span>, dass „Gut" mehr Fläche bekommt. Jetzt tragen sie <span class="num">.rate</span> aus system.css §13: gemessen 152 / 152 / 271 / 152 px bei 757 px Kartenbreite. Auf dem iPhone nimmt „Gut" die erste Zeile allein.</li>
     <li><strong>Die Intervall-Vorschau stand nur als Kleinschrift in den Knöpfen.</strong> Jetzt liegt darunter die Leiter, auf der die Karte steht — ein Faden mit sechs Punkten, und die Knöpfe zeigen darauf.</li>
     <li><strong>Die Drehung war ein eingefrorenes Standbild</strong> (<span class="num">rotateY(18deg)</span> plus gemalter Lichtabfall). Jetzt ist sie eine Bewegung mit zwei echten Seiten.</li>

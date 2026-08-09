@@ -124,31 +124,51 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <div style="flex:1"></div>
                 <span class="chip"><span class="ico" data-ico="link" style="width:14px;height:14px"></span>Kette</span>
               </div>
-              <!-- Drei Knoten auf EINEM Faden der Stärke --origin. Die Kante ist
+              <!-- Drei Stationen auf EINEM Faden der Stärke --origin. Die Kante ist
                    echt: die Notiz „Zellbiologie" hat 12 Karten erzeugt, 8 davon
-                   sind heute fällig. Richtung Notiz → Karten → fällig. -->
-              <div class="chain" style="margin-top:6px">
-                <button class="chain__link" id="t-notiz" style="text-align:left">
-                  <span class="dot dot--node chain__knot" id="t-notiz-knoten"></span>
-                  <span class="chain__eyebrow t-label"><span class="dot dot--notes"></span>Notiz<span style="flex:1 1 auto"></span><span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span></span>
+                   sind heute fällig. Richtung Notiz → Karten → fällig.
+
+                   N7 (Knotengrad): Ein Knoten steht nur, wo ZWEI Fäden
+                   zusammenlaufen — das ist hier ausschließlich die Mittelstation.
+                   Station 1 hat genau einen (abgehenden) Faden und trägt deshalb
+                   den gefüllten Modulpunkt des Objekts, aus dem der Faden kommt
+                   (Notizen-Grün). Station 3 hat genau einen (ankommenden) und
+                   bedeutet „hier bist du, heute" — also .dot--ring, mit dem
+                   Lernkarten-Kern, weil das Objekt am Ende eine Karte ist.
+
+                   M15 (eine Etikettengrammatik): Der Punkt auf dem Faden benennt
+                   das Objekt, das Etikett darunter benennt den Schritt. Kein
+                   zweiter Punkt im Etikett, kein Uhrsymbol an einer Station und
+                   Modulpunkt an der anderen.
+
+                   Affordanz (docs/05, „Fast"): Die drei Stationen trugen als
+                   einziges Merkmal einen 14-pt-Chevron — R2 fällt, weil weder
+                   Fläche noch Rand da war. Jetzt trägt jede Station ihre eigene
+                   Fläche, die drei sind durch 1-pt-Fugen in --line getrennt, und
+                   der Chevron ist 16 pt. Die Fuge kostet den Faden 1 pt Weg,
+                   deshalb --chain-prev: calc(100% + 1px) an den Gliedern 2 und 3. -->
+              <div class="chain" style="margin-top:6px; gap:1px; background:var(--line)">
+                <button class="chain__link" id="t-notiz" style="text-align:left; background:var(--fill)">
+                  <span class="dot dot--notes chain__knot" id="t-notiz-knoten"></span>
+                  <span class="chain__eyebrow t-label">Notiz<span style="flex:1 1 auto"></span><span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span></span>
                   <span class="t-section">Zellbiologie</span>
                   <span class="t-sub c-3">14 Absätze · 16:20 Uhr</span>
                 </button>
-                <button class="chain__link" id="t-karten" style="text-align:left">
+                <button class="chain__link" id="t-karten" style="text-align:left; background:var(--fill); --chain-prev: calc(100% + 1px)">
                   <svg class="thread thread--h thread--origin"></svg>
-                  <span class="dot dot--node chain__knot"></span>
-                  <span class="chain__eyebrow t-label"><span class="dot dot--cards"></span>Wurde zu<span style="flex:1 1 auto"></span><span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span></span>
+                  <span class="dot dot--node chain__knot" style="--node-ring: color-mix(in srgb, var(--ink-1) 5%, var(--paper))"></span>
+                  <span class="chain__eyebrow t-label">Wurde zu<span style="flex:1 1 auto"></span><span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span></span>
                   <span class="t-section num">12 Karten</span>
                   <span class="t-sub c-3">Deck „Zellbiologie"</span>
                 </button>
-                <button class="chain__link" id="t-faellig" style="text-align:left; background:var(--accent-soft)">
+                <button class="chain__link" id="t-faellig" style="text-align:left; background:var(--accent-soft); --chain-prev: calc(100% + 1px)">
                   <svg class="thread thread--h thread--origin"></svg>
-                  <span class="dot dot--node chain__knot" style="--node-ring: color-mix(in srgb, var(--accent) 7%, var(--paper))"></span>
-                  <span class="chain__eyebrow t-label" style="color:var(--ink-2)"><span class="ico" data-ico="clock" style="width:13px;height:13px"></span>Heute fällig<span style="flex:1 1 auto"></span><span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span></span>
+                  <span class="dot dot--cards dot--ring chain__knot"></span>
+                  <span class="chain__eyebrow t-label" style="color:var(--ink-2)">Heute fällig<span style="flex:1 1 auto"></span><span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span></span>
                   <span class="t-section num">8 Karten</span>
                   <span class="t-sub c-2">ca. 4 Minuten</span>
                 </button>
-                <div class="chain__link chain__link--end" style="flex:0 0 auto; justify-content:center; padding-right:16px">
+                <div class="chain__link chain__link--end" style="flex:0 0 auto; justify-content:center; padding-right:16px; background:var(--paper)">
                   <button class="btn btn--primary btn--sm"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>Lernen</button>
                 </div>
               </div>
@@ -189,7 +209,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                   <div class="divider"><span class="t-label c-3">HEUTE FÄLLIG</span><span class="t-label c-3 num">6</span></div>
                   <div class="card" style="padding:6px">
                     <div class="row">
-                      <span class="check"></span>
+                      <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Statistik-Blatt 4 abgeben erledigen"><span class="check"></span></button>
                       <div class="row__main">
                         <span class="t-body row__title">Statistik-Blatt 4 abgeben</span>
                         <span class="t-sub c-3">Analysis II</span>
@@ -199,7 +219,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                       </div>
                     </div>
                     <div class="row">
-                      <span class="check is-checking"></span>
+                      <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Laborprotokoll Zellkultur schreiben erledigen"><span class="check is-checking"></span></button>
                       <div class="row__main">
                         <span class="t-body row__title">Laborprotokoll Zellkultur schreiben</span>
                         <span class="t-sub c-3">Biologie</span>
@@ -216,7 +236,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                       </div>
                     </div>
                     <div class="row">
-                      <span class="check"></span>
+                      <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Rückmeldung an Prof. Wendt erledigen"><span class="check"></span></button>
                       <div class="row__main">
                         <span class="t-body row__title">Rückmeldung an Prof. Wendt</span>
                         <span class="t-sub c-3">Uni · 2 Teilschritte</span>
@@ -224,7 +244,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                       <div class="row__meta"><span class="t-label c-3 num">0/2</span></div>
                     </div>
                     <div class="row">
-                      <span class="check"></span>
+                      <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Bücher in der Bibliothek verlängern erledigen"><span class="check"></span></button>
                       <div class="row__main">
                         <span class="t-body row__title">Bücher in der Bibliothek verlängern</span>
                         <span class="t-sub c-3">Persönlich</span>
@@ -232,7 +252,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                       <div class="row__meta"><span class="ico" data-ico="location" style="width:16px;height:16px"></span></div>
                     </div>
                     <div class="row">
-                      <span class="check"></span>
+                      <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Karteikarten Anatomie nacharbeiten erledigen"><span class="check"></span></button>
                       <div class="row__main">
                         <span class="t-body row__title">Karteikarten Anatomie nacharbeiten</span>
                         <span class="t-sub c-3">Biologie · wiederholt sich wöchentlich</span>
@@ -260,50 +280,65 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                     </div>
                     <div style="display:flex; align-items:center; gap:10px">
                       <span class="dot dot--journal"></span>
-                      <span class="count"><span class="count__n">—</span><span class="count__w t-sub">Journal offen</span></span>
+                      <span class="count"><span class="count__n num">1</span><span class="count__w t-sub">Journal-Entwurf offen</span></span>
                     </div>
                     <div style="height:1px; background:var(--line)"></div>
 
                     <!-- Der Streak ist ein Faden aus Punkten. Die Kante ist echt:
                          zwei benachbarte Punkte sind zwei aufeinanderfolgende Tage
-                         derselben Serie. Stärke sagt Nähe — 1,5 pt zwischen zwei
-                         gelernten Tagen, 1 pt (weak) dort, wo die Serie reißt oder
-                         noch offen ist. -->
+                         derselben Serie.
+
+                         S5: Die Beziehung ist an JEDER Stelle dieselbe — Tag n →
+                         Tag n+1, also eine schwache Beziehung. Deshalb tragen alle
+                         zwölf Fadenstücke 1 pt (.thread--weak), so wie es die
+                         Serien auf journal-home und flashcards-home schon tun.
+                         Vorher waren 11 von 13 Stücken 1,5 pt.
+
+                         M1: Der ausgelassene Tag (31. Okt.) hat keinen Punkt und
+                         keinen Faden mehr, sondern eine LÜCKE. „hohl" heißt im
+                         ganzen Bestand „geplant, noch nicht da" — es kann nicht
+                         zugleich „vorbei und nicht geschehen" heißen. Keine
+                         Beziehung, kein Faden: das ist die motivgerechte Form.
+
+                         M3: Die Serie zählt gelernte Tage, ist also die
+                         Lernkarten-Serie (siehe aria-label). Sie trägt jetzt den
+                         Lernkarten-Punkt wie dieselbe Serie auf flashcards-home,
+                         nicht mehr Grau. -->
                     <div>
                       <div style="display:flex; align-items:center; gap:10px; margin-bottom:9px">
                         <span class="ico" data-ico="flame" style="width:18px;height:18px; color:var(--ink-2)"></span>
                         <span class="count"><span class="count__n num">12</span><span class="count__w t-sub">Tage in Folge</span></span>
                       </div>
-                      <div class="threadrow" aria-label="Die letzten vierzehn Tage: einer ausgelassen, zwölf gelernt, heute noch offen">
-                        <span class="dot dot--hollow" title="31. Okt. — ausgelassen"></span>
+                      <div class="threadrow" aria-label="Die letzten vierzehn Tage: der 31. Oktober ist ausgelassen und steht als Lücke ohne Faden, danach zwölf Tage in Folge gelernt, heute noch offen">
+                        <span style="width:6px; height:6px; flex:none" aria-hidden="true"></span>
+                        <span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+                        <span class="dot dot--cards" title="1. Nov."></span>
                         <svg class="thread thread--h thread--weak"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="1. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="2. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="3. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="4. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="5. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="6. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="7. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="8. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="9. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="10. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="11. Nov."></span>
-                        <svg class="thread thread--h"></svg>
-                        <span class="dot" style="background:var(--ink-2)" title="12. Nov."></span>
+                        <span class="dot dot--cards" title="2. Nov."></span>
                         <svg class="thread thread--h thread--weak"></svg>
-                        <span class="dot dot--ring" title="Heute, 13. Nov. — noch offen"></span>
+                        <span class="dot dot--cards" title="3. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards" title="4. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards" title="5. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards" title="6. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards" title="7. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards" title="8. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards" title="9. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards" title="10. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards" title="11. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards" title="12. Nov."></span>
+                        <svg class="thread thread--h thread--weak"></svg>
+                        <span class="dot dot--cards dot--ring" title="Heute, 13. Nov. — noch offen"></span>
                       </div>
-                      <div class="t-label c-3" style="margin-top:9px">hohl = ausgelassen · Ring = heute</div>
+                      <div class="t-label c-3" style="margin-top:9px">Lücke = ausgelassen · Ring = heute</div>
                     </div>
                   </div>
                 </section>
@@ -366,28 +401,28 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
             <div style="padding:12px 14px 8px; display:flex; align-items:center; gap:8px">
               <span class="t-label c-3">Aus der Vorlesung von gestern</span>
             </div>
-            <!-- Dieselbe Kette senkrecht: drei Knoten auf einem Faden der
-                 Stärke --origin. Alle drei Glieder sind exakt 62 pt hoch,
-                 deshalb ist der Fadenabschnitt genau 62 pt lang und endet
-                 auf beiden Knotenmitten — dieselbe Rechnung wie .chain am iPad. -->
-            <div style="display:flex; flex-direction:column">
-              <button id="p-notiz" style="position:relative; display:flex; align-items:center; gap:10px; height:62px; padding:0 14px 0 34px; text-align:left; width:100%">
-                <span class="dot dot--node" id="p-notiz-knoten" style="position:absolute; left:20px; top:50%; transform:translate(-50%,-50%); z-index:2"></span>
-                <span class="dot dot--notes"></span>
+            <!-- Dieselbe Kette senkrecht, mit derselben Punktgrammatik wie am
+                 iPad: Modulpunkt · Knoten · Ring. Alle drei Glieder sind exakt
+                 62 pt hoch, deshalb ist der Fadenabschnitt genau 62 pt lang und
+                 endet auf beiden Punktmitten. Die beiden ersten Glieder tragen
+                 eine eigene Fläche (--fill), das dritte --accent-soft, dazwischen
+                 1-pt-Fugen in --line: drei Stationen, drei Bedienflächen. -->
+            <div style="display:flex; flex-direction:column; gap:1px; background:var(--line)">
+              <button id="p-notiz" style="position:relative; display:flex; align-items:center; gap:10px; height:62px; padding:0 14px 0 34px; text-align:left; width:100%; background:var(--fill)">
+                <span class="dot dot--notes" id="p-notiz-knoten" style="position:absolute; left:20px; top:50%; transform:translate(-50%,-50%); z-index:2"></span>
                 <span class="t-body is-strong" style="flex:1">Zellbiologie</span>
                 <span class="t-sub c-3 num">14 Absätze</span>
                 <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
               </button>
-              <button style="position:relative; display:flex; align-items:center; gap:10px; height:62px; padding:0 14px 0 34px; text-align:left; width:100%">
-                <svg class="thread thread--v thread--origin" style="position:absolute; left:20px; bottom:50%; height:62px; width:10px; transform:translateX(-50%); z-index:1"></svg>
-                <span class="dot dot--node" style="position:absolute; left:20px; top:50%; transform:translate(-50%,-50%); z-index:2"></span>
-                <span class="dot dot--cards"></span>
+              <button style="position:relative; display:flex; align-items:center; gap:10px; height:62px; padding:0 14px 0 34px; text-align:left; width:100%; background:var(--fill)">
+                <svg class="thread thread--v thread--origin" style="position:absolute; left:20px; bottom:50%; height:63px; width:10px; transform:translateX(-50%); z-index:1"></svg>
+                <span class="dot dot--node" style="position:absolute; left:20px; top:50%; transform:translate(-50%,-50%); z-index:2; --node-ring: color-mix(in srgb, var(--ink-1) 5%, var(--paper))"></span>
                 <span class="t-body" style="flex:1">wurde zu <strong class="num is-strong">12 Karten</strong></span>
                 <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
               </button>
               <div style="position:relative; display:flex; align-items:center; gap:10px; height:62px; padding:0 14px 0 34px; background:var(--accent-soft)">
-                <svg class="thread thread--v thread--origin" style="position:absolute; left:20px; bottom:50%; height:62px; width:10px; transform:translateX(-50%); z-index:1"></svg>
-                <span class="dot dot--node" style="position:absolute; left:20px; top:50%; transform:translate(-50%,-50%); z-index:2; --node-ring: color-mix(in srgb, var(--accent) 7%, var(--paper))"></span>
+                <svg class="thread thread--v thread--origin" style="position:absolute; left:20px; bottom:50%; height:63px; width:10px; transform:translateX(-50%); z-index:1"></svg>
+                <span class="dot dot--cards dot--ring" style="position:absolute; left:20px; top:50%; transform:translate(-50%,-50%); z-index:2"></span>
                 <div style="flex:1">
                   <div class="t-body is-strong num">8 heute fällig</div>
                   <div class="t-sub c-2">ca. 4 Minuten</div>
@@ -414,14 +449,14 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
             <div class="divider" style="margin:2px 0 8px"><span class="t-label c-3">HEUTE FÄLLIG</span><span class="t-label c-3 num">6</span></div>
             <div class="card" style="padding:4px">
               <div class="row" style="min-height:56px">
-                <span class="check"></span>
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Statistik-Blatt 4 abgeben erledigen"><span class="check"></span></button>
                 <div class="row__main">
                   <span class="t-body">Statistik-Blatt 4 abgeben</span>
                   <span class="t-sub"><span class="chip chip--danger" style="height:22px">Heute 18:00</span></span>
                 </div>
               </div>
               <div class="row" style="min-height:56px">
-                <span class="check is-checking"></span>
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Laborprotokoll schreiben erledigen"><span class="check is-checking"></span></button>
                 <div class="row__main">
                   <span class="t-body">Laborprotokoll schreiben</span>
                   <button data-bw="herkunft" data-bw-ursprung="#p-notiz-knoten" data-bw-box="#t-iphone" data-bw-kurve="34"
@@ -432,7 +467,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
               </div>
               <div class="row" style="min-height:56px">
-                <span class="check"></span>
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Rückmeldung an Prof. Wendt erledigen"><span class="check"></span></button>
                 <div class="row__main">
                   <span class="t-body">Rückmeldung an Prof. Wendt</span>
                   <span class="t-sub c-3 num">0/2 Teilschritte</span>
@@ -454,36 +489,38 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
               <span class="ico" data-ico="flame" style="width:18px;height:18px; color:var(--ink-2)"></span>
               <span class="count"><span class="count__n num">12</span><span class="count__w t-sub">Tage in Folge</span></span>
             </div>
-            <div class="threadrow" aria-label="Die letzten vierzehn Tage: einer ausgelassen, zwölf gelernt, heute noch offen">
-              <span class="dot dot--hollow" title="31. Okt. — ausgelassen"></span>
+            <!-- Dieselbe Serie wie am iPad: 12 Stücke à 1 pt, Lücke statt hohlem
+                 Punkt für den ausgelassenen Tag, Lernkarten-Punkt statt Grau. -->
+            <div class="threadrow" aria-label="Die letzten vierzehn Tage: der 31. Oktober ist ausgelassen und steht als Lücke ohne Faden, danach zwölf Tage in Folge gelernt, heute noch offen">
+              <span style="width:6px; height:6px; flex:none" aria-hidden="true"></span>
+              <span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+              <span class="dot dot--cards" title="1. Nov."></span>
               <svg class="thread thread--h thread--weak"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="1. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="2. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="3. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="4. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="5. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="6. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="7. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="8. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="9. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="10. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="11. Nov."></span>
-              <svg class="thread thread--h"></svg>
-              <span class="dot" style="background:var(--ink-2)" title="12. Nov."></span>
+              <span class="dot dot--cards" title="2. Nov."></span>
               <svg class="thread thread--h thread--weak"></svg>
-              <span class="dot dot--ring" title="Heute, 13. Nov. — noch offen"></span>
+              <span class="dot dot--cards" title="3. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards" title="4. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards" title="5. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards" title="6. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards" title="7. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards" title="8. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards" title="9. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards" title="10. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards" title="11. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards" title="12. Nov."></span>
+              <svg class="thread thread--h thread--weak"></svg>
+              <span class="dot dot--cards dot--ring" title="Heute, 13. Nov. — noch offen"></span>
             </div>
-            <div class="t-label c-3" style="margin-top:9px">hohl = ausgelassen · Ring = heute</div>
+            <div class="t-label c-3" style="margin-top:9px">Lücke = ausgelassen · Ring = heute</div>
           </section>
         </div>
 
@@ -523,8 +560,9 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
   <h3>Der Faden auf diesem Schirm — drei Stellen, drei echte Kanten</h3>
   <table>
-    <tr><td>Die Kette</td><td>Drei Knoten auf <em>einem</em> Faden der Stärke <span class="num">--origin</span> (2,5 pt), Richtung Notiz → Karten → heute fällig. Die Kante steht im Datenmodell: die Notiz „Zellbiologie" hat 12 Karten erzeugt, 8 davon sind heute fällig. Gemessen: Knotenmitten bei x = 400 / 629 / 858, die beiden Fadenstücke laufen exakt 400→629 und 629→858 — sie enden auf den Knotenmitten, nicht daneben. Die 45°-Kerbe aus Runde 1 ist ersatzlos weg; es ist derselbe <span class="num">.thread</span>-Baustein wie überall, kein CSS-Nachbau. Auf dem iPhone steht dieselbe Kette senkrecht: drei Glieder zu exakt 62 pt, deshalb ist jedes Fadenstück genau 62 pt lang.</td></tr>
-    <tr><td>Der Streak</td><td>Ein Faden aus Punkten: die letzten 14 Tage. Gefüllt = gelernt, hohl = ausgelassen, Ring = heute (noch offen). Die Kante ist echt — zwei benachbarte Punkte sind zwei aufeinanderfolgende Tage derselben Serie. <strong>Die Stärke sagt Nähe:</strong> 1,5 pt zwischen zwei gelernten Tagen, 1 pt (<span class="num">--weak</span>) dort, wo die Serie reißt oder noch offen ist. Steht auf beiden Geräten.</td></tr>
+    <tr><td>Die Kette</td><td>Drei Stationen auf <em>einem</em> Faden der Stärke <span class="num">--origin</span> (2,5 pt), Richtung Notiz → Karten → heute fällig. Die Kante steht im Datenmodell: die Notiz „Zellbiologie" hat 12 Karten erzeugt, 8 davon sind heute fällig. Gemessen: alle acht Fadenenden der Karte sitzen auf einer Punktmitte (0,0–1,0 pt) — kein Ende hängt frei. Die 45°-Kerbe aus Runde 1 ist ersatzlos weg; es ist derselbe <span class="num">.thread</span>-Baustein wie überall, kein CSS-Nachbau. Auf dem iPhone steht dieselbe Kette senkrecht: drei Glieder zu exakt 62 pt, deshalb ist jedes Fadenstück genau 62 pt lang — und sie trägt <em>dieselbe</em> Punktgrammatik, nicht eine zweite.</td></tr>
+    <tr><td>Die drei Punkte der Kette</td><td><strong>Ein Knoten steht nur, wo zwei Fäden zusammenlaufen</strong> (DNA-Nachtrag N7). Auf dieser Kette ist das genau eine Stelle: die Mittelstation, an der der Faden aus der Notiz ankommt und der Faden zu „heute fällig" abgeht — sie trägt <span class="num">.dot--node</span>. Station 1 hat nur einen abgehenden Faden und trägt deshalb den <em>gefüllten Modulpunkt</em> des Objekts, aus dem der Faden kommt (Notizen-Grün). Station 3 hat nur einen ankommenden und bedeutet „heute" — sie trägt <span class="num">.dot--ring</span> mit Lernkarten-Kern. Vorher waren alle drei Knoten, zwei davon ohne zweiten Faden. Dazu <strong>eine</strong> Etikettengrammatik statt dreier: der Punkt auf dem Faden benennt das Objekt, das Wort darunter den Schritt — kein zweiter Punkt im Etikett, kein Uhrsymbol an der einen und Modulpunkt an der anderen Station.</td></tr>
+    <tr><td>Der Streak</td><td>Ein Faden aus Punkten: die letzten 14 Tage, in Lernkarten-Rosa — es ist dieselbe Serie, die <span class="num">flashcards-home</span> zeichnet, und sie trägt jetzt dieselbe Farbe. Gefüllt = gelernt, Ring = heute (noch offen). <strong>Die Stärke ist überall dieselbe:</strong> 1 pt (<span class="num">--weak</span>), denn die Beziehung ist an jeder Stelle dieselbe — Tag n → Tag n+1, eine schwache Beziehung. Vorher trugen 11 von 13 Stücken 1,5 pt. <strong>Der ausgelassene Tag hat keinen Punkt und keinen Faden, sondern eine Lücke:</strong> keine Beziehung, kein Faden. Der hohle Punkt heißt im ganzen Bestand „geplant, noch nicht da" und konnte hier nicht zugleich „vorbei und nicht geschehen" heißen. Steht auf beiden Geräten.</td></tr>
     <tr><td>Der Herkunfts-Chip</td><td>„aus ‚Zellbiologie'" an der Aufgabe <em>Laborprotokoll</em> ist ein Knopf mit 44-pt-Ziel. Der Tap zeichnet den Faden zurück zum Ursprung — und zwar genau auf den <em>Knoten</em> des ersten Kettenglieds, also auf dasselbe Objekt, an dem auch die Kette hängt. Erst dann wird navigiert. Ausgelöst über <span class="num">data-bw="herkunft"</span>, ohne eine Zeile JavaScript im Schirm.</td></tr>
   </table>
   <p><strong>Wo bewusst kein Faden steht:</strong> zwischen den beiden „Weitermachen"-Karten (sie haben keine Beziehung zueinander, nur dieselbe Überschrift), zwischen den Aufgabenzeilen (eine Liste ist keine Kette) und zwischen den drei Zahlen in „Heute in Zahlen". Die Trennlinien dort bleiben <span class="num">--line</span> und sehen deshalb anders aus als ein Faden.</p>
@@ -541,7 +579,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
   <p><strong>Innovation:</strong> Die Ketten-Karte zeigt in einer Zeile, was sonst fünf Apps und drei Exporte kostet — und sie ist an jeder Station anspringbar. <strong>Interaktion:</strong> Der nächste Schritt („Lernen", 4 Minuten) steht als primärer CTA am Ende der Kette, nicht in einem Menü.</p>
 
   <h3>Zwei-Merkmal-Regel</h3>
-  <p>Kein Zustand hängt an Farbe. Aktiv = Fläche + Gewicht + Balken. Fällig = Wort + Ink-Fläche. Deadline = rotes Wort + Flaggen-Symbol + Uhrzeit. Modul-Dots sind 6 pt und stehen nie ohne das zugehörige Wort. Im Streak unterscheiden sich die Tage durch <em>Form</em> (gefüllt · hohl · Ring), nicht durch Farbe, und die Zeile darunter sagt in Worten, was welche Form heißt.</p>
+  <p>Kein Zustand hängt an Farbe. Aktiv = Fläche + Gewicht + Balken. Fällig = Wort + Ink-Fläche. Deadline = rotes Wort + Flaggen-Symbol + Uhrzeit. Modul-Dots sind 6 pt und stehen nie ohne das zugehörige Wort. Im Streak unterscheiden sich die Tage durch <em>Form</em> (gefüllt · Ring · Lücke), nicht durch Farbe — der Lernkarten-Ton liegt auf allen Punkten gleich und trägt deshalb keine Aussage —, und die Zeile darunter sagt in Worten, was welche Form heißt.</p>
 
   <h3>Die Schrift</h3>
   <p>Der Screen-Titel („Guten Morgen, Emil" bzw. „Heute") trägt <span class="num">.serif--screen-title</span> — der erste Eindruck des Schirms spricht in New York. Sonst steht auf diesem Schirm <strong>kein</strong> Serif mehr: der Tagesimpuls („Was hat dich heute länger beschäftigt…") ist Velums eigener UI-Text und keiner der sieben Orte, er läuft jetzt in Sans. Das blanke <span class="num">.serif</span> kommt in dieser Datei nicht mehr vor.</p>
@@ -553,6 +591,9 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
     <li>Der Herkunfts-Chip war eine Beschriftung. Jetzt ist er ein Knopf, der den Weg zeigt, den er behauptet.</li>
     <li>Die Rückblick-Karte trug einen gestreiften Platzhalter. Jetzt steht dort das Foto des Eintrags („Erster Tag im Labor").</li>
     <li>Jede Kettenstation trägt einen Chevron — ohne ihn wäre eine Station Text neben Text, und der Ink-Akzent nimmt iOS das Signal „farbig = tappbar".</li>
+    <li><strong>Der Chevron war zu wenig.</strong> Der Affordanz-Test (docs/05) hat die Kette mit „Fast" bewertet: ein 14-pt-Chevron war das einzige Merkmal der drei Stationen, R2 verlangt Fläche, Rand oder Lage. Jetzt trägt jede Station ihre eigene Fläche, die drei sind durch 1-pt-Fugen in <span class="num">--line</span> getrennt — drei Bedienflächen statt dreier Textspalten —, und der Chevron ist 16 pt. Die Fuge kostet den Faden 1 pt Weg; <span class="num">--chain-prev: calc(100% + 1px)</span> an den Gliedern 2 und 3 gibt ihn zurück, damit die Enden weiter auf den Punktmitten sitzen.</li>
+    <li><strong>Die Erledigt-Kreise haben ein 44-pt-Ziel bekommen.</strong> Acht Stück auf beiden Geräten, nach dem Muster, das <span class="num">tasks.html</span> schon benutzt: 44-pt-Knopf mit <span class="num">margin:-11px</span>, das Zeichen bleibt 22 pt, das Layout bleibt gleich. Zusätzlich trägt jeder ein <span class="num">aria-label</span> mit dem Namen seiner Aufgabe.</li>
+    <li><strong>Der Geviertstrich ist weg.</strong> In „Heute in Zahlen" stand als dritter Wert ein „—" auf 28 pt in Ink, 8 pt neben dem Journal-Punkt — im Bild ein kurzer Ink-Strich, der aus einem Modulpunkt herausläuft, also ausgerechnet in der Karte, die das Punkt-Vokabular vorführt, die Form eines Fadens. Jetzt steht dort die Zahl, die die Karte „Entwurf ohne Titel" ohnehin belegt: „1 Journal-Entwurf offen".</li>
   </ul>
 </div>
 

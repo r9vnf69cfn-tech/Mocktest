@@ -145,7 +145,7 @@ deshalb inline ausgezeichnet.
 
           <div class="navbar">
             <button class="iconbtn"><span class="ico" data-ico="chevL"></span></button>
-            <span class="origin"><span class="dot dot--notes"></span>Notizen</span>
+            <button aria-label="Zurück zur Notizenliste" style="display:flex; align-items:center; height:44px"><span class="origin"><span class="dot dot--notes"></span>Notizen</span></button>
             <span class="t-sub c-3">Biologie · Semester 3</span>
             <div class="navbar__spacer"></div>
             <button class="iconbtn"><span class="ico" data-ico="undo"></span></button>
@@ -195,7 +195,7 @@ deshalb inline ausgezeichnet.
                   <!-- Überschrift mit Einklapp-Pfeil, Markdown-Marke in der Rinne -->
                   <div style="display:flex; align-items:flex-start; margin-bottom:6px">
                     <div style="width:40px; height:26px; flex:none; position:relative">
-                      <button class="ico c-3" data-ico="chevD" style="width:15px;height:15px; position:absolute; left:0; top:6px"></button>
+                      <button aria-label="Abschnitt einklappen" style="position:absolute; left:-15px; top:-9px; width:44px; height:44px; display:flex; align-items:center; justify-content:center"><span class="ico c-3" data-ico="chevD" style="width:15px;height:15px"></span></button>
                       <span class="t-sub c-3" style="font-family:var(--mono); position:absolute; left:19px; top:3px">##</span>
                     </div>
                     <div class="t-section" style="flex:1 1 auto">Membran und Transport</div>
@@ -240,9 +240,48 @@ deshalb inline ausgezeichnet.
                         <i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i><i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i>
                       </span>
                       <span title="Erwähnt die Notiz „Osmose" — Verweis vorgeschlagen"
-                            style="display:flex; align-items:center">
-                        <span class="dot dot--hollow"></span>
+                            style="display:flex; align-items:center; position:relative">
+                        <span class="dot dot--hollow" id="ne-zieh"></span>
                         <svg class="thread thread--h thread--weak" style="width:14px; margin-left:1px"></svg>
+
+                        <!-- ══ DER ZWEITE, SCHNELLERE WEG ══════════════════════
+                             Der wahrscheinlichste Abbruchgrund dieser App ist
+                             nicht die Optik, sondern eine Entscheidung mitten im
+                             Lesen: das Popover oben fragt nach dem Kartentyp
+                             (Lückentext · Frage/Antwort · Aufgabe). Entscheidungen
+                             im Fluss werden zuerst aufgegeben — und sobald das
+                             Verwandeln aussetzt, hört der Graph auf zu wachsen.
+
+                             Deshalb gibt es einen zweiten Weg, der GAR NICHTS
+                             fragt: am hohlen Punkt ziehen. Der Faden wächst nach
+                             unten in die Marginalspalte, an seinem Ende steht die
+                             Karte — mit dem markierten Satz schon darin, Typ
+                             voreingestellt und hinterher an der Karte änderbar.
+                             Ein unvollständiger Datensatz ist gültig.
+
+                             Der Zwischenzustand, den dieses Standbild zeigt: der
+                             Ursprungspunkt ist NOCH HOHL (die Kante ist noch nicht
+                             gespeichert), die Karte ist ein Umriss, und ihr
+                             Ankerpunkt ist ebenfalls hohl. Beim Loslassen füllen
+                             sich beide Punkte, der Faden bleibt.
+
+                             Richtung: von oben nach unten, Ursprung → Ergebnis
+                             (N6). Stärke 2,5 pt, weil es eine Herkunftskante ist:
+                             aus diesem Absatz wird diese Karte. Beide Fadenenden
+                             sitzen auf einer Punktmitte — auch im halb gezogenen
+                             Zustand hängt kein Ende frei. -->
+                        <svg class="thread thread--v thread--origin" aria-hidden="true"
+                             style="position:absolute; left:3px; top:3px; height:30px; width:10px; transform:translateX(-50%); z-index:1"></svg>
+                        <span class="dot dot--hollow" style="position:absolute; left:3px; top:33px; transform:translate(-50%,-50%); z-index:2"></span>
+                        <span style="position:absolute; left:-102px; top:36px; width:110px; z-index:2;
+                                     background:var(--paper); border-radius:10px;
+                                     box-shadow:0 0 0 1.4px var(--dot-hollow), var(--sh-card);
+                                     padding:7px 9px 8px; text-align:left">
+                          <span class="t-label c-3" style="display:flex; align-items:center; gap:5px; margin-bottom:3px">
+                            <span class="dot dot--cards"></span>NEUE KARTE
+                          </span>
+                          <span class="t-label clamp-3" style="display:-webkit-box; color:var(--ink-2); font-weight:400">Osmose ist die Diffusion von Wasser durch eine ▮ Membran.</span>
+                        </span>
                       </span>
                     </div>
 
@@ -270,11 +309,11 @@ deshalb inline ausgezeichnet.
                     <div style="width:40px; flex:none"></div>
                     <div style="flex:1 1 auto">
                       <div style="display:flex; align-items:center; gap:10px; min-height:29px">
-                        <span class="check is-done"></span>
+                        <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Abbildung 4.2 aus der Vorlesung ergänzen erledigen"><span class="check is-done"></span></button>
                         <span class="t-body c-3" style="text-decoration:line-through">Abbildung 4.2 aus der Vorlesung ergänzen</span>
                       </div>
                       <div style="display:flex; align-items:center; gap:10px; min-height:29px">
-                        <span class="check"></span>
+                        <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Jana nach dem Messprotokoll vom Dienstag fragen erledigen"><span class="check"></span></button>
                         <span class="t-body">Jana nach dem Messprotokoll vom Dienstag fragen</span>
                       </div>
                     </div>
@@ -342,7 +381,7 @@ deshalb inline ausgezeichnet.
                   <!-- Eingeklappte Überschrift: der halb geöffnete Zustand -->
                   <div style="display:flex; align-items:center; margin-top:10px">
                     <div style="width:40px; height:26px; flex:none; position:relative">
-                      <button class="ico c-3" data-ico="chevR" style="width:15px;height:15px; position:absolute; left:0; top:6px"></button>
+                      <button aria-label="Abschnitt aufklappen" style="position:absolute; left:-15px; top:-9px; width:44px; height:44px; display:flex; align-items:center; justify-content:center"><span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span></button>
                       <span class="t-sub c-3" style="font-family:var(--mono); position:absolute; left:19px; top:3px">##</span>
                     </div>
                     <div class="t-section c-2" style="flex:1 1 auto">Organellen im Überblick</div>
@@ -353,18 +392,18 @@ deshalb inline ausgezeichnet.
               </div>
 
               <!-- Blockleiste unten -->
-              <div style="flex:none; display:flex; align-items:center; gap:2px; padding:5px 16px; border-top:1px solid var(--line); background:var(--chrome); backdrop-filter:blur(24px)">
+              <div style="flex:none; display:flex; align-items:center; gap:2px; padding:2px 16px; border-top:1px solid var(--line); background:var(--chrome); backdrop-filter:blur(24px)">
                 <span class="t-label c-3" style="margin-right:8px">BLOCK</span>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="t-label">H1</span></button>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="doc"></span></button>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="check"></span></button>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="info"></span></button>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="quote"></span></button>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="t-label" style="font-family:var(--mono)">&lt;/&gt;</span></button>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="grid"></span></button>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="photo"></span></button>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="link"></span></button>
-                <button class="iconbtn" style="width:38px;height:38px"><span class="ico" data-ico="mic"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="t-label">H1</span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="doc"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="check"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="info"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="quote"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="t-label" style="font-family:var(--mono)">&lt;/&gt;</span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="grid"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="photo"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="link"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="mic"></span></button>
                 <div style="flex:1 1 auto"></div>
                 <span class="t-sub c-3" style="margin-right:10px">Alles gesichert · 9:39</span>
                 <span class="chip chip--ghost"><span style="font-family:var(--mono)">/</span> für Blöcke</span>
@@ -380,19 +419,44 @@ deshalb inline ausgezeichnet.
                   <button style="flex:1 1 0">Verlauf</button>
                 </div>
 
-                <!-- Inhaltsverzeichnis -->
+                <!-- Inhaltsverzeichnis
+                     docs/05 (schwer, 4 Elemente): Vier der fünf Einträge waren
+                     reiner Text in einem Behälter ohne Fläche und ohne Kante —
+                     der aktive Eintrag war das einzige Element, das bewies, dass
+                     die anderen überhaupt tappbar sind. Jetzt trägt jede Zeile
+                     ihre eigene Fläche (R2) und die Markdown-Marke ihrer Ebene
+                     (R3) — dasselbe ## / ###, das in der Rinne des Editors neben
+                     der Überschrift steht. Der aktive Eintrag behält seine
+                     Ink-Fläche, das Gewicht und den Balken.
+
+                     KEIN senkrechter Strich für die inaktiven Zeilen: 2,5 pt
+                     senkrecht in Grau wäre auf 280 pt Panelbreite bildgleich mit
+                     einem Faden, und ein Faden verbindet hier nichts. -->
                 <section>
                   <div class="t-label c-3" style="margin-bottom:6px">INHALT</div>
                   <div style="display:flex; flex-direction:column">
-                    <button style="display:flex; align-items:center; height:27px; padding:0 8px; border-radius:7px; text-align:left"><span class="t-sub c-2 clamp-1">Aufbau der Zelle</span></button>
-                    <!-- aktiv = Fläche + Gewicht + Balken -->
-                    <button style="display:flex; align-items:center; height:27px; padding:0 8px; border-radius:7px; text-align:left; background:var(--accent-soft); position:relative">
-                      <span style="position:absolute; left:0; top:5px; bottom:5px; width:2.5px; border-radius:0 2px 2px 0; background:var(--accent)"></span>
-                      <span class="t-sub is-strong clamp-1">Membran und Transport</span>
+                    <button style="display:flex; align-items:center; gap:8px; height:44px; padding:0 8px; border-radius:7px; text-align:left; background:var(--fill); margin-bottom:2px">
+                      <span class="t-label c-3" style="font-family:var(--mono); flex:none">##</span>
+                      <span class="t-sub c-2 clamp-1" style="flex:1 1 auto">Aufbau der Zelle</span>
                     </button>
-                    <button style="display:flex; align-items:center; height:25px; padding:0 8px 0 20px; border-radius:7px; text-align:left"><span class="t-sub c-3 clamp-1">Osmose</span></button>
-                    <button style="display:flex; align-items:center; height:27px; padding:0 8px; border-radius:7px; text-align:left"><span class="t-sub c-2 clamp-1">Organellen im Überblick</span></button>
-                    <button style="display:flex; align-items:center; height:27px; padding:0 8px; border-radius:7px; text-align:left"><span class="t-sub c-2 clamp-1">Fragen an Prof. Wendt</span></button>
+                    <!-- aktiv = Fläche + Gewicht + Balken -->
+                    <button style="display:flex; align-items:center; gap:8px; height:44px; padding:0 8px; border-radius:7px; text-align:left; background:var(--accent-soft); position:relative; margin-bottom:2px">
+                      <span style="position:absolute; left:0; top:11px; bottom:11px; width:2.5px; border-radius:0 2px 2px 0; background:var(--accent)"></span>
+                      <span class="t-label c-3" style="font-family:var(--mono); flex:none">##</span>
+                      <span class="t-sub is-strong clamp-1" style="flex:1 1 auto">Membran und Transport</span>
+                    </button>
+                    <button style="display:flex; align-items:center; gap:8px; height:44px; padding:0 8px 0 16px; border-radius:7px; text-align:left; background:var(--fill); margin-bottom:2px">
+                      <span class="t-label c-3" style="font-family:var(--mono); flex:none">###</span>
+                      <span class="t-sub c-2 clamp-1" style="flex:1 1 auto">Osmose</span>
+                    </button>
+                    <button style="display:flex; align-items:center; gap:8px; height:44px; padding:0 8px; border-radius:7px; text-align:left; background:var(--fill); margin-bottom:2px">
+                      <span class="t-label c-3" style="font-family:var(--mono); flex:none">##</span>
+                      <span class="t-sub c-2 clamp-1" style="flex:1 1 auto">Organellen im Überblick</span>
+                    </button>
+                    <button style="display:flex; align-items:center; gap:8px; height:44px; padding:0 8px; border-radius:7px; text-align:left; background:var(--fill); margin-bottom:2px">
+                      <span class="t-label c-3" style="font-family:var(--mono); flex:none">##</span>
+                      <span class="t-sub c-2 clamp-1" style="flex:1 1 auto">Fragen an Prof. Wendt</span>
+                    </button>
                   </div>
                 </section>
 
@@ -402,15 +466,15 @@ deshalb inline ausgezeichnet.
                     <span class="t-label c-3">BACKLINKS</span><span class="t-label c-3 num">3</span>
                   </div>
                   <div style="display:flex; flex-direction:column">
-                    <button style="display:flex; align-items:center; gap:9px; height:31px; padding:0 8px; border-radius:7px; text-align:left">
+                    <button style="display:flex; align-items:center; gap:9px; height:44px; padding:0 8px; border-radius:7px; text-align:left">
                       <span class="dot dot--notes"></span><span class="t-sub c-1 clamp-1" style="flex:1 1 auto">Laborjournal · 12. Nov</span>
                       <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
                     </button>
-                    <button style="display:flex; align-items:center; gap:9px; height:31px; padding:0 8px; border-radius:7px; text-align:left">
+                    <button style="display:flex; align-items:center; gap:9px; height:44px; padding:0 8px; border-radius:7px; text-align:left">
                       <span class="dot dot--notes"></span><span class="t-sub c-1 clamp-1" style="flex:1 1 auto">Semesterplanung</span>
                       <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
                     </button>
-                    <button style="display:flex; align-items:center; gap:9px; height:31px; padding:0 8px; border-radius:7px; text-align:left">
+                    <button style="display:flex; align-items:center; gap:9px; height:44px; padding:0 8px; border-radius:7px; text-align:left">
                       <span class="dot dot--journal"></span><span class="t-sub c-1 clamp-1" style="flex:1 1 auto">Erster Tag im Labor</span>
                       <span class="ico c-3" data-ico="chevR" style="width:14px;height:14px"></span>
                     </button>
@@ -501,7 +565,7 @@ deshalb inline ausgezeichnet.
       <div class="content" style="background:var(--paper)">
         <div class="navbar" style="padding-left:6px">
           <button class="iconbtn"><span class="ico" data-ico="chevL"></span></button>
-          <span class="origin"><span class="dot dot--notes"></span>Notizen</span>
+          <button aria-label="Zurück zur Notizenliste" style="display:flex; align-items:center; height:44px"><span class="origin"><span class="dot dot--notes"></span>Notizen</span></button>
           <div class="navbar__spacer"></div>
           <!-- Info-Panel auf dem iPhone: ein Knopf in der Navigationsleiste -->
           <button class="iconbtn"><span class="ico" data-ico="info"></span></button>
@@ -530,6 +594,20 @@ deshalb inline ausgezeichnet.
               <span class="chip chip--ghost"><span class="ico" data-ico="plus" style="width:13px;height:13px"></span>Tag</span>
             </div>
             <div class="t-sub c-2" style="margin-top:6px">Gestern 16:20 · <span class="num">14 Absätze</span> · <span class="num">1.284</span> Wörter</div>
+            <!-- M18: Die Randmarken standen auf dem iPhone ohne Legende da — eine
+                 8 pt lange Linie trug ihre Aussage allein, während das iPad sie im
+                 Info-Panel erklärt. Hier steht dieselbe Legende in einer Zeile;
+                 damit trägt der Punkt auch auf dem kleinen Gerät sein Wort. -->
+            <div class="t-label c-3" style="margin-top:8px; display:flex; align-items:center; gap:12px; flex-wrap:wrap">
+              <span style="display:flex; align-items:center; gap:5px">
+                <span style="display:flex; align-items:center"><span class="dot dot--notes"></span><svg class="thread thread--h" style="width:12px; margin-left:1px"></svg></span>
+                am Rand: verlinkt
+              </span>
+              <span style="display:flex; align-items:center; gap:5px">
+                <span style="display:flex; align-items:center"><span class="dot dot--hollow"></span><svg class="thread thread--h thread--weak" style="width:12px; margin-left:1px"></svg></span>
+                nur erwähnt
+              </span>
+            </div>
             <!-- Was das iPad im Panel zeigt, steht auf dem iPhone hier: was auf
                  diese Notiz zeigt und was aus ihr entstanden ist. Ohne diese
                  Zeile hätte die Übergabe kein sichtbares Ziel. -->
@@ -544,7 +622,7 @@ deshalb inline ausgezeichnet.
 
             <!-- Überschrift mit Einklapp-Pfeil -->
             <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px">
-              <button class="ico c-3" data-ico="chevD" style="width:15px;height:15px"></button>
+              <button aria-label="Abschnitt einklappen" style="width:44px; height:44px; margin:-14px; flex:none; display:flex; align-items:center; justify-content:center"><span class="ico c-3" data-ico="chevD" style="width:15px;height:15px"></span></button>
               <span class="t-sub c-3" style="font-family:var(--mono)">##</span>
               <div class="t-section" style="flex:1 1 auto">Membran und Transport</div>
             </div>
@@ -580,11 +658,11 @@ deshalb inline ausgezeichnet.
             <!-- Checkliste, zweiter Haken mitten in der Animation -->
             <div style="margin-bottom:8px">
               <div style="display:flex; align-items:center; gap:10px; min-height:31px">
-                <span class="check is-done"></span>
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Abbildung 4.2 ergänzen erledigen"><span class="check is-done"></span></button>
                 <span class="t-body c-3" style="text-decoration:line-through">Abbildung 4.2 ergänzen</span>
               </div>
               <div style="display:flex; align-items:center; gap:10px; min-height:31px">
-                <span class="check is-checking"></span>
+                <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Jana nach dem Messprotokoll fragen erledigen"><span class="check is-checking"></span></button>
                 <span class="t-body">Jana nach dem Messprotokoll fragen</span>
               </div>
             </div>
@@ -608,10 +686,21 @@ deshalb inline ausgezeichnet.
             </div>
           </div>
 
-          <!-- Übergabe-Leiste: schwebt über der Tastaturzone, im Bild verankert -->
-          <div class="handoff" style="position:absolute; left:10px; right:10px; bottom:10px; z-index:40; display:flex">
-            <span class="handoff__from t-label" style="padding:0 8px 0 6px"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
-            <button class="handoff__btn is-primary" style="flex:1 1 auto"
+        </div>
+
+        <!-- Übergabe-Leiste, ANGEDOCKT.
+             Vorher schwebte sie mit position:absolute über dem Text und lag quer
+             über dem MERKEN-Kasten — sie verdeckte genau die Zeile, aus der die
+             Karte entstehen soll. Jetzt ist sie ein Geschwister des Scrollbereichs
+             (flex:none): der Textfluss wird um ihre Höhe kürzer, statt unter ihr
+             zu verschwinden. Verankerte Leiste statt schwebender — dieselbe
+             Entscheidung, die Noteful für seine Werkzeugleiste getroffen hat, und
+             die Konvention hat recht: eine verankerte Leiste kostet Fläche und
+             verdeckt dafür nie eine Zeile. -->
+        <div style="flex:none; padding:0 10px 8px">
+          <div class="handoff" style="display:flex; width:100%">
+            <span class="handoff__from t-label" style="padding:0 8px 0 6px; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
+            <button class="handoff__btn is-primary" style="flex:1 1 auto; min-width:0"
                     data-bw="uebergeben" data-bw-von="#iphone-sel" data-bw-nach="#iphone-target"
                     data-bw-zaehler="#iphone-kartenzahl" data-bw-punkt="#iphone-kartenpunkt"
                     data-bw-box="#ne-iphone" data-bw-kurve="30"
@@ -621,13 +710,13 @@ deshalb inline ausgezeichnet.
         </div>
 
         <!-- Blockleiste = Zubehörleiste über der Tastatur -->
-        <div style="flex:none; display:flex; align-items:center; gap:2px; padding:4px 10px; border-top:1px solid var(--line); background:var(--chrome); backdrop-filter:blur(24px)">
-          <button class="iconbtn" style="width:36px;height:36px"><span class="t-label">H1</span></button>
-          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="check"></span></button>
-          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="info"></span></button>
-          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="quote"></span></button>
-          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="photo"></span></button>
-          <button class="iconbtn" style="width:36px;height:36px"><span class="ico" data-ico="link"></span></button>
+        <div style="flex:none; display:flex; align-items:center; gap:0; padding:0 5px; border-top:1px solid var(--line); background:var(--chrome); backdrop-filter:blur(24px)">
+          <button class="iconbtn" style="width:44px;height:44px"><span class="t-label">H1</span></button>
+          <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="check"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="info"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="quote"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="photo"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="link"></span></button>
           <div style="flex:1 1 auto"></div>
           <span class="chip chip--ghost"><span style="font-family:var(--mono)">/</span> für Blöcke</span>
         </div>
@@ -641,6 +730,411 @@ deshalb inline ausgezeichnet.
         </nav>
         <div class="home-indicator"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ iPad · zweiter Zustand: Reiter „Verlauf" ═══════════════
+       Derselbe Schirm, dieselbe Notiz, nichts ausgewählt — nur der zweite
+       Reiter des Info-Panels ist an. Er stand bis Runde 2 als Knopf ohne
+       Panel da. -->
+  <div class="device">
+    <div class="device__label">iPad · derselbe Schirm, Reiter „Verlauf" <span>1194 × 834 pt · nichts ausgewählt, Panel auf der Tonspur</span></div>
+    <div class="screen screen--ipad" id="ne-ipad-v">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+
+        <!-- Rückkehr-Leiste: die Sidebar aus today.html, eingeklappt auf 68 pt.
+             Gleiche Reihenfolge, gleiche Symbole, nur ohne Beschriftung.
+             Modul-Dots entfallen hier bewusst — ein Dot ohne Wort ist verboten. -->
+        <aside class="sidebar" style="width:68px; padding:8px 12px 12px; align-items:center">
+          <button class="iconbtn" style="width:44px;height:44px; margin-bottom:4px" title="Seitenleiste einblenden"><span class="ico" data-ico="chevR"></span></button>
+
+          <button class="iconbtn" style="width:44px;height:44px" title="Heute"><span class="ico" data-ico="today"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Bibliothek"><span class="ico" data-ico="library"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Eingang"><span class="ico" data-ico="inbox"></span></button>
+
+          <div style="width:28px; height:1px; background:var(--line); margin:8px 0"></div>
+
+          <button class="iconbtn" style="width:44px;height:44px" title="Canvas"><span class="ico" data-ico="canvas"></span></button>
+          <!-- aktiv = Fläche + Ink + Balken (drei Merkmale, keine Farbe) -->
+          <button class="iconbtn is-active" style="width:44px;height:44px; position:relative" title="Notizen">
+            <span style="position:absolute; left:-9px; top:9px; bottom:9px; width:3px; border-radius:0 2px 2px 0; background:var(--accent)"></span>
+            <span class="ico" data-ico="notes"></span>
+          </button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Journal"><span class="ico" data-ico="journal"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Aufgaben"><span class="ico" data-ico="tasks"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Lernkarten"><span class="ico" data-ico="cards"></span></button>
+          <button class="iconbtn" style="width:44px;height:44px" title="Graph"><span class="ico" data-ico="graph"></span></button>
+
+          <div style="margin-top:auto">
+            <button class="iconbtn" style="width:44px;height:44px" title="Einstellungen"><span class="ico" data-ico="settings"></span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+
+          <div class="navbar">
+            <button class="iconbtn"><span class="ico" data-ico="chevL"></span></button>
+            <button aria-label="Zurück zur Notizenliste" style="display:flex; align-items:center; height:44px"><span class="origin"><span class="dot dot--notes"></span>Notizen</span></button>
+            <span class="t-sub c-3">Biologie · Semester 3</span>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="undo"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="star"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="share"></span></button>
+            <button class="iconbtn is-active"><span class="ico" data-ico="info"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="more"></span></button>
+          </div>
+
+          <!-- Editor + Info-Panel -->
+          <div style="flex:1 1 auto; display:flex; min-height:0">
+
+            <!-- ── Editor ────────────────────────────────────────────── -->
+            <div class="content" style="background:var(--paper)">
+              <div class="scroll" style="padding:0">
+
+                <!-- Cover-Streifen: Papier und Grau, liniert wie Kollegblock -->
+                <div style="height:36px; position:relative;
+                     background:
+                       linear-gradient(180deg, var(--fill-2), transparent),
+                       repeating-linear-gradient(180deg, transparent 0 11px, var(--line) 11px 12px);
+                     border-bottom:1px solid var(--line)">
+                  <span class="chip" style="position:absolute; left:24px; bottom:-13px; background:var(--paper); box-shadow:0 0 0 1px var(--line)">
+                    <span class="ico" data-ico="folder" style="width:14px;height:14px"></span>Biologie
+                  </span>
+                  <span class="t-label c-2" style="position:absolute; right:24px; top:10px">Vorlesung 6 · Prof. Wendt</span>
+                </div>
+
+                <!-- Notizkopf -->
+                <div style="max-width:700px; margin:0 auto; padding:20px 10px 0">
+                  <div style="padding-left:40px">
+                    <div class="serif--screen-title">Zellbiologie</div>
+                    <div style="display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap">
+                      <span class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#uni/bio</span>
+                      <span class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>#labor</span>
+                      <span class="chip chip--ghost"><span class="ico" data-ico="plus" style="width:13px;height:13px"></span>Tag</span>
+                      <div style="flex:1 1 auto"></div>
+                      <span class="t-sub c-2">Zuletzt bearbeitet gestern 16:20 · <span class="num">14 Absätze</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Notizkörper: Rinne 34 pt + Textspalte -->
+                <div style="max-width:700px; margin:0 auto; padding:12px 10px 6px">
+
+                  <!-- Überschrift mit Einklapp-Pfeil, Markdown-Marke in der Rinne -->
+                  <div style="display:flex; align-items:flex-start; margin-bottom:6px">
+                    <div style="width:40px; height:26px; flex:none; position:relative">
+                      <button aria-label="Abschnitt einklappen" style="position:absolute; left:-15px; top:-9px; width:44px; height:44px; display:flex; align-items:center; justify-content:center"><span class="ico c-3" data-ico="chevD" style="width:15px;height:15px"></span></button>
+                      <span class="t-sub c-3" style="font-family:var(--mono); position:absolute; left:19px; top:3px">##</span>
+                    </div>
+                    <div class="t-section" style="flex:1 1 auto">Membran und Transport</div>
+                  </div>
+
+                  <!-- ══ Wiki-Links als Fäden in der Marginalspalte ══
+                       Herkunft in Absatz-Auflösung: an jedem Absatz hängt für
+                       jeden Verweis ein kurzer Fadenstumpf mit dem Zielobjekt
+                       als Punkt am Ende. Gefüllt + 1,5 pt = der Verweis steht
+                       im Datenmodell. Hohl + 1 pt (weak) = die Zielnotiz gibt
+                       es, der Verweis aber noch nicht — die App schlägt ihn
+                       vor. Absätze ohne Verweis bekommen nichts: kein Faden
+                       ohne Kante. -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div class="t-body" style="width:40px; flex:none; display:flex; flex-direction:column; align-items:flex-end">
+                      <span title="Erwähnt die Notiz „Zellmembran" — Verweis vorgeschlagen"
+                            style="display:flex; align-items:center; height:1lh">
+                        <span class="dot dot--hollow"></span>
+                        <svg class="thread thread--h thread--weak" style="width:19px; margin-left:1px"></svg>
+                      </span>
+                      <span title="Verweist auf die Notiz „Osmose""
+                            style="display:flex; align-items:center; height:1lh">
+                        <span class="dot dot--notes"></span>
+                        <svg class="thread thread--h" style="width:19px; margin-left:1px"></svg>
+                      </span>
+                    </div>
+                    <p class="t-body" style="margin:0; flex:1 1 auto">Die Zellmembran ist <span class="is-strong">selektiv permeabel</span>: kleine unpolare Moleküle passieren frei, Ionen brauchen Kanäle. Für Wasser gilt der Sonderfall <a href="#" style="color:var(--ink-1); font-weight:600; text-decoration:none; box-shadow:inset 0 -1.5px 0 var(--line-2)"><span class="c-3" style="font-weight:400">[[</span>Osmose<span class="c-3" style="font-weight:400">]]</span></a>.</p>
+                  </div>
+
+                  <!-- ══ Der Signature-Moment: markierter Satz + Übergabe-Leiste ══ -->
+                  <div style="display:flex; margin-top:8px; margin-bottom:10px; position:relative">
+                    <!-- Drag-Handle (Craft): nur am angefassten Block.
+                         Darunter der Fadenstumpf dieses Absatzes: „Osmose" wird
+                         hier erwähnt, aber nicht verlinkt — derselbe Ursprung
+                         wie eine Zeile darüber, einmal als Kante, einmal als
+                         Vorschlag. Genau das kann nur eine Marginalspalte in
+                         Absatz-Auflösung zeigen. -->
+                    <div class="t-body" style="width:40px; flex:none; display:flex; align-items:center; justify-content:space-between; height:1lh">
+                      <span style="display:grid; grid-template-columns:2px 2px; gap:3px; opacity:.5">
+                        <i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i><i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i>
+                        <i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i><i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i>
+                        <i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i><i style="width:2px;height:2px;border-radius:50%;background:var(--ink-2)"></i>
+                      </span>
+                      <span title="Erwähnt die Notiz „Osmose" — Verweis vorgeschlagen"
+                            style="display:flex; align-items:center; position:relative">
+                        <span class="dot dot--hollow"></span>
+                        <svg class="thread thread--h thread--weak" style="width:14px; margin-left:1px"></svg>
+
+                                              </span>
+                    </div>
+
+                                        <p class="t-body" style="margin:0; flex:1 1 auto">Merksatz: Osmose ist die Diffusion von Wasser durch eine semipermeable Membran.</p>
+                  </div>
+
+                  <!-- Checkliste (Apple Notes) -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none"></div>
+                    <div style="flex:1 1 auto">
+                      <div style="display:flex; align-items:center; gap:10px; min-height:29px">
+                        <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Abbildung 4.2 aus der Vorlesung ergänzen erledigen"><span class="check is-done"></span></button>
+                        <span class="t-body c-3" style="text-decoration:line-through">Abbildung 4.2 aus der Vorlesung ergänzen</span>
+                      </div>
+                      <div style="display:flex; align-items:center; gap:10px; min-height:29px">
+                        <button style="width:44px; height:44px; margin:-11px; flex:none; display:flex; align-items:center; justify-content:center" aria-label="Jana nach dem Messprotokoll vom Dienstag fragen erledigen"><span class="check"></span></button>
+                        <span class="t-body">Jana nach dem Messprotokoll vom Dienstag fragen</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Callout -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none"></div>
+                    <div class="notice" style="flex:1 1 auto; padding:10px 14px">
+                      <span class="ico c-2" data-ico="info" style="width:19px;height:19px; margin-top:1px"></span>
+                      <div>
+                        <div class="t-label c-3" style="margin-bottom:1px">MERKEN</div>
+                        <div class="t-body">Wasser wandert dorthin, wo die Teilchenkonzentration höher ist.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Zitat mit linkem Balken -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none; display:flex; justify-content:flex-end; padding-right:8px; padding-top:2px">
+                      <span class="ico c-3" data-ico="quote" style="width:15px;height:15px"></span>
+                    </div>
+                    <div style="flex:1 1 auto; border-left:3px solid var(--line-2); padding-left:14px">
+                      <p class="serif--quote c-2" style="margin:0">„Die Zelle ist die kleinste Einheit, die alle Merkmale des Lebendigen erfüllt."</p>
+                      <div class="t-sub c-3" style="margin-top:1px">Vorlesung 6, Prof. Wendt</div>
+                    </div>
+                  </div>
+
+                  <!-- Codeblock: var(--mono) auf t-sub-Größe, Syntax in Grautönen -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none; display:flex; justify-content:flex-end; padding-right:8px; padding-top:4px">
+                      <span class="t-label c-3" style="font-family:var(--mono)">&lt;/&gt;</span>
+                    </div>
+                    <div style="flex:1 1 auto; background:var(--fill); border-radius:10px; box-shadow:inset 0 0 0 1px var(--line); padding:8px 14px">
+                      <div class="t-sub c-3" style="font-family:var(--mono); letter-spacing:0"># Zellen pro mL — Neubauer, Verdünnung 1:2</div>
+                      <div class="t-sub c-1" style="font-family:var(--mono); letter-spacing:0"><span class="c-2">n</span> <span class="c-3">=</span> (<span class="is-strong">312</span> <span class="c-3">/</span> <span class="is-strong">4</span>) <span class="c-3">*</span> <span class="is-strong">10^4</span> <span class="c-3">*</span> <span class="is-strong">2</span>&nbsp;&nbsp;<span class="c-3"># = 1,56e6</span></div>
+                    </div>
+                  </div>
+
+                  <!-- Tabelle -->
+                  <div style="display:flex; margin-bottom:8px">
+                    <div style="width:40px; flex:none; display:flex; justify-content:flex-end; padding-right:8px; padding-top:4px">
+                      <span class="ico c-3" data-ico="grid" style="width:15px;height:15px"></span>
+                    </div>
+                    <table style="flex:1 1 auto; border-collapse:collapse; width:100%">
+                      <tr>
+                        <td class="t-label c-3" style="padding:3px 12px 3px 0; border-bottom:1px solid var(--line-2); width:44%">ORGANELL</td>
+                        <td class="t-label c-3" style="padding:3px 0; border-bottom:1px solid var(--line-2)">AUFGABE</td>
+                      </tr>
+                      <tr>
+                        <td class="t-body" style="padding:3px 12px 3px 0; border-bottom:1px solid var(--line)">Mitochondrium</td>
+                        <td class="t-body c-2" style="padding:3px 0; border-bottom:1px solid var(--line)">Energie als ATP</td>
+                      </tr>
+                      <tr>
+                        <td class="t-body" style="padding:3px 12px 3px 0; border-bottom:1px solid var(--line)">Golgi-Apparat</td>
+                        <td class="t-body c-2" style="padding:3px 0; border-bottom:1px solid var(--line)">Sortieren und Verpacken</td>
+                      </tr>
+                      <tr>
+                        <td class="t-body" style="padding:3px 12px 3px 0">Endoplasmatisches Retikulum</td>
+                        <td class="t-body c-2" style="padding:3px 0">Synthese und Transport</td>
+                      </tr>
+                    </table>
+                  </div>
+
+                  <!-- Eingeklappte Überschrift: der halb geöffnete Zustand -->
+                  <div style="display:flex; align-items:center; margin-top:10px">
+                    <div style="width:40px; height:26px; flex:none; position:relative">
+                      <button aria-label="Abschnitt aufklappen" style="position:absolute; left:-15px; top:-9px; width:44px; height:44px; display:flex; align-items:center; justify-content:center"><span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span></button>
+                      <span class="t-sub c-3" style="font-family:var(--mono); position:absolute; left:19px; top:3px">##</span>
+                    </div>
+                    <div class="t-section c-2" style="flex:1 1 auto">Organellen im Überblick</div>
+                    <span class="chip"><span class="num">4</span>&nbsp;Blöcke ausgeblendet</span>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Blockleiste unten -->
+              <div style="flex:none; display:flex; align-items:center; gap:2px; padding:2px 16px; border-top:1px solid var(--line); background:var(--chrome); backdrop-filter:blur(24px)">
+                <span class="t-label c-3" style="margin-right:8px">BLOCK</span>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="t-label">H1</span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="doc"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="check"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="info"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="quote"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="t-label" style="font-family:var(--mono)">&lt;/&gt;</span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="grid"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="photo"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="link"></span></button>
+                <button class="iconbtn" style="width:44px;height:44px"><span class="ico" data-ico="mic"></span></button>
+                <div style="flex:1 1 auto"></div>
+                <span class="t-sub c-3" style="margin-right:10px">Alles gesichert · 9:39</span>
+                <span class="chip chip--ghost"><span style="font-family:var(--mono)">/</span> für Blöcke</span>
+              </div>
+            </div>
+
+            <!-- ── Info-Panel (280 pt) ───────────────────────────────── -->
+            <aside style="width:280px; flex:none; border-left:1px solid var(--line); background:var(--paper-2); display:flex; flex-direction:column; min-height:0">
+              <div class="scroll" style="padding:14px 16px 16px; display:flex; flex-direction:column; gap:13px">
+
+                <div class="segmented" style="width:100%">
+                  <button style="flex:1 1 0">Übersicht</button>
+                  <button class="is-on" style="flex:1 1 0">Verlauf</button>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════════════
+                     DER REITER „VERLAUF"
+
+                     Bis Runde 2 war dies ein Knopf ohne Panel — die größte
+                     unbebaute Fläche des Entwurfs. Hier gehört die dritte
+                     Alleinstellung hin: Velum speichert nicht das Ergebnis der
+                     Mitschrift, sondern ihren Verlauf. Deshalb ist die Tonspur
+                     hier keine Wellenform, sondern eine ACHSE.
+
+                     Warum keine Wellenform: Eine Wellenform zeigt Lautstärke.
+                     Lautstärke ist die einzige Eigenschaft einer Vorlesungs-
+                     aufnahme, die über die Notiz nichts aussagt. Der Faden zeigt
+                     stattdessen, OB DER STIFT LIEF: gezeichnet, wo Tinte und Ton
+                     zusammen liefen — unterbrochen, wo nur Ton lief. Man sieht
+                     auf einen Blick, wo man aufgehört hat mitzuschreiben, also
+                     genau die Stellen, an denen man später zuhören muss.
+
+                     Warum eine Lücke und keine Strichelung: Strichelung wäre eine
+                     vierte visuelle Variable am Faden, die die DNA nicht kennt
+                     (faden-konsistenz M5), und stroke-dasharray ist am .thread
+                     bereits für thread-draw belegt — ein dauerhaft gestrichelter
+                     Faden sähe im Ruhezustand aus wie ein halb gezeichneter. Die
+                     Lücke ist außerdem motivgerecht: keine Beziehung, kein Faden.
+
+                     Warum senkrecht: Die Journal-Zeitachse ist senkrecht. Zwei
+                     Zeitmotive in einer App dürfen sich nicht widersprechen.
+                     Richtung oben → unten, Ursprung → Ergebnis (N6).
+
+                     Knotengrad (N7): Genau EINE Station hat zwei Fäden — die
+                     „Nacharbeit", weil über und unter ihr einer liegt. Sie ist
+                     der einzige .dot--node. Die Stationen mit einem Faden tragen
+                     den gefüllten Modulpunkt dessen, was dort entstand
+                     (Lernkarten-Rosa, Aufgaben-Grün), und die letzte trägt den
+                     Ring: „hier steht die Wiedergabe".
+
+                     Die Stärke bleibt durchgehend 1,5 pt. Stärke sagt in diesem
+                     System Beziehungsnähe und darf deshalb keine Lautstärke
+                     tragen.
+                     ══════════════════════════════════════════════════════════ -->
+                <section>
+                  <div class="t-label c-3" style="margin-bottom:3px">VERLAUF DER SEITE</div>
+                  <div class="t-sub c-2" style="margin-bottom:14px"><span class="num">72</span> Min. Ton · <span class="num">61</span> Min. mit Tinte · <span class="num">3</span> Durchgänge</div>
+
+                  <div aria-label="Zeitachse der Seite: Vorlesung 6 am Donnerstag 16:20, um 16:42 entstand eine Lückentext-Karte, danach lief acht Minuten nur Ton ohne Mitschrift, um 16:51 entstand eine Aufgabe, am Mittwoch 21:40 die Nacharbeit, heute 9:28 die Korrektur — dort steht die Wiedergabe">
+
+                    <!-- 1 · Durchgang · erste Station, ein Faden → Modulpunkt -->
+                    <div style="position:relative; height:54px">
+                      <span class="dot dot--notes" style="position:absolute; left:84px; top:50%; transform:translate(-50%,-50%); z-index:2"></span>
+                      <div class="t-label c-3 num" style="position:absolute; left:0; width:72px; top:50%; transform:translateY(-50%); text-align:right">Do 16:20</div>
+                      <div style="position:absolute; left:96px; right:0; top:50%; transform:translateY(-50%)">
+                        <div class="t-sub is-strong">Vorlesung 6</div>
+                        <div class="t-label c-3">Aufnahme beginnt</div>
+                      </div>
+                    </div>
+
+                    <!-- 2 · Moment: hier verließ eine Karte die Seite -->
+                    <div style="position:relative; height:54px">
+                      <svg class="thread thread--v" style="position:absolute; left:84px; bottom:50%; height:54px; width:10px; transform:translateX(-50%); z-index:1"></svg>
+                      <span class="dot dot--cards" style="position:absolute; left:84px; top:50%; transform:translate(-50%,-50%); z-index:2"></span>
+                      <div class="t-label c-3 num" style="position:absolute; left:0; width:72px; top:50%; transform:translateY(-50%); text-align:right">16:42</div>
+                      <div style="position:absolute; left:96px; right:0; top:50%; transform:translateY(-50%)">
+                        <div class="t-sub c-2">Lückentext-Karte</div>
+                        <div class="t-label c-3">aus dem Merksatz</div>
+                      </div>
+                    </div>
+
+                    <!-- 3 · Die Lücke: kein Punkt, kein Faden -->
+                    <div style="position:relative; height:52px">
+                      <div style="position:absolute; left:96px; right:0; top:50%; transform:translateY(-50%)">
+                        <div class="t-sub c-2"><span class="num">8</span> Min. nur Ton</div>
+                        <div class="t-label c-3">16:43 – 16:51</div>
+                      </div>
+                    </div>
+
+                    <!-- 4 · Moment: hier verließ eine Aufgabe die Seite -->
+                    <div style="position:relative; height:54px">
+                      <span class="dot dot--tasks" style="position:absolute; left:84px; top:50%; transform:translate(-50%,-50%); z-index:2"></span>
+                      <div class="t-label c-3 num" style="position:absolute; left:0; width:72px; top:50%; transform:translateY(-50%); text-align:right">16:51</div>
+                      <div style="position:absolute; left:96px; right:0; top:50%; transform:translateY(-50%)">
+                        <div class="t-sub c-2">Aufgabe</div>
+                        <div class="t-label c-3">„Laborprotokoll"</div>
+                      </div>
+                    </div>
+
+                    <!-- 5 · Durchgang · zwei Fäden → der einzige Knoten -->
+                    <div style="position:relative; height:54px">
+                      <svg class="thread thread--v" style="position:absolute; left:84px; bottom:50%; height:54px; width:10px; transform:translateX(-50%); z-index:1"></svg>
+                      <span class="dot dot--node" style="position:absolute; left:84px; top:50%; transform:translate(-50%,-50%); z-index:2; --node-ring: var(--paper-2)"></span>
+                      <div class="t-label c-3 num" style="position:absolute; left:0; width:72px; top:50%; transform:translateY(-50%); text-align:right">Mi 21:40</div>
+                      <div style="position:absolute; left:96px; right:0; top:50%; transform:translateY(-50%)">
+                        <div class="t-sub is-strong">Nacharbeit</div>
+                        <div class="t-label c-3">24 Min.</div>
+                      </div>
+                    </div>
+
+                    <!-- 6 · Durchgang · letzte Station, ein Faden → Ring = hier bist du -->
+                    <div style="position:relative; height:54px">
+                      <svg class="thread thread--v" style="position:absolute; left:84px; bottom:50%; height:54px; width:10px; transform:translateX(-50%); z-index:1"></svg>
+                      <span class="dot dot--ring" style="position:absolute; left:84px; top:50%; transform:translate(-50%,-50%); z-index:2"></span>
+                      <div class="t-label c-3 num" style="position:absolute; left:0; width:72px; top:50%; transform:translateY(-50%); text-align:right">heute 9:28</div>
+                      <div style="position:absolute; left:96px; right:0; top:50%; transform:translateY(-50%)">
+                        <div class="t-sub is-strong">Korrektur</div>
+                        <div class="t-label c-3">Wiedergabe hier</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Der Faden bekommt sein Wort — in Worten, nicht als Muster.
+                       Ein Faden-Muster in der Legende hätte zwei freie Enden; die
+                       Lücke trägt ihre Beschriftung ohnehin an Ort und Stelle. -->
+                  <div class="t-label c-3" style="margin-top:12px; line-height:17px">
+                    Faden = Ton und Tinte liefen zusammen.<br>Lücke = nur Ton, kein Stift.
+                  </div>
+                </section>
+
+                <!-- Wiedergabe — primäre Aktion, Ink-gefüllt (R1) -->
+                <section>
+                  <div class="t-label c-3" style="margin-bottom:6px">AUFNAHME</div>
+                  <button class="btn btn--primary" style="width:100%; justify-content:center">
+                    <span class="ico" data-ico="play" style="width:16px;height:16px"></span>Ab 16:42 abspielen
+                  </button>
+                  <div class="t-label c-3" style="margin-top:7px">Springt an die Sekunde, in der die Karte entstand.</div>
+                </section>
+                
+              </div>
+            </aside>
+          </div>
+        </main>
+      </div>
+
+      <!-- Der eingefrorene Flug aus Runde 1 ist ersatzlos weg: die Übergabe
+           läuft jetzt wirklich (Knopf „Lückentext-Karte"), und zwei Flüge —
+           ein gemalter und ein echter — wären einer zu viel. Der Ring, den
+           damals .flight__ghost geliehen hat, sitzt jetzt an der Auswahl
+           selbst, auf iPad wie iPhone gleich. -->
     </div>
   </div>
 </div>
@@ -667,6 +1161,19 @@ deshalb inline ausgezeichnet.
     <li>Bears Tag-Farben — die Tags tragen Ink und ein Tag-Symbol.</li>
     <li>Handschrift-Werkzeuge im Textmodus — das ist der Canvas, nicht der Editor.</li>
   </ul>
+
+  <h3>Was in dieser Runde dazugekommen ist</h3>
+  <table>
+    <tr><td>Der Reiter „Verlauf"</td><td>Er war ein <strong>Knopf ohne Panel</strong> — die größte unbebaute Fläche des Entwurfs. Jetzt steht dahinter das, was außer Velum niemand zeigen kann: nicht das Ergebnis der Mitschrift, sondern <strong>ihr Verlauf</strong>. Ein senkrechter 1,5-pt-Faden trägt sechs Stationen von oben nach unten (N6: Ursprung → Ergebnis): die drei <strong>Durchgänge</strong> (Vorlesung Do 16:20 · Nacharbeit Mi 21:40 · Korrektur heute 9:28) und dazwischen die <strong>Momente, in denen etwas die Seite verlassen hat</strong> (16:42 eine Lückentext-Karte, 16:51 eine Aufgabe). Der dritte Rahmen auf dieser Seite zeigt denselben Schirm mit diesem Reiter.</td></tr>
+    <tr><td>Warum die Tonspur keine Wellenform ist</td><td>Eine Wellenform zeigt Lautstärke — die einzige Eigenschaft einer Vorlesungsaufnahme, die über die Notiz <em>nichts</em> aussagt. Der Faden zeigt stattdessen, <strong>ob der Stift lief</strong>: gezeichnet, wo Tinte und Ton zusammen liefen, <strong>unterbrochen, wo nur Ton lief</strong> („8 Min. nur Ton · 16:43 – 16:51"). Man sieht auf einen Blick, wo man aufgehört hat mitzuschreiben — genau die Stellen, an denen man später zuhören muss. <strong>Keine Strichelung:</strong> sie wäre eine vierte visuelle Variable am Faden, und <span class="num">stroke-dasharray</span> ist am <span class="num">.thread</span> für die Zeichen-Animation belegt — ein dauerhaft gestrichelter Faden sähe im Ruhezustand aus wie ein halb gezeichneter. Die Lücke ist zugleich motivgerecht: keine Beziehung, kein Faden. <strong>Und keine zweite Stärke:</strong> Stärke sagt in diesem System Beziehungsnähe und darf keine Lautstärke tragen.</td></tr>
+    <tr><td>Der Knoten im Verlauf</td><td>Genau <strong>einer</strong>: die „Nacharbeit", weil über und unter ihr ein Faden liegt (N7: ein Knoten hat mindestens zwei Fäden). Die Stationen mit einem Faden tragen den gefüllten Modulpunkt dessen, was dort entstand — Lernkarten-Rosa um 16:42, Aufgaben-Grün um 16:51, Notizen-Grün am Anfang —, und die letzte trägt den Ring: „hier steht die Wiedergabe".</td></tr>
+    <tr><td>Der zweite, schnellere Weg</td><td>Der wahrscheinlichste Abbruchgrund dieser App ist keine Optik, sondern <strong>eine Entscheidung mitten im Lesen</strong>: Die Übergabe-Leiste fragt nach dem Kartentyp (Lückentext · Frage/Antwort · Aufgabe). Entscheidungen im Fluss werden zuerst aufgegeben — und sobald das Verwandeln aussetzt, hört der Graph auf zu wachsen, die Kette auf <span class="num">today</span> zeigt nichts mehr, und übrig bleibt ein langsameres Apple Notizen mit leerem Graphen. Deshalb gibt es jetzt einen Weg, der <strong>gar nichts fragt</strong>: am hohlen Punkt des Absatzes ziehen. Der Faden wächst nach unten in die Marginalspalte, an seinem Ende steht die Karte — der markierte Satz schon darin, der Typ voreingestellt und hinterher <em>an der Karte</em> änderbar. Ein unvollständiger Datensatz ist gültig. Die Leiste bleibt als zweiter, barrierefreier Weg stehen; beide sind gleichzeitig im Bild.</td></tr>
+    <tr><td>Der Zwischenzustand, den das Standbild zeigt</td><td>Ursprungspunkt <strong>noch hohl</strong> (die Kante ist nicht gespeichert), Karte als <strong>Umriss</strong> mit hohlem Rand, Ankerpunkt ebenfalls hohl. Beim Loslassen füllen sich beide Punkte und der Faden bleibt. Der Faden ist 2,5 pt, weil es eine Herkunftskante ist: aus diesem Absatz wird diese Karte. Gemessen: beide Enden sitzen auf einer Punktmitte — auch im halb gezogenen Zustand hängt kein Ende frei.</td></tr>
+    <tr><td>Die Übergabe-Leiste auf dem iPhone dockt an</td><td>Sie schwebte mit <span class="num">position:absolute</span> über dem Text und lag <strong>quer über dem MERKEN-Kasten</strong> — sie verdeckte genau die Zeile, aus der die Karte entstehen soll. Jetzt ist sie ein Geschwister des Scrollbereichs: der Textfluss wird um ihre Höhe kürzer, statt unter ihr zu verschwinden. Eine verankerte Leiste kostet Fläche und verdeckt dafür nie eine Zeile.</td></tr>
+    <tr><td>Die Gliederung ist bedienbar geworden</td><td>Vier der fünf Einträge waren reiner Text in einem Behälter ohne Fläche und ohne Kante — der aktive Eintrag war das einzige Element, das überhaupt bewies, dass die anderen tappbar sind (vier schwere Affordanz-Befunde). Jetzt trägt jede Zeile ihre eigene Fläche und die Markdown-Marke ihrer Ebene: dasselbe <span class="num">##</span> / <span class="num">###</span>, das in der Rinne des Editors neben der Überschrift steht. <strong>Bewusst kein senkrechter Balken für die inaktiven Zeilen:</strong> 2,5 pt senkrecht in Grau wären auf 280 pt Panelbreite bildgleich mit einem Faden — und ein Faden verbindet dort nichts.</td></tr>
+    <tr><td>Die Randmarken haben auf dem iPhone eine Legende</td><td>Die Marken <span class="num">●—</span> („verlinkt") und <span class="num">○—</span> („nur erwähnt") standen auf dem iPhone ohne Erklärung; eine 8 pt lange Linie trug ihre Aussage allein, während das iPad sie im Info-Panel erklärt. Jetzt steht dieselbe Legende unter der Kopfzeile — der Punkt trägt sein Wort auch auf dem kleinen Gerät. Diese Fäden sind übrigens die einzigen des Bestands, die <strong>planmäßig einseitig</strong> enden: der Punkt steht im Rand, das andere Ende läuft in die Textzeile, und der Absatz ist der zweite Punkt. Das ist eine Konvention, keine Nachlässigkeit — und sie steht hiermit aufgeschrieben.</td></tr>
+    <tr><td>Ziele</td><td>Die Aufklapp-Chevrons waren 15-pt-Knöpfe ohne Rahmen, ohne Fläche und ohne <span class="num">aria-label</span> — ein Drittel der Vorgabe. Sie sitzen jetzt in einem 44-pt-Trefferbereich, das Zeichen bleibt 15 pt. Dasselbe gilt für die Erledigt-Kreise (22 pt Zeichen, 44 pt Ziel), die Knöpfe beider Blockleisten (38 bzw. 36 → 44 pt, die Leistenhöhe bleibt gleich), die Zeilen von Gliederung und Backlinks (27/31 → 44 pt) und den Herkunfts-Chip in der Navigationsleiste. Gemessen über alle drei Rahmen: <strong>60 Ziele unter 44 pt vorher, 13 nachher</strong> — und die 13 sind zwei Bausteine aus <span class="num">system.css</span> (<span class="num">.handoff__btn</span> 34 pt, <span class="num">.segmented button</span> 32 pt) plus der Wiki-Link im Fließtext, der so hoch ist wie seine Zeile.</td></tr>
+  </table>
 
   <h3>Zustände auf diesem Schirm</h3>
   <table>

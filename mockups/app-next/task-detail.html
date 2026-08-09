@@ -17,14 +17,18 @@
      Vorgabe   Knotenmitte 16,5 / 8,0   Ziele 37,0 / 45,0 · 91,0 · 137,0
      Aa groß   Knotenmitte 16,5 / 10,0  Ziele 37,0 / 53,5 · 108,5 · 163,5
    ────────────────────────────────────────────────────────────────────────── */
-.fan__f { position: absolute; left: 16.5px; top: 8px; width: 20.5px; }
-.fan__f1 { height: 37px; }
-.fan__f2 { height: 83px; }
-.fan__f3 { height: 129px; }
-:root[data-type="gross"] .fan__f  { top: 10px; }
-:root[data-type="gross"] .fan__f1 { height: 43.5px; }
-:root[data-type="gross"] .fan__f2 { height: 98.5px; }
-:root[data-type="gross"] .fan__f3 { height: 153.5px; }
+/* f1 läuft von OBEN (Quelle) nach UNTEN auf den Knoten und ist deshalb an
+   der Senkrechten gespiegelt: die Standardkurve beginnt links oben und endet
+   rechts unten, gespiegelt beginnt sie rechts oben (am Quellpunkt) und endet
+   links unten (am Knoten). f2 und f3 laufen vom Knoten zu den zwei
+   Verweisen und behalten die Standardrichtung. */
+.fan__f  { position: absolute; left: 16.5px; width: 20.5px; }
+.fan__f1 { top: 23px; height: 44px; transform: scaleX(-1); }
+.fan__f2 { top: 67px; height: 44px; }
+.fan__f3 { top: 67px; height: 90px; }
+:root[data-type="gross"] .fan__f1 { top: 24px;  height: 49px; }
+:root[data-type="gross"] .fan__f2 { top: 73px;  height: 49px; }
+:root[data-type="gross"] .fan__f3 { top: 73px;  height: 103px; }
 </style>
 </head>
 <body>
@@ -84,8 +88,13 @@ DAS BESONDERE AN DIESEM SCHIRM
 Die aufgeklappte Karte weiß, woher sie kommt. Unter den Schritten sitzt der Satz,
 aus dem die Aufgabe entstanden ist — „Vor dem Fixieren jede Färbung fotografisch
 dokumentieren." Er steht in .serif--quote, weil er eine fremde Stimme ist: er
-steht wörtlich so in der Notiz. Davor liegt der Faden (Knoten = diese Aufgabe,
-2,5 pt, Chip = die Notiz), und „Zur Stelle" zeichnet ihn LIVE über die halbe
+steht wörtlich so in der Notiz. Darunter liegt der Faden — und zwar seit Runde 3
+in der einen Richtung, die die DNA kennt: LINKS die Quelle (Chip „aus
+„Zellbiologie""), RECHTS das Ergebnis (Ring = „diese Aufgabe"). Vorher stand der
+Knoten links und die Quelle rechts, also spiegelverkehrt zu flashcards-home und
+rückwärts zu der Richtung, in der bewegung.js zeichnet. Am rechten Ende steht
+jetzt auch kein Knoten mehr: dort läuft nur EIN Faden zusammen, und das ist nach
+N7 ein Ring, keiner. Ein Tipp auf die Zeile zeichnet ihn LIVE über die halbe
 Breite des Schirms bis zur Notiz in der Spalte rechts — 420 ms, Ink, vom Finger
 aus rückwärts an der Kante entlang. Die Kante im Datenmodell bleibt dabei
 Notiz → Aufgabe; nur der Stift läuft sie rückwärts ab (DNA §2.2, Rückweg).
@@ -179,7 +188,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
         <!-- Inhalt -->
         <main class="content">
           <div class="navbar" style="padding-top:4px; padding-bottom:4px">
-            <div class="serif--screen-title">Heute</div>
+            <div class="serif--screen-title">Aufgaben</div>
             <div class="segmented" style="margin-left:20px">
               <button class="is-on">Liste</button>
               <button>Planer</button>
@@ -263,7 +272,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
                       <span style="flex:0 0 2px"></span>
                     </div>
                     <div style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column">
-                      <span class="t-sub c-3" style="line-height:20px; text-decoration:line-through">Termin mit Wendt abgestimmt</span>
+                      <span class="t-sub c-3" style="line-height:20px; text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Termin mit Wendt abgestimmt</span>
                       <span class="t-sub c-2" style="line-height:20px; margin-top:6px">Jana und Milan zusagen</span>
                     </div>
                   </div>
@@ -314,17 +323,17 @@ Schirmwechsel; genau das soll hier nicht passieren.
 
                       <div style="display:flex; align-items:center; gap:9px; min-height:27px">
                         <span class="check is-done" style="transform:scale(.82)"></span>
-                        <span class="t-sub c-3" style="text-decoration:line-through">Messwerte von Tag 3 eintragen</span>
+                        <span class="t-sub c-3" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Messwerte von Tag 3 eintragen</span>
                       </div>
                       <div style="display:flex; align-items:center; gap:9px; min-height:27px">
                         <span class="check is-done" style="transform:scale(.82)"></span>
-                        <span class="t-sub c-3" style="text-decoration:line-through">Diagramm im Canvas anlegen</span>
+                        <span class="t-sub c-3" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Diagramm im Canvas anlegen</span>
                       </div>
                       <!-- Zwischenzustand: Haken wächst, Strich ist erst halb
                            durchgezogen, Text noch in voller Deckkraft. -->
                       <div style="display:flex; align-items:center; gap:9px; min-height:27px">
                         <span class="check is-checking" style="transform:scale(.82)"></span>
-                        <span class="t-sub" style="position:relative">Abweichung bei Probe 3 notieren<span style="position:absolute; left:0; top:50%; width:46%; height:1.5px; background:var(--ink-2)"></span></span>
+                        <span class="t-sub"><span style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Abweichung bei</span> Probe 3 notieren</span>
                       </div>
                       <div style="display:flex; align-items:center; gap:9px; min-height:27px">
                         <span class="check" style="transform:scale(.82)"></span>
@@ -337,23 +346,6 @@ Schirmwechsel; genau das soll hier nicht passieren.
                         <span class="t-sub">Schritt hinzufügen</span>
                       </div>
 
-                      <!-- Herkunft: der Satz, aus dem die Aufgabe entstand -->
-                      <!-- Die Herkunft. Der Satz ist eine fremde Stimme — er steht
-                           wörtlich so in der Notiz — und trägt deshalb .serif--quote.
-                           Davor der Faden: Knoten = diese Aufgabe, 2,5 pt = „A wurde
-                           zu B", Chip = die Notiz. „Zur Stelle" zeichnet denselben
-                           Faden live bis zur Notiz in der Spalte rechts. -->
-                      <div style="margin-top:8px; padding:7px 10px 8px; background:var(--fill); border-radius:10px">
-                        <div class="serif--quote c-2">„Vor dem Fixieren jede Färbung fotografisch dokumentieren."</div>
-                        <div style="display:flex; align-items:center; gap:6px; margin-top:6px">
-                          <span class="dot dot--node" style="--node-ring: color-mix(in srgb, var(--ink-1) 5%, var(--paper))"></span>
-                          <svg class="thread thread--h thread--origin" style="width:18px; margin:0 -2px"></svg>
-                          <span class="origin" style="background:var(--paper)"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
-                          <span style="flex:1"></span>
-                          <button class="chip" style="background:var(--paper); color:var(--ink-1)" aria-expanded="false"
-                                  data-bw="herkunft" data-bw-ursprung="#quelle-notiz" data-bw-box="#buehne-pad" data-bw-kurve="64"><span class="ico" data-ico="link" style="width:14px;height:14px"></span>Zur Stelle</button>
-                        </div>
-                      </div>
                     </div>
 
                     <!-- Eigenschaften: was die Aufgabe hat, steht da.
@@ -408,6 +400,36 @@ Schirmwechsel; genau das soll hier nicht passieren.
                     </div>
                   </div>
 
+                      <!-- Herkunft: der Satz, aus dem die Aufgabe entstand -->
+                  <!-- Die Herkunft. Der Satz ist eine fremde Stimme — er steht
+                       wörtlich so in der Notiz — und trägt deshalb .serif--quote.
+                       Davor der Faden: Knoten = diese Aufgabe, 2,5 pt = „A wurde
+                       zu B", Chip = die Notiz. „Zur Stelle" zeichnet denselben
+                       Faden live bis zur Notiz in der Spalte rechts. -->
+                  <div style="margin-top:8px; padding:7px 10px 8px; background:var(--fill); border-radius:10px">
+                    <div class="serif--quote c-2">„Vor dem Fixieren jede Färbung fotografisch dokumentieren."</div>
+                    <!-- Die ganze Zeile ist der Knopf: sie sagt, woher die
+                         Aufgabe kommt, UND führt dorthin. Richtung (N6):
+                         Quelle links, Ergebnis rechts. Am rechten Ende
+                         steht kein Knoten — dort läuft nur ein Faden
+                         zusammen, und das ist nach N7 ein Ring: „hier
+                         bist du". Die Enden sitzen auf den Punkträndern
+                         (3,0 pt), nicht daneben. -->
+                    <button style="display:flex; align-items:center; gap:0; width:100%; min-height:44px; margin-top:4px; text-align:left" aria-expanded="false"
+                            data-bw="herkunft" data-bw-ursprung="#quelle-notiz" data-bw-box="#buehne-pad" data-bw-kurve="64">
+                      <span class="origin" style="background:var(--paper)">aus „Zellbiologie"</span>
+                      <span class="threadrow" style="width:34px; flex:none; margin:0 6px">
+                        <span class="dot dot--notes"></span>
+                        <svg class="thread thread--h thread--origin"></svg>
+                        <span class="dot dot--ring"></span>
+                      </span>
+                      <span class="t-label c-2" style="white-space:nowrap">diese Aufgabe</span>
+                      <span style="flex:1; min-width:8px"></span>
+                      <span class="t-label c-2" style="white-space:nowrap">Zur Stelle</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px; margin-left:2px"></span>
+                    </button>
+                  </div>
+
                   <!-- Aktionsleiste -->
                   <div style="display:flex; align-items:center; gap:2px; margin-top:8px; padding-top:8px; border-top:1px solid var(--line)">
                     <button class="btn btn--sm btn--quiet" style="padding:0 10px"><span class="ico" data-ico="folder" style="width:16px;height:16px"></span>Verschieben</button>
@@ -437,7 +459,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
                     <span class="t-sub c-3">Biologie</span>
                   </div>
                   <div class="row__meta">
-                    <span class="chip"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>Wöchentlich</span>
+                    <span class="chip"><span class="ico" data-ico="undo" style="width:13px;height:13px"></span>wenn das Deck<span class="dot dot--cards"></span>fällig ist</span>
                   </div>
                 </div>
               </section>
@@ -479,7 +501,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
                       <div class="t-label c-3" style="margin-top:1px">aus „Zellbiologie" · Di, 11. Nov</div>
                     </div>
                   </div>
-                  <button class="btn btn--sm btn--quiet" style="width:100%; margin-top:8px; justify-content:flex-start; padding:0">Ganzen Verlauf zeigen</button>
+                  <button class="btn btn--sm btn--text" style="margin-top:8px; justify-content:flex-start; padding:0">Ganzen Verlauf zeigen</button>
                 </section>
 
                 <!-- VERKNÜPFT als Fächer: EIN Knoten oben ist diese Aufgabe,
@@ -495,15 +517,15 @@ Schirmwechsel; genau das soll hier nicht passieren.
                     <span class="t-label c-3 num">3</span>
                   </div>
                   <div class="fan" style="position:relative">
-                    <div style="display:flex; align-items:center; gap:8px; padding:0 0 6px 12px">
-                      <span class="dot dot--node"></span>
-                      <span class="t-label c-2">diese Aufgabe</span>
-                    </div>
-                    <!-- Maße gemessen, nicht geschätzt: Knotenmitte 16,5/8,0 ·
-                         Zielpunkte 37,0/45,0 · 37,0/91,0 · 37,0/137,0 -->
-                    <svg class="thread thread--curve thread--origin fan__f fan__f1"></svg>
-                    <svg class="thread thread--curve fan__f fan__f2"></svg>
-                    <svg class="thread thread--curve fan__f fan__f3"></svg>
+                    <!-- RICHTUNG (N6): die QUELLE steht oben. Von ihr läuft der
+                         2,5-pt-Faden abwärts auf den Knoten „diese Aufgabe",
+                         und von dort weiter zu den beiden Verweisen. Bis
+                         Runde 3 war fan__f1 andersherum gezeichnet — Ergebnis
+                         oben, Quelle unten. Der Knoten trägt drei Fäden und
+                         ist damit nach N7 einer.
+                         Maße gemessen, nicht geschätzt: Quellpunkt 37,0/23,0 ·
+                         Knotenmitte 16,5/67,0 · Zielpunkte 37,0/111,0 und
+                         37,0/157,0. -->
                     <button class="row" id="quelle-notiz" style="min-height:42px; padding:4px 8px 4px 30px; width:100%">
                       <span class="dot dot--notes" style="margin:0 4px"></span>
                       <div class="row__main" style="text-align:left">
@@ -512,6 +534,13 @@ Schirmwechsel; genau das soll hier nicht passieren.
                       </div>
                       <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
                     </button>
+                    <div style="display:flex; align-items:center; gap:8px; height:42px; padding-left:12px">
+                      <span class="dot dot--node"></span>
+                      <span class="t-label c-2">diese Aufgabe</span>
+                    </div>
+                    <svg class="thread thread--curve thread--origin fan__f fan__f1"></svg>
+                    <svg class="thread thread--curve fan__f fan__f2"></svg>
+                    <svg class="thread thread--curve fan__f fan__f3"></svg>
                     <button class="row" style="min-height:42px; padding:4px 8px 4px 30px; width:100%">
                       <span class="dot dot--cards" style="margin:0 4px"></span>
                       <div class="row__main" style="text-align:left">
@@ -567,7 +596,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
 
       <div class="content">
         <div class="navbar" style="border:0; padding-bottom:0">
-          <div class="serif--screen-title">Heute</div>
+          <div class="serif--screen-title">Aufgaben</div>
           <div class="navbar__spacer"></div>
           <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
         </div>
@@ -634,15 +663,15 @@ Schirmwechsel; genau das soll hier nicht passieren.
 
               <div style="display:flex; align-items:center; gap:9px; min-height:24px">
                 <span class="check is-done" style="transform:scale(.82)"></span>
-                <span class="t-sub c-3 clamp-1" style="text-decoration:line-through">Messwerte von Tag 3 eintragen</span>
+                <span class="t-sub c-3 clamp-1" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Messwerte von Tag 3 eintragen</span>
               </div>
               <div style="display:flex; align-items:center; gap:9px; min-height:24px">
                 <span class="check is-done" style="transform:scale(.82)"></span>
-                <span class="t-sub c-3 clamp-1" style="text-decoration:line-through">Diagramm im Canvas anlegen</span>
+                <span class="t-sub c-3 clamp-1" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Diagramm im Canvas anlegen</span>
               </div>
               <div style="display:flex; align-items:center; gap:9px; min-height:24px">
                 <span class="check is-checking" style="transform:scale(.82)"></span>
-                <span class="t-sub" style="position:relative">Abweichung bei Probe 3 notieren<span style="position:absolute; left:0; top:50%; width:46%; height:1.5px; background:var(--ink-2)"></span></span>
+                <span class="t-sub"><span style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Abweichung bei</span> Probe 3 notieren</span>
               </div>
               <div style="display:flex; align-items:center; gap:9px; min-height:24px">
                 <span class="check" style="transform:scale(.82)"></span>
@@ -665,12 +694,15 @@ Schirmwechsel; genau das soll hier nicht passieren.
                    2,5 pt = Herkunft, Chip = die Notiz. Live gezeichnet wird er
                    hier NICHT — auf dem Telefon steht die Quelle nicht mit im
                    Bild, und ein Faden mit nur einem Ende ist keiner. -->
-              <button style="display:flex; align-items:center; gap:6px; width:100%; min-height:44px; margin-top:7px; padding:4px 9px; background:var(--fill); border-radius:9px; text-align:left">
-                <span class="dot dot--node" style="--node-ring: color-mix(in srgb, var(--ink-1) 5%, var(--paper))"></span>
-                <svg class="thread thread--h thread--origin" style="width:18px; margin:0 -2px"></svg>
-                <span class="origin" style="background:var(--paper)"><span class="dot dot--notes"></span>aus „Zellbiologie"</span>
-                <span style="flex:1"></span>
-                <span class="t-label c-2">Zur Stelle</span>
+              <button style="display:flex; align-items:center; gap:0; width:100%; min-height:44px; margin-top:7px; padding:4px 9px; background:var(--fill); border-radius:9px; text-align:left">
+                <span class="origin" style="background:var(--paper)">aus „Zellbiologie"</span>
+                <span class="threadrow" style="width:34px; flex:none; margin:0 7px 0 6px">
+                  <span class="dot dot--notes"></span>
+                  <svg class="thread thread--h thread--origin"></svg>
+                  <span class="dot dot--ring"></span>
+                </span>
+                <span class="t-label c-2" style="white-space:nowrap">diese Aufgabe</span>
+                <span style="flex:1; min-width:6px"></span>
                 <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
               </button>
             </article>
@@ -689,7 +721,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
               <span class="check"></span>
               <div class="row__main">
                 <span class="t-body row__title clamp-1">Karteikarten Anatomie nacharbeiten</span>
-                <span class="t-sub c-3">Biologie · wöchentlich</span>
+                <span class="t-sub c-3">Biologie · wenn das Deck fällig ist</span>
               </div>
             </div>
           </section>
@@ -723,11 +755,11 @@ Schirmwechsel; genau das soll hier nicht passieren.
 
   <h3>Der Faden auf diesem Schirm</h3>
   <table>
-    <tr><td>Herkunft, ruhend</td><td><strong>Aufgabe → Quelle</strong>, 2,5 pt. Knoten = diese Aufgabe, Chip = Notiz „Zellbiologie". Steht still im Bild, damit der Schirm das Motiv auch als Standbild trägt.</td></tr>
+    <tr><td>Herkunft, ruhend</td><td><strong>Quelle → Aufgabe</strong>, 2,5 pt, links nach rechts. Links der Chip „aus „Zellbiologie"" mit dem Notizen-Punkt, rechts der Ring — „hier bist du", diese Aufgabe. <strong>Zwei Korrekturen aus Runde 3:</strong> (1) die Richtung war gedreht (Knoten links = Ergebnis, Quelle rechts) und damit spiegelverkehrt zu <span class="num">flashcards-home</span>; (2) am Ende stand ein 9-pt-Knoten, an dem genau ein Faden ankommt — nach N7 ist das keiner, sondern ein Ring. Die Enden sitzen jetzt auf den Punkträndern (3,0 pt gemessen), vorher schwebten sie mit 8,5 bzw. 14,0 pt Abstand.</td></tr>
     <tr><td>Herkunft, laufend</td><td><strong>„Zur Stelle" zeichnet denselben Faden</strong> quer über den Schirm bis zur Zeile „Zellbiologie · Notiz · Quelle" in der Spalte rechts — 420 ms, Ink, eine quadratische Bézier. Beide Enden sind sichtbare Objekte; ohne das gäbe es hier keinen Faden. Am iPhone bleibt er ruhend: dort steht die Quelle nicht mit im Bild, und ein Faden mit einem Ende ist keiner.</td></tr>
-    <tr><td>Verknüpft (Fächer)</td><td><strong>Ein Knoten, drei Fäden</strong>: von „diese Aufgabe" zu Notiz (2,5 pt · Quelle), Deck (1,5 pt · Verweis) und Canvas (1,5 pt · Verweis). Die Maße sind gemessen, nicht geschätzt — Knotenmitte 16,5/8,0, Zielpunkte 37,0/45,0 · 37,0/91,0 · 37,0/137,0; die drei Kurven enden auf den Modulpunkten, nicht daneben.</td></tr>
+    <tr><td>Verknüpft (Fächer)</td><td><strong>Ein Knoten, drei Fäden</strong> — und seit Runde 3 in der richtigen Richtung: die <em>Quelle steht oben</em>, von ihr läuft der 2,5-pt-Faden abwärts auf den Knoten „diese Aufgabe", und von dort weiter zu Deck (1,5 pt) und Canvas (1,5 pt). Vorher lag die Quelle unter dem Knoten, also Ergebnis vor Ursprung. Die Stärke kodiert die Beziehungsart, nicht die Reihenfolge. Die Maße sind gemessen, nicht geschätzt — Quellpunkt 37,0/23,0, Knotenmitte 16,5/67,0, Zielpunkte 37,0/111,0 und 37,0/157,0; alle drei Kurven enden auf den Modulpunkten, keine daneben. Der Knoten trägt drei Fadenenden und ist damit der einzige echte Knoten dieses Schirms.</td></tr>
     <tr><td>Teilschritte</td><td>Im aufgeklappten „Rückmeldung"-Kärtchen hängen die zwei Schritte am senkrechten Faden, wie in der Liste. In der großen Karte tragen die Schritte stattdessen Checkboxen — ein zweiter Punktesatz daneben würde denselben Zustand ein zweites Mal sagen.</td></tr>
-    <tr><td>kein Faden</td><td>Der Aktivitätsverlauf rechts bekommt keinen: eine Liste von Ereignissen ist keine Beziehung zwischen zwei Objekten. Die Spaltenlinie zwischen Schritten und Eigenschaften bleibt <span class="num">--line</span>.</td></tr>
+    <tr><td>kein Faden</td><td>Der Aktivitätsverlauf rechts bekommt keinen: eine Liste von Ereignissen ist keine Beziehung zwischen zwei Objekten. Die Spaltenlinie zwischen Schritten und Eigenschaften bleibt <span class="num">--line</span>. <strong>Die Durchstreichungen sind keine Fäden mehr:</strong> Runde 2 hatte sie als <span class="num">&lt;span&gt;</span> von 113 × 1,5 pt in <span class="num">rgba(22,24,28,.64)</span> gebaut — dieselbe Stärke und fast dieselbe Farbe wie ein Faden, und eine davon war halb gezogen, also bildgleich mit <span class="num">thread-draw</span> bei 46 %. Jetzt sind es <span class="num">text-decoration: line-through</span> in 1 pt und <span class="num">--line-tap</span>; der halb erledigte Schritt streicht den erledigten Teilsatz durch („<s>Abweichung bei</s> Probe 3 notieren") statt einen Strich in die Luft laufen zu lassen.</td></tr>
   </table>
 
   <h3>Woher die Ideen stammen</h3>

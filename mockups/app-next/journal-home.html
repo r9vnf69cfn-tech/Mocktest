@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Journal-Home — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
+<style>
+/* Der Wochen-Fächer: drei Herkunfts-Fäden aus EINEM Knoten.
+   Maße gemessen, nicht geschätzt — Knotenmitte 16,5/8,0 pt, Zielpunkte
+   37,0/45,0 · 37,0/89,0 · 37,0/133,0. Dieselbe Rechnung wie der Fächer
+   „VERKNÜPFT" auf task-detail.html; ein Bauteil, zwei Schirme. */
+.wfan__f  { position: absolute; left: 16.5px; top: 8px; width: 20.5px; }
+.wfan__f1 { height: 37px; }
+.wfan__f2 { height: 81px; }
+.wfan__f3 { height: 125px; }
+:root[data-type="gross"] .wfan__f  { top: 10px; }
+:root[data-type="gross"] .wfan__f1 { height: 43.5px; }
+:root[data-type="gross"] .wfan__f2 { height: 95px; }
+:root[data-type="gross"] .wfan__f3 { height: 146.5px; }
+</style>
 </head>
 <body>
 
@@ -40,7 +54,7 @@ KOMMENTARBLOCK — Journal-Home
   Bewertung: sehr gut gegen das leere Blatt. Die Frage steht in Sans, nicht in
   Serif: sie ist Velums Text, nicht Emils. Nicht übernommen ist Apples
   Vorschlags-Strom aus Fotos, Musik und Orten: das ist ein Feed, kein Tagebuch.
-· Journey (Stimmungsverlauf): Übernommen als schlichte Linie über 14 Tage.
+· Journey (Stimmung über Zeit): Übernommen als fünfstufiger Balken IN der Eintragskarte — nicht als Kurve daneben.
   Bewertung: die Idee ist richtig, die Ausführung bei Journey nicht — dort ist
   der Verlauf bunt und die Stimmung ein Emoji. Hier ist die Linie Ink, und die
   Stimmung sind fünf Balken, die auch in Graustufen und für Farbfehlsichtige
@@ -95,7 +109,7 @@ Text der App).
 
 <div class="mocktitle">
   <h1>Journal-Home</h1>
-  <p>Der Einstieg ins Journal. Links läuft die Zeit als Timeline, rechts steht, was sie bedeutet: die Serie, die Woche, der Stimmungsverlauf und der Rückblick. Der Eintrag von heute Morgen wird gerade noch aus der Sprachnotiz übertragen.</p>
+  <p>Der Einstieg ins Journal. Links läuft die Zeit als Timeline, rechts steht, was sie bedeutet: die Serie, die Woche, was aus den Einträgen dieser Woche geworden ist, und der Rückblick. Der Eintrag von heute Morgen wird gerade noch aus der Sprachnotiz übertragen.</p>
 </div>
 
 <div class="stage">
@@ -183,10 +197,13 @@ Text der App).
                     <!-- vor dem ersten Knoten liegt nichts: kein Faden, nur der
                          gleiche Vorlauf, damit alle Knoten auf einer Höhe sitzen -->
                     <span style="height:13px; flex:none"></span>
-                    <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+                    <!-- N7: An dieser Marke endet genau EIN Faden (nach unten) —
+                         ein Knoten ist sie damit nicht. Sie ist „heute", und dafür
+                         hat das System den Ring. -->
+                    <span class="dot dot--journal dot--ring" title="Heute, 13. November"></span>
                     <span class="serif--journal-date" style="margin-top:3px">13</span>
                     <span class="t-label c-3">Nov.</span>
-                    <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
+                    <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
                   </div>
                   <article class="card" style="flex:1 1 auto; min-width:0; padding:13px; margin-bottom:7px">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
@@ -220,13 +237,7 @@ Text der App).
                         </span>Stimmung 4
                       </span>
                       <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
-                        <span style="display:inline-flex; gap:2px">
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
-                        </span>Energie 3
+                        <span style="display:inline-flex; align-items:flex-end; gap:2px; height:12px"><i style="width:3px;height:4px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:6px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:8px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:10px;border-radius:1px;background:var(--fill-3)"></i><i style="width:3px;height:12px;border-radius:1px;background:var(--fill-3)"></i></span>Energie 3
                       </span>
                       <span class="chip" style="padding:0 9px"><span class="ico" data-ico="location" style="width:13px;height:13px"></span>Labor 2</span>
                       <span class="chip" style="padding:0 9px"><span class="ico" data-ico="cloud" style="width:13px;height:13px"></span>7 °C</span>
@@ -237,11 +248,11 @@ Text der App).
                 <!-- Eintrag 2 — gestern, Entwurf mit Foto-Streifen -->
                 <div style="display:flex; gap:14px">
                   <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <svg class="thread thread--v" style="height:13px; flex:none"></svg>
-                    <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
+                    <svg class="thread thread--v thread--weak" style="height:13px; flex:none"></svg>
+                    <span class="dot dot--journal dot--ring" title="Heute, 13. November"></span>
                     <span class="serif--journal-date" style="margin-top:3px">12</span>
                     <span class="t-label c-3">Nov.</span>
-                    <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
+                    <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
                   </div>
                   <article class="card" style="flex:1 1 auto; min-width:0; padding:13px; margin-bottom:7px">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
@@ -277,13 +288,7 @@ Text der App).
                         </span>Stimmung 3
                       </span>
                       <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
-                        <span style="display:inline-flex; gap:2px">
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
-                        </span>Energie 2
+                        <span style="display:inline-flex; align-items:flex-end; gap:2px; height:12px"><i style="width:3px;height:4px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:6px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:8px;border-radius:1px;background:var(--fill-3)"></i><i style="width:3px;height:10px;border-radius:1px;background:var(--fill-3)"></i><i style="width:3px;height:12px;border-radius:1px;background:var(--fill-3)"></i></span>Energie 2
                       </span>
                       <span class="chip" style="padding:0 9px"><span class="ico" data-ico="location" style="width:13px;height:13px"></span>Wohnheim</span>
                       <span class="chip" style="padding:0 9px"><span class="ico" data-ico="cloud" style="width:13px;height:13px"></span>4 °C</span>
@@ -294,29 +299,39 @@ Text der App).
                 <!-- 11. November — kein Eintrag. Der hohle Punkt sitzt AUF dem
                      Faden zwischen dem 12. und dem 10.; er ist kein eigener
                      Faden, sondern eine Stelle darauf, an der nichts steht. -->
+                <!-- Der hohle Punkt MARKIERT eine fehlende Beziehung — er soll
+                     sie auch herstellen können. Deshalb ist die Zeile ein Knopf mit
+                     44-pt-Ziel: „hohl" heißt hier wie überall im Bestand „offen,
+                     noch nicht da", und der Eintrag vom 11. lässt sich nachtragen.
+                     Ohne diesen Griff wäre „hohl" an dieser Stelle „vorbei und nicht
+                     geschehen" gewesen — dieselbe Form mit der entgegengesetzten
+                     Zeitrichtung. -->
                 <div style="display:flex; gap:14px; margin-bottom:7px">
                   <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <svg class="thread thread--v" style="height:13px; flex:none"></svg>
+                    <svg class="thread thread--v thread--weak" style="height:13px; flex:none"></svg>
                     <span class="dot dot--hollow"></span>
-                    <svg class="thread thread--v" style="flex:1 1 0; min-height:8px"></svg>
+                    <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:8px"></svg>
                   </div>
-                  <span class="t-label c-3" style="padding:8px 0 2px">11. Nov. · kein Eintrag</span>
+                  <button style="flex:1 1 auto; min-width:0; min-height:44px; display:flex; align-items:center; gap:8px; text-align:left">
+                    <span class="chip chip--ghost"><span class="ico" data-ico="plus" style="width:13px;height:13px"></span>11. Nov. nachtragen</span>
+                    <span class="t-label c-3">noch kein Eintrag</span>
+                  </button>
                 </div>
 
                 <!-- Eintrag 3 — 10. Nov, mit Herkunfts-Chip statt Fotos -->
                 <div style="display:flex; gap:14px">
                   <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <svg class="thread thread--v" style="height:13px; flex:none"></svg>
+                    <svg class="thread thread--v thread--weak" style="height:13px; flex:none"></svg>
                     <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
                     <span class="serif--journal-date" style="margin-top:3px">10</span>
                     <span class="t-label c-3">Nov.</span>
-                    <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
+                    <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
                   </div>
                   <article class="card" style="flex:1 1 auto; min-width:0; padding:13px; margin-bottom:7px">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
                       <span class="t-label c-3">Montag · 19:35</span>
                       <div style="flex:1"></div>
-                      <span class="origin"><span class="dot dot--notes"></span>aus „Laborjournal"</span>
+                      <button aria-label="Herkunft zeigen: aus der Notiz Laborjournal" style="display:flex; align-items:center; height:44px; margin-block:-10px"><span class="origin"><span class="dot dot--notes"></span>aus „Laborjournal"</span></button>
                     </div>
                     <div class="t-section">Zellkultur angesetzt</div>
                     <p class="t-body c-2 clamp-2" style="margin:4px 0 0">Erste eigene Passage. Ich habe für das Zählen dreimal so lange gebraucht wie Milan und trotzdem war es der beste Nachmittag seit Semesterbeginn.</p>
@@ -331,13 +346,7 @@ Text der App).
                         </span>Stimmung 5
                       </span>
                       <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
-                        <span style="display:inline-flex; gap:2px">
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                          <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
-                        </span>Energie 4
+                        <span style="display:inline-flex; align-items:flex-end; gap:2px; height:12px"><i style="width:3px;height:4px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:6px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:8px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:10px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:12px;border-radius:1px;background:var(--fill-3)"></i></span>Energie 4
                       </span>
                       <span class="chip" style="padding:0 9px"><span class="ico" data-ico="location" style="width:13px;height:13px"></span>Labor 2</span>
                       <span class="chip" style="padding:0 9px"><span class="ico" data-ico="sun" style="width:13px;height:13px"></span>9 °C</span>
@@ -349,10 +358,10 @@ Text der App).
                      sagt „es geht weiter, ist aber noch nicht geladen". -->
                 <div style="display:flex; gap:14px">
                   <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <svg class="thread thread--v" style="height:13px; flex:none"></svg>
+                    <svg class="thread thread--v thread--weak" style="height:13px; flex:none"></svg>
                     <span class="dot dot--hollow"></span>
                   </div>
-                  <button class="btn btn--sm btn--quiet" style="flex:1 1 auto; min-width:0; justify-content:flex-start; padding-left:0">
+                  <button class="btn btn--sm btn--text" style="flex:1 1 auto; min-width:0; justify-content:flex-start; padding-left:0; height:44px">
                     <span class="ico" data-ico="chevD" style="width:16px;height:16px"></span>Ältere Einträge · Oktober
                   </button>
                 </div>
@@ -372,27 +381,40 @@ Text der App).
                   <div class="count" style="margin-bottom:9px">
                     <span class="count__n num">12</span><span class="count__w t-sub">Tage in Folge</span>
                   </div>
-                  <!-- Die Serie ist ein Faden aus Punkten: jeder Punkt ist eine
-                       Woche, jedes Fadenstück die Kante „Woche folgt auf Woche".
-                       Gefüllt = geschrieben, hohl = Lücke, Ring = die laufende.
-                       1 pt, weil Nachbarschaft die schwächste Beziehung ist —
-                       die Zeitachse links trägt 1,5 pt. -->
+                  <!-- Die Serie ist ein Faden aus Punkten: jeder Punkt ist eine Woche,
+                       jedes Fadenstück die Kante „Woche folgt auf Woche". Gefüllt =
+                       geschrieben, Ring = die laufende.
+
+                       M2 · „halb gefüllt" war ein FÜNFTER Punkt-Zustand, den die DNA
+                       nicht kennt — und er trug Ring UND Halbfüllung für dieselbe
+                       Aussage. Die laufende Woche ist jetzt der Ring, wie „heute"
+                       überall sonst im Bestand.
+
+                       M1 · „hohl" hieß hier „Lücke", also vorbei und endgültig nicht
+                       geschehen — während dieselbe Form auf review-session, note-editor,
+                       settings und library „geplant, noch nicht da" bedeutet. Eine
+                       ausgelassene Woche bekommt deshalb GAR KEINEN Punkt und eine Lücke
+                       im Faden: keine Beziehung, kein Faden. Der hohle Punkt behält
+                       damit seine eine Bedeutung.
+
+                       1 pt durchgehend — Woche folgt auf Woche ist die schwache
+                       Beziehung. Die Zeitachse links trägt jetzt dieselbe Stärke, weil
+                       sie dieselbe Beziehung zeichnet (M6). -->
                   <div class="threadrow" style="margin-bottom:8px">
                     <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+                    <span style="width:6px; height:6px; flex:none" aria-hidden="true"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
                     <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-                    <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+                    <span style="width:6px; height:6px; flex:none" aria-hidden="true"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+                    <span class="dot dot--journal"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+                    <span style="width:6px; height:6px; flex:none" aria-hidden="true"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
                     <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
                     <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-                    <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
-                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-                    <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
-                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-                    <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-                    <!-- laufende Woche: halb gefüllt, weil erst Donnerstag ist -->
-                    <span class="dot dot--ring" style="background:linear-gradient(to top, var(--mod-journal) 0 57%, var(--fill-3) 57% 100%)"></span>
+                    <span class="dot dot--journal dot--ring" title="Diese Woche — sie läuft noch"></span>
                   </div>
-                  <div class="t-label c-3">12 Wochen · hohl = Lücke · halb = läuft</div>
+                  <div class="t-label c-3">12 Wochen · Lücke = nichts geschrieben · Ring = diese</div>
                 </section>
 
                 <!-- Kalender-Ausschnitt: Vorschau auf den Tab „Kalender" -->
@@ -405,55 +427,108 @@ Text der App).
                   <div style="display:flex; gap:4px">
                     <div style="flex:1; border-radius:9px; padding:5px 0; background:var(--fill); display:flex; flex-direction:column; align-items:center; gap:3px">
                       <span class="t-label c-3">Mo</span><span class="t-sub num">10</span>
-                      <i style="width:14px;height:3px;border-radius:2px;background:var(--ink-1)"></i>
+                      <span class="dot dot--journal" title="Eintrag vorhanden"></span>
                     </div>
                     <div style="flex:1; border-radius:9px; padding:5px 0; display:flex; flex-direction:column; align-items:center; gap:3px">
                       <span class="t-label c-3">Di</span><span class="t-sub num">11</span>
-                      <i style="width:14px;height:3px;border-radius:2px;background:var(--fill-3)"></i>
+                      <span class="dot dot--hollow" title="noch kein Eintrag"></span>
                     </div>
                     <div style="flex:1; border-radius:9px; padding:5px 0; background:var(--fill); display:flex; flex-direction:column; align-items:center; gap:3px">
                       <span class="t-label c-3">Mi</span><span class="t-sub num">12</span>
-                      <i style="width:14px;height:3px;border-radius:2px;background:var(--ink-1)"></i>
+                      <span class="dot dot--journal" title="Eintrag vorhanden"></span>
                     </div>
                     <!-- heute = Fläche + Ring -->
                     <div style="flex:1; border-radius:9px; padding:5px 0; background:var(--accent-soft); box-shadow:inset 0 0 0 1.5px var(--accent-ring); display:flex; flex-direction:column; align-items:center; gap:3px">
                       <span class="t-label c-1">Do</span><span class="t-sub is-strong num">13</span>
-                      <i style="width:14px;height:3px;border-radius:2px;background:var(--ink-1)"></i>
+                      <span class="dot dot--journal" title="Eintrag vorhanden"></span>
                     </div>
                     <!-- kommende Tage = Deckkraft + keine Fläche -->
                     <div class="is-off" style="flex:1; border-radius:9px; padding:5px 0; display:flex; flex-direction:column; align-items:center; gap:3px">
                       <span class="t-label c-3">Fr</span><span class="t-sub num">14</span>
-                      <i style="width:14px;height:3px;border-radius:2px;background:var(--fill-3)"></i>
+                      <span class="dot dot--hollow" title="noch kein Eintrag"></span>
                     </div>
                     <div class="is-off" style="flex:1; border-radius:9px; padding:5px 0; display:flex; flex-direction:column; align-items:center; gap:3px">
                       <span class="t-label c-3">Sa</span><span class="t-sub num">15</span>
-                      <i style="width:14px;height:3px;border-radius:2px;background:var(--fill-3)"></i>
+                      <span class="dot dot--hollow" title="noch kein Eintrag"></span>
                     </div>
                     <div class="is-off" style="flex:1; border-radius:9px; padding:5px 0; display:flex; flex-direction:column; align-items:center; gap:3px">
                       <span class="t-label c-3">So</span><span class="t-sub num">16</span>
-                      <i style="width:14px;height:3px;border-radius:2px;background:var(--fill-3)"></i>
+                      <span class="dot dot--hollow" title="noch kein Eintrag"></span>
                     </div>
                   </div>
-                  <div class="t-label c-3" style="margin-top:8px">Der Tab „Kalender" zeigt den Monat.</div>
+                  <div class="t-label c-3" style="margin-top:8px">gefüllt = Eintrag · hohl = noch keiner</div>
                 </section>
 
-                <!-- Stimmungsverlauf — Linie in Ink, kein Bunt -->
+                <!-- ══════════════════════════════════════════════════════════
+                     HIER STAND DER STIMMUNGSVERLAUF.
+
+                     Gemessen war er: eine polyline in rgb(22,24,28) — der exakten
+                     Farbe des AKTIVEN Fadens —, 1,8 pt stark, runde Strichkappen,
+                     14 Stützpunkte, am rechten Ende ein 6-pt-Punkt mit Ring, also
+                     die Form von .dot--ring. Das ist die vollständige Grammatik
+                     des Leitmotivs, mit allen falschen Werten, am auffälligsten
+                     Ort der rechten Spalte — dunkler und länger als jeder echte
+                     Faden desselben Schirms. docs/04 §0.5 hatte genau diese Stelle
+                     selbst als „Preis der Regel" ausgewiesen („Stimmungslinie,
+                     Wetter und Fortschrittsbalken bekommen keinen Faden, obwohl er
+                     dort hübsch wäre. Ein Motiv, das nichts kostet, ist
+                     Dekoration"). Der Preis war nicht bezahlt. Hier wird er bezahlt.
+
+                     N8 ließ zwei Wege offen: eine Form ohne Faden-Vokabular, oder
+                     Wegfall. Es ist der Wegfall geworden, und zwar nicht aus
+                     Strenge: Die Auskunft steht bereits in JEDER Eintragskarte
+                     („Stimmung 4", „Stimmung 3", „Stimmung 5"). Eine 14-Tage-Kurve
+                     daneben sagt nichts, was ein Eintrag nicht sagt — sie war das
+                     dunkelste, längste, auffälligste Objekt des Schirms für die am
+                     wenigsten eigene Aussage.
+
+                     An ihre Stelle tritt das, was außer Velum niemand zeichnen
+                     kann: WAS AUS DEN EINTRÄGEN DIESER WOCHE GEWORDEN IST. Ein
+                     Knoten, drei Herkunfts-Fäden zu 2,5 pt, drei Modulpunkte. Die
+                     Kanten sind echt und auf dem Nachbarschirm nachlesbar —
+                     journal-entry.html zeichnet dieselbe Kette („ENTSTANDEN AUS →
+                     DIESER EINTRAG → DARAUS WURDE"). Das Journal war bisher das
+                     Modul mit der schwächsten sichtbaren Herkunft; das, und nicht
+                     die Kurve allein, war der Grund, aus dem der Schirm fremd
+                     aussah.
+                     ══════════════════════════════════════════════════════════ -->
                 <section class="card" style="padding:13px">
-                  <div class="card__head" style="margin-bottom:6px">
-                    <span class="t-label c-3 card__title">STIMMUNGSVERLAUF</span>
-                    <span class="t-label c-3 num">14 Tage</span>
+                  <div class="card__head" style="margin-bottom:9px">
+                    <span class="ico c-2" data-ico="link" style="width:18px;height:18px"></span>
+                    <span class="t-label c-3 card__title">DARAUS ENTSTANDEN</span>
                   </div>
-                  <svg viewBox="0 0 260 58" style="width:100%; height:58px; display:block" aria-hidden="true">
-                    <path d="M0 30 H260" style="stroke:var(--line); stroke-width:1"></path>
-                    <polygon points="6,30 24.8,30 43.5,19 62.3,41 81.1,30 99.9,19 118.6,19 137.4,30 156.2,41 174.9,30 193.7,19 212.5,19 231.2,30 250,19 250,58 6,58" style="fill:var(--fill)"></polygon>
-                    <polyline points="6,30 24.8,30 43.5,19 62.3,41 81.1,30 99.9,19 118.6,19 137.4,30 156.2,41 174.9,30 193.7,19 212.5,19 231.2,30 250,19" style="fill:none; stroke:var(--ink-1); stroke-width:1.8; stroke-linejoin:round; stroke-linecap:round"></polyline>
-                    <circle cx="250" cy="19" r="6" style="fill:none; stroke:var(--accent-ring); stroke-width:1.5"></circle>
-                    <circle cx="250" cy="19" r="3" style="fill:var(--ink-1)"></circle>
-                  </svg>
-                  <div style="display:flex; justify-content:space-between; margin-top:2px">
-                    <span class="t-label c-3">30. Okt</span>
-                    <span class="t-label c-3 num">Schnitt 3,3</span>
-                    <span class="t-label c-1 num">heute 4</span>
+                  <div style="position:relative">
+                    <div style="display:flex; align-items:center; gap:8px; padding:0 0 6px 12px">
+                      <span class="dot dot--node"></span>
+                      <span class="t-label c-2"><span class="num">3</span> Einträge dieser Woche</span>
+                    </div>
+                    <svg class="thread thread--curve thread--origin wfan__f wfan__f1"></svg>
+                    <svg class="thread thread--curve thread--origin wfan__f wfan__f2"></svg>
+                    <svg class="thread thread--curve thread--origin wfan__f wfan__f3"></svg>
+                    <button class="row" style="min-height:44px; padding:2px 6px 2px 30px; width:100%">
+                      <span class="dot dot--tasks" style="margin:0 4px"></span>
+                      <div class="row__main" style="text-align:left">
+                        <span class="t-sub c-1 clamp-1">Laborprotokoll</span>
+                        <span class="t-label c-3 clamp-1">Aufgabe · offen</span>
+                      </div>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                    </button>
+                    <button class="row" style="min-height:44px; padding:2px 6px 2px 30px; width:100%">
+                      <span class="dot dot--notes" style="margin:0 4px"></span>
+                      <div class="row__main" style="text-align:left">
+                        <span class="t-sub c-1 clamp-1">Passage 3</span>
+                        <span class="t-label c-3 clamp-1">Notiz · 12. Nov.</span>
+                      </div>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                    </button>
+                    <button class="row" style="min-height:44px; padding:2px 6px 2px 30px; width:100%">
+                      <span class="dot dot--cards" style="margin:0 4px"></span>
+                      <div class="row__main" style="text-align:left">
+                        <span class="t-sub c-1 clamp-1"><span class="num">2</span> Karten</span>
+                        <span class="t-label c-3 clamp-1">Deck „Zellbiologie"</span>
+                      </div>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                    </button>
                   </div>
                 </section>
 
@@ -469,13 +544,21 @@ Text der App).
                   </div>
                 </section>
 
-                <!-- Tagesimpuls — dieselbe Frage wie auf „Today", weil derselbe Tag -->
+                <!-- Tagesimpuls aus dem eigenen Bestand — nicht aus dem Nichts -->
                 <section class="card" style="padding:13px">
                   <div class="card__head" style="margin-bottom:7px">
                     <span class="dot dot--journal"></span>
                     <span class="t-label c-3 card__title">IMPULS FÜR HEUTE</span>
                   </div>
-                  <p class="t-body" style="margin:0 0 10px">Was hat dich heute länger beschäftigt, als du erwartet hättest?</p>
+                  <!-- Ein Schreibanstoß ohne Bezug zum Bestand ist Apple Journals
+                       Signatur und in Velum ein Fremdkörper: er hat keine Kante.
+                       Dieser hat eine — er kommt aus dem Canvas vom 6. November,
+                       über den noch kein Eintrag existiert. Das kann kein
+                       Journal-Programm, das nur Journal ist. -->
+                  <p class="t-body" style="margin:0 0 8px">Über den Versuch vom <span class="num">6. November</span> steht noch nichts.</p>
+                  <div style="display:flex; align-items:center; gap:7px; margin-bottom:10px">
+                    <span class="origin"><span class="dot dot--canvas"></span>Messreihe Probe 1–5</span>
+                  </div>
                   <button class="btn btn--sm" style="width:100%"><span class="ico" data-ico="edit" style="width:16px;height:16px"></span>Eintrag beginnen</button>
                 </section>
 
@@ -498,7 +581,7 @@ Text der App).
 
       <div class="content" style="position:relative">
         <div class="navbar" style="border:0; padding-bottom:2px">
-          <button class="iconbtn" style="width:30px; margin-left:-8px"><span class="ico" data-ico="chevL"></span></button>
+          <button class="iconbtn" style="width:44px; margin-left:-15px"><span class="ico" data-ico="chevL"></span></button>
           <span class="serif--screen-title">Journal</span>
           <span class="dot dot--journal" style="align-self:center"></span>
           <div class="navbar__spacer"></div>
@@ -526,21 +609,40 @@ Text der App).
               </div>
               <span class="t-label c-3 num">Rekord 34</span>
             </div>
+            <!-- Die Serie ist ein Faden aus Punkten: jeder Punkt ist eine Woche,
+                 jedes Fadenstück die Kante „Woche folgt auf Woche". Gefüllt =
+                 geschrieben, Ring = die laufende.
+
+                 M2 · „halb gefüllt" war ein FÜNFTER Punkt-Zustand, den die DNA
+                 nicht kennt — und er trug Ring UND Halbfüllung für dieselbe
+                 Aussage. Die laufende Woche ist jetzt der Ring, wie „heute"
+                 überall sonst im Bestand.
+
+                 M1 · „hohl" hieß hier „Lücke", also vorbei und endgültig nicht
+                 geschehen — während dieselbe Form auf review-session, note-editor,
+                 settings und library „geplant, noch nicht da" bedeutet. Eine
+                 ausgelassene Woche bekommt deshalb GAR KEINEN Punkt und eine Lücke
+                 im Faden: keine Beziehung, kein Faden. Der hohle Punkt behält
+                 damit seine eine Bedeutung.
+
+                 1 pt durchgehend — Woche folgt auf Woche ist die schwache
+                 Beziehung. Die Zeitachse links trägt jetzt dieselbe Stärke, weil
+                 sie dieselbe Beziehung zeichnet (M6). -->
             <div class="threadrow" style="margin:9px 0 6px">
               <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+              <span style="width:6px; height:6px; flex:none" aria-hidden="true"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
               <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-              <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+              <span style="width:6px; height:6px; flex:none" aria-hidden="true"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
+              <span class="dot dot--journal"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
+              <span style="width:6px; height:6px; flex:none" aria-hidden="true"></span><span style="flex:1 1 0; min-width:10px" aria-hidden="true"></span>
               <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
               <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-              <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
-              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-              <span class="dot dot--hollow"></span><svg class="thread thread--weak thread--h"></svg>
-              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-              <span class="dot dot--journal"></span><svg class="thread thread--weak thread--h"></svg>
-              <span class="dot dot--ring" style="background:linear-gradient(to top, var(--mod-journal) 0 57%, var(--fill-3) 57% 100%)"></span>
+              <span class="dot dot--journal dot--ring" title="Diese Woche — sie läuft noch"></span>
             </div>
-            <div class="t-label c-3">12 Wochen · hohl = Lücke · halb = läuft</div>
+            <div class="t-label c-3">12 Wochen · Lücke = nichts geschrieben · Ring = diese</div>
           </section>
 
           <!-- Impuls in einer Zeile — dieselbe Aufgabe, gleiche Tapzahl wie am iPad -->
@@ -548,7 +650,8 @@ Text der App).
             <span class="dot dot--journal"></span>
             <span style="flex:1 1 auto; min-width:0">
               <span class="t-label c-3" style="display:block">IMPULS FÜR HEUTE</span>
-              <span class="t-sub c-1 clamp-1">Was hat dich heute länger beschäftigt, als du erwartet hättest?</span>
+              <span class="t-sub c-1 clamp-1">Über den Versuch vom <span class="num">6. November</span> steht noch nichts.</span>
+              <span class="origin" style="margin-top:4px"><span class="dot dot--canvas"></span>Messreihe Probe 1–5</span>
             </span>
             <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
           </button>
@@ -561,7 +664,7 @@ Text der App).
               <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
               <span class="serif--journal-date" style="margin-top:3px">13</span>
               <span class="t-label c-3">Nov.</span>
-              <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
+              <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
             </div>
             <article class="card" style="flex:1 1 auto; min-width:0; padding:12px; margin-bottom:12px">
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px">
@@ -591,13 +694,7 @@ Text der App).
                   </span>Stimmung 4
                 </span>
                 <span class="t-label c-2" style="display:inline-flex; align-items:center; gap:5px">
-                  <span style="display:inline-flex; gap:2px">
-                    <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                    <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                    <i style="width:6px;height:3px;border-radius:1px;background:var(--ink-1)"></i>
-                    <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
-                    <i style="width:6px;height:3px;border-radius:1px;background:var(--fill-3)"></i>
-                  </span>Energie 3
+                  <span style="display:inline-flex; align-items:flex-end; gap:2px; height:12px"><i style="width:3px;height:4px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:6px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:8px;border-radius:1px;background:var(--ink-1)"></i><i style="width:3px;height:10px;border-radius:1px;background:var(--fill-3)"></i><i style="width:3px;height:12px;border-radius:1px;background:var(--fill-3)"></i></span>Energie 3
                 </span>
               </div>
             </article>
@@ -605,11 +702,11 @@ Text der App).
 
           <div style="display:flex; gap:10px">
             <div style="width:34px; flex:none; display:flex; flex-direction:column; align-items:center">
-              <svg class="thread thread--v" style="height:11px; flex:none"></svg>
+              <svg class="thread thread--v thread--weak" style="height:11px; flex:none"></svg>
               <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
               <span class="serif--journal-date" style="margin-top:3px">12</span>
               <span class="t-label c-3">Nov.</span>
-              <svg class="thread thread--v" style="flex:1 1 0; min-height:10px"></svg>
+              <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
             </div>
             <article class="card" style="flex:1 1 auto; min-width:0; padding:12px">
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px">
@@ -662,10 +759,20 @@ Text der App).
 
   <h3>Der Faden auf diesem Schirm</h3>
   <table>
-    <tr><td>Zeitachse</td><td><strong>Eintrag ↔ benachbarter Eintrag</strong> desselben Journals, 1,5 pt. Genau diese Kante läuft der Eintrags-Schirm mit seinen ‹ ›-Knöpfen ab („Eintrag 34 von 41"). Knoten = Eintrag, hohler Punkt = Tag ohne Eintrag (11. Nov.) und das offene Ende unten = Oktober, noch nicht geladen.</td></tr>
-    <tr><td>Serie</td><td><strong>Woche ↔ Folgewoche</strong>, 1 pt (schwächste Nähe, deshalb dünner als die Zeitachse). Zwölf Punkte, drei davon hohl: die Lücken bleiben stehen. Der letzte trägt den Ink-Ring und ist halb gefüllt — die Woche läuft noch.</td></tr>
-    <tr><td>kein Faden</td><td>Der Stimmungsverlauf bekommt <em>keinen</em>: eine Kurve über 14 Messwerte verbindet keine zwei Objekte. Sie bleibt ein Diagramm — mit Fläche, Achse und Knickpunkten, alles drei Dinge, die ein Faden nie hat. Der Wochenstreifen und die Trennlinien ebenfalls nicht.</td></tr>
+    <tr><td>Zeitachse</td><td><strong>Eintrag ↔ benachbarter Eintrag</strong> desselben Journals, jetzt <strong>1 pt</strong>. Sie trug 1,5 pt („Verweis") und zeichnete damit dieselbe Beziehung wie die Serie zwei Karten weiter mit einer anderen Stärke. Tag folgt auf Tag ist Nachbarschaft, und Nachbarschaft ist in diesem System 1 pt — beide tragen jetzt dieselbe Zahl, weil sie dieselbe Aussage machen. Genau diese Kante läuft der Eintrags-Schirm mit seinen ‹ ›-Knöpfen ab („Eintrag 34 von 41").</td></tr>
+    <tr><td>Die Marken der Zeitachse</td><td><strong>Heute ist kein Knoten.</strong> An der Marke „13. Nov." endet genau <em>ein</em> Faden (nach unten); ein Knoten ist laut DNA-Nachtrag N7 nur, wo zwei oder mehr zusammenlaufen. Sie trägt deshalb den Journal-Punkt mit dem Ink-Ring — dieselbe Form, mit der „heute" auf jedem anderen Schirm markiert ist. Die Marken vom 12. und 10. November haben oben und unten einen Faden und bleiben Knoten. Der hohle Punkt unten („Ältere Einträge · Oktober") hat einen Faden und heißt „noch nicht geladen".</td></tr>
+    <tr><td>Der 11. November</td><td>Der hohle Punkt <em>markiert</em> eine fehlende Beziehung — jetzt <em>stellt</em> er sie auch her: die Zeile ist ein Knopf mit 44-pt-Ziel und dem Chip „11. Nov. nachtragen". Damit heißt „hohl" hier dasselbe wie überall im Bestand — <strong>offen, noch nicht da</strong> — und nicht „vorbei und nicht geschehen". Diese eine Zeile entscheidet, ob die Form auf diesem Schirm dieselbe Bedeutung trägt wie auf review-session, note-editor, settings und library.</td></tr>
+    <tr><td>Serie</td><td><strong>Woche ↔ Folgewoche</strong>, 1 pt, zwölf Wochen. Eine Woche ohne Eintrag bekommt <strong>keinen Punkt und keinen Faden</strong>, sondern eine Lücke — keine Beziehung, kein Faden. Vorher stand dort ein hohler Punkt mit der Legende „hohl = Lücke", also dieselbe Form für die entgegengesetzte Zeitrichtung. Die laufende Woche trägt den Ring; vorher war sie <strong>halb gefüllt</strong> und damit ein fünfter Punkt-Zustand, den die DNA nicht kennt — und sie trug Ring <em>und</em> Halbfüllung für dieselbe einzige Aussage.</td></tr>
+    <tr><td>Der Wochen-Fächer</td><td><strong>Neu, und der Grund, warum dieser Schirm jetzt Velum ist.</strong> Ein Knoten, drei Herkunfts-Fäden zu 2,5 pt, drei Modulpunkte: aus den Einträgen dieser Woche sind eine Aufgabe, eine Notiz und zwei Lernkarten geworden. Der Knoten verdient seinen Namen — dort laufen drei Fäden zusammen. Die Kante ist echt und auf dem Nachbarschirm nachlesbar: <span class="num">journal-entry.html</span> zeichnet dieselbe Kette („ENTSTANDEN AUS → DIESER EINTRAG → DARAUS WURDE"). Es ist dasselbe Bauteil wie der Fächer „VERKNÜPFT" auf <span class="num">task-detail.html</span>, mit derselben gemessenen Geometrie — ein Bauteil, zwei Schirme, kein zweites Vokabular.</td></tr>
+    <tr><td>Die Wochentage</td><td>Unter jedem Wochentag stand ein 14 × 3 pt langer Ink-Strich mit runden Enden — <strong>exakt die Aussage der Serie 90 pt darüber</strong> (Tag mit / ohne Eintrag), in einem zweiten Vokabular, und der kurze runde Ink-Strich gehört im System dem Faden. Jetzt steht dort der 6-pt-Punkt: gefüllt = Eintrag, hohl = noch keiner. Eine Aussage, eine Form.</td></tr>
+    <tr><td>Eine Messgeräte-Grammatik</td><td>„Stimmung" war eine Reihe <em>senkrechter</em> Stäbe, „Energie" daneben eine Reihe <em>waagerechter</em> — und die waagerechte Reihe las sich im Bild als gestrichelter Faden. Beide sind jetzt senkrecht. Zwei Messgeräte nebeneinander dürfen nicht zwei Grammatiken haben.</td></tr>
+    <tr><td>Der Impuls hat eine Kante</td><td>„Was hat dich heute länger beschäftigt?" ist ein Schreibanstoß ohne Bezug zum Bestand — Apple Journals Signatur und in Velum ein Fremdkörper, weil er keine Kante hat. Der neue kommt aus dem eigenen Material: „Über den Versuch vom 6. November steht noch nichts", mit dem Canvas-Punkt daneben. Das kann kein Programm, das nur Journal ist.</td></tr>
+    <tr><td>kein Faden</td><td>Der Wochenstreifen, die Trennlinien und die Fortschrittsleiste der laufenden Übertragung. <strong>Und der Stimmungsverlauf — er ist ganz weg.</strong> Siehe unten.</td></tr>
   </table>
+
+  <h3>Was hier nicht mehr steht: der Stimmungsverlauf</h3>
+  <p>Gemessen war er eine <span class="num">&lt;polyline&gt;</span> in <span class="num">rgb(22,24,28)</span> — der <em>exakten</em> Farbe des aktiven Fadens —, 1,8 pt stark, mit runden Strichkappen, 14 Stützpunkten und am rechten Ende einem 6-pt-Punkt mit hellem Ring, also der Form von <span class="num">.dot--ring</span>. Das ist die vollständige Grammatik des Leitmotivs, mit allen falschen Werten, am auffälligsten Ort der rechten Spalte: dunkler und länger als jeder echte Faden desselben Schirms. <span class="num">docs/04</span> §0.5 hatte genau diese Stelle selbst als „Preis der Regel" ausgewiesen — „Stimmungslinie, Wetter und Fortschrittsbalken bekommen keinen Faden, obwohl er dort hübsch wäre. Ein Motiv, das nichts kostet, ist Dekoration." Der Preis war nicht bezahlt.</p>
+  <p>Der Nachtrag N8 ließ zwei Wege offen: eine Form, die nichts vom Faden-Vokabular trägt, oder Wegfall. Es ist der Wegfall geworden, und nicht aus Strenge: <strong>Die Auskunft steht bereits in jeder Eintragskarte</strong> („Stimmung 4", „Stimmung 3", „Stimmung 5"). Eine 14-Tage-Kurve daneben sagt nichts, was ein Eintrag nicht sagt — sie war das dunkelste, längste, auffälligste Objekt des Schirms für die am wenigsten eigene Aussage. Ihre Fläche trägt jetzt den Wochen-Fächer, und der sagt etwas, das kein Konkurrent sagen kann.</p>
 
   <h3>Woher die Ideen stammen</h3>
   <table>
@@ -673,7 +780,7 @@ Text der App).
     <tr><td>Day One — Rückblick</td><td>„Vor einem Jahr" als Angebot in der Seitenspalte, dieselbe Karte wie auf „Today". <strong>Gut,</strong> aber nie als Vollbild-Unterbrechung wie im Original.</td></tr>
     <tr><td>Day One — Streak</td><td>Zahl, Rekord und 12-Wochen-Reihe. <strong>Geteilt:</strong> Die Zahl trägt, die Abzeichen tragen nicht. Wir zeigen auch die Lücken — drei offene Punkte in zwölf Wochen — statt sie zu verstecken. Als Faden aus Punkten wird aus der Reihe eine Folge.</td></tr>
     <tr><td>Apple Journal — Impuls</td><td>Eine konkrete Frage statt eines leeren Feldes. <strong>Sehr gut</strong> gegen das leere Blatt. Es ist bewusst genau eine Frage, kein Vorschlags-Strom. Sie steht in Sans: die Frage ist Velums Text, nicht Emils.</td></tr>
-    <tr><td>Journey — Stimmungsverlauf</td><td>Die Idee, Stimmung über Zeit zu zeigen. <strong>Richtig, Ausführung nicht:</strong> Journey macht daraus bunte Emojis. Hier ist die Linie Ink, die Stimmung ein fünfstufiger Balken.</td></tr>
+    <tr><td>Journey — Stimmung über Zeit</td><td>Die Idee, Stimmung zu erfassen. <strong>Übernommen, aber nicht als Kurve:</strong> Journey macht daraus bunte Emojis, Day One eine Seitenschiene voller Diagramme. Hier steht die Stimmung als fünfstufiger Ink-Balken <em>in der Eintragskarte, wo sie hingehört</em> — beim Tag, den sie beschreibt. Eine zusätzliche Kurve über 14 Tage ist gestrichen (siehe unten).</td></tr>
   </table>
 
   <h3>Bewusst nicht übernommen</h3>
@@ -687,7 +794,7 @@ Text der App).
 
   <h3>Zustände auf diesem Schirm</h3>
   <table>
-    <tr><td>gefüllt</td><td>Der gezeigte Zustand: drei Einträge in der Timeline, 12 Tage Serie, 14 Tage Stimmungsverlauf, ein Rückblick.</td></tr>
+    <tr><td>gefüllt</td><td>Der gezeigte Zustand: drei Einträge in der Timeline, ein Tag ohne Eintrag, zwölf Wochen Serie mit drei Lücken, drei Objekte im Wochen-Fächer, ein Rückblick.</td></tr>
     <tr><td>aktiv</td><td>„Journal" in der Sidebar (Fläche + Gewicht + Ink-Balken) und „Timeline" im Umschalter (Fläche + Gewicht). Auf dem iPhone ist „Bibliothek" der Tab, unter dem das Journal liegt — deshalb der Zurück-Pfeil im Kopf.</td></tr>
     <tr><td>ausgewählt</td><td>Der heutige Tag im Wochenstreifen: getönte Fläche + Ring + kräftigere Ziffer.</td></tr>
     <tr><td>Zwischenzustand</td><td>Der Eintrag von 8:05 wird gerade aus der Sprachnotiz übertragen: Fortschritt bei 1:14 von 2:03, der noch fehlende Text als Skelett. Zweiter, leiser Zwischenzustand: der letzte Punkt der Wochenreihe ist halb gefüllt, weil die Woche erst bis Donnerstag läuft.</td></tr>

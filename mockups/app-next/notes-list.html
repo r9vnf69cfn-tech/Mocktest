@@ -162,9 +162,14 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                   <span class="t-body">#uni</span>
                   <span class="navitem__count t-label num">22</span>
                 </button>
+                <!-- Die beiden Kinder von #uni waren die einzigen zwei
+                     Navigationszeilen des Schirms ohne Symbol (docs/05, S6) — alle
+                     zehn Geschwister tragen eines, und genau deshalb übersieht man
+                     diese zwei. Sie bekommen dasselbe Tag-Zeichen, in --ink-3 statt
+                     --ink-1: Symbol vorhanden (R3), Rangfolge trotzdem sichtbar. -->
                 <div style="margin-left:45px; padding-left:12px; border-left:1px solid var(--line-2)">
-                  <button class="navitem"><span class="t-body">/bio</span><span class="navitem__count t-label num">14</span></button>
-                  <button class="navitem"><span class="t-body">/mathe</span><span class="navitem__count t-label num">8</span></button>
+                  <button class="navitem"><span class="ico c-3" data-ico="tag" style="width:16px;height:16px"></span><span class="t-body">/bio</span><span class="navitem__count t-label num">14</span></button>
+                  <button class="navitem"><span class="ico c-3" data-ico="tag" style="width:16px;height:16px"></span><span class="t-body">/mathe</span><span class="navitem__count t-label num">8</span></button>
                 </div>
 
                 <button class="navitem">
@@ -212,9 +217,19 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 </div>
                 <div style="flex:1"></div>
                 <!-- Der Schalter gibt den Fäden in der Rinne ihr Wort. Ohne ihn
-                     stünde dort ein Strich, den niemand benennen kann. -->
-                <button aria-pressed="true" style="display:flex; align-items:center; height:44px; margin-block:-9px"><span class="chip chip--solid"><svg class="thread thread--h" style="width:15px; stroke:currentColor"></svg>Verweise</span></button>
-                <button class="chip chip--ghost"><span class="ico" data-ico="sort" style="width:14px;height:14px"></span>Geändert</button>
+                     stünde dort ein Strich, den niemand benennen kann.
+
+                     N9/S2: Hier stand bis Runde 2 ein echtes .thread-Element als
+                     Piktogramm — 15 pt, stroke:currentColor, im Hellen also weiß
+                     auf der Chipfläche. Es verband nichts; die nächsten Punkte lagen
+                     176 und 183 pt entfernt. Eine Legende darf das Zeichen erklären
+                     (graph.html tut das), ein Knopf darf es nicht benutzen. Ersatzlos
+                     entfernt; der Chip trägt jetzt das Verweis-Symbol aus dem
+                     .ico-Satz, dieselbe Quelle wie alle anderen Zeichen des Pakets. -->
+                <button aria-pressed="true" aria-label="Verweise in der Rinne zeigen" style="display:flex; align-items:center; height:44px; margin-block:-9px"><span class="chip chip--solid"><span class="ico" data-ico="link" style="width:14px;height:14px"></span>Verweise</span></button>
+                <!-- Derselbe Griff wie beim Nachbarn: 26-pt-Chip in einem 44-pt-Ziel,
+                     negativer Blockrand hält die Leistenhöhe (R4). -->
+                <button aria-label="Sortierung: zuletzt geändert" style="display:flex; align-items:center; height:44px; margin-block:-9px"><span class="chip chip--ghost"><span class="ico" data-ico="sort" style="width:14px;height:14px"></span>Geändert</span></button>
               </div>
 
               <div class="scroll" style="display:flex; flex-direction:column; padding:10px 24px 20px">
@@ -226,7 +241,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <!-- 1 -->
                 <div id="nl-zell" class="row" style="align-items:flex-start; padding:12px 12px 12px 68px">
                   <span class="dot dot--node" id="nl-zell-pkt" style="position:absolute; left:12px; top:26px; transform:translate(-50%,-50%); z-index:2" title="Knoten: hier treffen sich drei Verweise"></span>
-                  <span class="check" style="margin-top:2px"></span>
+                  <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="false" aria-label="Notiz Zellbiologie — Vorlesung 9 auswählen"><span class="check"></span></button>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
                       <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Zellbiologie — Vorlesung 9</span>
@@ -245,7 +260,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <!-- 2 -->
                 <div id="nl-sem" class="row" style="align-items:flex-start; padding:12px 12px 12px 68px">
                   <span class="dot dot--notes" id="nl-sem-pkt" style="position:absolute; left:12px; top:26px; transform:translate(-50%,-50%); z-index:2"></span>
-                  <span class="check" style="margin-top:2px"></span>
+                  <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="false" aria-label="Notiz Semesterplanung Wintersemester auswählen"><span class="check"></span></button>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
                       <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Semesterplanung Wintersemester</span>
@@ -267,7 +282,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <!-- 3 — ausgewählt: Fläche + Ring + Gewicht, und angehakt -->
                 <div id="nl-osmose" class="row is-selected" style="align-items:flex-start; padding:12px 12px 12px 68px">
                   <span class="dot dot--notes" id="nl-osmose-pkt" style="position:absolute; left:12px; top:26px; transform:translate(-50%,-50%); z-index:2"></span>
-                  <span class="check is-done" style="margin-top:2px"></span>
+                  <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="true" aria-label="Notiz Osmose und Zellmembran auswählen"><span class="check is-done"></span></button>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
                       <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Osmose und Zellmembran</span>
@@ -284,7 +299,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <!-- 4 — gerade angetippt: Häkchen mitten in der Animation -->
                 <div id="nl-labor" class="row" style="align-items:flex-start; padding:12px 12px 12px 68px; background:var(--accent-soft)">
                   <span class="dot dot--notes" id="nl-labor-pkt" style="position:absolute; left:12px; top:26px; transform:translate(-50%,-50%); z-index:2"></span>
-                  <span class="check is-checking" style="margin-top:2px"></span>
+                  <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="true" aria-label="Notiz Laborjournal — Zellkultur, Tag 3 auswählen"><span class="check is-checking"></span></button>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
                       <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Laborjournal — Zellkultur, Tag 3</span>
@@ -314,7 +329,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
                 <!-- 5 -->
                 <div class="row" style="align-items:flex-start; padding:12px 12px 12px 68px">
-                  <span class="check" style="margin-top:2px"></span>
+                  <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="false" aria-label="Notiz Analysis II — Grenzwertsätze auswählen"><span class="check"></span></button>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
                       <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Analysis II — Grenzwertsätze</span>
@@ -330,7 +345,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
                 <!-- 6 -->
                 <div class="row" style="align-items:flex-start; padding:12px 12px 12px 68px">
-                  <span class="check" style="margin-top:2px"></span>
+                  <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="false" aria-label="Notiz Lesenotizen Soziologie — Kapitel 2 auswählen"><span class="check"></span></button>
                   <div class="row__main">
                     <div style="display:flex; align-items:center; gap:8px">
                       <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Lesenotizen Soziologie — Kapitel 2</span>
@@ -395,7 +410,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
           <!-- 1 -->
           <div id="p-zell" class="row" style="align-items:flex-start; padding:10px 10px 10px 44px">
             <span class="dot dot--node" style="position:absolute; left:8px; top:22px; transform:translate(-50%,-50%); z-index:2" title="Knoten: hier treffen sich zwei Verweise"></span>
-            <span class="check" style="margin-top:2px"></span>
+            <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="false" aria-label="Notiz Zellbiologie — Vorlesung 9 auswählen"><span class="check"></span></button>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
                 <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Zellbiologie — Vorlesung 9</span>
@@ -418,7 +433,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
           <!-- 2 — ausgewählt -->
           <div id="p-osmose" class="row is-selected" style="align-items:flex-start; padding:10px 10px 10px 44px">
             <span class="dot dot--notes" style="position:absolute; left:8px; top:22px; transform:translate(-50%,-50%); z-index:2"></span>
-            <span class="check is-done" style="margin-top:2px"></span>
+            <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="true" aria-label="Notiz Osmose und Zellmembran auswählen"><span class="check is-done"></span></button>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
                 <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Osmose und Zellmembran</span>
@@ -436,7 +451,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
           <!-- 3 — Häkchen mitten in der Animation -->
           <div id="p-labor" class="row" style="align-items:flex-start; padding:10px 10px 10px 44px; background:var(--accent-soft)">
             <span class="dot dot--notes" style="position:absolute; left:8px; top:22px; transform:translate(-50%,-50%); z-index:2"></span>
-            <span class="check is-checking" style="margin-top:2px"></span>
+            <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="true" aria-label="Notiz Laborjournal — Zellkultur, Tag 3 auswählen"><span class="check is-checking"></span></button>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
                 <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Laborjournal — Zellkultur, Tag 3</span>
@@ -446,7 +461,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <span class="chip" style="height:24px">#labor</span>
                 <span class="chip" style="height:24px"><span class="ico" data-ico="photo" style="width:13px;height:13px"></span>2 Fotos</span>
                 <span style="flex:1 1 auto"></span>
-                <span class="t-label c-3 num" style="flex:none">Mo 10. Nov</span>
+                <span class="t-label c-3 num" style="flex:none">10. Nov</span>
               </div>
             </div>
           </div>
@@ -466,7 +481,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
           <!-- 4 -->
           <div class="row" style="align-items:flex-start; padding:10px 10px 10px 44px">
-            <span class="check" style="margin-top:2px"></span>
+            <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="false" aria-label="Notiz Analysis II — Grenzwertsätze auswählen"><span class="check"></span></button>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
                 <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Analysis II — Grenzwertsätze</span>
@@ -476,14 +491,14 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
                 <span class="chip" style="height:24px">#uni/mathe</span>
                 <span class="chip" style="height:24px"><span class="dot dot--tasks"></span>1 Aufgabe</span>
                 <span style="flex:1 1 auto"></span>
-                <span class="t-label c-3 num" style="flex:none">Mo 10. Nov</span>
+                <span class="t-label c-3 num" style="flex:none">10. Nov</span>
               </div>
             </div>
           </div>
 
           <!-- 5 -->
           <div class="row" style="align-items:flex-start; padding:10px 10px 10px 44px">
-            <span class="check" style="margin-top:2px"></span>
+            <button style="width:44px; height:44px; margin:-9px -11px -13px -11px; flex:none; display:flex; align-items:center; justify-content:center" aria-pressed="false" aria-label="Notiz Lesenotizen Soziologie — Kapitel 2 auswählen"><span class="check"></span></button>
             <div class="row__main">
               <div style="display:flex; align-items:center; gap:6px">
                 <span class="t-body row__title clamp-1" style="flex:1 1 auto; min-width:0">Lesenotizen Soziologie — Kapitel 2</span>
@@ -526,7 +541,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
 
   <h3>Woher die Ideen stammen</h3>
   <table>
-    <tr><td>Bear — Tag-Baum</td><td>Verschachtelte Tags, die beim Schreiben entstehen: <strong>#uni</strong> aufgeklappt mit <strong>/bio</strong> und <strong>/mathe</strong>. Besser gemacht: jeder Ast trägt eine Anzahl und eine sichtbare Führungslinie — bei Bear muss man raten, wie voll ein Tag ist.</td></tr>
+    <tr><td>Bear — Tag-Baum</td><td>Verschachtelte Tags, die beim Schreiben entstehen: <strong>#uni</strong> aufgeklappt mit <strong>/bio</strong> und <strong>/mathe</strong>. Besser gemacht: jeder Ast trägt eine Anzahl und eine sichtbare Führungslinie — bei Bear muss man raten, wie voll ein Tag ist. Die beiden Kinder tragen dasselbe Tag-Zeichen wie ihre Eltern, nur in <span class="num">--ink-3</span>: sie waren die einzigen zwei Navigationszeilen des Schirms ohne Symbol, und ein Symbol ist hier das zweite Merkmal, das R3 verlangt.</td></tr>
     <tr><td>Bear — ruhige Zeile</td><td>Titel, Vorschau, Datum, kein Bild, kein Farbstreifen. Besser gemacht: die Zeile sagt zusätzlich, was aus der Notiz geworden ist („12 Karten", „1 Aufgabe") — genau das verschweigt Bear.</td></tr>
     <tr><td>Apple Notes — Vorschau</td><td>Zwei Zeilen Textanfang statt Symbolen. Übernommen, hart auf zwei Zeilen begrenzt; darunter Tag-Chips statt Ordnername. Nicht übernommen: das Umkippen in eine Bildergalerie.</td></tr>
     <tr><td>Craft — Filterleiste</td><td>Die Sicht wird über der Liste umgestellt, nicht in einem Menü versteckt: <strong>Alle · Angeheftet · Mit Aufgaben · Mit Karten</strong>. Besser gemacht: genau eine Leiste statt Crafts drei gestapelter Zeilen; das Suchfeld sitzt oben in der Navigationsleiste.</td></tr>
@@ -538,7 +553,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
     <li><strong>Galerieansicht mit Vorschaubildern</strong> (Apple Notes) — beantwortet die einzige wichtige Frage „Was steht drin?" gerade nicht.</li>
     <li><strong>Datenbank-Kopfzeile mit Spalten und Gruppierungen</strong> (Notion) — eine Notizliste ist keine Tabelle.</li>
     <li><strong>Stapel/Notizbuch/Tag-Dreifachhierarchie</strong> (Evernote) — Notizbücher und Tags stehen hier untereinander in einer Spalte, nicht ineinander.</li>
-    <li><strong>Ein eigener „Auswählen"-Modus</strong> (iOS-Standard) — die Auswahlkreise sind immer da. Das spart auf dem iPhone genau den Tap, der es sonst teurer macht als das iPad.</li>
+    <li><strong>Ein eigener „Auswählen"-Modus</strong> (iOS-Standard) — die Auswahlkreise sind immer da. Das spart auf dem iPhone genau den Tap, der es sonst teurer macht als das iPad. Jeder der elf Kreise ist 22 pt groß und sitzt in einem <strong>44-pt-Ziel</strong> (negativer Außenabstand, das Layout bleibt gleich) und trägt <span class="num">aria-pressed</span> plus den Titel seiner Notiz.</li>
   </ul>
 
   <h3>Der Faden auf diesem Schirm</h3>
@@ -547,6 +562,7 @@ TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
     <tr><td>Der Knoten</td><td>Genau einer: „Zellbiologie". Ein <span class="num">.dot--node</span> steht nur dort, wo sich Fäden treffen — hier sind es drei. Alle anderen Enden sind 6-pt-Punkte in der Modulfarbe „Notizen", weil sie Objekte sind und keine Kreuzungen.</td></tr>
     <tr><td>Die Übergabe</td><td>Vom Auswahlanker zum Lernkarten-Eintrag der Seitenleiste (iPad) bzw. zum „Lernen"-Tab (iPhone). Der Faden wächst mit, die Karte fliegt auf ihm, das Ziel bleibt getönt und sein Punkt bekommt den Ink-Ring. <strong>Der Zähler „23" bleibt bewusst stehen:</strong> die Attribut-Schnittstelle von <span class="num">bewegung.js</span> zählt genau um eins hoch, aus zwei Notizen werden aber zwei Karten. Ein falscher Zähler wäre schlimmer als keiner.</td></tr>
     <tr><td>Was kein Faden ist</td><td>Die Führungslinie unter <span class="num">#uni</span> im Tag-Baum. Sie verbindet keine zwei Objekte, sondern zeigt eine Einrückung an — sie bleibt deshalb <span class="num">--line-2</span>, 1 px, ohne runde Enden, und sieht anders aus als jeder Faden auf diesem Schirm. Dasselbe gilt für die Trennlinien zwischen den Zeilen und die Spaltenkante.</td></tr>
+    <tr><td>Was hier nicht mehr steht</td><td>Im Filterknopf „Verweise" stand ein echtes <span class="num">.thread</span>-Element als Piktogramm: 15 pt lang, 1,5 pt stark, runde Enden, <span class="num">stroke: currentColor</span> — im Hellen also weiß auf der Chipfläche, weder <span class="num">--thread</span> noch <span class="num">--accent</span>. Es verband nichts; die nächstgelegenen Punkte lagen 176 und 183 pt entfernt (gemessen). Das ist nicht ein Strich, der wie ein Faden aussieht, sondern <strong>der Faden selbst als Zierrat</strong>, und damit der eine Fehler, den dieses Motiv nicht machen darf. Er ist ersatzlos weg; der Chip trägt jetzt das Verweis-Zeichen aus dem <span class="num">.ico</span>-Satz. Nachgemessen: auf diesem Schirm gibt es jetzt <strong>kein</strong> freies Fadenende mehr. Der zulässige Vergleichsfall bleibt unberührt — <span class="num">graph.html</span> darf das Zeichen in einer <em>Legende</em> zeigen, weil eine Legende es erklärt und ein Knopf es benutzt.</td></tr>
   </table>
 
   <h3>Zustände auf diesem Schirm</h3>

@@ -16,6 +16,14 @@ Werkzeug: [`tools/affordanz.js`](../tools/affordanz.js) · Bilder:
 [`mockups/_renders/affordanz/`](../mockups/_renders/affordanz/) — 76 Stück,
 19 Screens × 2 Geräte × 2 Erscheinungsbilder.
 
+**Zweiter Lauf.** `system.css` und alle 13 `app-next`-Screens sind seit der
+ersten Messung überarbeitet worden; die 115 Vorschaubilder und die 76 markierten
+Bilder sind neu erzeugt ([`tools/rendern.js`](../tools/rendern.js),
+[`tools/affordanz.js`](../tools/affordanz.js)). Jede Tabelle trägt die alten
+Zahlen daneben. Wo eine Zahl schlechter geworden ist, steht die Ursache dabei —
+und in einem Fall ist die schlechtere Zahl der Beleg für die größte
+Verbesserung dieses Laufs (§3.1).
+
 ---
 
 ## 1 · Was geprüft wurde, und was nicht
@@ -23,8 +31,17 @@ Werkzeug: [`tools/affordanz.js`](../tools/affordanz.js) · Bilder:
 | | |
 |---|---|
 | **Geprüft** | 13 Screens `app-next` + 6 Screens `best-of`, je iPad 1194×834 pt und iPhone 393×852 pt, je hell und dunkel |
-| **Gefundene Bedienelemente** | **976** (662 in `app-next`, 314 in `best-of`) |
+| **Gefundene Bedienelemente** | **1 033** (719 in `app-next`, 314 in `best-of`) — vorher 976 |
 | **Nicht geprüft** | die zehn Ansichten in `mockups/platform/` |
+
+**Die Zahl ist gewachsen, und das ist der wichtigste Einzelbefund dieses
+Laufs.** 57 Bedienelemente mehr als beim letzten Mal, 36 davon allein auf
+`graph`: die 27 Knoten waren vorher `<circle>`+`<text>` und für den Test wie
+für VoiceOver **nicht vorhanden** (alte §5.5). Sie sind jetzt `<button>` mit
+`aria-label` — und tauchen damit zum ersten Mal in jeder Zahl dieses Dokuments
+auf, samt ihrer Befunde. Wer nur die Summen vergleicht, liest eine
+Verschlechterung, wo ein blinder Fleck geschlossen wurde. §3.1 rechnet das
+auseinander.
 
 Die Plattform-Ansichten zeigen **Systemoberflächen** — Widgets, Sperrbildschirm,
 Spotlight, Siri, Teilen-Blatt. Deren Affordanz ist Apples, nicht Velums; ein
@@ -36,13 +53,13 @@ angreifbar ist und nicht wie ein Versehen aussieht.
 
 Drei Mengen, absichtlich getrennt gehalten:
 
-| | Was | Anzahl (hell) |
-|---|---|---|
-| **A** | echte Bedien-Semantik: `button` · `a[href]` · `[role]` · `[tabindex]` · `input` · `summary` · `[data-bw]` | 790 |
-| **B** | Bedien-**Klasse** ohne Semantik: `.row` · `.check` · `.origin` · `.iconbtn` · `.navitem` als `<div>`/`<span>` | **186** |
-| **C** | Bedien-**Optik** ohne Semantik: `.chip`/`.btn` als `<span>`, aber mit eigener Fläche oder sichtbarem Rand | **122** |
+| | Was | Anzahl (hell) | vorher |
+|---|---|---|---|
+| **A** | echte Bedien-Semantik: `button` · `a[href]` · `[role]` · `[tabindex]` · `input` · `summary` · `[data-bw]` | 854 | 790 |
+| **B** | Bedien-**Klasse** ohne Semantik: `.row` · `.check` · `.origin` · `.iconbtn` · `.navitem` als `<div>`/`<span>` | **179** | 186 |
+| **C** | Bedien-**Optik** ohne Semantik: `.chip`/`.btn` als `<span>`, aber mit eigener Fläche oder sichtbarem Rand | **123** | 122 |
 
-A und B sind die 976 geprüften Bedienelemente. C wird getrennt gezählt und
+A und B sind die 1 033 geprüften Bedienelemente. C wird getrennt gezählt und
 getrennt gezeichnet, weil dort zwei verschiedene Befunde möglich sind: entweder
 fehlt die Semantik, oder die Optik ist zu viel. Welcher von beiden zutrifft,
 kann kein Skript entscheiden — siehe §6.
@@ -115,57 +132,109 @@ lassen).
 
 | Screen | Gerät | geprüft | primär | sekundär | tertiär | schwer | mittel | leicht | R1 | R2 | R3 | R4 |
 |---|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| app-next/today | iPad | 31 | 2 | 10 | 19 | 0 | 6 | 15 | 0 | 2 | 0 | 19 |
-| app-next/today | iPhone | 17 | 1 | 5 | 11 | 0 | 5 | 1 | 0 | 2 | 0 | 4 |
-| app-next/library | iPad | 42 | 1 | 22 | 19 | 0 | 0 | 21 | 0 | 0 | 0 | 21 |
+| app-next/today | iPad | 35 | 2 | 12 | 21 | 0 | 8 | 15 | 0 | 4 | 0 | 19 |
+| app-next/today | iPhone | 20 | 1 | 7 | 12 | 0 | 6 | 1 | 0 | 3 | 0 | 4 |
+| app-next/library | iPad | 42 | 1 | 22 | 19 | 0 | 0 | 16 | 0 | 0 | 0 | 16 |
 | app-next/library | iPhone | 18 | 1 | 9 | 8 | 0 | 1 | 2 | 0 | 1 | 0 | 3 |
-| app-next/notes-list | iPad | 50 | 2 | 12 | 36 | **2** | 16 | 24 | 0 | 12 | 2 | 42 |
-| app-next/notes-list | iPhone | 19 | 2 | 6 | 11 | 0 | 4 | 3 | 0 | 0 | 0 | 7 |
-| app-next/note-editor | iPad | 47 | 1 | 7 | 39 | **4** | 9 | 16 | 0 | 9 | 4 | 29 |
-| app-next/note-editor | iPhone | 21 | 1 | 3 | 17 | 0 | 5 | 8 | 0 | 2 | 0 | 13 |
-| app-next/journal-home | iPad | 22 | 1 | 4 | 17 | 0 | 2 | 18 | 0 | 1 | 0 | 20 |
-| app-next/journal-home | iPhone | 13 | 1 | 2 | 10 | 0 | 0 | 5 | 0 | 0 | 0 | 5 |
-| app-next/journal-entry | iPad | 27 | 0 | 8 | 19 | **2** | 1 | 13 | 0 | 2 | 2 | 14 |
-| app-next/journal-entry | iPhone | 12 | 0 | 5 | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| app-next/tasks | iPad | 47 | 3 | 10 | 34 | 0 | 7 | 30 | 0 | 5 | 0 | 32 |
-| app-next/tasks | iPhone | 25 | 0 | 5 | 20 | 0 | 6 | 4 | 0 | 5 | 0 | 5 |
-| app-next/task-detail | iPad | 51 | 1 | 14 | 36 | **1** | 18 | 22 | 0 | 8 | 1 | 40 |
-| app-next/task-detail | iPhone | 23 | 0 | 11 | 12 | 0 | 8 | 4 | 0 | 0 | 0 | 12 |
+| app-next/notes-list | iPad | 55 | 2 | 11 | 42 | 0 | 23 | 24 | 0 | 18 | 0 | 41 |
+| app-next/notes-list | iPhone | 23 | 2 | 6 | 15 | 0 | 8 | 3 | 0 | 4 | 0 | 7 |
+| app-next/note-editor | iPad | 49 | 1 | 11 | 37 | 0 | 9 | 6 | 0 | 7 | 0 | 9 |
+| app-next/note-editor | iPhone | 23 | 1 | 3 | 19 | 0 | 6 | 2 | 0 | 4 | 0 | 5 |
+| app-next/journal-home | iPad | 25 | 1 | 3 | 21 | **1** | 1 | 17 | 0 | 2 | 1 | 17 |
+| app-next/journal-home | iPhone | 14 | 1 | 3 | 10 | 0 | 0 | 4 | 0 | 0 | 0 | 4 |
+| app-next/journal-entry | iPad | 27 | 0 | 8 | 19 | 0 | 3 | 13 | 0 | 2 | 0 | 14 |
+| app-next/journal-entry | iPhone | 13 | 0 | 4 | 9 | 0 | 2 | 1 | 0 | 2 | 0 | 1 |
+| app-next/tasks | iPad | 41 | 3 | 7 | 31 | 0 | 9 | 25 | 0 | 8 | 0 | 28 |
+| app-next/tasks | iPhone | 26 | 0 | 4 | 22 | 0 | 8 | 6 | 0 | 7 | 0 | 7 |
+| app-next/task-detail | iPad | 51 | 1 | 17 | 33 | 0 | 18 | 22 | 0 | 9 | 0 | 38 |
+| app-next/task-detail | iPhone | 23 | 0 | 14 | 9 | 0 | 8 | 4 | 0 | 0 | 0 | 12 |
 | app-next/flashcards-home | iPad | 26 | 2 | 9 | 15 | 0 | 0 | 19 | 0 | 0 | 0 | 19 |
 | app-next/flashcards-home | iPhone | 13 | 2 | 5 | 6 | 0 | 0 | 3 | 0 | 0 | 0 | 3 |
-| app-next/review-session | iPad | 19 | 1 | 6 | 12 | **1** | 7 | 0 | 0 | 6 | 1 | 7 |
-| app-next/review-session | iPhone | 17 | 1 | 4 | 12 | **3** | 2 | 0 | 0 | 5 | 3 | 3 |
-| app-next/graph | iPad | 29 | 1 | 8 | 20 | 0 | 8 | 19 | 0 | 3 | 0 | 27 |
-| app-next/graph | iPhone | 18 | 1 | 5 | 12 | 0 | 7 | 5 | 0 | 3 | 0 | 12 |
+| app-next/review-session | iPad | 20 | 1 | 13 | 6 | 0 | 2 | 6 | 0 | 0 | 0 | 8 |
+| app-next/review-session | iPhone | 18 | 1 | 9 | 8 | 0 | 1 | 4 | 0 | 1 | 0 | 4 |
+| app-next/graph | iPad | 55 | 1 | 12 | 42 | **23** | 11 | 16 | 0 | 24 | 23 | 35 |
+| app-next/graph | iPhone | 28 | 1 | 8 | 19 | **10** | 8 | 2 | 0 | 11 | 10 | 16 |
 | app-next/settings | iPad | 32 | 0 | 6 | 26 | 0 | 0 | 24 | 0 | 0 | 0 | 24 |
 | app-next/settings | iPhone | 13 | 0 | 4 | 9 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
 | app-next/leere-zustaende | iPad | 20 | 2 | 6 | 12 | 0 | 2 | 17 | 0 | 2 | 0 | 17 |
-| app-next/leere-zustaende | iPhone | 10 | 1 | 4 | 5 | 0 | 0 | 3 | 0 | 0 | 0 | 3 |
+| app-next/leere-zustaende | iPhone | 9 | 1 | 3 | 5 | 0 | 0 | 2 | 0 | 0 | 0 | 2 |
 | best-of/library | iPad | 37 | 2 | 18 | 17 | 0 | 4 | 21 | 0 | 1 | 0 | 25 |
 | best-of/library | iPhone | 21 | 0 | 3 | 18 | 0 | 2 | 8 | 0 | 2 | 0 | 10 |
-| best-of/today | iPad | 28 | 1 | 10 | 17 | **3** | 5 | 9 | 0 | 3 | 3 | 15 |
+| best-of/today | iPad | 28 | 1 | 11 | 16 | **2** | 5 | 10 | 0 | 2 | 2 | 15 |
 | best-of/today | iPhone | 20 | 1 | 8 | 11 | **2** | 5 | 0 | 0 | 2 | 2 | 5 |
 | best-of/notes | iPad | 38 | 0 | 8 | 30 | **2** | 5 | 25 | 0 | 2 | 2 | 31 |
 | best-of/notes | iPhone | 9 | 0 | 1 | 8 | 0 | 1 | 3 | 0 | 0 | 0 | 4 |
-| best-of/journal | iPad | 23 | 1 | 5 | 17 | **1** | 3 | 15 | 0 | 4 | 1 | 19 |
+| best-of/journal | iPad | 23 | 1 | 6 | 16 | 0 | 4 | 15 | 0 | 3 | 0 | 19 |
 | best-of/journal | iPhone | 11 | 1 | 1 | 9 | 0 | 0 | 3 | 0 | 0 | 0 | 3 |
-| best-of/tasks | iPad | 54 | 1 | 21 | 32 | **8** | 15 | 24 | 0 | 10 | 8 | 47 |
-| best-of/tasks | iPhone | 25 | 1 | 11 | 13 | **1** | 6 | 8 | 0 | 1 | 1 | 15 |
-| best-of/flashcards | iPad | 32 | 1 | 8 | 23 | **3** | 1 | 15 | 0 | 4 | 3 | 18 |
+| best-of/tasks | iPad | 54 | 1 | 23 | 30 | **6** | 16 | 25 | 0 | 8 | 6 | 47 |
+| best-of/tasks | iPhone | 25 | 1 | 12 | 12 | 0 | 6 | 9 | 0 | 0 | 0 | 15 |
+| best-of/flashcards | iPad | 32 | 1 | 11 | 20 | 0 | 4 | 15 | 0 | 1 | 0 | 18 |
 | best-of/flashcards | iPhone | 16 | 1 | 5 | 10 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
-| **Summe** | | **976** | **38** | **289** | **649** | **33** | **161** | **409** | **0** | **97** | **33** | **575** |
+| **Summe** | | **1 033** | **38** | **323** | **672** | **46** | **186** | **390** | **0** | **130** | **46** | **547** |
 
-Dazu, nicht in den 976 enthalten: **186** Elemente ohne Bedien-Semantik im
-Markup und **122** Elemente mit Bedien-Optik ohne Semantik.
+Dazu, nicht in den 1 033 enthalten: **179** Elemente ohne Bedien-Semantik im
+Markup und **123** Elemente mit Bedien-Optik ohne Semantik.
 
-### Dunkelmodus — dieselben 976 Elemente
+### 3.1 · Was sich gegen den letzten Lauf verschoben hat
+
+| | vorher | jetzt | |
+|---|--:|--:|---|
+| geprüft | 976 | **1 033** | +57 — 36 davon die Graph-Knoten, die es vorher im Markup nicht gab |
+| primär | 38 | 38 | unverändert, R1 weiter bei 0 |
+| sekundär | 289 | **323** | +34 — Flächen und Ringe, die vorher fehlten |
+| tertiär | 649 | 672 | +23, trotz +57 geprüfter Elemente |
+| **schwer** | 33 | **46** | **+13 — siehe unten, die Zahl täuscht** |
+| mittel | 161 | **186** | +25 |
+| leicht | 409 | **390** | −19 |
+| R2 | 97 | 130 | +33 |
+| R3 | 33 | 46 | +13 |
+| R4 | 575 | **547** | −28 |
+| ohne Semantik (B) | 186 | **179** | −7 |
+| Fehlaffordanz (C) | 122 | 123 | +1 |
+
+**Die 46 schweren Befunde sind nicht dieselbe Art Befund wie die 33 vorher.**
+Aufgeschlüsselt:
+
+| | vorher | jetzt |
+|---|--:|--:|
+| `graph` — Knoten (im letzten Lauf **nicht gezählt**, weil ohne Semantik) | — | **33** |
+| `journal-home` — „11. Nov. nachtragen" (neu) | 0 | **1** |
+| alle übrigen `app-next`-Befunde (`.btn--quiet`, Inhaltsverzeichnis, Herkunfts-Kette, `/bio`+`/mathe`, `task-detail`) | 13 | **0** |
+| `best-of` (unangetastet, profitiert nur von `system.css`) | 20 | **12** |
+
+**Ohne `graph` fällt `app-next` von 13 schweren Befunden auf 1.** Die 33
+Graph-Knoten sind kein Rückschritt: sie sind der Preis dafür, dass Punkt 4 der
+alten Aufgabenliste erledigt wurde. Vorher waren sie für VoiceOver, Tastatur
+**und** diesen Test unsichtbar; jetzt sind sie erreichbar — und der Test sagt,
+was das markierte Bild bestätigt: erreichbar heißt noch nicht erkennbar (§5.1).
+
+`best-of` hat niemand angefasst; die acht weggefallenen schweren Befunde dort
+gehen allein auf die eine geänderte CSS-Regel `.btn--quiet` zurück. Das ist der
+sauberste Beleg dieses Laufs dafür, dass der Befund an der Klasse hing und
+nicht an den Screens.
+
+**Zwei Zahlen sind schlechter geworden und haben nichts mit `graph` zu tun:**
+
+- **mittel 161 → 186.** Ursache ist nicht neue Nachlässigkeit, sondern die
+  gestiegene Elementzahl plus die Umstufung: was vorher **schwer** war, ist
+  durch einen Ring oder eine Fläche auf **mittel** gerutscht, nicht auf null.
+  `.btn--quiet` trägt jetzt `--line-tap`, fällt aber weiter durch R4 (34 pt).
+  Von den 186 sind **102 reine R4-Meldungen**, 84 tragen R2.
+- **`notes-list` iPad 16 → 23 mittel und `task-detail` iPad 18 mittel.** Beide
+  haben Bedienelemente **dazubekommen** (50 → 55 bzw. gleich viele, aber
+  umgebaut). Die neuen sind nicht schlechter als die alten, es sind mehr.
+
+### Dunkelmodus — dieselben 1 033 Elemente
 
 | | schwer | mittel | leicht | R1 | R2 | R3 | R4 | Linie < 3:1 | Fläche grenzwertig |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| hell | 33 | 161 | 409 | 0 | 97 | 33 | 575 | 7 | 2 |
-| dunkel | 33 | 177 | 408 | 0 | 113 | 38 | 575 | **46** | **47** |
+| hell | 46 | 186 | 390 | 0 | 130 | 46 | 547 | 7 | 2 |
+| dunkel | 46 | 200 | 390 | 0 | 144 | 51 | 547 | **46** | **46** |
+| *hell, vorher* | *33* | *161* | *409* | *0* | *97* | *33* | *575* | *7* | *2* |
+| *dunkel, vorher* | *33* | *177* | *408* | *0* | *113* | *38* | *575* | *46* | *47* |
 
-**Die schweren Befunde sind in beiden Erscheinungsbildern dieselben 33.** Der
+**Die schweren Befunde sind in beiden Erscheinungsbildern dieselben 46** —
+elementweise verglichen, nicht nur der Summe nach. Der
 Unterschied liegt in der Mitte, und er hat genau eine Ursache: im Dunkelmodus
 liegen die leisen Linien und die leisen Flächen näher an der Schwelle. Gemessen:
 
@@ -180,13 +249,25 @@ liegen die leisen Linien und die leisen Flächen näher an der Schwelle. Gemesse
 | `--paper` gegen `--ground` (jede Karte) | **1,118:1** | **1,089:1** |
 | `--accent-on` auf `--accent` (CTA-Text) | 17,77:1 | 17,27:1 |
 
+**Alle acht Werte sind unverändert** — kein Token wurde in dieser Runde
+angefasst, und das ist überprüft, nicht angenommen.
+
 `--line-tap` hält 3:1 in beiden Modi. Das ist der Kern der Sache und es ist
 belegt, nicht behauptet: **jeder Ghost-Chip, der ein `<button>` ist, misst
 3,20–3,34:1; jeder, der ein `<span>` ist, misst 1,46:1 (hell) bzw. 1,75–1,84:1
 (dunkel).** Die Regel aus `system.css` §6 — „ein Chip, den man drücken kann,
-sieht anders aus als einer, den man nur liest" — ist im Bild nachweisbar
-eingehalten: sechs interaktive Ghost-Chips, in beiden Modi gemessen, zwölf
-Messungen, alle ≥ 3,20:1; kein einziger Etiketten-Ghost-Chip darüber.
+sieht anders aus als einer, den man nur liest" — hält weiter für jeden Chip,
+der selbst das Bedienelement ist.
+
+**Sie hat jetzt eine Lücke, und sie kostet den einzigen neuen schweren Befund
+in `app-next`:** wenn der Chip **im** Bedienelement sitzt statt es zu sein,
+greift die Regel nicht. `journal-home` Zeile 316 ist der Fall — ein
+`<button>` von 468×44 pt, darin ein `<span class="chip chip--ghost">`. Der
+Knopf ist das Ziel, der Chip ist das Zeichen, und weil der Chip ein `<span>`
+ist, trägt er den **Etiketten**-Ring mit 1,46:1 statt der 3,29:1, die ihm als
+einzigem sichtbaren Merkmal eines Bedienelements zustünden. Die Regel muss
+lauten: *ein Chip, der ein Bedienelement **anzeigt**, sieht aus wie eines* —
+nicht *ein Chip, der eines **ist***. Siehe §5.2.
 
 **Ein echter Befund steckt trotzdem in dieser Tabelle:** `--paper` gegen
 `--ground` trennt jede Karte, jede Kachel, jedes Blatt. iOS trennt an derselben
@@ -199,112 +280,154 @@ stehen Velums Karten flacher auf ihrem Grund als Apples.
 
 ## 4 · Die Befunde nach Schwere
 
-Nicht 603 Befunde, sondern **wenige Bausteine, die vielfach vorkommen.** So sind
+Nicht 622 Befunde, sondern **wenige Bausteine, die vielfach vorkommen.** So sind
 sie hier gruppiert; die Einzelmeldungen stehen dahinter.
 
-### Schwer — 33 Elemente, die im unmarkierten Bild nicht als Bedienelement lesbar sind
+### Schwer — 46 Elemente, die im unmarkierten Bild nicht als Bedienelement lesbar sind
 
-| # | Ursache | Anzahl | Wo |
+| # | Ursache | Anzahl | Wo | vorher |
+|---|---|--:|---|--:|
+| **N1** | **Graph-Knoten** — `<button class="gn">` ohne Fläche, ohne Rand, ohne Chevron; das sichtbare Zeichen ist ein 6-pt-`<circle>` im SVG, den kein Merkmalstest sieht | **33** | `graph` iPad (23), iPhone (10) | *nicht gezählt* |
+| **N2** | **Chip im Knopf statt Chip als Knopf** — 468×44-pt-`<button>`, dessen einziges Zeichen ein `<span class="chip--ghost">` mit 1,46:1 ist | **1** | `journal-home` iPad | 0 |
+| S3 | Datumsleiste ohne Fläche: sechs von sieben Tagen tragen nur Text | **6** | `best-of/tasks` iPad | 6 → **8 waren es, zwei sind über `--line-tap` weggefallen** |
+| S5 | Terminzeilen ohne Kreis und ohne Kante | **4** | `best-of/today` iPad + iPhone | 4 |
+| S7 | Gliederungszeilen in der Notizen-Seitenspalte | **2** | `best-of/notes` iPad | 2 |
+
+**Erledigt und aus der Tabelle verschwunden:**
+
+| # | war | Anzahl | wodurch |
 |---|---|--:|---|
-| S1 | **`.btn--quiet`** — `background:none; color:var(--ink-2)`: dunkler Text neben dunklem Text | **13** | `review-session` (4), `task-detail` (1), `best-of/today` (1), `best-of/journal` (1), `best-of/tasks` (3), `best-of/flashcards` (3) |
-| S2 | Inhaltsverzeichnis im Notiz-Editor: 4 von 5 Einträgen reiner Text, 25–27 pt hoch | **4** | `note-editor` iPad |
-| S3 | Datumsleiste ohne Fläche: sechs von sieben Tagen tragen nur Text | **6** | `best-of/tasks` iPad |
-| S4 | Herkunfts-Kette auf `journal-entry`: zwei von drei Gliedern ohne Chevron | **2** | `journal-entry` iPad |
-| S5 | Terminzeilen ohne Kreis und ohne Kante | **4** | `best-of/today` iPad + iPhone |
-| S6 | Verschachtelte Tag-Einträge ohne Symbol, während alle Geschwister eines tragen | **2** | `notes-list` iPad (`/bio`, `/mathe`) |
-| S7 | Gliederungszeilen in der Notizen-Seitenspalte | **2** | `best-of/notes` iPad |
+| S1 | `.btn--quiet` ohne jedes Merkmal | **13 → 0** | `system.css` §6 gibt der Klasse `inset 0 0 0 1px var(--line-tap)` — 3,29:1. Eine Regel, 24 Vorkommen, 13 schwere Befunde weg, davon 8 in `best-of`, das niemand angefasst hat |
+| S2 | Inhaltsverzeichnis im Notiz-Editor | **4 → 0** | alle fünf Einträge tragen jetzt eine Zeilenfläche, der aktive zusätzlich Balken und Fettung |
+| S4 | Herkunfts-Kette auf `journal-entry` | **2 → 0** | „ENTSTANDEN AUS" und „DARAUS WURDE" haben den Chevron, den `today` schon hatte; die Mittelstation trägt bewusst keinen — sie ist kein Ziel |
+| S6 | `/bio` und `/mathe` ohne Symbol | **2 → 0** | beide tragen jetzt dasselbe Tag-Symbol wie ihre Geschwister |
+| — | `best-of/journal`, `best-of/flashcards` | **4 → 0** | ausschließlich über `.btn--quiet` |
 
-**13 der 33 stehen in `app-next`, 20 in `best-of`.** Das ist der einzige Satz
-dieses Dokuments, der wie Eigenlob klingt, und er ist der einzige, der es sein
-darf: die Screens aus Runde 1 tragen bei halber Elementzahl anderthalbmal so
-viele schwere Befunde. Der Unterschied ist der `.btn--quiet`-Bestand und die
-Kette.
+**34 der 46 stehen in `app-next`, 12 in `best-of` — und 33 der 34 sind die
+Graph-Knoten.** Rechnet man `graph` heraus, hält `app-next` bei 719 geprüften
+Bedienelementen **einen** schweren Befund. `best-of` hält bei 314 Elementen
+zwölf, ohne dass jemand die Dateien angefasst hätte.
 
-### Mittel — 161 Elemente (hell), zwei Ursachen
+### Mittel — 186 Elemente (hell), zwei Ursachen
 
-| Ursache | Anzahl |
-|---|--:|
-| **R4 mit kleinster Kante unter 30 pt** — davon 67 der Erledigt-Kreis `.check` (22 pt, in `task-detail` 18 pt) und 18 Chips mit eigener Semantik (24–28 pt) | 97 |
-| **R2** — weder Fläche noch Rand noch Leistenlage, aber ein Symbol oder ein Chevron trägt es: `.chain__link`, tappbare Karten, `.iconbtn` außerhalb einer Leiste | 64 |
-
-### Leicht — 409 Elemente, ausnahmslos R4 zwischen 32 und 44 pt
-
-| Kleinste Kante | Anzahl |
-|---|--:|
-| 40–43 pt | 216 |
-| 36–39 pt | 49 |
-| 32–35 pt | 144 |
-
-**Die 575 R4-Meldungen sind sieben Bausteine**, verteilt über alle Schweregrade:
-
-| Baustein | Maß | Meldungen |
+| Ursache | Anzahl | vorher |
 |---|--:|--:|
-| `.navitem` (Sidebar-Zeile) | 40 pt | 228 |
-| `.btn--sm` | 34 pt | 84 |
-| `.check` | 22 pt / 18 pt | 67 |
-| `<button>` ohne Klasse, inline gemessen | 25–40 pt | 64 |
-| `.iconbtn` mit Inline-Maß | 38 pt / 34 pt / 26 pt | 39 |
-| `.row` in schmalen Fassungen | 32–43 pt | 25 |
-| `.segmented button` · `.chip` | 32 pt / 26 pt | 36 |
+| **reine R4-Meldung** — davon 66 der Erledigt-Kreis `.check` (22 pt, in `task-detail` 18 pt) und 24 Chips mit eigener Semantik (24–28 pt) | 102 | 97 |
+| **R2** — weder Fläche noch Rand noch Leistenlage, aber ein Symbol oder ein Chevron trägt es: `.chain__link`, tappbare Karten, `.iconbtn` außerhalb einer Leiste, die Graph-Knoten | 84 | 64 |
 
-`.navitem` allein stellt 228 Meldungen: eine Sidebar-Zeile ist 40 pt hoch, nicht
-44. Die Zahl ist groß und der Befund ist klein — genau deshalb steht die
-Verteilung hier und nicht nur die Summe.
+Die häufigsten Bausteine im Mittelfeld: `.check` 66 · `<button>` ohne Klasse 45
+· `.chip` 24 · `.navitem` 11 · `.row` 8 · `.btn` 7 · `.iconbtn` 7 ·
+`.klammer__quelle` 4.
+
+### Leicht — 390 Elemente, ausnahmslos R4 zwischen 32 und 44 pt
+
+| Kleinste Kante | Anzahl | vorher |
+|---|--:|--:|
+| 40–43 pt | 234 | 216 |
+| 36–39 pt | 26 | 49 |
+| 32–35 pt | 130 | 144 |
+
+**Die 547 R4-Meldungen sind zehn Bausteine** (vorher 575 aus sieben), verteilt
+über alle Schweregrade:
+
+| Baustein | Maß | Meldungen | vorher |
+|---|--:|--:|--:|
+| `.navitem` (Sidebar-Zeile) | 40 pt | 228 | 228 |
+| `.btn` / `.btn--sm` | 34 pt | 83 | 84 |
+| `.check` | 22 pt / 18 pt | 66 | 67 |
+| `<button>` ohne Klasse, inline gemessen | 25–40 pt | 56 | 64 |
+| `.chip` | 26–32 pt | 24 | — |
+| `.iconbtn` mit Inline-Maß | 38 / 34 / 26 pt | 20 | 39 |
+| `.segmented button.is-on` | 32 pt | 17 | — |
+| `.handoff__btn` | 34 pt | 17 | — |
+| **`.gn` (Graph-Knoten)** | 84×32 pt | **14** | *nicht gezählt* |
+| `.row` in schmalen Fassungen | 32–43 pt | 14 | 25 |
+
+`.navitem` allein stellt weiter 228 Meldungen: eine Sidebar-Zeile ist 40 pt
+hoch, nicht 44. **Punkt 8 der alten Aufgabenliste ist nicht angefasst worden,
+Punkt 2 ebenfalls nicht** — `.check` misst unverändert 22 pt an 66 Stellen,
+obwohl `tasks.html` den 44-pt-Griff seit dem letzten Lauf vorführt. Die Zahl
+ist groß und der Befund ist klein — genau deshalb steht die Verteilung hier und
+nicht nur die Summe.
 
 ---
 
 ## 5 · Die fünf schlimmsten
 
-### 1 · `.btn--quiet` — eine Klasse, 13 schwere Befunde
+### 1 · Die Graph-Knoten sind jetzt Bedienelemente — und immer noch nicht lesbar
 
-`system.css` §6:
+Der größte Einzelposten des letzten Laufs ist zur Hälfte erledigt. `graph.html`
+meldete 29 geprüfte Bedienelemente, **keines davon ein Knoten**; die Objekte
+waren `<circle>` plus `<text>` ohne `role`, ohne `tabindex`. Sie sind jetzt
+`<button class="gn">` mit `aria-label`. **Für VoiceOver, Full Keyboard Access
+und Switch Control ist der Screen damit von leer auf vollständig gesprungen** —
+das ist die wichtigste einzelne Verbesserung dieser Runde und sie steht in
+keiner Summe, weil ein Test, der Affordanz misst, Erreichbarkeit nicht belohnt.
 
-```css
-.btn--quiet { background: none; color: var(--ink-2); }
+Gemessen wird jetzt, was vorher unsichtbar war, und das Ergebnis ist hart:
+**33 der 46 schweren Befunde sind Graph-Knoten**, 23 auf dem iPad, 10 auf dem
+iPhone. Jeder misst `flKontrast 1,00` und `randKontrast 1,00` — der Knopf ist
+vollständig durchsichtig.
+
+Der Verdacht liegt nahe, dass hier das Werkzeug irrt: das sichtbare Zeichen des
+Knotens ist ein 6-pt-Modulpunkt, gezeichnet als `<circle>` **im** Knopf, und
+`background-color` findet den nicht. **Das markierte Bild widerlegt den
+Verdacht.** Links, ohne Markierung, lesen sich „Analysis II", „Semesterplan",
+„Zellkultur-Skizze" als *Beschriftungen in einem Diagramm*. Der Modulpunkt sitzt
+darüber und liest sich als **Datenpunkt**, nicht als Bedienzeichen — er sagt
+„das hier ist eine Notiz", nicht „das hier kannst du drücken". Auf jedem anderen
+Screen steht derselbe 6-pt-Punkt neben Text, den man **nicht** drücken kann.
+
+Dazu ein Befund, den erst der Rahmen zeigt: **das Ziel ist die Beschriftung,
+nicht der Punkt.** Die grünen Kästen liegen auf den Wörtern (84×32 pt), der
+Punkt liegt außerhalb. Wer auf das zielt, was wie der Knoten aussieht, trifft
+nichts.
+
+![graph iPad](../mockups/_renders/affordanz/app-next-graph-ipad.png)
+
+### 2 · Der Chip im Knopf — ein Befund, eine Regel, `journal-home`
+
+Der einzige neue schwere Befund in `app-next`, und er ist klein genug, dass man
+ihn ernst nehmen muss. `journal-home.html` Zeile 316:
+
+```html
+<button …>   <!-- 468 × 44 pt, ohne Klasse, ohne Fläche -->
+  <span class="chip chip--ghost"><span class="ico" data-ico="plus"></span>11. Nov. nachtragen</span>
+  <span …>noch kein Eintrag</span>
+</button>
 ```
 
-Keine Fläche, kein Rand, kein Symbol. Was bleibt, ist ein Wort in `--ink-2`
-neben Wörtern in `--ink-1` — **Farbe als einziges Merkmal, also genau das, was
-R2 verbietet.** Die Klasse steht 25-mal im Bestand; **alle 25** tragen einen
-Befund, 13 davon einen schweren.
+Der Knopf ist richtig gebaut: 44 pt hoch, volle Zeilenbreite, ein echtes
+`<button>`. Im Bild ist er auch zu sehen — der Chip trägt einen Ring und ein
+Plus-Zeichen. **Der Ring ist nur der falsche.** Weil der Chip ein `<span>` ist,
+greift die Etiketten-Fassung von `.chip--ghost` mit `--line-2` bei **1,46:1**
+statt `--line-tap` bei 3,29:1; und weil das Plus als Textzeichen gesetzt ist,
+zählt der Symboltest es nicht.
 
-Der klarste Fall ist `review-session.html` iPhone, Elemente #9/#10/#11:
-„Zurücklegen · Aussetzen · Bearbeiten", drei Wörter nebeneinander, 34 pt hoch,
-in einem Behälter ohne Fläche und ohne Kante. Im unmarkierten Bild ist das eine
-Bildunterschrift.
+Der zweite Teil des Befunds ist der ehrlichere: **das Ziel ist 468 pt breit, das
+Zeichen 155 pt.** Zwei Drittel der Trefferfläche sehen nach nichts aus. Das ist
+kein Fehler des Werkzeugs — es ist genau die Sorte Halbheit, die ein Fremder in
+drei Sekunden merkt, und sie kostet `journal-home` sein **Ja** (§7).
 
-Zwei Zeilen darüber steht, dass es anders geht: „Gut" ist Ink-gefüllt und nimmt
-die ganze Breite, „Nochmal · Schwer · Leicht" tragen `--line-tap` bei 3,20:1.
-Dieselbe Karte, dieselbe Runde, drei Zeilen Abstand.
+### 3 · Die Datumsleiste in `best-of/tasks` — sechs von sieben Tagen ohne Fläche
 
-![review-session iPhone](../mockups/_renders/affordanz/app-next-review-session-iphone.png)
+Der größte verbliebene Posten außerhalb von `graph`, und er steht in Runde-1-
+Code, den in dieser Runde niemand anfassen sollte. Sechs `<button>` — „Mo 10",
+„Di 11", „Mi 12", „Fr 14" und zwei weitere — tragen nur Text; der siebte, der
+heutige, trägt `--accent-soft`. **Der aktive Tag beweist, dass die anderen
+tappbar sind, und ist der einzige Beweis.**
 
-### 2 · Das Inhaltsverzeichnis im Notiz-Editor
+Zwei der ursprünglich acht sind ohne Zutun weggefallen, weil sie
+`.btn--quiet` waren. Die übrigen sechs brauchen dieselbe Behandlung wie das
+Inhaltsverzeichnis in `note-editor`, die es dort inzwischen gibt: eine
+Zeilenfläche für alle, ein zweites Merkmal für den aktiven.
 
-`note-editor.html` iPad, #44/#46/#47/#48 — „Aufbau der Zelle", „Osmose",
-„Organellen im Überblick", „Fragen an Prof. Wendt". Je 247×27 pt, `<button>` mit
-Inline-Stil, ohne Klasse, ohne Fläche, ohne Rand, ohne Chevron. Der aktive
-Eintrag „Membran und Transport" hat `--accent-soft` und einen 2,5-pt-Balken —
-**er beweist, dass die vier anderen tappbar sind, und ist der einzige Beweis.**
+### 4 · Der Erledigt-Kreis: 66-mal 22 pt, und die Lösung liegt weiter daneben
 
-### 3 · Die Herkunfts-Kette auf `journal-entry`
-
-`journal-entry.html` iPad, #23 „ENTSTANDEN AUS · Zellbiologie · Notiz · 12. Nov"
-und #26 „DARAUS WURDE · Laborprotokoll · Aufgabe · offen", je 169×115 pt.
-Dieselbe `.chain__link`-Klasse trägt auf `today.html` einen 14-pt-Chevron und
-fällt dort nur durch R2; hier fehlt er, und damit fällt sie durch R3.
-
-**Ein Bauteil, zwei Screens, zwei verschiedene Affordanz-Fassungen.** Das trifft
-die Alleinstellung: Herkunft ist das, was kein Konkurrent hat, und auf dem
-Screen, der sie am ausführlichsten zeigt, sieht sie am wenigsten nach
-Bedienelement aus.
-
-![journal-entry iPad](../mockups/_renders/affordanz/app-next-journal-entry-ipad.png)
-
-### 4 · Der Erledigt-Kreis existiert zweimal, in zwei Größen
-
-`.check` misst 22×22 pt — 67-mal im Bestand, in acht Screens. Es ist das
-Bedienelement, mit dem in einer Aufgaben-App am häufigsten getippt wird.
+Unverändert seit dem letzten Lauf, deshalb steht er wieder hier. `.check` misst
+22×22 pt — **66-mal im Bestand, in acht Screens**, und es ist das Bedienelement,
+mit dem in einer Aufgaben-App am häufigsten getippt wird. Alle 66 fallen durch
+R4, alle 66 sind als **mittel** eingestuft.
 
 `tasks.html` macht es an fünf Stellen richtig:
 
@@ -315,22 +438,32 @@ Bedienelement, mit dem in einer Aufgaben-App am häufigsten getippt wird.
 ```
 
 44 pt Ziel, 22 pt Zeichen, negativer Außenabstand, damit das Layout gleich
-bleibt. **Genau dieser Griff fehlt an den anderen 67 Stellen.** Es ist kein
+bleibt. **Genau dieser Griff fehlt an den anderen 66 Stellen.** Es ist kein
 Entwurfsproblem, es ist ein nicht zu Ende geführter Umbau — die Lösung steht
-schon in derselben Datei.
+seit zwei Runden in derselben Datei.
 
-### 5 · Die 27 Knoten des Graphen sind keine Bedienelemente
+Dasselbe gilt für `.navitem`: 40 statt 44 pt, **228 Meldungen**, eine Zeile CSS.
+Zusammen sind das 294 der 547 R4-Meldungen aus zwei Zahlen.
 
-`graph.html` meldet 29 geprüfte Bedienelemente. **Keines davon ist ein Knoten.**
-Die Objekte sind `<circle>` plus `<text>` in einem SVG, ohne `button`, ohne
-`role`, ohne `tabindex`. Der Test findet sie deshalb nicht — und VoiceOver und
-die Tastatur finden sie genauso wenig.
+### 5 · Der Wiki-Link trägt weiter die Etikettenlinie
 
-Der Screen zeigt sein Panel „AUSGEWÄHLTER KNOTEN" mit einem ausgewählten Knoten;
-die Auswahl muss also irgendwo herkommen. Sie kommt aus einem Bedienelement, das
-im Markup nicht existiert.
+`note-editor.html`, jetzt an **drei** Stellen (Zeilen 225, 644, 860 — vorher
+zwei):
 
-![graph iPad](../mockups/_renders/affordanz/app-next-graph-ipad.png)
+```html
+<a href="#" style="… box-shadow: inset 0 -1.5px 0 var(--line-2)">[[Osmose]]</a>
+```
+
+Die Unterstreichung ist da, R3 ist erfüllt, der Befund ist formal nur *leicht* —
+und er ist trotzdem der schärfste Einzelbefund des Dokuments geblieben, **weil
+er gegen die eigene Regel verstößt.** `--line-2` hält 1,46:1; `--line-tap` ist
+eigens für „umrandet ein Bedienelement ohne eigene Fläche" geschaffen und hält
+3,29:1. Im Ausschnitt sieht man es sofort: die Linie unter `[[Osmose]]` ist
+heller als der Text, den sie unterstreicht.
+
+Ein Zeichen ist da; es ist nur nicht zu sehen. Punkt 5 der alten Aufgabenliste,
+zwei Zeichen Arbeit, **nicht gemacht** — und in der Zwischenzeit ist eine dritte
+Fundstelle dazugekommen.
 
 ---
 
@@ -339,13 +472,25 @@ im Markup nicht existiert.
 Vier Grenzen. Sie stehen hier, weil ein Nachweis, der seine eigenen Lücken
 verschweigt, kein Nachweis ist.
 
-1. **Er findet nur, was als Bedienelement erklärt ist.** Die Graph-Knoten (§5.5)
-   sind der größte Fall. Weitere im Bild gefundene: die Stimmungs-Balken und der
-   Energie-Regler auf `journal-entry`, die Teilschritt-Zeilen unter einer Aufgabe
-   auf `tasks`, die „verlinkt / erwähnt"-Zeilen in der Editor-Seitenspalte.
-   **Ein Element, das weder Semantik noch Bedien-Klasse trägt, taucht in keiner
-   Zahl dieses Dokuments auf.**
-2. **186 + 122 = 308 Elemente tragen Bedien-Optik oder Bedien-Klasse ohne
+1. **Er findet nur, was als Bedienelement erklärt ist.** Der größte Fall ist
+   erledigt: die 27 Graph-Knoten sind seit dieser Runde `<button>` und damit
+   gezählt — das allein erklärt +36 geprüfte Elemente und die gestiegene
+   Schwer-Zahl (§3.1). **Was diese Zahl bewegt, sagt mehr über den Umbau des
+   Markups als über die Gestaltung.** Weiter nicht gefunden: die Stimmungs-Balken
+   und der Energie-Regler auf `journal-entry`, die Teilschritt-Zeilen unter einer
+   Aufgabe auf `tasks`, die „verlinkt / erwähnt"-Zeilen in der Editor-Seiten-
+   spalte. **Ein Element, das weder Semantik noch Bedien-Klasse trägt, taucht in
+   keiner Zahl dieses Dokuments auf.**
+   
+   **Eine zweite Blindstelle hat dieser Lauf gefunden und sie ist nicht
+   behoben:** der Test misst `background-color` und `border` des Elements
+   **selbst**. Ein Zeichen, das als `<circle>` im SVG **darin** liegt (die
+   Graph-Knoten) oder als `<span>` mit eigenem Ring **darin** sitzt
+   (`journal-home`, §5.2), zählt nicht als Merkmal des Knopfes. Beide Fälle sind
+   nachgesehen worden und beide sind **echte** Befunde geblieben (§5.1, §5.2) —
+   aber das war Augenschein, nicht Messung, und beim nächsten Bauteil dieser Art
+   kann es anders ausgehen. Wer die Zahl 46 benutzt, muss das mitsagen.
+2. **179 + 123 = 302 Elemente tragen Bedien-Optik oder Bedien-Klasse ohne
    Bedien-Semantik.** Für den Affordanz-Test sind sie mitgezählt, weil er nach
    dem Bild fragt. Für VoiceOver, Full Keyboard Access und Switch Control sind
    sie nicht vorhanden. Welche davon Bedienelemente werden sollen und welche
@@ -380,45 +525,70 @@ danebengelegt habe. **Ja** heißt: alles Gerahmte war vorher erkennbar. **Fast**
 heißt: bis auf benannte Stellen. **Nein** heißt: eine Aktion, die der Screen
 braucht, war nicht zu finden.
 
-| Screen | Antwort | Was fehlt |
-|---|---|---|
-| **flashcards-home** | **Ja** | Nichts. Der sauberste Screen des Entwurfs: jeder Knopf hat Fläche, Ring oder Ink. Alle 19 Befunde sind R4 zwischen 32 und 43 pt. |
-| **settings** | **Ja** | 0 schwer, 0 mittel. Eine Liste aus Zeilen mit Chevron und Schaltern — die Bauform trägt alles. |
-| **library** | **Ja** | Ein Deckel ist ein Deckel. Der Papierdruck macht die Kachel; der Rücken mit seinen Punkten macht sie unterscheidbar. |
-| **journal-home** | **Ja** | 0 schwer. Einträge sind Zeilen in Listen, der Impuls-Knopf ist Ink. |
-| **today** | **Fast** | Die drei Glieder der Ketten-Karte tragen nur einen 14-pt-Chevron als Auskunft. Man **findet** sie, aber man findet sie zuletzt — und es ist der Signaturmoment. |
-| **tasks** | **Fast** | Zeilen, Kreise, Chips und die Auswahl-Leiste lesen sich. Unklar bleiben die vier erkannten Marken im Eingabefeld: sie sagen „Antippen zum Ändern" und sehen aus wie Etiketten. |
-| **notes-list** | **Fast** | Die Liste liest sich sofort. `/bio` und `/mathe` sind die einzigen zwei Navigationszeilen des Screens ohne Symbol — man übersieht sie, weil alle anderen eines haben. |
-| **task-detail** | **Fast** | Die aufgeklappte Karte ist dicht und trotzdem lesbar. „Ganzen Verlauf zeigen" am Fuß der Aktivitätsspalte liest sich als letzte Textzeile, nicht als Knopf. |
-| **journal-entry** | **Fast** | Alles obere trägt Flächen. Die „VERBUNDEN"-Kette unten ist zu zwei Dritteln reiner Text — und sie ist der Grund, warum es den Screen gibt. |
-| **note-editor** | **Fast** | Der Text, die Übergabe-Leiste und die Blockleiste sind klar. Die Gliederung rechts ist es nicht: vier Zeilen ohne jedes Merkmal, eine mit Fläche. |
-| **review-session** | **Nein** | „Zurücklegen · Aussetzen · Bearbeiten" auf dem iPhone und „Leeren" auf dem iPad sind unsichtbar. Der Rest des Screens ist vorbildlich — das macht es schlimmer, nicht besser: der Blick lernt am „Gut"-Knopf, was hier ein Knopf ist, und findet drei Zeilen tiefer nichts, was danach aussieht. |
-| **graph** | **Nein** | Panel, Filter und Zoom sind klar. Die 27 Knoten — die eigentliche Bedienfläche — sind es nicht: sie sind im Markup keine Bedienelemente und im Bild nur Kreise mit Beschriftung. |
-| **leere-zustaende** | **Ja** | 0 schwer. Ein leerer Screen mit genau einem Ink-Knopf ist die einfachste Affordanz-Aufgabe, die es gibt, und sie ist gelöst. |
+| Screen | Antwort | vorher | Was fehlt |
+|---|---|---|---|
+| **flashcards-home** | **Ja** | Ja | Nichts. Weiter der sauberste Screen: 0 schwer, 0 mittel auf beiden Geräten. Jeder Knopf hat Fläche, Ring oder Ink. |
+| **settings** | **Ja** | Ja | 0 schwer, 0 mittel. Eine Liste aus Zeilen mit Chevron und Schaltern — die Bauform trägt alles. |
+| **library** | **Ja** | Ja | Ein Deckel ist ein Deckel. Neu dazu: das Kontextmenü ist gezeichnet (§8.2). |
+| **leere-zustaende** | **Ja** | Ja | 0 schwer. Ein leerer Screen mit genau einem Ink-Knopf. |
+| **today** | **Ja** | *Fast* | **Aufgestiegen.** Die drei Kettenglieder tragen jetzt `--fill` als eigene Fläche **und** den Chevron — vorher nur den Chevron. Der Signaturmoment findet sich zuerst statt zuletzt. |
+| **notes-list** | **Ja** | *Fast* | **Aufgestiegen.** `/bio` und `/mathe` tragen dasselbe Tag-Symbol wie ihre Geschwister. |
+| **journal-entry** | **Ja** | *Fast* | **Aufgestiegen.** Die „VERBUNDEN"-Kette hat Chevrons an beiden Zielgliedern; die Mittelstation hat bewusst keinen, weil sie kein Ziel ist. |
+| **task-detail** | **Ja** | *Fast* | **Aufgestiegen.** „Ganzen Verlauf zeigen" ist unterstrichen. |
+| **review-session** | **Ja** | *Nein* | **Zwei Stufen aufgestiegen, der größte Sprung dieser Runde.** „Zurücklegen · Aussetzen · Bearbeiten" und „Leeren" tragen den `--line-tap`-Ring. Die Karte liest sich jetzt in drei Lautstärken: „Gut" Ink-gefüllt, die drei Bewertungen mit Ring, die drei Verwaltungsknöpfe mit demselben Ring in kleiner. |
+| **journal-home** | **Fast** | *Ja* | **Abgestiegen.** „11. Nov. nachtragen" ist ein 468-pt-Knopf, dessen einziges Zeichen ein 155-pt-Chip mit dem **Etiketten**-Ring (1,46:1) ist. Alles andere auf dem Screen liest sich. §5.2. |
+| **note-editor** | **Fast** | *Fast* | Die Gliederung rechts ist gelöst — alle fünf Zeilen haben Fläche. Offen bleibt der Wiki-Link `[[Osmose]]`: unterstrichen, aber mit 1,46:1 heller als der Text darüber. §5.5. |
+| **tasks** | **Fast** | *Fast* | Zeilen, Kreise, Klammer und Auswahl-Leiste lesen sich. Unverändert unklar: die vier erkannten Marken im Eingabefeld — sie sagen „Antippen zum Ändern" und sind `<span>` mit Etikettenoptik. 10 der 123 Fehlaffordanzen stehen auf diesem Screen. |
+| **graph** | **Nein** | *Nein* | Panel, Filter und Zoom sind klar. Die 27 Knoten sind jetzt **erreichbar** (VoiceOver, Tastatur) und immer noch nicht **lesbar**: transparente Knöpfe, deren Zeichen ein 6-pt-Datenpunkt außerhalb der Trefferfläche ist. §5.1. |
 
-**Bilanz `app-next`: 5 × Ja, 6 × Fast, 2 × Nein.**
+**Bilanz `app-next`: 9 × Ja, 3 × Fast, 1 × Nein** — vorher 5 × Ja, 6 × Fast,
+2 × Nein.
 
-Für `best-of` (Runde 1, unangetastet): `library` **Ja**; `flashcards`,
-`journal`, `notes` **Fast**; `today` und `tasks` **Nein** — bei `tasks` ist die
-ganze Wochenleiste betroffen, sechs von sieben Tagen tragen nur Text.
+| | vorher | jetzt |
+|---|--:|--:|
+| **Ja** | 5 | **9** |
+| **Fast** | 6 | **3** |
+| **Nein** | 2 | **1** |
+
+Fünf Screens sind aufgestiegen (`today`, `notes-list`, `journal-entry`,
+`task-detail`, `review-session`), **einer ist abgestiegen** (`journal-home`),
+einer steht still (`graph`).
+
+Für `best-of` (Runde 1, unangetastet, nur von `system.css` erreicht):
+`library`, `flashcards` und `journal` **Ja** — die letzten beiden aufgestiegen,
+ohne dass jemand die Dateien geöffnet hat; `notes` **Fast**; `today` und `tasks`
+**Nein** — bei `tasks` ist weiter die Wochenleiste betroffen, jetzt sechs von
+sieben Tagen statt acht Meldungen.
 
 ### Die ehrliche Zusammenfassung
 
-Der Entwurf **kann** Affordanz ohne Farbe. `flashcards-home`, `settings`,
-`library`, `journal-home` und `leere-zustaende` beweisen es: **209
-Bedienelemente, kein einziger schwerer Befund**, fünf mittlere. Die Mittel dafür
-sind da und sind gerechnet —
-`--line-tap` auf 3,3:1, die Ink-Füllung auf 17,8:1, die Chip-Fläche, die
-Listenform.
+Der Entwurf **kann** Affordanz ohne Farbe, und er tut es inzwischen fast
+überall. Neun der dreizehn Screens bestehen die Drei-Sekunden-Frage ohne
+Einschränkung; **719 Bedienelemente in `app-next`, davon ein einziger schwerer
+Befund außerhalb von `graph`.**
 
-Er tut es nur nicht überall. **33 von 976 Bedienelementen — 3,4 % — sind im
-Bild nicht als solche zu erkennen**, und sie verteilen sich nicht zufällig: 13
-davon sind eine einzige CSS-Klasse, die keine Affordanz hat und trotzdem 25-mal
-benutzt wird. Das ist kein Gestaltungsproblem. Das ist ein Baustein, der fehlt.
+Der Beleg dafür, dass es an einem Baustein hing und nicht am Entwurf, steht in
+`best-of`: dort hat niemand eine Datei angefasst, und trotzdem sind acht
+schwere Befunde verschwunden — weil `.btn--quiet` eine Zeile CSS bekommen hat.
+**Eine Klasse, 24 Vorkommen, 13 schwere Befunde weg.** Punkt 1 der alten
+Aufgabenliste war richtig gestellt.
 
-Was ich **nicht** behaupte: dass 3,4 % wenig sind. Zwei der 13 Screens
-scheitern an der Frage, und einer davon ist die Lernsitzung — der Screen, den
-ein Nutzer öfter sieht als jeden anderen.
+Was **nicht** behauptet wird:
+
+- **Die Summe ist gestiegen: 33 → 46 schwer.** Sie ist gestiegen, weil 36
+  Bedienelemente dazugekommen sind, die es vorher im Markup nicht gab. Wer die
+  beiden Zahlen ohne §3.1 nebeneinanderstellt, liest das Gegenteil dessen, was
+  passiert ist — und das ist die Schuld dieses Dokuments, nicht die des Lesers.
+- **`graph` ist nicht gelöst, sondern zur Hälfte gelöst.** Erreichbarkeit ja,
+  Lesbarkeit nein. 33 von 46 schweren Befunden stehen auf einem Screen.
+- **Vier Punkte der alten Aufgabenliste sind unangetastet:** der 44-pt-Griff am
+  Erledigt-Kreis (66 Vorkommen), `.navitem` auf 44 pt (228 Meldungen), der
+  Wiki-Link auf `--line-tap` (jetzt drei Fundstellen statt zwei), und die Karte
+  gegen den Grund im Dunkelmodus (weiter 1,089 gegen Apples 1,234).
+- **Die 302 Elemente ohne Semantik sind nicht durchgesehen worden.** 179 tragen
+  eine Bedien-Klasse ohne Semantik, 123 eine Bedien-Optik ohne Semantik. Die
+  Zahl hat sich um sechs bewegt; die Entscheidung „Knopf oder Etikett" steht
+  weiter aus.
 
 ### 7.1 · Die dreizehn Screens im Bild
 
@@ -427,9 +597,9 @@ Rot = primär · Blau = sekundär · Grün = tertiär · Violett gestrichelt =
 Bedien-Optik ohne Semantik. Halo = schwerer Befund. Der Dunkelmodus und die
 sechs `best-of`-Screens stehen in der Tabelle in §10.
 
-#### today — **Fast**
+#### today — **Ja** *(vorher Fast)*
 
-Die Kette trägt nur einen 14-pt-Chevron. Alles andere liest sich.
+Die Kettenglieder tragen jetzt eigene Fläche **und** Chevron.
 
 ![today iPad](../mockups/_renders/affordanz/app-next-today-ipad.png)
 
@@ -437,15 +607,15 @@ Die Kette trägt nur einen 14-pt-Chevron. Alles andere liest sich.
 
 #### library — **Ja**
 
-Ein Deckel ist ein Deckel. 0 schwer, 0 mittel auf dem iPad.
+Ein Deckel ist ein Deckel. 0 schwer, 0 mittel auf dem iPad (hell).
 
 ![library iPad](../mockups/_renders/affordanz/app-next-library-ipad.png)
 
 ![library iPhone](../mockups/_renders/affordanz/app-next-library-iphone.png)
 
-#### notes-list — **Fast**
+#### notes-list — **Ja** *(vorher Fast)*
 
-`/bio` und `/mathe` sind die einzigen Navigationszeilen ohne Symbol.
+`/bio` und `/mathe` tragen jetzt dasselbe Tag-Symbol wie ihre Geschwister.
 
 ![notes-list iPad](../mockups/_renders/affordanz/app-next-notes-list-ipad.png)
 
@@ -453,23 +623,23 @@ Ein Deckel ist ein Deckel. 0 schwer, 0 mittel auf dem iPad.
 
 #### note-editor — **Fast**
 
-Die Gliederung rechts: vier Zeilen ohne jedes Merkmal, eine mit Fläche.
+Die Gliederung ist gelöst — alle fünf Zeilen mit Fläche. Offen: der Wiki-Link bei 1,46:1.
 
 ![note-editor iPad](../mockups/_renders/affordanz/app-next-note-editor-ipad.png)
 
 ![note-editor iPhone](../mockups/_renders/affordanz/app-next-note-editor-iphone.png)
 
-#### journal-home — **Ja**
+#### journal-home — **Fast** *(vorher Ja)*
 
-0 schwer. Zeilen in Listen, Impuls-Knopf in Ink.
+Der 468-pt-Knopf „11. Nov. nachtragen" zeigt sein Zeichen auf 155 pt — und im Etiketten-Ring.
 
 ![journal-home iPad](../mockups/_renders/affordanz/app-next-journal-home-ipad.png)
 
 ![journal-home iPhone](../mockups/_renders/affordanz/app-next-journal-home-iphone.png)
 
-#### journal-entry — **Fast**
+#### journal-entry — **Ja** *(vorher Fast)*
 
-Die „VERBUNDEN"-Kette unten ist zu zwei Dritteln reiner Text.
+Die „VERBUNDEN"-Kette trägt Chevrons an beiden Zielgliedern.
 
 ![journal-entry iPad](../mockups/_renders/affordanz/app-next-journal-entry-ipad.png)
 
@@ -477,15 +647,15 @@ Die „VERBUNDEN"-Kette unten ist zu zwei Dritteln reiner Text.
 
 #### tasks — **Fast**
 
-Zeilen, Kreise und Auswahl-Leiste lesen sich; die erkannten Marken im Eingabefeld nicht.
+Zeilen, Kreise, Klammer und Auswahl-Leiste lesen sich; die erkannten Marken im Eingabefeld nicht.
 
 ![tasks iPad](../mockups/_renders/affordanz/app-next-tasks-ipad.png)
 
 ![tasks iPhone](../mockups/_renders/affordanz/app-next-tasks-iphone.png)
 
-#### task-detail — **Fast**
+#### task-detail — **Ja** *(vorher Fast)*
 
-„Ganzen Verlauf zeigen" liest sich als letzte Textzeile der Aktivitätsspalte.
+„Ganzen Verlauf zeigen" ist unterstrichen und damit als Knopf lesbar.
 
 ![task-detail iPad](../mockups/_renders/affordanz/app-next-task-detail-ipad.png)
 
@@ -493,15 +663,15 @@ Zeilen, Kreise und Auswahl-Leiste lesen sich; die erkannten Marken im Eingabefel
 
 #### flashcards-home — **Ja**
 
-Der sauberste Screen: jeder Knopf hat Fläche, Ring oder Ink.
+Der sauberste Screen: jeder Knopf hat Fläche, Ring oder Ink. 0 schwer, 0 mittel.
 
 ![flashcards-home iPad](../mockups/_renders/affordanz/app-next-flashcards-home-ipad.png)
 
 ![flashcards-home iPhone](../mockups/_renders/affordanz/app-next-flashcards-home-iphone.png)
 
-#### review-session — **Nein**
+#### review-session — **Ja** *(vorher Nein)*
 
-„Zurücklegen · Aussetzen · Bearbeiten" (iPhone) und „Leeren" (iPad) sind unsichtbar.
+„Zurücklegen · Aussetzen · Bearbeiten" und „Leeren" tragen den `--line-tap`-Ring. Drei Lautstärken auf einer Karte.
 
 ![review-session iPad](../mockups/_renders/affordanz/app-next-review-session-ipad.png)
 
@@ -509,7 +679,7 @@ Der sauberste Screen: jeder Knopf hat Fläche, Ring oder Ink.
 
 #### graph — **Nein**
 
-Die 27 Knoten sind im Markup keine Bedienelemente — kein Rahmen im rechten Bild sitzt auf einem.
+Die 27 Knoten sind jetzt Bedienelemente — jeder Rahmen im rechten Bild trägt einen Halo. Erreichbar, nicht lesbar.
 
 ![graph iPad](../mockups/_renders/affordanz/app-next-graph-ipad.png)
 
@@ -540,13 +710,15 @@ Nachgewiesen, nicht abgehakt. Wo etwas nicht stimmt, steht es hier.
 ### 8.1 Schriften — belegt
 
 Gemessen wurde nicht der Quelltext, sondern die **gerenderte** Schrift jedes
-Textelements in allen 13 Screens, iPad und iPhone (1 627 Elemente):
+Textelements in allen 13 Screens, iPad und iPhone — **1 958 Elemente**, vorher
+1 627. Der Zuwachs ist derselbe wie in §1: die Screens tragen mehr Inhalt,
+`graph` allein 33 beschriftete Knoten mehr.
 
-| erste Familie der Kaskade | Elemente |
-|---|--:|
-| `-apple-system` (SF Pro Text) | 1 545 |
-| `New York` | 70 |
-| `SF Mono` | 12 |
+| erste Familie der Kaskade | Elemente | vorher |
+|---|--:|--:|
+| `-apple-system` (SF Pro Text) | 1 841 | 1 545 |
+| `New York` | 73 | 70 |
+| `SF Mono` | 44 | 12 |
 
 **Eine dritte Familie kommt nicht vor.** `grep` über `mockups/` und `docs/*.html`
 findet **null** `@font-face`, null `.woff`/`.otf`/`.ttf`, null `@import`, null
@@ -562,31 +734,34 @@ drei Systemschriften, alle auf jedem iPhone und iPad vorhanden.
 Keine weitere Größe im ganzen Bestand. Die 11 pt sind die in `system.css` §4
 dokumentierte Ausnahme; sie gehören iOS und nicht Velum.
 
-**Zeilenhöhen — hier gibt es Abweichungen, 82 von 1 627 (5,0 %):**
+**Zeilenhöhen — hier gibt es Abweichungen, und sie sind mehr geworden: 121 von
+1 958 (6,2 %), vorher 82 von 1 627 (5,0 %).**
 
-| Abweichung | Anzahl | Bewertung |
-|---|--:|---|
-| `.btn`-Varianten mit `line-height: 1` (17/17, 15/15) | 61 | **richtig.** Ein Knopf ist eine einzeilige Zeilenbox; `line-height: 1` zentriert sie. 23 pt Zeilenhöhe in einem 34-pt-Knopf wäre der Fehler. |
-| `.count__n` bei 20/24 statt 20/26 | 14 | **Befund.** Eine Kennzahl ist Text wie jeder andere; für 24 statt 26 gibt es keinen Grund. |
-| `.t-label` bei 13/14 und 13/12, inline gesetzt | 6 | **Befund.** Zwei inline gesetzte Zeilenhöhen an drei Stellen, ohne Notwendigkeit. |
-| `num` einzeln | 1 | Befund, minimal. |
+| Abweichung | Anzahl | vorher | Bewertung |
+|---|--:|--:|---|
+| `.btn`-Varianten mit `line-height: 1` (17/17, 15/15) | 63 | 61 | **richtig.** Ein Knopf ist eine einzeilige Zeilenbox; `line-height: 1` zentriert sie. 23 pt Zeilenhöhe in einem 34-pt-Knopf wäre der Fehler. |
+| `.count__n num` bei 20/24 statt 20/26 | **45** | 14 | **Befund, und er ist gewachsen.** Eine Kennzahl ist Text wie jeder andere; für 24 statt 26 gibt es keinen Grund. Die Zahl hat sich mehr als verdreifacht, während der Bestand um 20 % gewachsen ist — das Muster ist beim Bauen kopiert worden. |
+| `.t-label c-3` bei 13/12 · 13/14 · 13/15 · 13/17, inline gesetzt | **10** | 6 | **Befund.** Vier verschiedene inline gesetzte Zeilenhöhen auf einer einzigen Textgröße, alle ohne Notwendigkeit. |
+| `num` einzeln mit `line-height: 1` | 2 | 1 | Befund, minimal. |
+| **`.serif--cover-title` bei 13/18** | **1** | — | **Neu.** Die einzige Serif-Rolle mit einer eigenen Zeilenhöhe. Eine Fundstelle, aber sie steht in der Rolle, die 22-mal vorkommt. |
 
 **Serif — die sieben Rollen, gezählt im Bild:**
 
-| Rolle | Vorkommen |
-|---|--:|
-| `serif--screen-title` | 20 |
-| `serif--cover-title` | 21 |
-| `serif--empty-title` | 10 |
-| `serif--voice` (Journal-Fließtext) | 6 |
-| `serif--quote` | 6 |
-| `serif--journal-date` | 5 |
-| `serif--wordmark` | 2 |
-| **blankes `.serif`** | **0** |
+| Rolle | Vorkommen | vorher |
+|---|--:|--:|
+| `serif--cover-title` | 22 | 21 |
+| `serif--screen-title` | 21 | 20 |
+| `serif--empty-title` | 10 | 10 |
+| `serif--quote` | 7 | 6 |
+| `serif--voice` (Journal-Fließtext) | 6 | 6 |
+| `serif--journal-date` | 5 | 5 |
+| `serif--wordmark` | 2 | 2 |
+| **blankes `.serif`** | **0** | **0** |
 
 Der Nachtrag N1 der DNA ist damit nachprüfbar umgesetzt: New York steht an
-genau sieben benannten Orten und nirgends sonst. 70 Elemente von 1 627 —
-4,3 % der Textelemente tragen die Serif. Sie ist Stimme, nicht Textur.
+genau sieben benannten Orten und nirgends sonst. 73 Elemente von 1 958 —
+**3,7 %** der Textelemente tragen die Serif, vorher 4,3 %. Sie ist Stimme, nicht
+Textur, und sie ist relativ leiser geworden, weil die Screens gewachsen sind.
 
 ### 8.2 Navigation
 
@@ -594,7 +769,7 @@ genau sieben benannten Orten und nirgends sonst. 70 Elemente von 1 627 —
 |---|---|---|
 | **Sidebar auf iPad** | ✅ 12 von 13 Screens | Ausnahme `review-session`: eine Lernsitzung ist ein Vollbild-Modus, iOS entfernt dort die Navigation. Richtig so, und es ist der einzige Screen mit einem `×` links oben. |
 | **Tab-Bar auf iPhone** | ✅ 13 von 13 | fünf Einträge, 48 pt hoch, Beschriftung 11 pt, aktiver Zustand über Gewicht **und** Farbe |
-| **Kontextmenü** | ⚠️ nur in `platform/kontextmenue.html` | In den 13 App-Screens ist kein Kontextmenü gezeichnet; `library.html` erwähnt es im Kommentar. Wer nur die Screens sieht, sieht das Muster nicht. |
+| **Kontextmenü** | ✅ **neu** — `library.html` + `platform/kontextmenue.html` | `library.html` zeichnet es jetzt aus: „Umbenennen · Duplizieren · Verschieben · Zu Favoriten — Löschen", mit Trennlinie vor der zerstörenden Aktion und `--danger` nur dort. Der alte Befund „wer nur die Screens sieht, sieht das Muster nicht" ist erledigt. Es bleibt bei **einem** von 13 Screens. |
 | **Blatt (Sheet)** | ❌ **fehlt** | `grep` findet in `app-next/` kein Blatt mit Griffleiste. Die Klasse `.sheetnote` ist der Erklärkasten unter dem Gerät, kein UI-Blatt. Ein Entwurf mit „Neu"-Knopf auf jedem Screen braucht ein Blatt, und keines ist gezeichnet. |
 | **Wischgeste** | ⚠️ nur `review-session` | Dort echt: Zeiger wird erst ab 6 pt gefangen, vier Knöpfe sind der gleichwertige Weg. Auf Listenzeilen (`tasks`, `notes-list`, `journal-home`) ist keine Wischaktion gezeichnet — das klassischste iOS-Listenmuster überhaupt. |
 | **Popover** | ⚠️ formfrei | Die Übergabe-Leiste `.handoff` und das Graph-Panel sind popover-artig, aber ohne Zeiger und ohne Systemform. |
@@ -602,14 +777,15 @@ genau sieben benannten Orten und nirgends sonst. 70 Elemente von 1 627 —
 **Zwei bewusste Abweichungen vom Standard — die Begründung muss dastehen:**
 
 **Die Ketten-Karte** ist kein iOS-Muster. Sie ist ein waagerechter Faden mit drei
-Knoten, an jeder Station anspringbar. Vorhersehbar bleibt sie, weil sie sich wie
-eine Liste verhält: die Stationen stehen in Leserichtung, jede trägt Vorspann,
-Titel und Metazeile in derselben Anordnung wie eine Listenzeile, und jede hat
-einen Chevron nach rechts. Der Fadenverlauf sagt „von hier nach dort" und ist die
-einzige Zutat, die iOS nicht kennt. **Der Test bestätigt die Form und rügt ihre
-Lautstärke:** auf `today.html` fällt sie durch R2 (kein Rand, keine Fläche, keine
-Leistenlage), auf `journal-entry.html` zusätzlich durch R3 (dort fehlt auch der
-Chevron). Die Abweichung ist begründet, die Ausführung ist es noch nicht.
+Stationen, an jeder anspringbar. Vorhersehbar bleibt sie, weil sie sich wie eine
+Liste verhält: die Stationen stehen in Leserichtung, jede trägt Vorspann, Titel
+und Metazeile in derselben Anordnung wie eine Listenzeile, und jede hat einen
+Chevron nach rechts. Der Fadenverlauf sagt „von hier nach dort" und ist die
+einzige Zutat, die iOS nicht kennt. **Der Test bestätigte die Form und rügte
+ihre Lautstärke; die Rüge ist erledigt:** jedes Glied trägt jetzt `--fill` als
+eigene Fläche und den Chevron, auf `today` wie auf `journal-entry`. Beide
+Screens sind dadurch von *Fast* auf *Ja* gestiegen (§7). Die Abweichung ist
+begründet **und** ausgeführt.
 
 **Die Übergabe-Leiste** ersetzt das System-Menü über einer Textauswahl. Sie ist
 vorhersehbar, weil sie an derselben Stelle erscheint wie das Systemmenü, dieselbe
@@ -640,24 +816,37 @@ Zahl ist eine Schätzung, und sie steht hier als solche.
 ```
 
 Je ein Kontakt- und ein Streuschatten, im Dunkelmodus eigene Werte (stärker, wie
-es sein muss). **Befund: vier Schatten stehen außerhalb der Token** —
-`.segmented button.is-on` (`0 1px 3px rgba(0,0,0,.12)`), die Kachelkante in
-§4 (`0 0 0 .5px rgba(0,0,0,.18)`), der weiche Hof des laufenden Hakens und der
-weiße Ring auf dem Punkt des primären Übergabe-Knopfes. Die letzten beiden sind
-Zustandsringe und keine Tiefe; die ersten beiden gehören in Token.
+es sein muss). **Befund, nachgezählt: acht Schlagschatten stehen außerhalb der drei Token.**
+`0 1px 3px rgba(22,24,28,.16)` (4×) und `0 1px 2px rgba(22,24,28,.16)` (4×) —
+darunter `.segmented button.is-on` und die Kachelkante. Sie sind gegen den
+letzten Lauf **auf ein einheitliches Alpha vereinheitlicht** worden (vorher drei
+verschiedene Werte), stehen aber weiter inline statt in einem Token.
+
+Nicht mitgezählt sind die 60 `inset`-Schatten: das sind Ringe und
+Unterstreichungen, keine Tiefe, und sie hängen fast alle korrekt an einem Token
+(`--line`, `--line-2`, `--line-tap`, `--accent-ring`, `--dot-hollow`). Zwei
+Ausnahmen bleiben inline: `inset 0 0 0 1px rgba(242,243,245,.10)` (8×) und
+`inset 0 0 0 1px rgba(22,24,28,.16)` (6×) — dieselbe Kante, in zwei
+handgeschriebenen Fassungen für hell und dunkel, wo ein einziges Token beide
+tragen würde.
 
 iOS gibt keine Schattenwerte heraus. Erfinden ist hier unvermeidlich — die
 Frage ist nur, ob es an einer Stelle geschieht oder an fünfzehn. Es geschieht an
-drei plus zwei.
+drei Token plus zwei inline gesetzten Kanten.
 
 ### 8.4 Symbole
 
-**Alle 55 Symbole sind gezeichnet, keines ist ein SF Symbol.**
+**Alle 55 Symbole sind gezeichnet, keines ist ein SF Symbol.** Nachgezählt in
+`mock.js`: die `ICONS`-Tabelle hat unverändert 55 Einträge.
 
 `mock.js` baut jedes aus einem 24×24-Pfad mit `stroke-width: 1.7`,
-`stroke-linecap: round`, `fill: none`. **Eine einzige Abweichung im
-Strichgewicht: `check` steht auf 2.0** — begründbar, weil ein Haken bei 1,7 auf
-22 pt zerfällt, aber es ist eine Abweichung und sie steht nirgends erklärt.
+`stroke-linecap: round`, `fill: none`. **Im Bild nachgemessen** (jeder
+`svg`-Strich in allen 13 Screens, beide Geräte): 1,7 pt mit runder Kappe kommt
+auf **allen 13** Screens vor und ist die einzige Symbol-Strichstärke.
+**Eine einzige Abweichung im Strichgewicht: `check` steht auf 2.0** — auf
+`note-editor`, `tasks`, `review-session` und `settings` gemessen. Begründbar,
+weil ein Haken bei 1,7 auf 22 pt zerfällt, aber es ist eine Abweichung und sie
+steht nirgends erklärt.
 
 Der Grund für die eigenen Zeichnungen ist keine Gestaltungsentscheidung: SF
 Symbols sind lizenzrechtlich an Apple-Plattformen gebunden und dürfen in einem
@@ -677,16 +866,20 @@ nicht gemacht.
 
 Alle Werte in §3. Zusammengefasst:
 
-| Prüfung | Anforderung | Stand |
-|---|---|---|
-| CTA-Text auf Ink | ≥ 4,5:1 | 17,77:1 hell · 17,27:1 dunkel ✅ |
-| Rand eines Bedienelements (`--line-tap`) | ≥ 3:1 | 3,29:1 · 3,34:1 ✅ |
-| Ghost-Chip als Knopf, 30 Fälle | ≥ 3:1 | 3,20–3,34:1 ✅ |
-| Karte gegen Grund | Apple: 1,12 / 1,23 | 1,118 ✅ · **1,089 ⚠️** |
-| Unterstreichung des Wiki-Links | ≥ 3:1 | **1,46:1 ❌** |
+| Prüfung | Anforderung | Stand | vorher |
+|---|---|---|---|
+| CTA-Text auf Ink | ≥ 4,5:1 | 17,77:1 hell · 17,27:1 dunkel ✅ | gleich |
+| Rand eines Bedienelements (`--line-tap`) | ≥ 3:1 | 3,29:1 · 3,34:1 ✅ | gleich |
+| Ghost-Chip als Knopf | ≥ 3:1 | 3,20–3,34:1 ✅ | gleich |
+| **`.btn--quiet`** — neu mit Ring | ≥ 3:1 | **3,29:1 ✅ (war: kein Rand)** | ❌ |
+| **Ghost-Chip *im* Knopf** (`journal-home`) | ≥ 3:1 | **1,46:1 ❌ (neu)** | — |
+| Karte gegen Grund | Apple: 1,12 / 1,23 | 1,118 ✅ · **1,089 ⚠️** | gleich, nicht angefasst |
+| Unterstreichung des Wiki-Links | ≥ 3:1 | **1,46:1 ❌**, jetzt an 3 statt 2 Stellen | gleich, nicht angefasst |
 
-Der letzte Punkt ist der schärfste Einzelbefund des ganzen Dokuments, weil er
-gegen die eigene Regel verstößt. `note-editor.html` Zeile 225:
+Der letzte Punkt ist der schärfste Einzelbefund des ganzen Dokuments geblieben,
+weil er gegen die eigene Regel verstößt — und er ist in dieser Runde **nicht
+angefasst** worden, während eine dritte Fundstelle dazugekommen ist.
+`note-editor.html` Zeile 225, 644 und 860:
 
 ```html
 <a href="#" style="… box-shadow: inset 0 -1.5px 0 var(--line-2)">[[Osmose]]</a>
@@ -696,32 +889,63 @@ Der Wiki-Link im Fließtext trägt eine Unterstreichung — R3 ist erfüllt. Abe
 steht auf `--line-2` und hält damit **1,46:1**, während das System eigens
 `--line-tap` mit **3,29:1** dafür geschaffen hat („umrandet ein Bedienelement
 ohne eigene Fläche", `system.css` §1). Ein Zeichen ist da; es ist nur nicht zu
-sehen. Zwei Vorkommen (iPad und iPhone), Wechsel des Tokens genügt.
+sehen. **Drei** Vorkommen, Wechsel des Tokens genügt.
+
+Derselbe Fehlgriff, dasselbe Token, an einer zweiten Stelle: der Ghost-Chip in
+`journal-home` (§5.2). `--line-2` ist inzwischen zweimal dort im Einsatz, wo
+`--line-tap` hingehört. Es ist keine Nachlässigkeit an einer Stelle mehr,
+sondern ein Muster.
 
 ---
 
 ## 9 · Was zu tun ist
 
-Nach Wirkung sortiert. Die ersten zwei schließen 13 der 33 schweren Befunde.
+Der Stand der alten Liste zuerst, damit sichtbar bleibt, was diese Runde
+geleistet hat und was liegen geblieben ist.
 
-1. **`.btn--quiet` bekommt ein Merkmal** — `--line-tap`-Ring bei 3,3:1 oder
-   `--fill`-Fläche. 25 Vorkommen, eine CSS-Regel, 13 schwere Befunde weg.
-2. **Der Erledigt-Kreis bekommt überall den 44-pt-Griff**, den `tasks.html`
-   bereits hat. 67 Vorkommen, ein Muster, das schon existiert.
-3. **`.chain__link` bekommt auf `journal-entry` denselben Chevron wie auf
-   `today`** — und beide eine Fläche oder einen Rand, damit das Signaturbauteil
-   nicht das leiseste bleibt.
-4. **Die Graph-Knoten werden Bedienelemente** — `role="button"`, `tabindex`,
-   `aria-label`. Ohne das ist der Screen für VoiceOver leer.
-5. **Der Wiki-Link wechselt auf `--line-tap`.** Zwei Zeilen.
-6. **Die Gliederung im Editor bekommt Chevrons oder Zeilenflächen.**
-7. **Die 308 Elemente ohne Semantik werden durchgesehen** und in zwei Stapel
+| alt | Aufgabe | Stand |
+|---|---|---|
+| 1 | `.btn--quiet` bekommt ein Merkmal | ✅ **erledigt** — `inset 0 0 0 1px var(--line-tap)`, 3,29:1. 24 Vorkommen, 13 schwere Befunde weg, 8 davon in `best-of` ohne eine Zeile Screen-Arbeit |
+| 2 | Erledigt-Kreis bekommt überall den 44-pt-Griff | ❌ **nicht angefasst** — weiter 66 × 22 pt |
+| 3 | `.chain__link` bekommt Chevron und Fläche | ✅ **erledigt** — beide Screens, beide Geräte |
+| 4 | Graph-Knoten werden Bedienelemente | 🟡 **halb** — Semantik ja, Affordanz nein (§5.1) |
+| 5 | Wiki-Link wechselt auf `--line-tap` | ❌ **nicht angefasst** — und eine dritte Fundstelle dazu |
+| 6 | Gliederung im Editor bekommt Flächen | ✅ **erledigt** — alle fünf Zeilen |
+| 7 | Die Elemente ohne Semantik durchsehen | ❌ **nicht angefasst** — 302 statt 308 |
+| 8 | `.navitem` von 40 auf 44 pt | ❌ **nicht angefasst** — weiter 228 Meldungen |
+| 9 | Ein Blatt zeichnen | ❌ **nicht angefasst** — `grep` findet in `app-next/` weiter kein Blatt mit Griffleiste |
+| 10 | Karte gegen Grund im Dunkelmodus anheben | ❌ **nicht angefasst** — weiter 1,089 |
+
+**Sechs von zehn stehen noch, und vier davon sind je eine Zeile Arbeit.** Neu
+sortiert nach Wirkung:
+
+1. **Die Graph-Knoten bekommen ein Bedienzeichen.** 33 der 46 schweren Befunde,
+   ein Screen. Der Punkt bleibt das Zeichen für „hier ist ein Objekt"; das
+   Zeichen für „das kannst du drücken" fehlt und muss die **Beschriftung**
+   tragen, weil sie das Ziel ist: eine Zeilenfläche unter dem Wort, ein Ring,
+   oder die Beschriftung in eine Chip-Fläche gesetzt. Nebenher fällt R4 weg,
+   wenn die Fläche auf 44 pt Höhe kommt.
+2. **`--line-2` → `--line-tap` an zwei Stellen.** Der Wiki-Link (3 Vorkommen)
+   und der Ghost-Chip in `journal-home` (§5.2). Zwei Tokenwechsel, ein schwerer
+   Befund weg, der schärfste Kontrastbefund des Dokuments weg.
+3. **Der Erledigt-Kreis bekommt den 44-pt-Griff**, den `tasks.html` seit zwei
+   Runden vorführt. 66 Vorkommen, 66 mittlere Befunde.
+4. **`.navitem` von 40 auf 44 pt.** Eine Zeile CSS, 228 der 547 R4-Meldungen.
+   Zusammen mit Punkt 3 fallen 294 weg — mehr als die Hälfte.
+5. **Die Datumsleiste in `best-of/tasks`** bekommt, was das Inhaltsverzeichnis
+   in `note-editor` schon hat: eine Zeilenfläche für alle sieben Tage. 6 schwere
+   Befunde.
+6. **Die Terminzeilen in `best-of/today`** bekommen Kreis oder Kante. 4 schwere
+   Befunde. Danach hat `best-of` nur noch die zwei Gliederungszeilen.
+7. **Die 302 Elemente ohne Semantik werden durchgesehen** und in zwei Stapel
    sortiert: Knopf oder Etikett. Der zweite Stapel legt seine Chip-Fläche ab.
-8. **`.navitem` von 40 auf 44 pt**, `.btn--sm` von 34 auf 44 oder mit
-   ausgewiesener Trefferfläche. Danach fallen 312 der 575 R4-Meldungen weg.
-9. **Ein Blatt zeichnen.** Der „Neu"-Knopf führt auf jedem Screen ins Leere.
-10. **Karte gegen Grund im Dunkelmodus** von 1,089 auf ≈ 1,23 anheben, damit
-    Velums Tiefe im Dunkeln nicht flacher ist als die des Systems.
+   Auf `tasks` allein sind es 10, und sie stehen unter der Beschriftung
+   *„Antippen zum Ändern"*.
+8. **Ein Blatt zeichnen.** Der „Neu"-Knopf führt auf jedem Screen ins Leere.
+9. **Karte gegen Grund im Dunkelmodus** von 1,089 auf ≈ 1,23 anheben.
+10. **`.count__n` auf 20/26 und die vier `.t-label`-Zeilenhöhen einsammeln.**
+    56 Abweichungen, und sie sind in dieser Runde mehr geworden, nicht weniger
+    (§8.1).
 
 ---
 
@@ -737,8 +961,10 @@ node tools/affordanz.js --json befunde.json
 Das Werkzeug braucht `playwright-core` und einen Chromium-Pfad
 (`VELUM_PLAYWRIGHT`, `VELUM_CHROME`), kein npm install, keine externe URL. Es
 schreibt nach `mockups/_renders/affordanz/` und gibt die Tabelle aus §3 auf der
-Konsole aus. Die Zahlen dieses Dokuments stammen aus einem Lauf vom 9. August
-2026; jeder spätere Lauf gegen dieselben Dateien liefert sie wieder.
+Konsole aus. Die Zahlen dieses Dokuments stammen aus einem Lauf vom **9. August 2026,
+nach dem Umbau von `system.css` und allen 13 Screens**; jeder spätere Lauf
+gegen dieselben Dateien liefert sie wieder. Die kursiven Vergleichswerte
+stammen aus dem Lauf davor.
 
 ### Alle 76 Bilder
 

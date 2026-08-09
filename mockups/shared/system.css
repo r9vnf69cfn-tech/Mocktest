@@ -51,6 +51,27 @@
  * .flight/.flight__trail/.flight__ghost (§6) und .book__mod (§12.8): Regeln,
  * die auf nichts mehr trafen.
  *
+ * RUNDE 4 — DIE QUERSCHNITTLICHEN BEFUNDE. Vier Eingriffe, alle an der
+ * Wurzel, alle vorher und nachher gemessen. Sie wirken auf jede Seite.
+ *
+ *   1 .btn--quiet und .btn--danger bekommen den Ring in --line-tap (§5.1).
+ *     Sie waren Farbe als einziges Merkmal — 13 der 33 schweren Meldungen
+ *     aus docs/05 hingen an dieser einen Regel. Zwei benannte Ausnahmen:
+ *     in einer Leiste kein Ring (Lage trägt die Auskunft), im Text die
+ *     Unterstreichung (.btn--text).
+ *   2 .device__label span stand in --ink-4 und hielt 1,93:1 hell / 2,51:1
+ *     dunkel — auf 29 von 34 Seiten. Jetzt --ink-3, 4,94:1 / 5,73:1 (§3).
+ *   3 --ink-3 selbst war nur gegen Papier gerechnet und fiel im Dunkeln auf
+ *     getönter Fläche auf 4,48:1. Neu gegen den Flächensatz aus §9.0
+ *     gerechnet und auf 0,63/0,55 gehoben (§1.2a). --ink-2 wurde ebenso
+ *     nachgerechnet und hält unverändert.
+ *   4 Sieben Bausteine bekommen einen unsichtbaren 44-pt-Trefferbereich,
+ *     ohne dass sich im Bild etwas bewegt (§5.9).
+ *
+ * Zwei Befunde sind geprüft und NICHT behoben, mit Begründung an Ort und
+ * Stelle: das 40-pt-Raster der Sidebar (§5.9, es fehlt die Höhe) und
+ * --paper gegen --ground im Dunkeln (1,089:1, §1.2b).
+ *
  * Musterseiten: shared/faden-probe.html (die Primitive),
  *               app-next/library.html  (das Notizbuch-System).
  * ========================================================================== */
@@ -69,8 +90,47 @@
   /* 1.2 Ink — Text, Icons, Linien. Zugleich der Akzent. */
   --ink:       #16181C;
   --ink-1:     #16181C;                    /* 17,8:1 auf Papier */
+  /* 1.2a DIE BEIDEN LEISEN TEXTTÖNE — gerechnet gegen den Flächensatz aus
+     §9.0, nicht gegen Papier allein. Das ist derselbe Fehler, den §9.0 beim
+     Faden schon einmal korrigiert hat: ein Ton, der nur auf --paper gemessen
+     wird, fällt auf jeder getönten Fläche durch. Text steht in diesem System
+     auf sieben Flächen; gemessen wurde auf allen sieben (Zahlen unten).
+       --ink-2  Sekundärtext.  0,64 hält 5,32 … 4,63:1 hell, 7,41 … 4,59:1
+                dunkel — der schlechteste Fall bleibt über 4,5:1. Unverändert.
+       --ink-3  Tertiärtext.   0,62/0,52 hielten im schlechtesten Fall 4,54:1
+                hell und 4,48:1 dunkel — dunkel also UNTER der eigenen
+                Schwelle, hell mit 0,9 % Rest. Angehoben auf 0,63/0,55.
+                                      hell .63   dunkel .55
+       Papier                          5,14        5,57
+       Grund                           4,94        5,73
+       Papier-2                        5,07        5,41
+       fill / Papier                   4,96        5,08
+       fill / Grund                    4,75        5,41
+       accent-soft / Papier            4,88        4,82
+       accent-soft / Grund             4,68        5,17
+       schlechtester Fall              4,68        4,82
+     NICHT enthalten sind --fill-2 und --fill-3: sie tragen keinen Text
+     (dieselbe Begründung wie in §9.0 für den Faden).
+     EIN REST BLEIBT, und er steht hier, damit er nicht verschwiegen ist:
+     today.html und journal-entry.html legen --fill-2 UND --fill unter
+     dieselbe Kettenzeile, note-editor eine zweite Tönung unter die
+     Gliederung. Diese gestapelten Gründe sind rgb(221,222,222) hell und
+     rgb(63,65,67) dunkel; dort hält 0,63 hell noch 4,55:1, 0,55 dunkel nur
+     3,83:1. Das ist ein Befund der Schirme, kein Tokenfehler: ein Ton, der
+     die doppelte Tönung tragen müsste, wäre --ink-2 (0,64) — und dann gäbe
+     es keinen dritten Ton mehr. Sieben Textknoten auf drei Schirmen. */
   --ink-2:     rgba(22,24,28,0.64);        /*  5,3:1 auf Papier — Sekundärtext */
-  --ink-3:     rgba(22,24,28,0.62);        /*  4,8:1 auf Grund  — Tertiärtext  */
+  --ink-3:     rgba(22,24,28,0.63);        /*  4,9:1 auf Grund  — Tertiärtext  */
+  /* --ink-4 trägt Icons und Deko und NIE Text. Der Kommentar stand hier schon
+     in Runde 2 — und §3 setzte die Gerätebeschriftung trotzdem in diesen Ton
+     (1,93:1 hell / 2,51:1 dunkel bei 13 px, auf 29 von 34 Seiten). Behoben.
+     Nachgezählt bleibt genau eine Verwendung: .empty__art (§7), das Symbol
+     im leeren Zustand — 1,93:1 hell / 2,52:1 dunkel auf --fill. Das bleibt
+     so, und zwar begründet: es ist kein Text und keine Bedienoberfläche,
+     sondern die einzige Verwendung, für die das Token gemacht wurde. Es
+     trägt nichts, was nicht daneben steht — der leere Zustand nennt seinen
+     Titel, seinen Satz und seinen Knopf; das Symbol ist die vierte Auskunft,
+     nicht die erste. Alle sieben Vorkommen liegen in best-of/. */
   --ink-4:     rgba(22,24,28,0.30);        /* nur Icons/Deko, nie Text        */
   /* Die Linien-Leiter — drei Stufen, drei Aufgaben. Welche gilt, entscheidet
      NICHT die Optik, sondern eine Frage: Trägt der Strich die Auskunft, dass
@@ -175,6 +235,22 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
 
+  /* 1.2b EIN BEFUND, DER HIER STEHT UND NICHT BEHOBEN IST.
+     --paper gegen --ground trennt jede Karte, jede Kachel, jedes Blatt.
+     Gerechnet: 1,118:1 hell · 1,089:1 dunkel. iOS trennt an derselben Stelle
+     mit 1,116:1 hell (systemGroupedBackground gegen weiß) und 1,234:1 dunkel.
+     Der Hellwert stimmt auf drei Nachkommastellen; im Dunkeln stehen Velums
+     Karten flacher auf ihrem Grund als Apples (docs/05 §3, §9.10).
+     NICHT geändert, und der Grund ist nicht Bequemlichkeit: 1,089 verletzt
+     keine Schwelle dieses Systems — 4,5:1 gilt für Text, 3:1 für
+     Bedienoberfläche, für die Trennung zweier Flächen gibt es keine. Es ist
+     ein Vergleich mit Apple, kein Durchfallen. Und der Eingriff wäre keiner
+     von einer Zeile: --paper müsste von #17191C auf etwa #24262A, damit
+     bliebe --paper-2 (#1D1F23) DUNKLER als --paper — eine eingelassene
+     Fläche, die heller liegt als die, in die sie eingelassen ist —, und
+     --chrome (rgba(23,25,28,.84)) hängt am selben Ton. Drei Tokens, jede
+     Fläche jeder Seite. Das ist eine Entscheidung der DNA, nicht eine der
+     Querschnittsrunde; sie steht hier, damit sie nicht wieder verloren geht. */
   --ground:    #0E0F11;
   --paper:     #17191C;
   --paper-2:   #1D1F23;
@@ -183,7 +259,7 @@
   --ink:       #F2F3F5;
   --ink-1:     #F2F3F5;                    /* 15,9:1 auf Papier */
   --ink-2:     rgba(242,243,245,0.64);     /*  7,1:1 */
-  --ink-3:     rgba(242,243,245,0.52);     /*  4,9:1 */
+  --ink-3:     rgba(242,243,245,0.55);     /*  5,6:1 — Rechnung in §1.2a */
   --ink-4:     rgba(242,243,245,0.30);
   --line:      rgba(242,243,245,0.12);
   --line-2:    rgba(242,243,245,0.20);
@@ -289,7 +365,14 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   margin-bottom: 10px;
   display: flex; gap: 8px; align-items: baseline;
 }
-.device__label span { font-weight: 400; color: var(--ink-4); }
+/* Die Maßangabe unter dem Rahmen stand bis Runde 4 in --ink-4 und hielt damit
+   1,93:1 hell und 2,51:1 dunkel bei 13 px — auf 29 von 34 Seiten dieselbe
+   Zeile, dieselbe Zahl. Sie gehört zur Kulisse des Mockups und nicht zur App,
+   aber sie ist Text und soll gelesen werden; die 4,5:1 gelten also. Jetzt
+   --ink-3: 4,94:1 hell · 5,73:1 dunkel. Die beiden Hälften der Zeile bleiben
+   unterscheidbar, weil das Gewicht sie trennt (600 gegen 400) und nicht die
+   Farbe — dieselbe Zwei-Merkmal-Regel wie überall sonst. */
+.device__label span { font-weight: 400; color: var(--ink-3); }
 
 .screen {
   position: relative;
@@ -498,8 +581,80 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   background: var(--fill); color: var(--ink-1);
 }
 .btn--primary { background: var(--accent); color: var(--accent-on); }
-.btn--quiet   { background: none; color: var(--ink-2); }
-.btn--danger  { background: none; color: var(--danger); }
+
+/* ── 5.1 DIE LEISEN KNÖPFE — der teuerste Baustein des Bestands ───────────
+ *
+ * DER BEFUND (docs/05 §5.1, 13 der 33 schweren Meldungen). Hier stand:
+ *
+ *     .btn--quiet { background: none; color: var(--ink-2); }
+ *     .btn--danger { background: none; color: var(--danger); }
+ *
+ * Keine Fläche, kein Rand, kein Symbol — übrig blieb ein Wort in --ink-2
+ * neben Wörtern in --ink-1, also FARBE ALS EINZIGES MERKMAL und damit genau
+ * das, was R2 verbietet. Die Klasse steht 26-mal im Bestand (25 in den
+ * geprüften Schirmen, einmal in platform/kurzbefehle); alle 26 trugen einen
+ * Befund. Der klarste Fall: auf review-session iPhone lesen sich
+ * „Zurücklegen · Aussetzen · Bearbeiten" als Bildunterschrift — drei Zeilen
+ * über einer Reihe von Knöpfen, die es richtig macht.
+ *
+ * DIE ENTSCHEIDUNG: der Ring, nicht die Fläche. Drei Gründe.
+ *   1 Das System hat für „Bedienelement OHNE eigene Fläche" bereits genau
+ *     eine Antwort, und sie steht dreimal in dieser Datei: --line-tap auf
+ *     .check (§5), auf dem tappbaren .chip--ghost (§5) und auf .rate__btn
+ *     (§13). Eine vierte Antwort wäre die Inkonsequenz, nicht die Lösung.
+ *   2 Die Fläche wäre --fill — und damit wäre .btn--quiet Zeichen für
+ *     Zeichen das schon vorhandene .btn. Eine Klasse, die ihre Schwester
+ *     dupliziert, hat aufgehört, eine eigene Aussage zu haben.
+ *   3 Der Ring trägt 3,29:1 hell und 3,34:1 dunkel, gerechnet in §9.0. Die
+ *     3:1 für Bedienoberfläche sind damit gehalten, nicht geschätzt.
+ * Rangfolge bleibt trotzdem lesbar, weil sie nicht am Ring hängt:
+ * gefüllte Ink-Fläche (primär) > --fill-Fläche (.btn) > Ring (.btn--quiet).
+ *
+ * ZWEI AUSNAHMEN, BEIDE GEMESSEN, NICHT GERATEN:
+ *
+ * a) IN EINER LEISTE steht der Ring nicht. Wer in .navbar, .tabbar, .sidebar,
+ *    .toolbar, .segmented, .rate oder .handoff sitzt, trägt die Auskunft
+ *    „hier ist etwas zu bedienen" schon über die Lage — das ist R2s eigene
+ *    dritte Bedingung (docs/05 §2) und zugleich iOS' Form: keine
+ *    Navigationsleiste dieser Welt umrandet ihr „Abbrechen".
+ *    Trifft heute: platform/kurzbefehle „Abbrechen".
+ *    NICHT automatisch getroffen ist die Aktionsleiste am Fuß von
+ *    task-detail (iPhone): sie ist eine Leiste mit eigener Fläche, hat aber
+ *    keine Klasse. Sie bekommt eine — class="toolbar" — oder ihre drei
+ *    Knöpfe tragen den Ring. Entscheidung des Schirms, nicht dieser Datei.
+ *
+ * b) IM TEXT steht kein Kasten: .btn--text statt .btn--quiet. Für Knöpfe,
+ *    die ohne Innenabstand am Fuß einer Spalte oder in einem Fließsatz
+ *    stehen („Ganzen Verlauf zeigen", „Erneut versuchen"), wäre ein Ring
+ *    eine Kiste, die die Zeile aufreißt. Sie bekommen die Unterstreichung —
+ *    R3s eigenes Mittel, im selben Token und mit demselben gerechneten
+ *    Pegel. text-decoration und nicht ein inset-Schatten, damit sie am Wort
+ *    hängt und nicht am Kasten: bei padding:0 und height:22px liegt der
+ *    Kastenboden sonst auf der Grundlinie.
+ *
+ * .btn--danger geht denselben Weg — auch Rot ist Farbe, und „nie über Farbe
+ * allein" kennt keine Ausnahme für Semantikfarben. Der Ring steht in
+ * currentColor, genau wie beim schon vorhandenen .chip--danger (§5).
+ * ────────────────────────────────────────────────────────────────────────── */
+
+.btn--quiet   { background: none; color: var(--ink-2);
+                box-shadow: inset 0 0 0 1px var(--line-tap); }
+.btn--danger  { background: none; color: var(--danger);
+                box-shadow: inset 0 0 0 1px currentColor; }
+
+/* a) Lage trägt die Auskunft — kein Ring. */
+:is(.navbar, .tabbar, .sidebar, .toolbar, .segmented, .rate, .handoff)
+  :is(.btn--quiet, .btn--danger) { box-shadow: none; }
+
+/* b) Knopf im Text — Unterstreichung statt Kasten. */
+.btn--text {
+  background: none; color: var(--ink-2);
+  text-decoration: underline;
+  text-decoration-color: var(--line-tap);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
 .btn[disabled], .btn.is-disabled { opacity: .38; }
 .btn--sm { height: 34px; padding: 0 12px; font-size: 15px; border-radius: 9px; }
 
@@ -555,6 +710,101 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* Trenner mit Beschriftung */
 .divider { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; }
 .divider::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--line); }
+
+/* ── 5.9 DER TREFFERBEREICH (R4) ──────────────────────────────────────────
+ *
+ * DER BEFUND (docs/05 §3/§4): 575 Meldungen „Ziel < 44 pt", 409 davon
+ * zwischen 32 und 44. Sie sind keine 575 Fehler, sondern sieben Bausteine.
+ *
+ * DIE ENTSCHEIDUNG: das Ziel wächst, das Zeichen nicht. Ein größeres Symbol
+ * wäre eine Gestaltungsänderung; ein größeres Ziel ist die Korrektur eines
+ * Versäumnisses. tasks.html macht es an fünf Stellen schon so — 44 pt Knopf,
+ * 22 pt Zeichen, negativer Außenabstand. Hier steht dasselbe als Regel, nur
+ * über ein Pseudoelement statt über negative Abstände: das verschiebt im
+ * Layout garantiert nichts, auch nicht in Rastern und Flexkästen.
+ *
+ *   Größe:  max(eigene Größe, 44 pt) in beiden Richtungen. Ein Element, das
+ *           schon groß genug ist, ändert sich nicht — width/height 100 %
+ *           mit min-width/min-height var(--tap).
+ *   Sicht:  keine. Keine Farbe, kein Rand, kein Schatten.
+ *   Lage:   mittig, absolut positioniert, also außerhalb des Flusses. In
+ *           einem Flexkasten wird ein Pseudoelement sonst zum Flexkind.
+ *
+ * WELCHE KLASSEN (Maß vorher → gesichertes Ziel nachher, Meldungen laut
+ * docs/05 §4):
+ *   .btn--sm            34 pt → 44   (84)
+ *   .check              22/18 pt → 44 (67) — über ::before, weil ::after
+ *                       schon den Haken zeichnet
+ *   .iconbtn            26–38 pt bei inline verkleinertem Maß → 44 (39)
+ *   .segmented button   32 pt → 44   \  (36)
+ *   .chip (tappbar)     26 pt → 44   /
+ *   .handoff__btn       34 pt → 44
+ *
+ * .chip nur als button/a/[role=button]/label/summary — dieselbe Trennung wie
+ * beim .chip--ghost weiter oben: was man nur liest, braucht kein Ziel, und
+ * ein unsichtbares 44-pt-Feld über einem Etikett würde Nachbarn verdecken,
+ * die man wirklich treffen will.
+ * .origin stand in der ersten Fassung dieser Liste und ist wieder heraus,
+ * weil die Messung zeigte, dass sie auf nichts trifft: von 34 Herkunfts-Chips
+ * im Bestand sind 26 <span> — Etiketten, richtig ausgeschlossen — und die
+ * acht <button> messen bereits 44 pt. Eine Regel, die nichts bewirkt,
+ * gehört nicht in diese Datei.
+ *
+ * WAS DIESE REGEL KOSTET, gemessen und nicht verschwiegen. Ein Trefferbereich
+ * ist in einem dichten Feld ein Nullsummenspiel: liegen zwei Bedienelemente
+ * enger als 44 pt beieinander, kann nur eines von beiden 44 pt bekommen, und
+ * CSS entscheidet das über die Reihenfolge im Markup — das spätere gewinnt.
+ * Die Treffprobe über alle 34 Seiten (1 111 im Bild treffbare Bedienelemente)
+ * zeigt die Bilanz: 215 Ziele werden größer, 9 werden kleiner.
+ *   note-editor  1 Erledigt-Kreis 21,9 → 11,9 pt · 1 .iconbtn 43,8 → 41,9
+ *   task-detail  6 Erledigt-Kreise 17,8 → 16,9 bzw. 10,6 pt
+ *   best-of/tasks 1 Chip 23,8 → 13,8 pt
+ * Alle neun stehen in Stapeln mit weniger als 30 pt Abstand — sie lagen also
+ * schon vorher weit unter dem Ziel, und ihre Ursache ist der Zeilenabstand
+ * ihres Behälters, nicht diese Regel. Behoben wird das im Schirm, nicht hier.
+ *
+ * .navitem STEHT ABSICHTLICH NICHT IN DIESER LISTE, und das ist gemessen,
+ * nicht geschätzt. Die Sidebar-Zeile ist 40 pt hoch und die Zeilen stehen
+ * ohne Zwischenraum; ein echtes 44-pt-Raster bräuchte 4 pt je Zeile mehr.
+ * Unter der letzten Zeile sind auf allen 19 Schirmen mit Sidebar genau 12 px
+ * frei, gebraucht würden 36–56 px — auf 834 pt iPad-Höhe ist das nicht da.
+ * Der Trefferbereich hilft hier nicht nur nicht, er SCHADET: bei Zeilen ohne
+ * Zwischenraum greift jedes Feld 2 pt in beide Nachbarn, und weil das spätere
+ * Geschwister oben liegt, verliert jede Zeile 2 pt oben und 2 pt unten. Die
+ * Treffprobe (elementFromPoint, größtes mittiges Rechteck) hat das gezeigt:
+ * 37,8 pt vorher, 33,8 pt mit Feld. Deshalb ist die Regel dort wieder
+ * entfernt. Ein Trefferbereich hilft nur, wo um das Element herum Platz ist.
+ * Die 228 R4-Meldungen der Sidebar bleiben damit offen; sie sind keine
+ * CSS-Frage, sondern eine der Informationsarchitektur: zwölf Sidebar-
+ * Einträge oder 44 pt, beides zusammen geht auf dieser Höhe nicht.
+ *
+ * .row und die klassenlosen <button> mit Inline-Maß (64 + 25 Meldungen)
+ * bleiben Sache der Schirme: sie sind nur dort klein, wo ein Inline-Stil
+ * sie klein macht, und eine Wurzelregel für „alle <button>" träfe auch die
+ * Karten, die selbst ein Bedienelement sind. */
+
+.btn--sm,
+.iconbtn,
+.segmented button,
+.handoff__btn,
+:is(button, a[href], [role="button"], label, summary).chip {
+  position: relative;
+}
+
+.btn--sm::after,
+.iconbtn::after,
+.segmented button::after,
+.handoff__btn::after,
+:is(button, a[href], [role="button"], label, summary).chip::after,
+.check::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;  min-width:  var(--tap);
+  height: 100%; min-height: var(--tap);
+  border-radius: inherit;
+}
 
 /* ── 6. Signatur: der Fluss zwischen den Modulen ──────────────────────── */
 
