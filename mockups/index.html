@@ -32,6 +32,16 @@
      (beide 15px, beide grau). Größe und Gewicht sind das zweite Merkmal. */
   .sec__head span { font: 600 13px/16px var(--sans); color: var(--ink-3); }
   .sec > p { font: 400 15px/20px var(--sans); color: var(--ink-2); margin: 0 0 20px; max-width: 35em; }
+  /* Ink ist fast-schwarz und nimmt einem Verweis das Signal „farbig = tappbar".
+     Deshalb trägt der Verweis im Fließtext zwei Merkmale: Gewicht und Linie.
+     Die Linie liegt auf --line-tap, dem Token für die Umrandung eines
+     Bedienelements ohne eigene Fläche, nicht auf --line-2 (1,46:1) — sie
+     ist hier Bedienoberfläche und keine Zierlinie, also gilt die
+     3:1-Schwelle. Im Bild war --line-2 schlicht nicht zu sehen. Der
+     Rückfall auf --thread hält denselben gerechneten Pegel, falls die
+     Seite einmal ohne die neue Stufe geöffnet wird. */
+  .sec > p a { color: var(--ink-1); font-weight: 600; text-decoration: none; border-bottom: 1.5px solid var(--line-tap, var(--thread)); }
+  .sec > p a:hover { border-bottom-color: var(--ink-1); }
 
   /* ── Kasten: So benutzt du diesen Ordner ──────────────────────────── */
   .howto {
@@ -48,9 +58,10 @@
      ist also 31px schmaler als die Spalte: 360-31 = 329px bei 15px Text,
      440-31 = 409px bei 19px — beide über 40 Zeichen je Zeile.
      Drei Spalten können nicht entstehen: dafür bräuchte es 3·360+2·30 =
-     1140px im Kasten, innen sind höchstens 1180-60-48 = 1072px frei. Das
-     ist wichtig, weil bei vier Punkten die zweite Zeile sonst zu drei
-     Vierteln leer bliebe. min(100%, …) hält die Spalte auf schmalen
+     1140px im Kasten, innen sind höchstens 1180-60-48 = 1072px frei. Bei
+     fünf Punkten bleibt die dritte Zeile damit halb leer — das ist der
+     Preis dafür, dass kein Punkt in eine 23-Zeichen-Spalte gerät.
+     min(100%, …) hält die Spalte auf schmalen
      Fenstern im Kasten, statt ihn quer laufen zu lassen. */
   .howto__grid {
     --howto-col: 360px;
@@ -78,6 +89,11 @@
 
   /* ── Vorschaukacheln ──────────────────────────────────────────────── */
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 22px; }
+  /* Zwei Kacheln, die die Zeile füllen sollen: auto-fit statt auto-fill,
+     sonst stünden sie in der ersten von vier Spalten und die Zeile bliebe
+     zur Hälfte leer. Benutzt für die beiden Bewegungsseiten — sie sind das,
+     was diese Runde dazugelegt hat, und stehen deshalb groß. */
+  .grid--zwei { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
   .item { display: block; text-decoration: none; color: inherit; }
   .item__shot {
     display: block; width: 100%; aspect-ratio: 1194 / 834;
@@ -176,6 +192,7 @@
     <p class="eyebrow">Entwurfspaket · August 2026</p>
     <h1 class="t-title" style="margin:0 0 14px">Eine All-in-One-App für Studium und Alltag</h1>
     <p><strong>Fünf Werkzeuge in einem Datenmodell.</strong> Der Kern ist nicht die Menge der Module, sondern dass Inhalte zwischen ihnen fließen: Ein markierter Satz in einer Vorlesungsnotiz wird zur Lernkarte, die morgen fällig ist — und behält den Weg dorthin sichtbar.</p>
+    <p><strong>Das Leitmotiv heißt der Faden.</strong> Jede Verbindung ist ein Faden zwischen zwei Punkten, und man kann ihn in beide Richtungen ablaufen — vom Absatz zur Karte und von der Karte zurück zum Absatz. Dazu gehört eine Regel, die etwas kostet: kein Faden ohne echte Beziehung im Datenmodell. Wo sich nicht sagen lässt, welche zwei Objekte ein Strich verbindet, steht keiner — auch dort nicht, wo einer hübsch aussähe.</p>
     <p>Die Oberfläche ist Papier und Grau. Der einzige Akzent ist Ink — fast-schwarz im hellen, fast-weiß im dunklen Modus — und er hat genau drei Aufgaben: aktiven Zustand, primäre Aktion, Auswahl. Alle Farbe, die man sonst sieht, gehört dem Nutzer: seine Tinte, seine Fotos, seine Cover.</p>
   </div>
 
@@ -194,6 +211,10 @@
       <div class="howto__item">
         <span class="ico" data-ico="hand"></span>
         <p>Das <b>Canvas ist wirklich bedienbar</b> — darin lässt sich mit Maus, Trackpad oder Stift zeichnen.</p>
+      </div>
+      <div class="howto__item">
+        <span class="ico" data-ico="play"></span>
+        <p>Die <b>Bewegung läuft</b>, sie ist nicht beschrieben: auf der Musterseite, im Onboarding und an den Knöpfen von sieben Screens des Entwurfs. Jede Bewegung hat einen zweiten, gebauten Pfad für <b>Reduce Motion</b>; beide sind dort umschaltbar.</p>
       </div>
       <div class="howto__item">
         <span class="ico" data-ico="photo"></span>
@@ -245,8 +266,22 @@
   <!-- ══ Der Entwurf ══ -->
   <section class="sec">
     <div class="sec__head"><h2>Der Entwurf</h2><span>dreizehn Screens · je hell und dunkel, je iPad und iPhone</span></div>
-    <p>Die verbindliche Zielfassung. Jeder Screen zeigt beide Größenklassen nebeneinander und lässt sich im Mockup zwischen hell und dunkel sowie zwischen zwei Dynamic-Type-Stufen umschalten.</p>
+    <p>Die verbindliche Zielfassung. Jeder Screen zeigt beide Größenklassen nebeneinander und lässt sich im Mockup zwischen hell und dunkel sowie zwischen zwei Dynamic-Type-Stufen umschalten. Der Faden trägt auf allen dreizehn — als Ketten-Karte, Zeitachse, Serie, Intervall-Reihe, Buchrücken, Graph-Kante und als Weg ins Leere.</p>
     <div class="grid" id="gridNext"></div>
+  </section>
+
+  <!-- ══ Bewegung ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Bewegung</h2><span>vier Rollen · fünf Momente · läuft wirklich</span></div>
+    <p>Bewegung nur, wo sie etwas erklärt: Herkunft, Fortschritt, Zustandswechsel. Die Kurven sind aus Federparametern gerechnet, nicht geschätzt, und jede Bewegung hat einen zweiten, gebauten Pfad für Reduce Motion — keinen Ausschalter. Beide Seiten sind bedienbar: anhalten, verlangsamen, umschalten.</p>
+    <div class="grid grid--zwei" id="gridMotion"></div>
+  </section>
+
+  <!-- ══ Plattform ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Velum im System</h2><span>zehn Berührungspunkte mit iOS</span></div>
+    <p>Die Rahmen, Radien, Materialien und Größen gehören iOS, der Inhalt gehört Velum. Wo eine Systemgröße nicht zu belegen war, steht sie mit ihrer Herleitung im Steckbrief der Seite — als erinnert, hergeleitet oder geschätzt, nie als Behauptung. Auf sieben der zehn Seiten steht ein Faden, auf dreien steht bewusst keiner; beides ist begründet. Die <a href="platform/index.html">Übersicht des Ordners</a> stellt Systemmaße und Fäden in zwei Tabellen nebeneinander.</p>
+    <div class="grid" id="gridPlatform"></div>
   </section>
 
   <!-- ══ Best-of ══ -->
@@ -256,18 +291,35 @@
     <div class="grid" id="gridBest"></div>
   </section>
 
+  <!-- ══ Bausteine und Proben ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Bausteine und Proben</h2><span>zwei Werkstattseiten</span></div>
+    <p>Nicht Teil der App, sondern der Nachweis darunter: die drei Primitive in jedem Zustand mit ihren gerechneten Kontrastwerten — und die Probe, ob die stille Oberfläche echte Fotografie trägt. Die Bilder im Entwurf sind erzeugt, weil freie Bildquellen aus diesem Container nicht erreichbar sind; die Probe zeigt sie in voller Größe neben den Flächen, auf denen sie liegen.</p>
+    <div class="grid" id="gridProben"></div>
+  </section>
+
   <!-- ══ Dokumente ══ -->
   <section class="sec">
-    <div class="sec__head"><h2>Dokumente</h2><span>drei Texte zum Lesen, zwei Bögen zum Ansehen</span></div>
+    <div class="sec__head"><h2>Dokumente</h2><span>fünf Texte zum Lesen, zwei Bögen zum Ansehen</span></div>
     <div class="doclist">
       <a href="../docs/das-ist-die-app.html">
         <span class="ico" data-ico="info"></span>
-        <span class="doclist__main"><b>Das ist die App</b><span class="sub">Was sie ist, für wen, wie sie aussieht und warum — mit Award-Bilanz</span></span>
+        <span class="doclist__main"><b>Das ist die App</b><span class="sub">Was sie ist, für wen, wie sie aussieht und warum — mit Award-Bilanz und der Liste dessen, was fehlt</span></span>
+        <span class="chip chip--ghost">Seite</span>
+      </a>
+      <a href="../docs/velum-dna.html">
+        <span class="ico" data-ico="edit"></span>
+        <span class="doclist__main"><b>Die Handschrift — Velum-DNA</b><span class="sub">Warum der Faden aus Velum folgt und nicht aus Geschmack · die drei Primitive · die Marke · der unbequeme Absatz</span></span>
+        <span class="chip chip--ghost">Seite</span>
+      </a>
+      <a href="../docs/bewegung.html">
+        <span class="ico" data-ico="bolt"></span>
+        <span class="doclist__main"><b>Bewegung</b><span class="sub">Vier Rollen, fünf Momente, ein Reduce-Motion-Pfad je Bewegung — samt der Liste dessen, was absichtlich stillsteht</span></span>
         <span class="chip chip--ghost">Seite</span>
       </a>
       <a href="../docs/konkurrenz-anatomie.html">
         <span class="ico" data-ico="search"></span>
-        <span class="doclist__main"><b>Konkurrenz-Anatomie</b><span class="sub">18 Apps in sechs Bereichen strukturell zerlegt</span></span>
+        <span class="doclist__main"><b>Konkurrenz-Anatomie</b><span class="sub">18 Plätze in sechs Bereichen strukturell zerlegt — 14 verschiedene Produkte</span></span>
         <span class="chip chip--ghost">Seite</span>
       </a>
       <a href="../docs/liesmich.html">
@@ -277,12 +329,12 @@
       </a>
       <a href="_renders/kontaktbogen-app-next-hell.png" data-shot="_renders/kontaktbogen-app-next">
         <span class="ico" data-ico="grid"></span>
-        <span class="doclist__main"><b>Kontaktbogen — Der Entwurf</b><span class="sub">Alle dreizehn Screens auf einem Blatt · Bilddatei, 2004 × 2615 px</span></span>
+        <span class="doclist__main"><b>Kontaktbogen — Der Entwurf</b><span class="sub">Alle dreizehn Screens auf einem Blatt · Bilddatei, hell und dunkel</span></span>
         <span class="chip chip--ghost">PNG</span>
       </a>
       <a href="_renders/kontaktbogen-best-of-hell.png" data-shot="_renders/kontaktbogen-best-of">
         <span class="ico" data-ico="grid"></span>
-        <span class="doclist__main"><b>Kontaktbogen — <span style="white-space:nowrap">Best-of</span></b><span class="sub">Alle sechs Screens auf einem Blatt · Bilddatei, 2004 × 1136 px</span></span>
+        <span class="doclist__main"><b>Kontaktbogen — <span style="white-space:nowrap">Best-of</span></b><span class="sub">Alle sechs Screens auf einem Blatt · Bilddatei, hell und dunkel</span></span>
         <span class="chip chip--ghost">PNG</span>
       </a>
     </div>
@@ -290,8 +342,9 @@
 
   <!-- ══ Fußzeile ══ -->
   <footer class="foot">
-    <p>Stand August 2026 · zwanzig Screens: das lauffähige Canvas, dreizehn Screens des Entwurfs, sechs Screens der Best-of-Vorstufe.</p>
-    <p>Dazu 80 Screenshots in <code>_renders/</code> — jeder Screen hell und dunkel, als iPad und als iPhone.</p>
+    <p>Stand August 2026 · vierunddreißig Seiten: das lauffähige Canvas, dreizehn Screens des Entwurfs, zwei Bewegungsseiten, zehn Plattform-Ansichten, sechs Screens der Best-of-Vorstufe, zwei Werkstattseiten.</p>
+    <p>Die Vorschaubilder liegen in <code>_renders/</code> und heißen nach Ordner und Datei. Die Screens des Entwurfs und der Vorstufe gibt es dort viermal — als iPad und als iPhone, je hell und dunkel; die übrigen Seiten zweimal, hell und dunkel. Der Umschalter oben rechts wechselt die Bilder auf dieser Seite mit.</p>
+    <p>Das Zeichen fehlt: Die drei App-Icon-Dateien unter <code>assets/brand/</code> liegen nicht vor. Wo das Zeichen stünde, steht ein leerer Rahmen mit dem Dateinamen — nachgezeichnet wird nichts.</p>
   </footer>
 </div>
 
@@ -326,6 +379,34 @@
     ['tasks', 'Aufgaben', 'Things 3 · Todoist · TickTick'],
     ['flashcards', 'Lernkarten', 'Anki · Quizlet · RemNote'],
   ];
+  /* Die Bewegungsseiten und die Plattform-Ansichten sind ganze Seiten, keine
+     Gerätepaare — sie liegen in _renders/ deshalb nur zweimal (hell/dunkel)
+     statt viermal. Der Dateiname folgt derselben Regel wie überall:
+     Ordner + Datei + Modus, also motion-onboarding-hell.png. */
+  const MOTION = [
+    ['index', 'Bewegungs-Musterseite', 'Vier Rollen und fünf Momente mit Steckbrief, Verlangsamer und Reduce-Motion-Schalter',
+     ['läuft', '0,25× schaltbar']],
+    ['onboarding', 'Die ersten 30 Sekunden', 'Elf Takte in 28 Sekunden — Start, Pause, zurück auf Anfang. Kein Takt bringt eine eigene Bewegung mit',
+     ['läuft', 'Onboarding']],
+  ];
+  const PLATFORM = [
+    ['widgets', 'Widgets', 'Klein, mittel, groß im echten Raster — dazu die drei Sperrbildschirm-Formen und eine Rasterzeichnung mit jedem Maß', 'iPhone · 4 Ansichten'],
+    ['live-activity', 'Live Activity · Dynamic Island', 'Ruhe, kompakt, minimal, erweitert und die Sperrbildschirm-Fassung, mit Zustandstafel 1:1', 'iPhone · 4 Ansichten'],
+    ['pencil', 'Apple Pencil', 'Schweben über dem Herkunfts-Rand, Squeeze-Palette an der Spitze, Scribble im Moment davor', 'iPad · 3 Ansichten'],
+    ['sperrbildschirm', 'Sperrbildschirm-Mitteilung', 'Stapel, aufgezogen, lange Fassung — die Mitteilung nennt den Weg, nicht nur eine Zahl', 'iPhone · 3 Ansichten'],
+    ['spotlight', 'Spotlight', 'Systemsuche mit Velum-Treffern, daneben Velums eigenes Feld: Wege statt Treffer', 'iPhone · 2 Ansichten'],
+    ['kurzbefehle', 'Siri und Kurzbefehle', 'Fünf Aktionen im System, eine geöffnet, die Siri-Antwort über dem laufenden Schirm', 'iPhone · 3 Ansichten'],
+    ['fokus', 'Fokus-Filter', 'Der Filter im System und derselbe Schirm zweimal: ohne Fokus und im Fokus „Studium“', 'iPhone · 3 Ansichten'],
+    ['teilen', 'Teilen-Blatt', 'Aus Velum hinaus und nach Velum hinein — hinaus bewusst ohne Faden', 'iPhone · 2 Ansichten'],
+    ['kontextmenue', 'Kontextmenü', 'Menü unter der Vorschau auf dem iPhone, neben der Vorschau auf dem iPad', 'iPhone + iPad'],
+    ['handoff', 'Handoff', 'iPhone zu iPad — der einzige Faden, der einen Geräterahmen verlässt', 'iPhone + iPad'],
+  ];
+  const PROBEN = [
+    ['shared/faden-probe.html', 'shared-faden-probe', 'Der Faden — Musterseite',
+     'Punkt, Faden und Knoten in jedem Zustand, mit den gerechneten Kontrastwerten und dem Marken-Baustein'],
+    ['assets/bilder/probe.html', 'bilder-probe', 'Bildprobe',
+     'Erzeugte Fotos, zwölf Cover-Papiere und die Mikroskopie in voller Größe — mit gemessenem Kontrast je Bild'],
+  ];
 
   const card = (href, shot, title, sub, tags) => {
     const a = document.createElement('a');
@@ -352,6 +433,18 @@
   const gb = document.getElementById('gridBest');
   BEST.forEach(([f, t, s]) =>
     gb.appendChild(card('best-of/' + f + '.html', '_renders/best-of-' + f + '-ipad-hell.png', t, s)));
+
+  const gm = document.getElementById('gridMotion');
+  MOTION.forEach(([f, t, s, tags]) =>
+    gm.appendChild(card('motion/' + f + '.html', '_renders/motion-' + f + '-hell.png', t, s, tags)));
+
+  const gp = document.getElementById('gridPlatform');
+  PLATFORM.forEach(([f, t, s, tag]) =>
+    gp.appendChild(card('platform/' + f + '.html', '_renders/platform-' + f + '-hell.png', t, s, [tag])));
+
+  const gpr = document.getElementById('gridProben');
+  PROBEN.forEach(([href, shot, t, s]) =>
+    gpr.appendChild(card(href, '_renders/' + shot + '-hell.png', t, s)));
 
   // Vorschaubilder folgen dem Modus des Betrachters
   const swap = () => {
