@@ -51,6 +51,28 @@ Drei Entscheidungen dazu, die keine Selbstverständlichkeiten sind:
    ist, und der einzige mit einem Knoten: im Papierkorb treffen Fäden aus
    allen fünf Modulen zusammen.
 
+KEINE BEWEGUNG AUF DIESEM SCHIRM — begründet, nicht vergessen
+bewegung.css und bewegung.js sind hier NICHT eingebunden, und das ist eine
+Entscheidung. Alle sechs Momente aus bewegung.js brauchen zwei vorhandene
+Objekte: Öffnen (Zeile → Karte), Wechseln (Ansicht → Ansicht), Übergeben
+(Absatz → Kachel), Bestätigen (Aufgabe → erledigt), Herkunft (Chip →
+Ursprung), Zurück. Ein leerer Ort hat genau EIN Objekt; das zweite ist ja
+gerade das, was fehlt. Es gibt hier nichts zu übergeben und nichts, wohin man
+zurückginge.
+
+Ohne einen einzigen data-bw-Knopf wären die beiden Zeilen zwei tote Verweise:
+bewegung.css definiert außer :root-Variablen ausschließlich .bw-*- und
+[data-bw]-Regeln, bewegung.js bereitet nur .bw-check, .bw-staffel, .bw-welle,
+.bw-zaehler und [data-bw-laden] auf — nichts davon steht auf diesem Schirm.
+Dasselbe machen die fertigen journal-home.html und graph.html: einbinden, wo
+etwas ausgelöst wird, sonst nicht.
+
+Die Bewegung, die zu diesem Schirm gehört, gehört dem NÄCHSTEN: sobald die
+erste Notiz existiert, füllt sich der hohle Punkt und der Faden ist eine
+Herkunft. Nachzusehen auf flashcards-home.html, wo genau derselbe Faden
+(Notiz „Zellbiologie" → Karte) als 2,5-pt-Herkunftsfaden wiederkommt und sich
+auf Tastendruck zurückzeichnen lässt.
+
 ÜBERNOMMEN
 · Apple Journal: Der beste leere Zustand im ganzen Vergleichsfeld ist gar
   nicht leer — er zeigt Rohmaterial aus den eigenen Fotos und Orten, und die
@@ -81,13 +103,22 @@ festgelegt und über alle sechs Karten hinweg widerspruchsfrei:
   · Ein Kalendertermin und drei Fotos auf dem Gerät
   · Nichts im Papierkorb, keine Karte, keine zweite Notiz
 
-KONTRAST (gerechnet, Werte am Ende dieser Runde nachgemessen)
-  Titel            ink-1 auf Papier   17,8:1 (hell) · 15,9:1 (dunkel)
-  Erklärtext       ink-2 auf Papier    5,3:1 (hell) ·  7,1:1 (dunkel)
-  Fadenbeschriftung ink-3 auf Papier   4,8:1 (hell) ·  4,9:1 (dunkel)
-  CTA-Text         accent-on auf Ink  17,8:1 (hell) · 17,3:1 (dunkel)
-  Faden            --thread            3,10:1 (hell) ·  3,13:1 (dunkel)
-  Hohler Punkt     --dot-hollow        3,10:1 (hell) ·  3,13:1 (dunkel)
+KONTRAST — am gerenderten Schirm GEMESSEN, nicht abgeschrieben. Verfahren:
+getComputedStyle liefert die aufgelösten Farbwerte, der Untergrund wird die
+Elternkette hinauf bis zur ersten deckenden Fläche gesucht und
+alpha-über-Untergrund gemischt. Skript: scratchpad/r2e/kontrast.js.
+
+                                        hell      dunkel   soll
+  Screen-Titel   serif--screen-title   16,38:1   16,11:1    3,0
+  Leer-Titel     serif--empty-title    17,77:1   15,86:1    4,5
+  Fließtext      t-body                14,24:1   12,37:1    4,5
+  Erklärtext     t-sub c-2              5,32:1    7,10:1    4,5
+  Fadenbeschr.   t-label c-3            4,97:1    5,12:1    4,5
+  CTA-Text       accent-on auf Ink     17,77:1   17,27:1    4,5
+  Faden          --thread auf Papier    3,10:1    3,13:1    3,0
+  Der hohle Punkt trägt denselben Ring wie der Faden Strich: 3,10 / 3,13.
+  Engster Wert des Schirms: der Faden mit 3,10:1 — über 3:1 ohne Reserve,
+  begründet in system.css §9.0.
 
 TYPO: 5 Größen, 2 Gewichte. Die Titel tragen .serif--empty-title (20/26 600) —
 eine der sieben Serif-Rollen. Kein blankes .serif auf diesem Schirm.
@@ -338,7 +369,7 @@ beginnt).
               <div style="display:flex; align-items:center; gap:18px">
                 <div style="flex:1 1 0; min-width:0">
                   <div class="empty__title serif--empty-title">Noch keine Verbindungen</div>
-                  <p class="t-sub c-2" style="margin:5px 0 0">Eine Verbindung braucht zwei Seiten. Ab der zweiten Notiz zeichnet der Graph sich von selbst: jeder <span style="font-family:var(--mono); font-size:14px">[[Wiki-Link]]</span> legt einen Faden.</p>
+                  <p class="t-sub c-2" style="margin:5px 0 0">Eine Verbindung braucht zwei Seiten. Ab der zweiten Notiz zeichnet der Graph sich von selbst: jeder <span style="font-family:var(--mono); white-space:nowrap">[[Wiki-Link]]</span> legt einen Faden.</p>
                 </div>
 
                 <!-- FADEN 6 · Notiz „Zellbiologie" → (zweite Notiz fehlt).
@@ -369,7 +400,7 @@ beginnt).
 
   <!-- ══════════════════════════ iPhone ══════════════════════════ -->
   <div class="device" style="margin-top:34px">
-    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · derselbe erste Tag, dieselben Fäden</span></div>
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · derselbe erste Tag, zwei der sechs Orte in voller Länge</span></div>
     <div class="screen screen--iphone">
       <div class="statusbar">
         <span class="num">9:41</span>
@@ -399,9 +430,15 @@ beginnt).
               <span class="t-label c-3">noch kein Eintrag</span>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap:8px">
-              <button class="btn btn--primary btn--sm" style="width:100%"><span class="ico" data-ico="edit" style="width:16px;height:16px"></span>Erste Notiz schreiben</button>
-              <button class="btn btn--sm" style="width:100%"><span class="ico" data-ico="plus" style="width:16px;height:16px"></span>Aufgabe erfassen</button>
+            <!-- Nebeneinander statt untereinander, und mit denselben
+                 Beschriftungen wie am iPad. Grund ist gemessen, nicht
+                 geschmacklich: untereinander maß der Inhalt des iPhones
+                 709 pt bei 663 pt Sichthöhe, und der Knopf der unteren
+                 Karte wurde 26 pt tief abgeschnitten. Ein leerer Ort, dessen
+                 erster Schritt halb unter dem Rand liegt, nennt ihn nicht. -->
+            <div style="display:flex; gap:8px">
+              <button class="btn btn--primary btn--sm" style="flex:1 1 0"><span class="ico" data-ico="edit" style="width:16px;height:16px"></span>Erste Notiz</button>
+              <button class="btn btn--sm" style="flex:1 1 0"><span class="ico" data-ico="plus" style="width:16px;height:16px"></span>Aufgabe</button>
             </div>
           </section>
 
@@ -434,10 +471,15 @@ beginnt).
               <svg class="thread thread--h"></svg>
               <span class="dot dot--hollow"></span>
             </div>
-            <div style="display:flex; justify-content:space-between; gap:8px; margin-top:2px">
+            <div style="display:flex; justify-content:space-between; gap:8px; margin:2px 0 11px">
               <span class="t-label c-3">„Zellbiologie" · 14 Absätze</span>
               <span class="t-label c-3">keine Karte</span>
             </div>
+            <!-- Der erste Schritt fehlte hier: die Karte nannte den Weg nur im
+                 Satz („markiere einen Satz in einer Notiz"), ohne ihn gehbar
+                 zu machen — als einzige der sechs. Ein leerer Ort, der den
+                 Schritt nur beschreibt, ist genau die Hälfte der Regel. -->
+            <button class="btn btn--sm" style="width:100%"><span class="ico" data-ico="notes" style="width:16px;height:16px"></span>Notiz öffnen</button>
           </section>
         </div>
 
@@ -472,13 +514,18 @@ beginnt).
   <p>Bis Runde 1 stand in jeder dieser Karten Apples <span class="num">ContentUnavailableView</span>: ein SF-Symbol in einer 76-pt-Fläche, darunter Titel und Satz. Diese Kachel ist ersatzlos weg. Ein Symbol <em>behauptet</em> Leere; der Faden <em>zeigt</em>, was fehlt und wo es herkäme. Die Probe darauf, dass er die Verwandlung wirklich trägt und nicht daneben liegt: nimmt man ihn heraus, hat die Karte ein Loch — die beiden Beschriftungen unter den Punkten sind der einzige Ort, an dem steht, welches Objekt hier entstehen würde.</p>
   <p>Ebenfalls gestrichen: die Vorschau-Konstellation im Graph-Kasten (fünf Kreise, gestrichelte Linien). Sie sah aus wie ein Graph, verband aber nichts — genau der Fall, den die Regel „kein Faden ohne Kante" ausschließt.</p>
 
+  <h3>Warum hier nichts sich bewegt</h3>
+  <p>Dieser Schirm bindet <span class="num">bewegung.js</span> bewusst nicht ein. Alle sechs Momente der Bewegungssprache brauchen <em>zwei</em> vorhandene Objekte — Öffnen, Wechseln, Übergeben, Bestätigen, Herkunft, Zurück. Ein leerer Ort hat genau eines; das zweite ist ja gerade das, was fehlt. Es gibt hier nichts zu übergeben und nichts, wohin man zurückginge. Zwei Verweise ohne einen einzigen auslösenden Knopf wären tote Zeilen, und die fertigen <span class="num">journal-home.html</span> und <span class="num">graph.html</span> halten es genauso.</p>
+  <p>Die Bewegung, die zu diesem Schirm gehört, gehört dem nächsten: Sobald die erste Notiz existiert, füllt sich der hohle Punkt, und aus derselben Beziehung wird ein Herkunftsfaden, den man auf Tastendruck zurücklaufen lassen kann — nachzusehen auf <span class="num">flashcards-home.html</span>, wo genau dieser Faden (Notiz „Zellbiologie" → Karte) mit 2,5 pt wiederkommt.</p>
+
   <h3>Warum alle sechs 1,5 pt tragen</h3>
   <p>Stärke sagt Nähe: 1 pt schwach, 1,5 pt normal, 2,5 pt Herkunft. Eine Beziehung, die es noch gar nicht gibt, darf keine Stärke behaupten. Deshalb steht auf diesem Schirm kein einziger <span class="num">.thread--origin</span> — er beginnt erst dort, wo wirklich etwas aus etwas entstanden ist.</p>
 
   <h3>Die Regel hinter allen sechs Orten</h3>
   <table>
     <tr><td>Was hier steht</td><td>Jeder leere Ort erklärt in einem Satz, was normalerweise an dieser Stelle liegt — nicht, dass etwas fehlt.</td></tr>
-    <tr><td>Der erste Schritt</td><td>Genau ein Knopf, benannt nach der Handlung („Notizbuch anlegen"), nie „Los geht's".</td></tr>
+    <tr><td>Der erste Schritt</td><td>Genau ein Knopf, benannt nach der Handlung („Notizbuch anlegen", „Notiz öffnen", „Zweite Notiz"), nie „Los geht's". <strong>Fünf von sechs.</strong> Der Papierkorb hat keinen — siehe die nächste Zeile.</td></tr>
+    <tr><td>Die eine Ausnahme</td><td><strong>Der Papierkorb bekommt bewusst keinen Knopf.</strong> Er ist der einzige Ort, an dem die Leere schon der gewünschte Zustand ist; es gibt hier nichts zu tun, und ein Knopf wäre eine erfundene Handlung. Wir haben ihn nicht eingebaut, um die Regel „jeder leere Ort nennt den ersten Schritt" formal zu erfüllen — eine Regel, die man mit einer Attrappe erfüllt, ist keine mehr. Stattdessen steht dort der Satz, der die Lage benennt: „Der einzige Ort, an dem das gut ist."</td></tr>
     <tr><td>Material statt Aufforderung</td><td>Wo das Gerät schon etwas weiß — Kalendereintrag, Fotos von gestern, eine Notiz mit 14 Absätzen — liegt es als Karte bereit. Der leere Screen sieht dann strukturell aus wie der gefüllte.</td></tr>
     <tr><td>Der Faden</td><td>Beide Enden tragen ihren Namen als Wort. Wer den Strich sieht, kann lesen, welche zwei Dinge er verbinden würde.</td></tr>
   </table>

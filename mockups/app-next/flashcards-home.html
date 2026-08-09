@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lernkarten-Start — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
 </head>
 <body>
 
@@ -34,10 +35,13 @@ KOMMENTARBLOCK — Lernkarten-Start
   leerer Zustand, der auf denselben Weg zeigt: „markiere Text in einer Notiz".
   Bewertung: konzeptionell die reifste der drei Vorlagen — RemNote versteckt es
   nur hinter einer Lernkurve. Hier ist die Herkunft ein Chip, kein Konzept.
-· GitHubs Beitragsraster (als Form, nicht als Vorbild) — 12 Wochen als
-  Punktraster. Übernommen für die Form, verworfen für die Farbe: die Dichte
-  läuft über Ink-Deckkraft, nicht über Grün, und unter dem Raster steht die
-  Zahl. Wer keine Sättigungsunterschiede sieht, liest trotzdem „859".
+· GitHubs Beitragsraster — die FORM übernommen, die KENNZAHL verworfen.
+  Zwölf Wochen als Punktraster bleiben; GitHubs Metrik (wie viel wurde
+  gemacht) ist ersetzt durch die einzige, die aus Velum folgt: wie viel vom
+  Material eines Tages heute sitzt. Begründung im Kasten über der Karte.
+  Auch die Farbe ist verworfen: die Dichte läuft über Ink-Deckkraft, nicht
+  über Grün, und die Aussage steht zusätzlich als Zahl darunter
+  („84 von 107 sitzen"). Wer keine Sättigungsunterschiede sieht, liest sie.
 
 BEWUSST NICHT ÜBERNOMMEN
 · Ankis Buntkodierung der drei Zähler (blau/rot/grün). Drei Buntfarben für drei
@@ -64,17 +68,68 @@ Zwei Dinge, die keine der Vorlagen zusammen hat:
    Notiz, und das leere Deck erklärt den Weg dorthin, statt zu einem
    Karten-Editor zu schicken. Ein Deck ist hier nie ein Stapel ohne Vorgeschichte.
 
+DER FADEN AUF DIESEM SCHIRM (Runde 2)
+Drei Sorten Kante, und keine vierte. Wer einen Strich sieht, kann sagen,
+welche zwei Objekte er verbindet:
+
+  1 HERKUNFT (2,5 pt, --origin) · Notiz → Deck.
+    Im Kopf jeder Deck-Karte, in Leserichtung: links die Notiz, dann der
+    Faden, dann der Deckname. Vier Decks, vier verschiedene Fälle —
+    „Zellbiologie" eine Notiz · „Anatomie" DREI Notizen, die in einem KNOTEN
+    zusammenlaufen (der einzige Ort des Schirms mit mehr als einer
+    eingehenden Kante) · „Statistik-Formeln" eine Notiz · „Lesenotizen
+    Soziologie" eine Notiz, aber NOCH KEINE KARTE: dieser Faden endet hohl
+    und trägt nur 1,5 pt. Eine Beziehung, die es noch nicht gibt, behauptet
+    keine Stärke.
+    Genau hier kann Velum etwas, was Anki und Quizlet strukturell nicht
+    können: ein Deck ohne Vorgeschichte gibt es nicht. Der Chip ist begehbar
+    — der Tap läuft den Faden zurück und legt die Notiz daneben (bewegung.js,
+    Moment „Herkunft", ausgelöst über data-bw, ohne eine Zeile JavaScript in
+    dieser Datei).
+
+  2 WIEDERHOLUNG (1,5 pt) · Wiederholung n → Wiederholung n+1.
+    Die Abstandsleiter 1 d · 3 d · 8 d · 21 d einer einzelnen Karte
+    („Osmose"). Gefüllt, was hinter ihr liegt; Ink-Ring, wo sie heute steht;
+    hohl, was noch aussteht. Die begangenen Fadenstücke sind aktiv (Ink), das
+    kommende ist es nicht.
+
+  3 FORTSETZUNG (1 pt, --weak) · Tag n → Tag n+1 innerhalb EINES Laufs.
+    Die Serie. Die schwächste der drei Kanten, deshalb der dünnste Faden.
+
+KEIN FADEN im Zwölf-Wochen-Raster, in den Prognose-Balken, im
+Fortschrittsbalken und zwischen den drei Zählern. Dort liegt keine Kante,
+sondern Nachbarschaft, Skala oder Summe. Die Begründung für das Raster steht
+im Kasten über der Ertrags-Karte; sie ist der Preis der Regel und wird nicht
+verschwiegen.
+
 ADA-KATEGORIE: Inklusion (die Heatmap trägt keine Buntfarbe — Dichte über
 Ink-Deckkraft plus Zahl darunter; jeder Zustand hat zwei Merkmale) und
 Innovation (der Scheduler wird zum bedienbaren Regler mit sichtbarer Folge).
 
-KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
-  Titel/Fließtext  ink-1 auf Papier   17,8:1   (hell) · 15,9:1 (dunkel)
-  Sekundärtext     ink-2 auf Papier    5,3:1   (hell) ·  7,1:1 (dunkel)
-  Metadaten        ink-3 auf Grund     4,8:1   (hell) ·  4,9:1 (dunkel)
-  CTA-Text         accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
-  Heatmap-Punkte sind ink-1 mit .07/.24/.44/.66/.88 Deckkraft — Dekoration,
-  nie Textträger; die Aussage steht als Zahl daneben (859 · 50 aktive Tage).
+KONTRAST — am gerenderten Schirm GEMESSEN, nicht aus system.css abgeschrieben.
+Verfahren: getComputedStyle liefert die aufgelösten Farbwerte, der Untergrund
+wird die Elternkette hinauf bis zur ersten deckenden Fläche gesucht und
+alpha-über-Untergrund gemischt; die eigene Fläche zählt mit (ein Knopf mit
+Ink-Füllung trägt seinen Text auf DIESER Fläche). Skript:
+scratchpad/r2e/kontrast.js.
+
+                                        hell      dunkel   soll
+  Screen-Titel   serif--screen-title   16,38:1   16,11:1    3,0
+  Fließtext      t-body                16,38:1   16,11:1    4,5
+  Leer-Titel     serif--empty-title    17,77:1   15,86:1    4,5
+  Zitat          serif--quote          15,43:1   12,12:1    4,5
+  Sekundärtext   t-sub c-2              5,32:1    7,10:1    4,5
+  Fadenbeschr.   t-label c-3            4,78:1    5,23:1    4,5
+  CTA-Text       accent-on auf Ink     17,77:1   17,27:1    4,5
+  Faden          --thread auf Grund     3,03:1    3,02:1    3,0
+  Faden schwach  --thread auf Papier    3,10:1    3,13:1    3,0
+  Faden aktiv    --accent              17,77:1   15,86:1    3,0
+  Der engste Wert des Schirms ist der Faden mit 3,02:1 im Dunkelmodus —
+  über 3:1, aber ohne Reserve. Das ist Absicht: system.css §9.0 begründet,
+  warum der Faden --thread trägt und nicht --line-2 (1,46:1).
+
+  Ertrags-Punkte sind ink-1 mit .07/.24/.44/.66/.88 Deckkraft — Dekoration,
+  nie Textträger; die Aussage steht als Zahl daneben (84 von 107 · 48 Tage).
   Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
 
 TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
@@ -92,7 +147,7 @@ gesetzt — system.css bleibt unangetastet.
   <!-- ══════════════════════════ iPad ══════════════════════════ -->
   <div class="device">
     <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Sidebar, Deck-Liste und Planer-Spalte</span></div>
-    <div class="screen screen--ipad">
+    <div class="screen screen--ipad" id="fc-ipad">
       <div class="statusbar">
         <span class="num">9:41</span>
         <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
@@ -161,8 +216,21 @@ gesetzt — system.css bleibt unangetastet.
                    Der Herkunfts-Chip aus Runde 1 sagte das in Worten („aus
                    ‚Zellbiologie'"); jetzt trägt er den Strich, und der Strich
                    ist derselbe Baustein wie überall: <svg class="thread">.
-                   Leserichtung im Kopf jeder Karte ist die Kausalität —
-                   links die Notiz, dann der Faden, dann der Deckname.
+                   Die Kausalität steht IM Chip — Notiz-Punkt, Faden,
+                   Karten-Punkt, in dieser Richtung.
+
+                   DER CHIP STEHT RECHTS, nicht links. Zwei Gründe, der zweite
+                   ist aus dem Bild: (1) So machen es die fertigen Schirme —
+                   today.html hängt den Herkunfts-Chip in .row__meta, also ans
+                   Zeilenende, und das iPhone unten stellt den Decknamen
+                   ebenfalls voran. Erst das Objekt, dann seine Herkunft.
+                   (2) Links neben dem Titel lief der Herkunfts-Faden beim
+                   Antippen quer durch den Decknamen und sah aus wie eine
+                   Durchstreichung: MOCK.thread verlässt ein Element auf der
+                   Seite, die dem Ziel zugewandt ist, und das ist bei einem
+                   Ziel in der rechten Spalte die rechte Kante auf halber
+                   Höhe — genau dort stand der Titel. Jetzt öffnet sich die
+                   rechte Kante des Chips ins Freie.
 
                    Vier Decks, vier verschiedene Fälle:
                      1 Zellbiologie   eine Notiz  → 2,5 pt (Herkunft)
@@ -170,7 +238,14 @@ gesetzt — system.css bleibt unangetastet.
                      3 Statistik      eine Notiz  → 2,5 pt
                      4 Soziologie     Notiz da, Karte nicht → 1,5 pt, hohl
               ══════════════════════════════════════════════════════════ -->
-              <div style="display:flex; flex-direction:column; gap:7px; min-width:0">
+              <!-- position:relative, damit die Quell-Tafel (unten) absolut
+                   darüberliegen kann. Absolut heißt: sie kostet keine
+                   Zeilenhöhe, solange sie nicht gerufen wird — die Spalte
+                   passt weiterhin auf 749 pt, gemessen.
+
+                   Die Klammer um die Deck-Liste weiter unten ist KEIN
+                   Schönheitsmittel, sondern ein Befund aus dem Bild. -->
+              <div style="position:relative; display:flex; flex-direction:column; gap:7px; min-width:0">
 
                 <div style="display:flex; align-items:center; gap:12px">
                   <div class="divider" style="flex:1 1 auto; margin:0"><span class="t-label c-3">DECKS</span><span class="t-label c-3 num">4</span></div>
@@ -180,10 +255,20 @@ gesetzt — system.css bleibt unangetastet.
                   </div>
                 </div>
 
-                <!-- ══ Deck 1 — eine Notiz, 9 markierte Absätze, 12 Karten ══ -->
+                <!-- ══ Deck 1 — eine Notiz, 9 markierte Absätze, 12 Karten ══
+                     Der Herkunfts-Chip ist hier nicht nur Beschriftung: der
+                     Tap läuft den Faden zurück (bewegung.js, Moment
+                     „Herkunft"). Ausgelöst über data-Attribute — in dieser
+                     Datei steht keine Zeile JavaScript. -->
                 <section class="card" style="padding:9px 14px 10px">
                   <div class="card__head" style="margin-bottom:7px; gap:10px; min-width:0; overflow:hidden">
-                    <button class="origin" style="height:auto; min-height:44px; gap:8px; padding:0 11px; flex:none">
+                    <span class="t-section" style="white-space:nowrap">Zellbiologie</span>
+                    <div style="flex:1 1 auto"></div>
+                    <button class="origin" style="height:auto; min-height:44px; gap:8px; padding:0 11px; flex:none"
+                            data-bw="herkunft" data-bw-ursprung="#fc-quelle-anker"
+                            data-bw-quelle="#fc-quelle"
+                            data-bw-box="#fc-ipad" data-bw-kurve="30"
+                            aria-expanded="false" aria-label="Herkunft zeigen: aus der Notiz Zellbiologie">
                       <span style="white-space:nowrap">aus „Zellbiologie"</span>
                       <span class="threadrow" style="width:40px; flex:none">
                         <span class="dot dot--notes"></span>
@@ -191,7 +276,6 @@ gesetzt — system.css bleibt unangetastet.
                         <span class="dot dot--cards"></span>
                       </span>
                     </button>
-                    <span class="t-section" style="white-space:nowrap">Zellbiologie</span>
                   </div>
 
                   <div style="display:flex; align-items:center; gap:0">
@@ -240,6 +324,8 @@ gesetzt — system.css bleibt unangetastet.
                      Stelle mit mehr als einer eingehenden Kante ist. -->
                 <section class="card" style="padding:9px 14px 10px">
                   <div class="card__head" style="margin-bottom:7px; gap:10px; min-width:0; overflow:hidden">
+                    <span class="t-section" style="white-space:nowrap">Anatomie Grundlagen</span>
+                    <div style="flex:1 1 auto"></div>
                     <button class="origin" style="height:auto; min-height:44px; gap:9px; padding:0 11px; flex:none">
                       <span style="white-space:nowrap">aus 3 Notizen</span>
                       <span style="position:relative; width:46px; height:22px; flex:none">
@@ -253,7 +339,6 @@ gesetzt — system.css bleibt unangetastet.
                         <span class="dot dot--node" style="position:absolute; right:0; top:7px; --node-ring: var(--fill)"></span>
                       </span>
                     </button>
-                    <span class="t-section" style="white-space:nowrap">Anatomie Grundlagen</span>
                   </div>
                   <div style="display:flex; align-items:center; gap:0">
                     <span class="count"><span class="count__n num">4</span><span class="count__w t-sub">Neu</span></span>
@@ -276,6 +361,8 @@ gesetzt — system.css bleibt unangetastet.
                      Deckkraft + fehlende Fläche, nie nur ausgegraut. ══ -->
                 <section class="card" style="padding:9px 14px 10px">
                   <div class="card__head" style="margin-bottom:7px; gap:10px; min-width:0; overflow:hidden">
+                    <span class="t-section" style="white-space:nowrap">Statistik-Formeln</span>
+                    <div style="flex:1 1 auto"></div>
                     <button class="origin" style="height:auto; min-height:44px; gap:8px; padding:0 11px; flex:none">
                       <span style="white-space:nowrap">aus „Formelsammlung"</span>
                       <span class="threadrow" style="width:40px; flex:none">
@@ -284,7 +371,6 @@ gesetzt — system.css bleibt unangetastet.
                         <span class="dot dot--cards"></span>
                       </span>
                     </button>
-                    <span class="t-section" style="white-space:nowrap">Statistik-Formeln</span>
                   </div>
                   <div style="display:flex; align-items:center; gap:0">
                     <span class="count is-off"><span class="count__n num">0</span><span class="count__w t-sub">Neu</span></span>
@@ -309,6 +395,8 @@ gesetzt — system.css bleibt unangetastet.
                      Regel wie auf leere-zustaende.html. ══ -->
                 <section class="card" style="padding:9px 14px 10px">
                   <div class="card__head" style="margin-bottom:4px; gap:10px; min-width:0; overflow:hidden">
+                    <span class="t-section" style="white-space:nowrap">Lesenotizen Soziologie</span>
+                    <div style="flex:1 1 auto"></div>
                     <button class="origin" style="height:auto; min-height:44px; gap:8px; padding:0 11px; flex:none">
                       <span style="white-space:nowrap">aus „Weber"</span>
                       <span class="threadrow" style="width:40px; flex:none">
@@ -317,7 +405,6 @@ gesetzt — system.css bleibt unangetastet.
                         <span class="dot dot--hollow"></span>
                       </span>
                     </button>
-                    <span class="t-section" style="white-space:nowrap">Lesenotizen Soziologie</span>
                   </div>
                   <div style="display:flex; align-items:center; text-align:left; gap:14px">
                     <div style="flex:1 1 auto; min-width:0">
@@ -330,8 +417,45 @@ gesetzt — system.css bleibt unangetastet.
 
               </div>
 
-              <!-- ══ Rechte Spalte: der Planer ══ -->
-              <div style="display:flex; flex-direction:column; gap:8px; min-width:0">
+              <!-- ══ Rechte Spalte: der Planer ══
+                   position:relative, damit die Quell-Tafel darüber warten
+                   kann, ohne Zeilenhöhe zu kosten — die Spalte misst
+                   weiterhin 749 pt, gemessen. -->
+              <div style="position:relative; display:flex; flex-direction:column; gap:8px; min-width:0">
+
+                <!-- ══════════════════════════════════════════════════════════
+                     DIE QUELLE — das andere Ende des Herkunfts-Fadens.
+
+                     WARUM SIE HIER STEHT UND NICHT NEBEN DEM CHIP: Der erste
+                     Versuch legte sie über die Deck-Spalte, also 60 pt neben
+                     den Chip. Im Bild war der Faden dann ein Häkchen — ein
+                     Rückweg von 60 pt ist keiner, und das Leitmotiv sagt
+                     ausdrücklich, dass man den Faden ABLAUFEN kann. Jetzt
+                     liegt die Quelle in der anderen Spalte, rund 640 pt
+                     entfernt, und der Faden ist eine Strecke. Dieselbe
+                     Aufteilung wie in task-detail.html: Chip links, Quelle
+                     rechts.
+
+                     Ablauf: erst zeichnet sich der Faden vom Chip zum Anker
+                     (420 ms), dann — 160 ms später — kommt die Notiz von
+                     rechts herein und landet genau auf dem Fadenende. Erst
+                     liegt der Weg, dann kommt, was ihn geht.
+
+                     Das ist der Satz, den Anki und Quizlet nicht sagen
+                     können: nicht „hier ist eine Karte über Osmose", sondern
+                     „diese Karte ist AUS DIESEM SATZ entstanden, und hier
+                     steht er". Der markierte Satz trägt .bw-markiert —
+                     Auswahl, eine der drei erlaubten Ink-Rollen.
+                ══════════════════════════════════════════════════════════ -->
+
+                <!-- Der Landeplatz des Quell-Knotens: kein gezeichnetes
+                     Element, nur der Punkt, auf den der Faden zeigt. Er steht
+                     schon da, bevor die Tafel hereinkommt — sonst zeigte das
+                     Fadenende 580 ms lang auf eine Stelle, die noch wandert. -->
+                <span id="fc-quelle-anker" aria-hidden="true"
+                      style="position:absolute; left:14px; top:12px; width:9px; height:9px; pointer-events:none"></span>
+
+
 
                 <!-- ══════════════════════════════════════════════════════════
                      ERTRAG · 12 WOCHEN — die eigene Kennzahl
@@ -365,10 +489,24 @@ gesetzt — system.css bleibt unangetastet.
                      offen, noch nicht da), nur auf einen Tag angewandt. Zwei
                      Merkmale: Form UND die Zeile darunter.
 
-                     KEIN FADEN. Zwischen zwei Kalendertagen besteht keine
-                     Beziehung im Datenmodell, nur Nachbarschaft. Ein Raster
-                     bleibt ein Raster. Der Faden steht darunter, wo wirklich
-                     eine Kante liegt: in der Serie und in der Abstandsleiter.
+                     KEIN FADEN IM RASTER. Die 84 Felder sind 84 Kalendertage,
+                     die nebeneinander liegen — mehr verbindet sie nicht. Wo
+                     keine Kante ist, wird kein Strich gezogen; das Raster
+                     bleibt ein Raster, und die Lücken zwischen den Punkten
+                     bleiben Lücken.
+
+                     UND WARUM DIE SERIE DARUNTER TROTZDEM EINEN FADEN HAT —
+                     das ist kein Widerspruch, sondern die Probe auf die
+                     Regel: Die Serie ist nicht „diese Tage liegen
+                     nebeneinander", sondern EIN Objekt, ein Lauf. Jeder
+                     Faden darin ist die Aussage „dieser Tag setzt den
+                     vorigen fort"; fällt ein Tag aus, reißt der Lauf und mit
+                     ihm der Faden. Genau daran hängt die Zahl „12". Das ist
+                     eine Kante, und es ist die schwächste der drei — deshalb
+                     1 pt (--weak) und nicht 1,5 oder 2,5.
+
+                     Dasselbe Feld, zwei Fälle: im Raster stehen Tage
+                     nebeneinander, in der Serie halten sie einander.
                 ══════════════════════════════════════════════════════════ -->
                 <section class="card" style="padding:11px 14px">
                   <div class="card__head" style="margin-bottom:5px">
@@ -505,7 +643,7 @@ gesetzt — system.css bleibt unangetastet.
                     <div style="flex:1 1 auto"></div>
                     <span class="t-label c-1 num">in 21 Tagen</span>
                   </div>
-                  <div class="threadrow" style="padding:0 2px">
+                  <div class="threadrow">
                     <span class="dot dot--cards"></span>
                     <svg class="thread thread--h is-active"></svg>
                     <span class="dot dot--cards"></span>
@@ -514,11 +652,21 @@ gesetzt — system.css bleibt unangetastet.
                     <svg class="thread thread--h"></svg>
                     <span class="dot dot--hollow"></span>
                   </div>
-                  <div style="display:flex; justify-content:space-between; margin-top:3px">
-                    <span class="t-label c-3 num">1 d</span>
-                    <span class="t-label c-3 num">3 d</span>
-                    <span class="t-label c-1 num">8 d</span>
-                    <span class="t-label c-3 num">21 d</span>
+                  <!-- Die Beschriftungen sind das ZWEITE MERKMAL der Punkte und
+                       müssen deshalb unter ihrem Punkt sitzen, nicht ungefähr.
+                       Mit justify-content:space-between taten sie das nicht:
+                       gemessen wanderte „21 d" 11,1 pt nach links und „1 d"
+                       6,5 pt nach rechts, weil space-between die Kanten
+                       ausrichtet und die vier Wörter verschieden breit sind —
+                       bei einem 6-pt-Punkt steht das Wort dann daneben statt
+                       darunter. Jetzt liegen sie auf denselben Bruchteilen wie
+                       die Punkte: Mitte n = 3 pt + n · (Breite − 6 pt) / 3.
+                       Nachgemessen: Versatz 0,0 pt an allen vier Stellen. -->
+                  <div style="position:relative; height:16px; margin-top:3px">
+                    <span class="t-label c-3 num" style="position:absolute; left:3px; transform:translateX(-50%)">1 d</span>
+                    <span class="t-label c-3 num" style="position:absolute; left:calc(3px + (100% - 6px) / 3); transform:translateX(-50%)">3 d</span>
+                    <span class="t-label c-1 num" style="position:absolute; left:calc(3px + (100% - 6px) * 2 / 3); transform:translateX(-50%)">8 d</span>
+                    <span class="t-label c-3 num" style="position:absolute; left:calc(100% - 3px); transform:translateX(-50%)">21 d</span>
                   </div>
                   <p class="t-sub c-2" style="margin:7px 0 0">Dreimal richtig hintereinander — die gefüllten Punkte liegen hinter der Karte, die hohlen vor ihr.</p>
 
@@ -575,6 +723,60 @@ gesetzt — system.css bleibt unangetastet.
                   </div>
                 </section>
 
+                <!-- DIE QUELL-TAFEL — sie steht ABSICHTLICH als letztes Kind
+                     der Spalte, obwohl sie oben landet. Zwei Befunde aus dem
+                     Bild stecken darin:
+
+                     (1) Mit z-index:3 lag sie über der Zeichenfläche
+                     (.thread-layer, z-index:1, system.css §9.2): der Faden
+                     verschwand auf den letzten 30 pt unter ihrer Kante und
+                     endete im Nichts statt auf dem Knoten.
+                     (2) Ohne z-index verschwand die Tafel ganz — .card trägt
+                     position:relative, also entscheidet unter gleichrangigen
+                     positionierten Geschwistern die Reihenfolge im Quelltext,
+                     und als erstes Kind lag sie unter der Ertrags-Karte.
+
+                     Als letztes Kind ohne z-index stimmt beides: über den
+                     Karten der Spalte, unter dem Faden. Genau die Reihenfolge,
+                     die Bericht 2 verlangt — Text · Knoten · Faden.
+
+                     min-height = die gemessene Höhe der Ertrags-Karte (320 pt),
+                     damit die Tafel sie ganz verdeckt. Ohne das lugte unten
+                     ein halber Serien-Faden hervor und sah aus wie ein Fehler. -->
+                <section class="card bw-quelle" id="fc-quelle" aria-label="Quelle der Karten: Notiz Zellbiologie"
+                         style="position:absolute; left:0; right:0; top:0; min-height:320px;
+                                padding:11px 14px 12px; display:flex; flex-direction:column">
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+                    <span class="dot dot--node" style="--node-ring: var(--paper)"></span>
+                    <span class="t-label c-3">DIE QUELLE DIESER 12 KARTEN</span>
+                  </div>
+
+                  <div class="t-section" style="margin-bottom:2px">Zellbiologie</div>
+                  <div class="t-label c-3 num" style="margin-bottom:8px">14 Absätze · 9 markiert · gestern 16:20</div>
+
+                  <div class="serif--quote c-1 bw-markiert" style="margin-bottom:9px">
+                    „Osmose ist die Diffusion von Wasser durch eine selektiv permeable Membran."
+                  </div>
+
+                  <div style="display:flex; align-items:center; gap:9px">
+                    <span class="threadrow" style="width:46px; flex:none">
+                      <span class="dot dot--notes"></span>
+                      <svg class="thread thread--h thread--origin is-active"></svg>
+                      <span class="dot dot--cards"></span>
+                    </span>
+                    <span class="t-sub c-2" style="flex:1 1 auto; min-width:0">Aus diesem Absatz sind 2 Karten geworden.</span>
+                  </div>
+
+                  <div style="flex:1 1 auto; min-height:10px"></div>
+
+                  <!-- Volle .btn-Höhe (44 pt), nicht btn--sm (34 pt): die
+                       beiden sind die einzigen Knöpfe, die dieser Schirm neu
+                       bekommt, und der Affordanz-Test verlangt 44. -->
+                  <div style="display:flex; gap:7px">
+                    <button class="btn" style="flex:1 1 auto; padding:0 10px; white-space:nowrap"><span class="ico" data-ico="notes" style="width:16px;height:16px"></span>Notiz öffnen</button>
+                    <button class="btn" data-bw="zurueck" style="flex:none; padding:0 12px; white-space:nowrap">Loslassen</button>
+                  </div>
+                </section>
               </div>
             </div>
           </div>
@@ -774,14 +976,33 @@ gesetzt — system.css bleibt unangetastet.
   <h2>Lernkarten-Start — Steckbrief</h2>
   <p>Der Schirm beantwortet drei Fragen, bevor Emil etwas antippt: Woraus besteht die Sitzung (drei Zähler)? Woher kommt dieses Deck (Herkunfts-Chip)? Und was macht der Planer daraus (Regler, Prognose, zwölf Wochen)?</p>
 
+  <h3>Die Fäden — drei Sorten Kante, und keine vierte</h3>
+  <table>
+    <tr><td>Herkunft<br><span class="num">2,5 pt</span></td><td><strong>Notiz → Deck</strong>, im Kopf jeder Deck-Karte. Vier Decks, vier Fälle: „Zellbiologie" eine Notiz · <strong>„Anatomie Grundlagen" drei Notizen, die in einem Knoten zusammenlaufen</strong> — die einzige Stelle des Schirms mit mehr als einer eingehenden Kante, und deshalb der einzige <span class="num">.dot--node</span> · „Statistik-Formeln" eine Notiz · „Lesenotizen Soziologie" eine Notiz, aber noch keine Karte: dieser Faden endet <strong>hohl</strong> und trägt nur 1,5 pt.</td></tr>
+    <tr><td>Wiederholung<br><span class="num">1,5 pt</span></td><td><strong>Wiederholung n → Wiederholung n+1</strong> derselben Karte. Die Abstandsleiter 1 d · 3 d · 8 d · 21 d von „Osmose". Gefüllt, was hinter der Karte liegt; Ink-Ring, wo sie heute steht; hohl, was noch aussteht. Die begangenen Fadenstücke sind aktiv (Ink), das kommende nicht — der Weg ist gelaufen, die Strecke davor nicht.</td></tr>
+    <tr><td>Fortsetzung<br><span class="num">1 pt</span></td><td><strong>Tag n → Tag n+1 innerhalb eines Laufs.</strong> Die Serie, zwölf Punkte, der letzte mit Ink-Ring. Die schwächste der drei Kanten, deshalb der dünnste Faden.</td></tr>
+    <tr><td><strong>Kein Faden</strong></td><td>Im Zwölf-Wochen-Raster, in den Prognose-Balken, im Fortschrittsbalken und zwischen den drei Zählern. Dort liegt keine Kante, sondern Nachbarschaft, Skala oder Summe. Das kostet: das Raster hätte mit Strichen „reicher" ausgesehen. Ein Motiv, das nichts kostet, ist Dekoration.</td></tr>
+  </table>
+
+  <h3>Der Faden ist begehbar — die Bewegung</h3>
+  <p>Der Herkunfts-Chip von „Zellbiologie" ist kein Etikett, sondern ein Knopf mit 44-pt-Ziel. Der Tap zeichnet den Faden vom Chip quer über den Schirm zur Notiz, aus der die zwölf Karten stammen — und erst danach, 160 ms später, kommt die Notiz selbst von rechts herein und landet genau auf dem Fadenende. <strong>Erst liegt der Weg, dann kommt, was ihn geht.</strong> Die Quelle zeigt den markierten Satz, aus dem zwei der Karten wurden; „Loslassen" zieht den Faden zurück und räumt sie wieder ab. Ausgelöst über <span class="num">data-bw="herkunft"</span> aus <span class="num">bewegung.js</span> — in dieser Datei steht keine Zeile JavaScript.</p>
+  <p>Das ist der Satz, den Anki und Quizlet strukturell nicht sagen können. Beide kennen die Karte; keiner kennt den Absatz, aus dem sie kam, weil bei keinem Notiz und Karte im selben Datenmodell liegen. <strong>Bei reduzierter Bewegung</strong> erscheint der Faden auf voller Länge und die Quelle blendet an ihrem Platz auf: dieselbe Reihenfolge Ursprung → Ergebnis, nur ohne Weg.</p>
+  <p><strong>Warum der Chip rechts steht und nicht links:</strong> today.html hängt den Herkunfts-Chip ans Zeilenende (<span class="num">.row__meta</span>), und das iPhone unten stellt den Decknamen ohnehin voran — erst das Objekt, dann seine Herkunft. Dazu ein Befund aus dem Bild: links neben dem Titel lief der Faden beim Antippen quer durch den Decknamen und sah aus wie eine Durchstreichung. <span class="num">MOCK.thread</span> verlässt ein Element auf der Seite, die dem Ziel zugewandt ist — bei einem Ziel in der rechten Spalte ist das die rechte Kante auf halber Höhe, und genau dort stand der Titel.</p>
+
   <h3>Woher die Ideen stammen</h3>
   <table>
     <tr><td>Anki — drei Zähler</td><td>Neu · Zu wiederholen · Gelernt, pro Deck sichtbar. <strong>Bewertung: die stärkste Einzelidee des Feldes</strong> — sie beantwortet „wie lang wird das?" vor dem Start. Übernommen ohne Ankis drei Buntfarben: Zahl trägt Gewicht, Wort trägt Bedeutung.</td></tr>
     <tr><td>Anki / FSRS — Scheduler-Transparenz</td><td>Ankis „desired retention" ist die beste Idee mit der schlechtesten Darbietung: vier Ebenen tief, ohne Folgenabschätzung. Hier als „Ziel-Erinnerungsrate" auf dem Startschirm, mit der Folge im selben Satz (90 % → ca. 17 Karten am Tag, 85 % → 12) und der Prognose direkt darunter.</td></tr>
     <tr><td>Quizlet — Deck-Karten</td><td>Das Deck als greifbarer Gegenstand mit Titel, Umfang und Fortschritt. Übernommen; der Balken bleibt 4 pt fein und trägt die Zeile „4 von 12 sitzen", weil ein Balken ohne Zahl nichts behauptet. <strong>Bewertung: richtig gedacht, aber bei Quizlet unter Spielmodi begraben.</strong></td></tr>
     <tr><td>RemNote — Herkunft</td><td>Karten entstehen im Notizfluss. Übernommen als Herkunfts-Chip „aus „Zellbiologie"" auf dem Deck und als leerer Zustand, der auf denselben Weg zeigt. <strong>Bewertung: konzeptionell die reifste Vorlage</strong>, nur hinter einer Lernkurve versteckt — hier ist es ein Chip, kein Konzept.</td></tr>
-    <tr><td>GitHub — Beitragsraster</td><td>Nur die Form übernommen. Die Dichte läuft über Ink-Deckkraft (.07 → .88), nicht über einen Grünverlauf, und unter dem Raster steht die Zahl (859 · 50 aktive Tage).</td></tr>
+    <tr><td>GitHub — Beitragsraster</td><td><strong>Die Form übernommen, die Kennzahl verworfen.</strong> GitHub zählt Anwesenheit: wie viel an einem Tag gemacht wurde. Genau das wirft dieser Schirm zwei Zeilen weiter oben Quizlet und Duolingo vor, und ein geborgtes Raster mit geborgter Metrik wäre derselbe Fehler. Hier zählt ein Punkt, <strong>wie viel vom Material dieses Tages heute sitzt</strong> — siehe unten. Auch die Farbe ist verworfen: Dichte über Ink-Deckkraft (.07 → .88), nicht über einen Grünverlauf, und die Aussage steht als Zahl darunter (84 von 107 · 48 Tage).</td></tr>
   </table>
+
+  <h3>Warum das Raster bleiben durfte — und was es jetzt zählt</h3>
+  <p>Das Zwölf-Wochen-Raster war der offene Befund dieses Schirms: übernommene Form <em>und</em> übernommene Metrik. Es bleibt, weil die Form richtig ist — ein Jahresviertel auf einen Blick, ohne zu scrollen, mit dem Wochentag als Zeile. Ersetzt ist, was es zählt:</p>
+  <p><strong>Ein Punkt ist ein Tag. Seine Dichte ist der Anteil des an diesem Tag geschriebenen Materials, aus dem heute sicheres Wissen geworden ist.</strong></p>
+  <p>Diese Zahl kann nur Velum rechnen, weil sie drei Dinge im selben Datenmodell braucht: den Absatz, die daraus entstandene Karte und ihren Lernstand. Anki hat den Absatz nicht, Obsidian die Karte nicht, GitHub keines von beidem. <strong>Der sichtbare Beweis, dass es eine andere Kennzahl ist:</strong> die jüngsten Tage sind die hohlsten. Material von letzter Woche hatte noch keine Gelegenheit, sich zu bewähren. Bei GitHub ist heute immer am dunkelsten — hier ist heute fast leer und der Semesterbeginn am dichtesten. Ein hohler Punkt heißt „Material da, Ertrag noch nicht", dieselbe Bedeutung wie überall sonst im System, nur auf einen Tag angewandt.</p>
+  <p><strong>Und warum im Raster kein Faden liegt:</strong> Die 84 Felder sind 84 Kalendertage, die nebeneinander liegen — mehr verbindet sie nicht. Kein Faden ohne Kante, also keiner. Dass die Serie unmittelbar darunter einen trägt, ist kein Widerspruch, sondern die Probe darauf: die Serie ist nicht „diese Tage liegen nebeneinander", sondern <em>ein</em> Objekt, ein Lauf. Jeder Faden darin sagt „dieser Tag setzt den vorigen fort" — fällt ein Tag aus, reißt der Lauf, und die 12 stimmt nicht mehr. Das ist eine Kante, und zwar die schwächste der drei: 1 pt.</p>
 
   <h3>Bewusst nicht übernommen</h3>
   <ul>
@@ -796,15 +1017,15 @@ gesetzt — system.css bleibt unangetastet.
   <h3>Zustände auf diesem Schirm</h3>
   <table>
     <tr><td>gefüllt</td><td>Drei Decks mit Zahlen: 8 + 12 + 3 = 23 fällige Karten, dieselbe 23 wie in der Sidebar, im CTA und auf Today. Die drei Zähler eines Decks addieren sich auf seinen Umfang (4+4+4 = 12, 4+8+52 = 64, 0+3+28 = 31).</td></tr>
-    <tr><td>leer</td><td>„Lesenotizen Soziologie" trägt den leeren Zustand <em>in</em> der Karte, nicht auf einem eigenen Schirm: „Noch keine Karten — markiere Text in einer Notiz", dazu der Weg dorthin („Notiz öffnen"). Kein Karten-Editor, weil Karten hier nicht im Editor entstehen.</td></tr>
+    <tr><td>leer</td><td>„Lesenotizen Soziologie" trägt den leeren Zustand <em>in</em> der Karte, nicht auf einem eigenen Schirm: „Noch keine Karten — 0 Karten, in „Weber, Kap. 3" sind drei Stellen markiert", dazu der Weg dorthin („Notiz öffnen"). Kein Karten-Editor, weil Karten hier nicht im Editor entstehen. Sein Herkunfts-Faden endet <strong>hohl</strong> und trägt nur 1,5 pt statt 2,5: die Notiz gibt es, die Karte nicht — eine Beziehung, die es noch nicht gibt, behauptet keine Stärke. Dieselbe Regel wie auf <span class="num">leere-zustaende.html</span>.</td></tr>
     <tr><td>aktiv</td><td>Sidebar „Lernkarten": Fläche + Gewicht + Ink-Balken links. iPhone-Tab „Lernen": Ink + Gewicht. Segment „Fällig zuerst": Papierfläche + Ink + Schatten.</td></tr>
-    <tr><td>deaktiviert</td><td>„0 Neu" bei Statistik-Formeln und der „Lernen"-Knopf des leeren Decks: Deckkraft .38 <em>plus</em> fehlende Fläche (btn--quiet). Nie nur ausgegraut.</td></tr>
+    <tr><td>deaktiviert</td><td>„0 Neu" bei Statistik-Formeln: Deckkraft <em>plus</em> fehlende Fläche, nie nur ausgegraut. Das leere Deck hat gar keinen „Lernen"-Knopf — ein abgeblendeter Knopf, der nie angehen kann, ist eine Attrappe; an seiner Stelle steht die Handlung, die wirklich weiterführt („Notiz öffnen").</td></tr>
     <tr><td>Zwischenzustand</td><td><strong>Vier eingefrorene Momente.</strong> (1) Die Kartenvorschau von „Zellbiologie" klappt gerade auf: die erste Karte steht schon, die zweite läuft noch in die Blende, die dritte ist noch nicht da. Der Deckel ist auf halber Höhe stehen geblieben. (2) Der Punkt für heute in der 12-Wochen-Matrix ist erst zu einem Drittel gefüllt und trägt den wachsenden Ring — der Tag ist angefangen, nicht fertig. (3) Der Regler-Knopf trägt den Halo des Fingers: er wird in diesem Moment gezogen. (4) Auf dem iPhone liegt der Finger auf „Lernen" — der Knopf trägt den Druck-Halo und ist minimal gestaucht.</td></tr>
   </table>
 
   <h3>Warum award-würdig</h3>
-  <p><strong>Inklusion:</strong> Die zwölf Wochen kommen ohne einen einzigen Buntton aus. Die Dichte läuft über Ink-Deckkraft, die Legende steht daneben, und die Aussage steht zusätzlich als Zahl da — wer keine Sättigungsunterschiede unterscheidet, verliert nichts. Dasselbe gilt für die drei Zähler: Zahl, Wort und Position tragen sie, nicht Farbe.</p>
-  <p><strong>Innovation:</strong> Der Planer ist bedienbar statt nur transparent. Die Ziel-Erinnerungsrate liegt als Regler neben ihrer eigenen Folge — Prognose und Tagespensum stehen in derselben Spalte und ändern sich mit. Und ein Deck kennt seine Herkunft: der Chip führt zurück in die Notiz, aus der die Karten kamen.</p>
+  <p><strong>Inklusion:</strong> Die zwölf Wochen kommen ohne einen einzigen Buntton aus. Die Dichte läuft über Ink-Deckkraft, die Legende steht daneben, und die Aussage steht zusätzlich als Zahl da — wer keine Sättigungsunterschiede unterscheidet, verliert nichts. Dasselbe gilt für die drei Zähler: Zahl, Wort und Position tragen sie, nicht Farbe. Und für die Fäden: jedes Ende trägt Punkt <em>und</em> Wort, gefüllt gegen hohl ist Form und nicht Farbe.</p>
+  <p><strong>Innovation:</strong> Der Planer ist bedienbar statt nur transparent — die Ziel-Erinnerungsrate liegt als Regler neben ihrer eigenen Folge, Prognose und Tagespensum stehen in derselben Spalte. Und ein Deck kennt seine Herkunft: der Chip führt zurück in die Notiz, aus der die Karten kamen, und der Tap läuft den Faden dorthin wirklich ab. Beides hängt an derselben Eigenschaft — <strong>fünf Module in einem Datenmodell</strong>. Aus ihr folgt auch die Kennzahl des Rasters, die kein Konkurrent rechnen kann.</p>
 
   <h3>Zwei-Merkmal-Regel</h3>
   <p>Kein Zustand hängt an Farbe. Aktiv = Fläche + Gewicht (+ Balken). Ausgewählt = Fläche + Ring. Deaktiviert = Deckkraft + fehlende Fläche. Fällig heute = Wort + Ink-Fläche im Chip. Kommende Tage in der Matrix = leerer Kreis + Umriss, gelernte Tage = gefüllte Fläche. Der Herkunfts-Chip trägt Dot <em>und</em> Wort — der 6-pt-Dot steht nirgends allein.</p>
@@ -814,5 +1035,6 @@ gesetzt — system.css bleibt unangetastet.
 </div>
 
 <script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
 </body>
 </html>

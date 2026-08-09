@@ -5,6 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Einstellungen — Entwurf</title>
 <link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
+<style>
+/* ──────────────────────────────────────────────────────────────────────────
+   Nur für diesen Schirm: der Fächer zwischen Konto und Geräten.
+
+   EIN Knoten („Emils iCloud"), von ihm drei Fäden zu drei Gerätepunkten.
+   Die Kante ist echt: jedes Gerät hängt an genau diesem Konto, und man kann
+   den Faden in beide Richtungen ablaufen — vom Konto zu den Geräten und vom
+   Gerät zurück zum Konto. Der Punkt des iPad ist HOHL, weil seine drei
+   Änderungen noch nicht angekommen sind: hohl heißt in dieser DNA „geplant,
+   offen, noch nicht da", und genau das ist der Zustand.
+
+   Gemessen im Browser bei 1440 pt Fensterbreite (Werte in pt):
+     Knotenmitte 14,5 / 8,0      Zielpunkte 30,0 / 34,0 · 58,0 · 82,0
+   Bei „Aa groß" wachsen Etikett- und Zeilenhöhen; die Werte stehen deshalb
+   ein zweites Mal in der großen Stufe.
+   ────────────────────────────────────────────────────────────────────────── */
+.dev__f  { position: absolute; left: 15.5px; top: 8px; width: 14.5px; }
+.dev__f1 { height: 19px; }
+.dev__f2 { height: 41px; }
+.dev__f3 { height: 63px; }
+:root[data-type="gross"] .dev__f1 { height: 21px; }
+:root[data-type="gross"] .dev__f2 { height: 47px; }
+:root[data-type="gross"] .dev__f3 { height: 73px; }
+.dev__row { display: flex; align-items: center; gap: 8px; height: 22px; padding-left: 27px; }
+:root[data-type="gross"] .dev__row { height: 26px; }
+
+/* Der Marken-Baustein steht in einer 236-pt-Spalte. Die Pfadangabe des
+   fehlenden Zeichens ist breiter als die Spalte — sie soll stören, aber
+   nicht aus dem Schirm laufen, deshalb bricht sie hier unter den Rahmen. */
+.ueber .brandmark    { align-items: flex-start; gap: 10px; }
+.ueber .appicon      { align-items: flex-start; gap: 8px; }
+
+/* Die Bereichsliste ist eine Liste: sie rollt. Angeheftet bleibt der Fuß —
+   Geräte, Konto und das Zeichen stehen immer da, weil sie keine Bereiche
+   sind, sondern die Antwort auf „welches Velum ist das hier". */
+.bl__liste  { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.bl__gruppe { margin-top: 10px; }
+.bl__titel  { padding: 0 10px 3px; }
+</style>
 </head>
 <body>
 
@@ -39,11 +79,37 @@ BEWUSST NICHT ÜBERNOMMEN
 · Notions Einstellungs-Modal über dem Inhalt — es verdeckt genau das, was man
   gerade beurteilen will. Hier bleibt der Schirm ein Schirm.
 · Die 40-zeilige Ein-Ebene-Liste von Obsidian und Craft — das ist keine
-  Struktur, das ist eine Reihenfolge.
+  Struktur, das ist eine Reihenfolge. Und, härter: auch Obsidians GRUPPIERTE
+  Reihenfolge nicht. Die Bereichsliste stand in Runde 1 in genau Obsidians
+  Folge (Darstellung · Sync · Mitteilungen · Datenschutz · Speicher · Export ·
+  Abo), nur auf Deutsch. In Runde 2 folgt sie Velums eigenem Versprechen.
 · Byte-Genauigkeit im Speicher („4.237.881.344 Bytes") — Emil entscheidet nicht
   in Bytes, sondern in „reicht das noch".
 · Ein Fortschrittsrad für die Synchronisierung. Ein Fehlschlag wird hier
   benannt, nicht animiert.
+
+DIE ORDNUNG DER BEREICHE — die Entscheidung dieses Schirms
+Velum hält fünf Module in EINEM Datenmodell. Daraus folgt etwas für die
+Einstellungen, das keine der Vorlagen haben kann: „Wo liegen meine Sachen,
+wie viel sind es, wie kommen sie hier wieder heraus, wer kann sie sehen"
+sind bei fünf getrennten Apps fünf Fragen mit fünf Antworten — bei Velum ist
+es EINE. Und es ist die Frage, die man mitbringt, wenn man Einstellungen
+öffnet. Also steht sie oben:
+
+  1 DEINE SACHEN            Sync · Speicher · Export & Backup · Datenschutz
+  2 WIE VELUM SICH VERHÄLT  Darstellung · Benachrichtigungen · Tastatur & Pencil
+  3 ÜBER VELUM              Abo · Was ist neu · Hilfe · Rechtliches + das Zeichen
+
+Nicht gewählt, und zwar bewusst: die Ordnung nach den fünf Modulen. Sie wäre
+die naheliegende „Velum-Ordnung" — aber sie stünde als zweite Modulliste
+unmittelbar neben der ersten (die App-Sidebar zeigt Canvas · Notizen ·
+Journal · Aufgaben · Lernkarten), und dieselben fünf Wörter hießen dort
+„dorthin gehen" und hier „das einstellen". Dazu kommt: Schriftgröße, Sync,
+Speicher und Bewegung gehören keinem Modul; sie hätten keinen Platz. Velums
+STRUKTUR sind die Module — sein VERSPRECHEN ist das eine Datenmodell, und
+ein Einstellungsschirm hat für das Versprechen geradezustehen.
+Nebenwirkung, die kein Zufall ist: der Sync-Fehler steht jetzt an erster
+Stelle statt an siebter — dort, wo man ihn sucht.
 
 DAS BESONDERE AN DIESEM SCHIRM
 Einstellungen zeigen bei fast allen Apps Schalter ohne Folgen. Hier steht neben
@@ -53,6 +119,37 @@ zeigt das Ergebnis mit („vor 18 Minuten" statt „09:23"). „Bewegung reduzie
 sagt, was mit der Übergabe zwischen Modulen passiert — der Signatur-Animation
 dieser App. Und die Modul-Farben werden nicht angeboten, sondern erklärt: fünf
 6-pt-Punkte, die nur Herkunft markieren und nie eine Fläche färben.
+
+DER FADEN AUF DIESEM SCHIRM — genau eine Stelle
+GERÄTE UND KONTO: ein Knoten („Emils iCloud"), drei Fäden, drei
+Gerätepunkte. Die Kante steht im Datenmodell und ist in beide Richtungen
+begehbar — jedes Gerät hängt an genau diesem Konto. Der Punkt des iPad ist
+HOHL, weil seine drei Änderungen noch nicht angekommen sind; hohl heißt in
+dieser DNA „geplant, offen, noch nicht da", und genau das ist der Zustand.
+Zwei-Merkmal-Regel: Form (hohl) + Wort („3 Änderungen warten", rot) + die
+Erklärzeile in der Kopfzeile sagen dasselbe dreimal.
+
+WO KEIN FADEN STEHT — und das ist die längere Liste
+· Zwischen den Speicher-Abschnitten und ihren Beschriftungen. Balken und
+  Etikett sind DASSELBE Objekt, zweimal gezeigt; zwischen einem Ding und
+  seinem eigenen Etikett gibt es keine Kante. Ein Strich wäre hübsch und
+  gelogen.
+· Zwischen den Bereichen der Liste. Eine Liste ist eine Reihenfolge, keine
+  Beziehung.
+· Zwischen Schaltern und ihren Folgen. „Bewegung reduzieren" verändert eine
+  Bewegung, es verknüpft keine zwei Objekte.
+· Zwischen den drei Design-Kacheln. Alternativen sind keine Kette.
+Einstellungen sind eine Liste von Schaltern. Dass hier genau ein Faden steht
+und nicht sieben, ist das Ergebnis der Regel, nicht ihr Versagen.
+
+BEWEGUNG
+bewegung.css und bewegung.js sind eingebunden, aber KEIN data-bw steht auf
+diesem Schirm. Der Grund ist nicht Vergesslichkeit: dieser Schirm trägt den
+Schalter „Bewegung reduzieren", und bewegung.js ist die Datei, die daraus
+data-bw-reduce am <html> macht. Ein Schirm, der einen Schalter für eine
+Maschine anbietet, muss dieselbe Maschine laufen lassen. Eine Bewegung zu
+erfinden, nur damit die Datei etwas zu tun hat, wäre derselbe Fehler wie ein
+Faden ohne Kante.
 
 ADA-KATEGORIE: Inklusion (Dynamic Type, Bewegung reduzieren, Fettschrift und
 gerechnete Kontraste sind nicht das Kleingedruckte, sondern der Schirm) und
@@ -65,6 +162,14 @@ KONTRAST (gerechnet, siehe mockups/shared/system.css §1)
   Schalter an      accent-on auf Ink  17,8:1   (hell) · 17,3:1 (dunkel)
   Fehler rot       danger auf Grund    5,2:1   (hell) ·  6,3:1 (dunkel)
   Modul-Dots sind 6 pt und stehen nie allein — immer Dot + Wort.
+  Faden ruhend     --thread auf Papier  3,11:1 (hell) ·  3,11:1 (dunkel)
+  Knoten           Ink auf Papier      17,8:1  (hell) · 15,9:1 (dunkel)
+  hohler Punkt     Ring 47 %/36 %       3,11:1 (hell) ·  3,11:1 (dunkel)
+  Wortmarke        ink-1 auf Papier    17,8:1  (hell) · 15,9:1 (dunkel)
+  Pfadangabe       ink-2 auf Papier     5,3:1  (hell) ·  6,8:1 (dunkel)
+  Der Kupferton des reservierten Rahmens ist Bedienoberfläche, kein Text:
+  4,44:1 (hell) · 3,96:1 (dunkel) — über 3:1, unter 4,5:1. Deshalb steht die
+  Wortmarke in Ink und nicht in Kupfer.
   Die Design-Kacheln tragen bewusst feste Hex-Werte: Sie bilden das jeweils
   ANDERE Design ab und dürfen deshalb nicht mit dem aktuellen Theme wandern.
   Es sind exakt die Token-Werte aus §1 (#F2F2F4/#FFFFFF/#16181C gegen
@@ -140,61 +245,75 @@ Skala selbst, keine Simulation.
             <!-- ── Bereichsliste (zweite, schmale Spalte) ── -->
             <aside class="sidebar" style="width:236px; background:var(--paper); backdrop-filter:none">
 
-              <div style="display:flex; align-items:center; gap:10px; padding:10px 10px 12px">
-                <span class="t-body is-strong" style="width:36px;height:36px;border-radius:50%;background:var(--fill-2);display:flex;align-items:center;justify-content:center;flex:none">E</span>
-                <span style="display:flex;flex-direction:column;min-width:0">
-                  <span class="t-body is-strong">Emil</span>
-                  <span class="t-sub c-3 clamp-1">iCloud · 3 Geräte</span>
-                </span>
-              </div>
-
-              <div class="sidebar__grouptitle t-label">BEREICHE</div>
-              <button class="navitem is-active"><span class="ico" data-ico="sun"></span><span class="t-body">Darstellung</span></button>
+              <!-- Der Kontokopf („E · Emil · iCloud · 3 Geräte") stand hier
+                   doppelt: die App-Sidebar links trägt „Emil" schon in ihrem
+                   Kopf, und die drei Geräte stehen unten als Knoten mit ihren
+                   Fäden. Zweimal dieselbe Auskunft in zwei Spalten
+                   nebeneinander ist keine Orientierung, sondern Rauschen. -->
+              <!-- ══ DIE ORDNUNG DIESER LISTE ══
+                   Vorher stand hier Obsidians Reihenfolge auf Deutsch:
+                   Darstellung, Sync, Mitteilungen, Datenschutz, Speicher,
+                   Export, Abo — die Reihenfolge einer fremden App.
+                   Jetzt folgt sie Velums eigenem Versprechen. Velum hält
+                   fünf Module in EINEM Datenmodell; daraus folgt, dass die
+                   Fragen „wo liegt es, wie viel ist es, wie kommt es hier
+                   weg, wer sieht es" nicht mehr fünf Fragen sind, sondern
+                   eine — und diese eine bringt jeder als Erstes mit, wenn er
+                   Einstellungen öffnet. Also steht sie oben. Darunter, was
+                   das Verhalten der App ändert. Zuletzt die App selbst.
+                   Nebenwirkung, die kein Zufall ist: der Sync-Fehler steht
+                   dort, wo man ihn sucht, und nicht an siebter Stelle. -->
+              <div class="bl__liste">
+              <div class="sidebar__grouptitle t-label bl__titel">DEINE SACHEN</div>
               <button class="navitem"><span class="ico" data-ico="cloud"></span><span class="t-body">Sync</span><span class="navitem__count" style="color:var(--danger);display:flex;align-items:center"><span class="ico" data-ico="alert" style="width:17px;height:17px"></span></span></button>
-              <button class="navitem"><span class="ico" data-ico="bolt"></span><span class="t-body">Benachrichtigungen</span></button>
-              <button class="navitem" style="height:auto; min-height:40px; padding:5px 10px"><span class="ico" data-ico="lock"></span><span class="t-body">Datenschutz &amp; Sperre</span></button>
               <button class="navitem"><span class="ico" data-ico="box"></span><span class="t-body">Speicher</span><span class="navitem__count t-label num">4,2 GB</span></button>
               <button class="navitem"><span class="ico" data-ico="share"></span><span class="t-body">Export &amp; Backup</span></button>
-              <button class="navitem"><span class="ico" data-ico="star"></span><span class="t-body">Abo</span><span class="navitem__count t-label">Uni</span></button>
+              <button class="navitem"><span class="ico" data-ico="lock"></span><span class="t-body">Datenschutz</span></button>
 
-              <div class="sidebar__group">
-                <div class="sidebar__grouptitle t-label">MEHR</div>
-                <button class="navitem"><span class="ico" data-ico="grid"></span><span class="t-body">Tastaturkürzel</span></button>
+              <div class="sidebar__group bl__gruppe">
+                <div class="sidebar__grouptitle t-label bl__titel">WIE VELUM SICH VERHÄLT</div>
+                <button class="navitem is-active"><span class="ico" data-ico="sun"></span><span class="t-body">Darstellung</span></button>
+                <button class="navitem"><span class="ico" data-ico="bolt"></span><span class="t-body">Benachrichtigungen</span></button>
+                <button class="navitem"><span class="ico" data-ico="grid"></span><span class="t-body">Tastatur &amp; Pencil</span></button>
+              </div>
+
+              <div class="sidebar__group bl__gruppe">
+                <div class="sidebar__grouptitle t-label bl__titel">ÜBER VELUM</div>
+                <button class="navitem"><span class="ico" data-ico="star"></span><span class="t-body">Abo</span><span class="navitem__count t-label">Uni</span></button>
                 <button class="navitem"><span class="ico" data-ico="info"></span><span class="t-body">Was ist neu</span></button>
                 <button class="navitem"><span class="ico" data-ico="heart"></span><span class="t-body">Hilfe &amp; Feedback</span></button>
                 <button class="navitem"><span class="ico" data-ico="quote"></span><span class="t-body">Rechtliches</span></button>
               </div>
+              </div>
 
-              <!-- Geräte — füllt den Fuß der Spalte und erklärt den Sync-Fehler -->
-              <div style="margin-top:auto; padding-top:12px">
-                <div class="card card--flat" style="padding:12px">
-                  <div class="t-label c-3" style="margin-bottom:8px">GERÄTE</div>
-                  <div style="display:flex;flex-direction:column;gap:8px">
-                    <div style="display:flex;align-items:baseline;gap:8px">
-                      <span class="t-sub is-strong" style="flex:1;min-width:0">iPad 11″</span>
-                      <span class="t-label" style="color:var(--danger)">wartet</span>
-                    </div>
-                    <div style="display:flex;align-items:baseline;gap:8px">
-                      <span class="t-sub" style="flex:1;min-width:0">iPhone 15</span>
-                      <span class="t-label c-3 num">22:14</span>
-                    </div>
-                    <div style="display:flex;align-items:baseline;gap:8px">
-                      <span class="t-sub" style="flex:1;min-width:0">MacBook Air</span>
-                      <span class="t-label c-3 num">21:50</span>
-                    </div>
-                  </div>
+              <div style="flex:none; padding-top:10px">
+
+                <!-- ══ ÜBER — einer von zwei Orten, an denen das Zeichen steht ══
+                     Die drei PNG liegen nicht vor. Der Baustein zeigt dann den
+                     reservierten, sichtbar leeren Platz samt Pfad. Das ist das
+                     richtige Verhalten und wird nicht repariert: nichts
+                     nachgezeichnet, kein Ersatzzeichen. Sobald die Dateien da
+                     sind, erscheinen sie hier, ohne dass eine Zeile sich
+                     ändert. Die Wortmarke steht in Ink, nicht in Kupfer —
+                     Kupfer hält als Textfarbe nur 4,44:1 und lebt deshalb
+                     ausschließlich im Rahmen des fehlenden Zeichens. -->
+                <div class="ueber" style="padding:2px 10px 0">
+                  <span class="brandmark brandmark--sm">
+                    <span class="appicon" data-appicon></span>
+                    <span class="serif--wordmark">Velum</span>
+                  </span>
+                  <div class="t-sub c-3 num" style="padding-top:8px">Version 1.0 (240)</div>
                 </div>
-                <div class="t-sub c-3 num" style="padding:9px 10px 0">Version 1.0 (240)</div>
               </div>
             </aside>
 
             <!-- ── Bereich „Darstellung" ── -->
             <div class="content">
-              <div class="scroll" style="padding:12px 24px 14px; display:flex; flex-direction:column; gap:12px">
+              <div class="scroll" style="padding:11px 24px 8px; display:flex; flex-direction:column; gap:10px">
 
                 <!-- ══ Design: drei echte Mini-Screens ══ -->
                 <section>
-                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:6px">
+                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:4px">
                     <span class="t-section">Darstellung</span>
                     <span class="t-sub c-3">Folgt dem System — wechselt heute um 16:38 auf Dunkel</span>
                   </div>
@@ -202,7 +321,7 @@ Skala selbst, keine Simulation.
 
                     <!-- Hell -->
                     <button style="text-align:left; padding:6px; border-radius:12px; background:var(--paper); box-shadow:var(--sh-card)">
-                      <div style="position:relative; height:70px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
+                      <div style="position:relative; height:58px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
                         <div style="position:absolute; inset:0; display:flex; background:#F2F2F4">
                           <div style="width:31%; background:#EDEDEF; border-right:1px solid rgba(22,24,28,.10); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
                             <div style="height:5px;width:74%;border-radius:3px;background:rgba(22,24,28,.58)"></div>
@@ -223,12 +342,12 @@ Skala selbst, keine Simulation.
                           </div>
                         </div>
                       </div>
-                      <div style="padding:7px 3px 1px"><span class="t-sub">Hell</span></div>
+                      <div style="padding:5px 3px 0"><span class="t-sub">Hell</span></div>
                     </button>
 
                     <!-- Dunkel -->
                     <button style="text-align:left; padding:6px; border-radius:12px; background:var(--paper); box-shadow:var(--sh-card)">
-                      <div style="position:relative; height:70px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
+                      <div style="position:relative; height:58px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
                         <div style="position:absolute; inset:0; display:flex; background:#0E0F11">
                           <div style="width:31%; background:#131518; border-right:1px solid rgba(242,243,245,.12); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
                             <div style="height:5px;width:74%;border-radius:3px;background:rgba(242,243,245,.62)"></div>
@@ -249,13 +368,13 @@ Skala selbst, keine Simulation.
                           </div>
                         </div>
                       </div>
-                      <div style="padding:7px 3px 1px"><span class="t-sub">Dunkel</span></div>
+                      <div style="padding:5px 3px 0"><span class="t-sub">Dunkel</span></div>
                     </button>
 
                     <!-- Automatisch — ausgewählt: Fläche + Ring + Häkchen.
                          Die Kachel zeigt die Überblendung eingefroren. -->
                     <button style="text-align:left; padding:6px; border-radius:12px; background:var(--accent-soft); box-shadow:inset 0 0 0 2px var(--accent-ring)">
-                      <div style="position:relative; height:70px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
+                      <div style="position:relative; height:58px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(22,24,28,.16)">
                         <!-- untere Ebene: HELL -->
                         <div style="position:absolute; inset:0; display:flex; background:#F2F2F4">
                           <div style="width:31%; background:#EDEDEF; border-right:1px solid rgba(22,24,28,.10); padding:7px 5px; display:flex; flex-direction:column; gap:5px">
@@ -299,7 +418,7 @@ Skala selbst, keine Simulation.
                           </div>
                         </div>
                       </div>
-                      <div style="display:flex; align-items:center; gap:6px; padding:7px 3px 1px">
+                      <div style="display:flex; align-items:center; gap:6px; padding:5px 3px 0">
                         <span class="t-sub is-strong">Automatisch</span>
                         <div style="flex:1"></div>
                         <span class="ico" data-ico="check" style="width:16px;height:16px; color:var(--ink-1)"></span>
@@ -314,11 +433,11 @@ Skala selbst, keine Simulation.
                   <div style="display:flex; flex-direction:column; gap:12px">
 
                     <!-- Schriftgröße -->
-                    <section class="card" style="padding:12px 14px">
+                    <section class="card" style="padding:10px 14px">
                       <div class="t-label c-3">SCHRIFTGRÖSSE</div>
 
                       <!-- Regler — Knopf angehoben, Wertblase: er wird gerade gezogen -->
-                      <div style="display:flex; align-items:center; gap:12px; margin:26px 0 6px">
+                      <div style="display:flex; align-items:center; gap:12px; margin:24px 0 4px">
                         <span class="t-label c-3">A</span>
                         <div style="position:relative; flex:1; height:26px; display:flex; align-items:center">
                           <div style="position:absolute; left:0; right:0; height:4px; border-radius:2px; background:var(--fill-2)"></div>
@@ -351,49 +470,49 @@ Skala selbst, keine Simulation.
                     </section>
 
                     <!-- Modul-Farben -->
-                    <section class="card" style="padding:12px 14px">
-                      <div class="t-label c-3" style="margin-bottom:10px">MODUL-FARBEN</div>
-                      <div style="display:grid; grid-template-columns:1fr 1fr; gap:7px 12px">
+                    <section class="card" style="padding:10px 14px">
+                      <div class="t-label c-3" style="margin-bottom:8px">MODUL-FARBEN</div>
+                      <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px 12px">
                         <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--canvas"></span><span class="t-sub">Canvas</span></span>
                         <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--tasks"></span><span class="t-sub">Aufgaben</span></span>
                         <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--notes"></span><span class="t-sub">Notizen</span></span>
                         <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--cards"></span><span class="t-sub">Lernkarten</span></span>
                         <span style="display:flex; align-items:center; gap:8px"><span class="dot dot--journal"></span><span class="t-sub">Journal</span></span>
                       </div>
-                      <p class="t-sub c-2" style="margin:10px 0 0">6 pt, immer neben dem Wort — nie als Fläche, nie als Text.</p>
+                      <p class="t-sub c-2" style="margin:8px 0 0">6 pt, immer neben dem Wort — nie als Fläche, nie als Text.</p>
                     </section>
                   </div>
 
                   <div style="display:flex; flex-direction:column; gap:12px">
 
                     <!-- Papier & Raster -->
-                    <section class="card" style="padding:12px 14px">
-                      <div class="t-label c-3" style="margin-bottom:10px">PAPIER &amp; RASTER</div>
+                    <section class="card" style="padding:10px 14px">
+                      <div class="t-label c-3" style="margin-bottom:8px">PAPIER &amp; RASTER</div>
                       <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px">
                         <div>
-                          <div style="height:42px; border-radius:7px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line-2)"></div>
+                          <div style="height:38px; border-radius:7px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line-2)"></div>
                           <div class="t-sub c-3" style="margin-top:5px">Blanko</div>
                         </div>
                         <div>
-                          <div style="height:42px; border-radius:7px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line-2); background-image:repeating-linear-gradient(to bottom, transparent 0 7px, var(--line-2) 7px 8px)"></div>
+                          <div style="height:38px; border-radius:7px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line-2); background-image:repeating-linear-gradient(to bottom, transparent 0 7px, var(--line-2) 7px 8px)"></div>
                           <div class="t-sub c-3" style="margin-top:5px">Liniert</div>
                         </div>
                         <div>
-                          <div style="height:42px; border-radius:7px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line-2); background-image:repeating-linear-gradient(to bottom, transparent 0 7px, var(--line) 7px 8px), repeating-linear-gradient(to right, transparent 0 7px, var(--line) 7px 8px)"></div>
+                          <div style="height:38px; border-radius:7px; background:var(--paper-2); box-shadow:inset 0 0 0 1px var(--line-2); background-image:repeating-linear-gradient(to bottom, transparent 0 7px, var(--line) 7px 8px), repeating-linear-gradient(to right, transparent 0 7px, var(--line) 7px 8px)"></div>
                           <div class="t-sub c-3" style="margin-top:5px">Kariert</div>
                         </div>
                         <!-- ausgewählt = Fläche + Ring + Gewicht -->
                         <div>
-                          <div style="height:42px; border-radius:7px; background:var(--accent-soft); box-shadow:inset 0 0 0 2px var(--accent-ring); background-image:radial-gradient(var(--ink-4) 1.1px, transparent 1.2px); background-size:8px 8px; background-position:4px 4px"></div>
+                          <div style="height:38px; border-radius:7px; background:var(--accent-soft); box-shadow:inset 0 0 0 2px var(--accent-ring); background-image:radial-gradient(var(--ink-4) 1.1px, transparent 1.2px); background-size:8px 8px; background-position:4px 4px"></div>
                           <div class="t-sub is-strong" style="margin-top:5px">Punkte</div>
                         </div>
                       </div>
-                      <p class="t-sub c-2" style="margin:10px 0 0">Gilt für neue Notizen. Pro Notizbuch änderbar.</p>
+                      <p class="t-sub c-2" style="margin:8px 0 0">Gilt für neue Notizen. Pro Notizbuch änderbar.</p>
                     </section>
 
                     <!-- Schalter -->
-                    <section class="card" style="padding:4px 14px">
-                      <div class="row" style="padding:5px 0">
+                    <section class="card" style="padding:2px 14px">
+                      <div class="row" style="padding:3px 0">
                         <div class="row__main">
                           <span class="t-body">Bewegung reduzieren</span>
                           <span class="t-sub c-3 clamp-1">Übergaben blenden über</span>
@@ -426,7 +545,7 @@ Skala selbst, keine Simulation.
                 </div>
 
                 <!-- ══ Sync-Fehler ══ -->
-                <div class="notice notice--error" style="align-items:center; padding:10px 14px">
+                <div class="notice notice--error" style="align-items:center; padding:8px 14px">
                   <span class="ico" data-ico="alert"></span>
                   <div class="notice__text" style="flex:1; min-width:0">
                     <div class="t-body is-strong">Letzte Synchronisierung fehlgeschlagen</div>
@@ -435,7 +554,8 @@ Skala selbst, keine Simulation.
                   <button class="btn btn--sm" style="flex:none">Erneut versuchen</button>
                 </div>
 
-                <!-- ══ Speicher ══ -->
+                <!-- ══ Speicher und Geräte — zwei Antworten auf dieselbe Frage ══ -->
+                <div style="display:grid; grid-template-columns:1fr 300px; gap:12px; align-items:start">
                 <section class="card" style="padding:12px 14px">
                   <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:7px">
                     <span class="t-label c-3" style="flex:1">SPEICHER</span>
@@ -447,13 +567,59 @@ Skala selbst, keine Simulation.
                     <span style="width:14%; height:100%; background:var(--ink-1); opacity:.38"></span>
                     <span style="width:8%;  height:100%; background:var(--ink-1); opacity:.22"></span>
                   </div>
-                  <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:12px; margin-top:7px">
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1">Notizen</span><span class="t-label num">1,9 GB</span></span>
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.62;flex:none"></span><span class="t-sub c-2" style="flex:1">Fotos</span><span class="t-label num">1,4 GB</span></span>
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.38;flex:none"></span><span class="t-sub c-2" style="flex:1">Audio</span><span class="t-label num">0,6 GB</span></span>
-                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.22;flex:none"></span><span class="t-sub c-2" style="flex:1">Karten</span><span class="t-label num">0,3 GB</span></span>
+                  <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 14px; margin-top:7px">
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Notizen</span><span class="t-label num" style="white-space:nowrap">1,9 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.62;flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Fotos</span><span class="t-label num" style="white-space:nowrap">1,4 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.38;flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Audio</span><span class="t-label num" style="white-space:nowrap">0,6 GB</span></span>
+                    <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.22;flex:none"></span><span class="t-sub c-2" style="flex:1; min-width:0">Karten</span><span class="t-label num" style="white-space:nowrap">0,3 GB</span></span>
+                  </div>
+                  <!-- KEIN FADEN. Der Balkenabschnitt und seine Beschriftung
+                       sind dasselbe Objekt, zweimal gezeigt — zwischen einem
+                       Ding und seinem eigenen Etikett gibt es keine Kante.
+                       Ein Strich wäre hier hübsch und gelogen. -->
+                </section>
+
+                <!-- ══ GERÄTE UND KONTO — der einzige Faden auf diesem Schirm ══
+                     Ein Knoten, drei Fäden, drei Gerätepunkte. Die Kante ist
+                     echt und in beide Richtungen begehbar: jedes Gerät hängt
+                     an genau diesem Konto — das ist dieselbe Beziehung, die
+                     der Sync-Fehler oben meldet, nur als Bild. Der Punkt des
+                     iPad ist HOHL, weil seine drei Änderungen noch nicht
+                     angekommen sind; hohl heißt in dieser DNA „noch nicht
+                     da", und mehr behauptet er nicht. Die Farbe trägt die
+                     Aussage nicht: Form (hohl) + Wort („wartet") + die Zeile
+                     darunter sagen dasselbe dreimal. -->
+                <section class="card" style="padding:10px 14px">
+                  <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:8px">
+                    <span class="t-label c-3" style="flex:1">GERÄTE UND KONTO</span>
+                    <span class="t-label c-3" style="white-space:nowrap">hohl = wartet</span>
+                  </div>
+                  <div style="position:relative">
+                    <div style="display:flex; align-items:center; gap:8px; height:16px; padding-left:11px">
+                      <span class="dot dot--node"></span>
+                      <span class="t-label c-2">Emils iCloud</span>
+                    </div>
+                    <svg class="thread thread--curve dev__f dev__f1"></svg>
+                    <svg class="thread thread--curve dev__f dev__f2"></svg>
+                    <svg class="thread thread--curve dev__f dev__f3"></svg>
+                    <div class="dev__row">
+                      <span class="dot dot--hollow" title="drei Änderungen noch nicht angekommen"></span>
+                      <span class="t-sub is-strong" style="flex:1; min-width:0; white-space:nowrap">iPad 11″</span>
+                      <span class="t-label" style="color:var(--danger); white-space:nowrap">3 warten</span>
+                    </div>
+                    <div class="dev__row">
+                      <span class="dot" style="background:var(--ink-2)"></span>
+                      <span class="t-sub" style="flex:1; min-width:0; white-space:nowrap">iPhone 15</span>
+                      <span class="t-label c-3 num">22:14</span>
+                    </div>
+                    <div class="dev__row">
+                      <span class="dot" style="background:var(--ink-2)"></span>
+                      <span class="t-sub" style="flex:1; min-width:0; white-space:nowrap">MacBook Air</span>
+                      <span class="t-label c-3 num">21:50</span>
+                    </div>
                   </div>
                 </section>
+                </div>
 
               </div>
             </div>
@@ -491,9 +657,96 @@ Skala selbst, keine Simulation.
             <button class="btn btn--sm" style="flex:none; height:30px; padding:0 11px">Erneut</button>
           </div>
 
+          <!-- ══ GRUPPE 1 · DEINE SACHEN ══
+               Dieselbe Ordnung wie auf dem iPad und aus demselben Grund:
+               Velum hält fünf Module in EINEM Datenmodell, also ist „wo liegt
+               es, wie viel ist es, wie kommt es hier weg, wer sieht es" nicht
+               mehr eine Frage je Modul, sondern eine einzige — und die bringt
+               jeder als Erstes mit. Der Sync-Fehler steht deshalb dort, wo man
+               ihn sucht. Die Design-Vorschau folgt gleich darunter. -->
+          <section>
+            <div class="divider" style="margin:0 0 7px"><span class="t-label c-3">DEINE SACHEN</span></div>
+            <div class="card" style="padding:2px 14px">
+              <div class="row" style="padding:5px 0">
+                <span class="ico c-2" data-ico="cloud"></span>
+                <div class="row__main"><span class="t-body">Sync</span></div>
+                <div class="row__meta"><span class="t-sub" style="color:var(--danger)">Fehler</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+              <div class="row" style="padding:5px 0">
+                <span class="ico c-2" data-ico="share"></span>
+                <div class="row__main"><span class="t-body">Export &amp; Backup</span></div>
+                <div class="row__meta"><span class="t-sub c-3">Wöchentlich</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+              <div class="row" style="padding:5px 0">
+                <span class="ico c-2" data-ico="lock"></span>
+                <div class="row__main"><span class="t-body">Datenschutz &amp; Sperre</span></div>
+                <div class="row__meta"><span class="t-sub c-3">Face ID</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card" style="padding:11px 14px 12px">
+            <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px">
+              <span class="t-label c-3" style="flex:1">SPEICHER</span>
+              <span class="t-sub c-3 num">4,2 von 128 GB</span>
+            </div>
+            <div class="bar" style="height:10px; display:flex; gap:0">
+              <span style="width:45%; height:100%; background:var(--ink-1)"></span>
+              <span style="width:33%; height:100%; background:var(--ink-1); opacity:.62"></span>
+              <span style="width:14%; height:100%; background:var(--ink-1); opacity:.38"></span>
+              <span style="width:8%;  height:100%; background:var(--ink-1); opacity:.22"></span>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px 14px; margin-top:8px">
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1">Notizen</span><span class="t-label num">1,9 GB</span></span>
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.62;flex:none"></span><span class="t-sub c-2" style="flex:1">Fotos</span><span class="t-label num">1,4 GB</span></span>
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.38;flex:none"></span><span class="t-sub c-2" style="flex:1">Audio</span><span class="t-label num">0,6 GB</span></span>
+              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.22;flex:none"></span><span class="t-sub c-2" style="flex:1">Karten</span><span class="t-label num">0,3 GB</span></span>
+            </div>
+          </section>
+
+
+          <!-- ══ GERÄTE UND KONTO — der einzige Faden auf diesem Schirm ══
+               Ein Knoten, drei Fäden, drei Gerätepunkte; die Kante ist echt
+               und in beide Richtungen begehbar. Der Punkt des iPad ist hohl,
+               weil seine drei Änderungen noch nicht angekommen sind. -->
+          <section class="card" style="padding:11px 14px 12px">
+            <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px">
+              <span class="t-label c-3" style="flex:1">GERÄTE UND KONTO</span>
+              <span class="t-label c-3" style="white-space:nowrap">hohl = wartet</span>
+            </div>
+            <div style="position:relative">
+              <div style="display:flex; align-items:center; gap:8px; height:16px; padding-left:11px">
+                <span class="dot dot--node"></span>
+                <span class="t-label c-2">Emils iCloud</span>
+              </div>
+              <svg class="thread thread--curve dev__f dev__f1"></svg>
+              <svg class="thread thread--curve dev__f dev__f2"></svg>
+              <svg class="thread thread--curve dev__f dev__f3"></svg>
+              <div class="dev__row">
+                <span class="dot dot--hollow" title="drei Änderungen noch nicht angekommen"></span>
+                <span class="t-sub is-strong" style="flex:1; min-width:0; white-space:nowrap">iPad 11″</span>
+                <span class="t-label" style="color:var(--danger); white-space:nowrap">3 warten</span>
+              </div>
+              <div class="dev__row">
+                <span class="dot" style="background:var(--ink-2)"></span>
+                <span class="t-sub" style="flex:1; min-width:0; white-space:nowrap">iPhone 15 · dieses Gerät</span>
+                <span class="t-label c-3 num">22:14</span>
+              </div>
+              <div class="dev__row">
+                <span class="dot" style="background:var(--ink-2)"></span>
+                <span class="t-sub" style="flex:1; min-width:0; white-space:nowrap">MacBook Air</span>
+                <span class="t-label c-3 num">21:50</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══ GRUPPE 2 · WIE VELUM SICH VERHÄLT ══ -->
+          <section>
+            <div class="divider" style="margin:0 0 7px"><span class="t-label c-3">WIE VELUM SICH VERHÄLT</span></div>
+          </section>
+
           <!-- Design als Reihe -->
           <section>
-            <div class="divider" style="margin:0 0 7px"><span class="t-label c-3">DESIGN</span></div>
             <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px">
 
               <!-- Hell -->
@@ -654,54 +907,59 @@ Skala selbst, keine Simulation.
             </div>
           </section>
 
-          <!-- Speicher — beginnt unterhalb der Falz; die Liste scrollt weiter -->
-          <section class="card" style="margin-top:14px; padding:11px 14px 12px">
-            <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px">
-              <span class="t-label c-3" style="flex:1">SPEICHER</span>
-              <span class="t-sub c-3 num">4,2 von 128 GB</span>
-            </div>
-            <div class="bar" style="height:10px; display:flex; gap:0">
-              <span style="width:45%; height:100%; background:var(--ink-1)"></span>
-              <span style="width:33%; height:100%; background:var(--ink-1); opacity:.62"></span>
-              <span style="width:14%; height:100%; background:var(--ink-1); opacity:.38"></span>
-              <span style="width:8%;  height:100%; background:var(--ink-1); opacity:.22"></span>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px 14px; margin-top:8px">
-              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);flex:none"></span><span class="t-sub c-2" style="flex:1">Notizen</span><span class="t-label num">1,9 GB</span></span>
-              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.62;flex:none"></span><span class="t-sub c-2" style="flex:1">Fotos</span><span class="t-label num">1,4 GB</span></span>
-              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.38;flex:none"></span><span class="t-sub c-2" style="flex:1">Audio</span><span class="t-label num">0,6 GB</span></span>
-              <span style="display:flex; align-items:center; gap:7px"><span style="width:8px;height:8px;border-radius:2px;background:var(--ink-1);opacity:.22;flex:none"></span><span class="t-sub c-2" style="flex:1">Karten</span><span class="t-label num">0,3 GB</span></span>
-            </div>
-          </section>
-
-          <!-- Die übrigen Bereiche — identisch zur Bereichsliste des iPad -->
+          <!-- Benachrichtigungen und Tastatur gehören zu „wie Velum sich
+               verhält" und stehen deshalb hier, nicht bei den Sachen. -->
           <section class="card" style="padding:2px 14px">
-            <div class="row" style="padding:5px 0">
-              <span class="ico c-2" data-ico="cloud"></span>
-              <div class="row__main"><span class="t-body">Sync</span></div>
-              <div class="row__meta"><span class="t-sub" style="color:var(--danger)">Fehler</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
-            </div>
             <div class="row" style="padding:5px 0">
               <span class="ico c-2" data-ico="bolt"></span>
               <div class="row__main"><span class="t-body">Benachrichtigungen</span></div>
               <div class="row__meta"><span class="t-sub c-3">3 aktiv</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
             </div>
             <div class="row" style="padding:5px 0">
-              <span class="ico c-2" data-ico="lock"></span>
-              <div class="row__main"><span class="t-body">Datenschutz &amp; Sperre</span></div>
-              <div class="row__meta"><span class="t-sub c-3">Face ID</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
-            </div>
-            <div class="row" style="padding:5px 0">
-              <span class="ico c-2" data-ico="share"></span>
-              <div class="row__main"><span class="t-body">Export &amp; Backup</span></div>
-              <div class="row__meta"><span class="t-sub c-3">Wöchentlich</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
-            </div>
-            <div class="row" style="padding:5px 0">
-              <span class="ico c-2" data-ico="star"></span>
-              <div class="row__main"><span class="t-body">Abo</span></div>
-              <div class="row__meta"><span class="t-sub c-3">Uni · bis 30.09.</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              <span class="ico c-2" data-ico="grid"></span>
+              <div class="row__main"><span class="t-body">Tastatur &amp; Pencil</span></div>
+              <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
             </div>
           </section>
+
+          <!-- ══ GRUPPE 3 · ÜBER VELUM — hier steht das Zeichen ══
+               Einer von zwei Orten im ganzen Entwurf. Die drei PNG liegen
+               nicht vor; der Baustein zeigt dann den reservierten, sichtbar
+               leeren Platz mit der Pfadangabe. Das ist richtig so und wird
+               nicht repariert — kein gezeichnetes V, kein Ersatzzeichen. -->
+          <section>
+            <div class="divider" style="margin:0 0 7px"><span class="t-label c-3">ÜBER VELUM</span></div>
+            <div class="card" style="padding:2px 14px">
+              <div class="row" style="padding:5px 0">
+                <span class="ico c-2" data-ico="star"></span>
+                <div class="row__main"><span class="t-body">Abo</span></div>
+                <div class="row__meta"><span class="t-sub c-3">Uni · bis 30.09.</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+              <div class="row" style="padding:5px 0">
+                <span class="ico c-2" data-ico="info"></span>
+                <div class="row__main"><span class="t-body">Was ist neu</span></div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+              <div class="row" style="padding:5px 0">
+                <span class="ico c-2" data-ico="heart"></span>
+                <div class="row__main"><span class="t-body">Hilfe &amp; Feedback</span></div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+              <div class="row" style="padding:5px 0">
+                <span class="ico c-2" data-ico="quote"></span>
+                <div class="row__main"><span class="t-body">Rechtliches</span></div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+            </div>
+          </section>
+
+          <div class="ueber" style="padding:6px 4px 4px">
+            <span class="brandmark">
+              <span class="appicon" data-appicon></span>
+              <span class="serif--wordmark">Velum</span>
+            </span>
+            <div class="t-sub c-3 num" style="padding-top:10px">Version 1.0 (240) · Uni-Lizenz bis 30.09.</div>
+          </div>
         </div>
 
         <nav class="tabbar">
@@ -740,6 +998,28 @@ Skala selbst, keine Simulation.
     <li><strong>Ein Fortschrittsrad für die Synchronisierung</strong> — ein Fehlschlag wird benannt, nicht animiert.</li>
   </ul>
 
+  <h3>Wonach diese Liste geordnet ist — und warum nicht anders</h3>
+  <p>In Runde 1 stand die Bereichsliste in <strong>Obsidians Reihenfolge auf Deutsch</strong>: Darstellung · Sync · Mitteilungen · Datenschutz · Speicher · Export · Abo. Das ist keine Entscheidung, das ist eine Übernahme. Jetzt folgt sie Velums eigenem Versprechen.</p>
+  <table>
+    <tr><td>1 · <strong>Deine Sachen</strong></td><td>Sync · Speicher · Export &amp; Backup · Datenschutz. <strong>Warum zuerst:</strong> Velum hält fünf Module in <em>einem</em> Datenmodell. Bei fünf getrennten Apps sind „wo liegen meine Sachen, wie viel sind es, wie kommen sie hier wieder heraus, wer sieht sie" fünf Fragen mit fünf Antworten — bei Velum ist es eine einzige. Und es ist genau die Frage, die man mitbringt, wenn man Einstellungen öffnet. Die Ordnung folgt also aus Velums Versprechen, nicht aus einer Faustregel.</td></tr>
+    <tr><td>2 · <strong>Wie Velum sich verhält</strong></td><td>Darstellung · Benachrichtigungen · Tastatur &amp; Pencil. Alles, was das Verhalten der App ändert, ohne die Daten anzufassen.</td></tr>
+    <tr><td>3 · <strong>Über Velum</strong></td><td>Abo · Was ist neu · Hilfe &amp; Feedback · Rechtliches — und am Fuß das Zeichen mit der Version. Die App selbst, zuletzt.</td></tr>
+  </table>
+  <p><strong>Die Ordnung, die ich verworfen habe:</strong> nach den fünf Modulen. Sie wäre die naheliegende „Velum-Ordnung" — und sie ist trotzdem falsch, aus zwei Gründen. Erstens stünde sie als zweite Modulliste unmittelbar neben der ersten: die App-Sidebar links zeigt Canvas · Notizen · Journal · Aufgaben · Lernkarten, und dieselben fünf Wörter hießen dort „dorthin gehen" und eine Spalte weiter „das einstellen". Zwei Bedeutungen für dieselben fünf Wörter, nebeneinander sichtbar. Zweitens gehören Schriftgröße, Sync, Speicher, Bewegung und Datenschutz <em>keinem</em> Modul; sie hätten in einer Modulordnung keinen Platz und lägen am Ende in einem Sammelfach namens „Allgemein" — also wieder in einer Reihenfolge statt in einer Struktur. Velums <em>Struktur</em> sind die Module; sein <em>Versprechen</em> ist das eine Datenmodell. Ein Einstellungsschirm hat für das Versprechen geradezustehen.</p>
+  <p><strong>Eine Nebenwirkung, die kein Zufall ist:</strong> Der Sync-Fehler steht jetzt an erster statt an siebter Stelle — an der Stelle, an der man ihn sucht. Und die drei Merkmale, an denen er sichtbar ist (Banner, rotes Zeichen an „Sync", hohler Punkt in der Geräteliste), liegen jetzt alle im selben ersten Drittel des Schirms.</p>
+
+  <h3>Der Faden auf diesem Schirm — genau eine Stelle</h3>
+  <table>
+    <tr><td>Geräte und Konto</td><td>Ein Knoten („Emils iCloud"), drei Fäden, drei Gerätepunkte. Die Kante steht im Datenmodell und ist in beide Richtungen begehbar: jedes Gerät hängt an genau diesem Konto, und jedes Konto trägt genau diese Geräte. Der Punkt des iPad ist <strong>hohl</strong>, weil seine drei Änderungen noch nicht angekommen sind — hohl heißt in dieser DNA „geplant, offen, noch nicht da", und genau das ist der Zustand. Gemessen: Knotenmitte 29,5 / 58,0, Zielpunkte 44,0 / 77,0 · 99,0 · 121,0; die drei Kurven enden auf den Punktmitten, nicht daneben. Bei „Aa groß" gilt dasselbe mit eigenen Werten (86,0 → 107,0 · 133,0 · 159,0).</td></tr>
+  </table>
+  <p><strong>Wo bewusst kein Faden steht — und das ist hier die längere Liste.</strong> Zwischen den Speicher-Abschnitten und ihren Beschriftungen: Balken und Etikett sind <em>dasselbe</em> Objekt, zweimal gezeigt, und zwischen einem Ding und seinem eigenen Etikett gibt es keine Kante — ein Strich wäre dort hübsch und gelogen. Zwischen den Bereichen der Liste: eine Reihenfolge ist keine Beziehung. Zwischen einem Schalter und seiner Folge: „Bewegung reduzieren" verändert eine Bewegung, es verknüpft keine zwei Objekte. Zwischen den drei Design-Kacheln: Alternativen sind keine Kette. <strong>Einstellungen sind eine Liste von Schaltern.</strong> Dass hier genau ein Faden steht und nicht sieben, ist das Ergebnis der Regel, nicht ihr Versagen.</p>
+
+  <h3>Das Zeichen — und warum der Rahmen leer bleibt</h3>
+  <p>„Über" ist einer von zwei Orten im ganzen Entwurf, an denen die Marke erscheint (der andere ist das Onboarding). Sie steht als <span class="num">.brandmark</span> — Zeichen plus Wortmarke in New York — am Fuß der Bereichsliste, auf dem iPhone am Ende der Gruppe „Über Velum". <strong>Die drei PNG liegen nicht vor.</strong> Der Baustein zeigt deshalb einen sichtbar leeren, gestrichelten Platz mit der Pfadangabe daneben: <span class="num">assets/brand/velum-appicon-light.png</span>. Das ist kein Fehler und wird nicht repariert — kein gezeichnetes V, kein Ersatzzeichen, keine Andeutung. Die <span class="num">ERR_FILE_NOT_FOUND</span> in der Konsole sind der Baustein bei der Arbeit. Sobald die drei Dateien abgelegt werden, erscheint das Zeichen hier und an allen anderen Stellen gleichzeitig, ohne dass eine Zeile geändert wird. Der Rahmen ist der einzige heutige Gebrauch des Kupfertons (4,44:1 hell · 3,96:1 dunkel — als Bedienoberfläche zulässig, als Textfarbe nicht); deshalb steht die Wortmarke daneben in Ink.</p>
+
+  <h3>Bewegung</h3>
+  <p><span class="num">bewegung.css</span> und <span class="num">bewegung.js</span> sind eingebunden, aber auf diesem Schirm steht <strong>kein</strong> <span class="num">data-bw</span>. Das ist kein Versehen: dieser Schirm trägt den Schalter „Bewegung reduzieren", und <span class="num">bewegung.js</span> ist die Datei, die aus der Systemvorliebe und dem Schalter das <span class="num">data-bw-reduce</span> am <span class="num">&lt;html&gt;</span> macht. Ein Schirm, der den Schalter für eine Maschine anbietet, muss dieselbe Maschine laufen lassen. Eine Bewegung zu erfinden, nur damit die Datei etwas zu tun bekommt, wäre derselbe Fehler wie ein Faden ohne Kante.</p>
+
   <h3>Zustände auf diesem Schirm</h3>
   <table>
     <tr><td>gefüllt</td><td>Der gezeigte Zustand: Design „Automatisch", Schrift „Standard", Papier „Punkte", drei Schalter, 4,2 GB belegt.</td></tr>
@@ -748,7 +1028,8 @@ Skala selbst, keine Simulation.
     <tr><td>Fehler</td><td><strong>Sync:</strong> <code>.notice--error</code> — „Letzte Synchronisierung fehlgeschlagen", darunter „Verbindung prüfen · 3 Änderungen warten" und rechts der Knopf „Erneut versuchen". Der Satz steht bewusst auf zwei Zeilen: „Synchronisierung" ist so lang, dass eine einzige Zeile dreizeilig umbrechen würde. Derselbe Fehler ist an drei Stellen sichtbar — im Banner, als rotes Zeichen neben „Sync" in der Bereichsliste und als „wartet" in der Geräteliste. So findet man ihn auch, wenn man von woanders kommt.</td></tr>
     <tr><td>Zwischenzustand</td><td><strong>Der Schalter „Bewegung reduzieren" steht mitten im Umlegen</strong> — die Spur ist zu 56 % gefüllt, der Knopf sitzt zwischen den Positionen, um ihn liegt der Druck-Ring. Zweiter Zwischenzustand: Der Schriftgrößen-Regler wird gerade gezogen — der Knopf ist angehoben (Schatten + Ring), darüber steht die Wertblase „Standard". Dritter: Die Kachel „Automatisch" zeigt die Überblendung zwischen Hell und Dunkel eingefroren, mit hellem Grat an der Naht.</td></tr>
     <tr><td>nicht gewählt</td><td>Die Vorschauzeile „Groß" liegt auf 42 % Deckkraft und trägt keine Fläche — die beiden Merkmale für „aus".</td></tr>
-    <tr><td>scrollt weiter</td><td>Auf dem iPhone endet der sichtbare Bereich sauber unter der Schalter-Gruppe. „Speicher" und die übrigen Bereiche (Sync, Benachrichtigungen, Datenschutz &amp; Sperre, Export &amp; Backup, Abo) stehen darunter in derselben Liste — auf dem iPad sind sie gleichzeitig sichtbar, weil die Fläche es hergibt. Beide Geräte erlauben dieselbe Aufgabe, das iPhone kostet keinen zusätzlichen Tipp.</td></tr>
+    <tr><td>scrollt weiter</td><td>Auf dem iPhone endet der sichtbare Bereich an der Oberkante der Design-Kacheln: erst der Fehler, dann „Deine Sachen" mit Speicher und Geräten, dann beginnt „Wie Velum sich verhält". Der erste Bildschirm beantwortet damit genau die Frage, nach der die Liste geordnet ist — die Ordnung ist nicht behauptet, sondern zu sehen. Alles Weitere (Schriftgröße, Papier, Schalter, Über) steht darunter in derselben Liste; auf dem iPad ist es gleichzeitig sichtbar, weil die Fläche es hergibt. Beide Geräte erlauben dieselbe Aufgabe, das iPhone kostet keinen zusätzlichen Tipp.</td></tr>
+    <tr><td>wartet</td><td>Der hohle Punkt am iPad in „Geräte und Konto": drei Änderungen liegen noch hier und nicht beim Konto. Form (hohl) + Wort („3 Änderungen warten", rot) + die Erklärzeile in der Kopfzeile — dreifach, bevor Farbe ins Spiel kommt.</td></tr>
   </table>
 
   <h3>Warum award-würdig</h3>
@@ -759,5 +1040,6 @@ Skala selbst, keine Simulation.
 </div>
 
 <script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
 </body>
 </html>
