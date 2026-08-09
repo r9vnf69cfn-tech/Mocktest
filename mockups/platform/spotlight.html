@@ -211,7 +211,7 @@ einzige Ausnahme auf dieser Seite.
           <span class="appicon hit__ico" style="--appicon-size:40px; background:none; --thread:rgba(255,255,255,.55)" title="assets/brand/velum-appicon-dark.png"><span class="appicon__frame" style="border-radius:8.9px"></span></span>
           <div class="hit__main">
             <div class="t-body is-strong clamp-2">Osmose: Wohin wandert das Wasser?</div>
-            <div class="t-sub c-3" style="margin-top:1px">Lernkarte · Deck „Zellbiologie"</div>
+            <div class="t-sub c-3" style="margin-top:1px">Lernkarte · Stapel „Zellbiologie"</div>
             <!-- Der Faden: die Karte weiß, aus welchem Absatz sie kommt. -->
             <div style="margin-top:9px">
               <div class="threadrow" style="padding:0 4px">
@@ -256,8 +256,8 @@ einzige Ausnahme auf dieser Seite.
         <div class="hit">
           <span class="hit__ico"><span class="ico" data-ico="play"></span></span>
           <div class="hit__main">
-            <div class="t-body is-strong clamp-1">Lernsession starten</div>
-            <div class="t-sub c-3">Velum · Deck „Zellbiologie" · 8 fällig</div>
+            <div class="t-body is-strong clamp-1">Lernen starten</div>
+            <div class="t-sub c-3">Velum · Stapel „Zellbiologie" · 8 fällig</div>
           </div>
         </div>
 
@@ -288,7 +288,16 @@ einzige Ausnahme auf dieser Seite.
         </div>
         <div class="kb__row" style="margin-bottom:0">
           <span class="key key--wide key--dark">123</span>
-          <span class="key key--dark" style="flex:.8 1 0; font-size:17px">🌐</span>
+          <!-- Die Globus-Taste. Sie trug bis zur Aufräumrunde das Emoji U+1F310
+               und war damit die einzige Buntfläche im ganzen Paket außerhalb
+               von .brandmark und den 6-pt-Punkten — dazu die einzige Stelle,
+               deren Aussehen von der Schriftausstattung des Rechners abhing.
+               Jetzt ein Strichzeichen wie die übrigen: viewBox 24, Strich 1,7,
+               runde Kappen, currentColor — dieselbe Bauart wie die Symbole in
+               mock.js (die Registry führt keinen Globus) und wie das
+               Websuche-Zeichen weiter oben auf dieser Seite. Kreis r 8,4 wie
+               bei clock/alert/info, Äquator und ein Meridian. -->
+          <span class="key key--dark" style="flex:.8 1 0" aria-label="Tastatur wechseln"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.4"/><path d="M3.6 12h16.8"/><path d="M12 3.6c2.2 2.4 3.4 5.3 3.4 8.4S14.2 18 12 20.4C9.8 18 8.6 15.1 8.6 12s1.2-6 3.4-8.4Z"/></svg></span>
           <span class="key key--space">Leerzeichen</span>
           <span class="key key--wide key--dark" style="flex:2 1 0">Suchen</span>
         </div>
@@ -361,7 +370,7 @@ einzige Ausnahme auf dieser Seite.
             <div><div class="t-label c-3">wurde zu</div><div class="t-sub is-strong num">5 Karten</div></div>
             <div><div class="t-label c-3">morgen fällig</div><div class="t-sub is-strong num">5 Karten</div></div>
           </div>
-          <div class="t-label c-3" style="margin-top:9px">Ausgewählt: „5 Karten" — Return öffnet das Deck an dieser Station.</div>
+          <div class="t-label c-3" style="margin-top:9px">Ausgewählt: „5 Karten" — Return öffnet den Stapel an dieser Station.</div>
         </div>
 
         <!-- Weg 2 -->
@@ -419,6 +428,12 @@ einzige Ausnahme auf dieser Seite.
     <tr><td>Faden im Treffer</td><td>rgba(255,255,255,.58) 5,6:1 — über der 3:1-Schwelle</td></tr>
     <tr><td>Velum-Feld</td><td>ink-1 auf Papier 17,8:1 hell · 15,9:1 dunkel; Faden 3,10:1 hell · 3,13:1 dunkel</td></tr>
     <tr><td>Auswahl im Velum-Feld</td><td>accent-soft als Fläche PLUS Ink-Ring am Knoten — zwei Merkmale, nie Farbe allein</td></tr>
+  </table>
+
+  <h3>Was die Aufräumrunde korrigiert hat</h3>
+  <table>
+    <tr><td>Globus-Taste</td><td>Sie trug das Emoji <span class="num">U+1F310</span> und war damit die einzige Buntfläche im ganzen Paket außerhalb von <span class="num">.brandmark</span> und den 6-pt-Punkten — dazu die einzige Stelle, deren Aussehen von der Schriftausstattung des Rechners abhing. Jetzt ein Strichzeichen wie die übrigen: viewBox 24, Strich 1,7, runde Kappen, <span class="num">currentColor</span>. Die Registry in <span class="num">mock.js</span> führt keinen Globus, deshalb ist er hier gezeichnet — Kreis <span class="num">r 8,4</span> wie bei clock, alert und info, dazu Äquator und ein Meridian.</td></tr>
+    <tr><td>Wortwahl</td><td>„Deck" → <strong>Stapel</strong>, „Lernsession starten" → <strong>Lernen starten</strong>. Für eingehende Verweise steht überall <strong>Rückverweise</strong>, nie „Backlinks".</td></tr>
   </table>
 
   <h3>Warum die beiden Schirme zusammengehören</h3>

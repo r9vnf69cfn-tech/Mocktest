@@ -27,7 +27,14 @@
 .sheet__hdr { display:flex; align-items:center; gap:12px; padding:14px 16px; }
 .sheet__rule { height:1px; background:var(--line); margin:0 16px; }
 
-.approw { display:flex; gap:18px; padding:16px 16px 14px; overflow:hidden; }
+/* Vier Kacheln zu 60 pt und drei Abstände zu 18 pt ergeben mit den beiden
+   Innenabständen 240 + 54 + 32 = 326 pt in einem 377 pt breiten Blatt. Die
+   Reihe trug vorher fünf Kacheln (404 pt) und war mit overflow:hidden auf
+   377 pt beschnitten — die fünfte Kachel „Mehr" war ein angeschnittenes
+   Bedienelement. Beide Blätter tragen jetzt vier Kacheln im selben Rhythmus.
+   Kein overflow mehr: würde die Reihe je wieder zu breit, soll man es
+   sehen und nicht geklippt bekommen. */
+.approw { display:flex; gap:18px; padding:16px 16px 14px; }
 .appitem { width:60px; flex:none; display:flex; flex-direction:column; align-items:center; gap:6px; }
 .appitem__sq { width:60px; height:60px; border-radius:13.42px; flex:none;   /* 60 × 22,37 % */
                background:var(--fill-2); display:flex; align-items:center; justify-content:center;
@@ -36,8 +43,14 @@
 .appitem__lbl { font:400 11px/13px var(--sans); color:var(--ink-2); text-align:center;
                 max-width:64px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
+/* Die Aktionszeile ist eine Listenzeile und trägt deshalb die Arbeitsgröße
+   17/23 — dieselbe Stufe wie .t-body. Ohne diese Zeile erbte sie 16 px mit
+   line-height:normal aus dem Browser: eine sechste Größe außerhalb der
+   Fünferskala und die einzige nicht festgelegte Zeilenhöhe im Paket. */
 .act { display:flex; align-items:center; gap:12px; min-height:52px; padding:8px 16px;
-       position:relative; width:100%; text-align:left; color:var(--ink-1); }
+       position:relative; width:100%; text-align:left; color:var(--ink-1);
+       font:400 17px/23px var(--sans); letter-spacing:-.01em; }
+:root[data-type="gross"] .act { font-size:21px; line-height:28px; }
 .act + .act::before { content:""; position:absolute; left:16px; right:0; top:0; height:1px; background:var(--line); }
 .act .sp { flex:1 1 auto; }
 .act .ico { width:22px; height:22px; color:var(--ink-2); flex:none; }
@@ -79,7 +92,12 @@ Kein Netzzugang zum Hersteller in diesem Lauf.
     Abstand 18 pt, Beschriftung 11 pt. Die 11 pt sind iOS' Maß für
     Symbolbeschriftungen und nicht Velums Skala — dieselbe begründete
     Ausnahme wie die Tab-Beschriftung in system.css §4.
-  Aktionszeile ≥ 52 pt, Trennlinie beginnt beim Innenabstand 16 pt.
+    VIER Kacheln je Blatt: 4 × 60 + 3 × 18 + 2 × 16 = 326 pt in einem
+    377 pt breiten Blatt. Fünf Kacheln wären 404 pt und damit 27 pt zu
+    breit — die fünfte stand angeschnitten am Blattrand, und „Mehr" ist
+    ein Bedienelement. Lieber eine Kachel weniger als eine halbe.
+  Aktionszeile ≥ 52 pt, Schrift 17/23 (die Arbeitsgröße, wie jede
+    Listenzeile), Trennlinie beginnt beim Innenabstand 16 pt.
 
 DAS ZEICHEN
 Velum steht in der App-Reihe des rechten Blatts. Die drei PNG liegen nicht
@@ -142,7 +160,7 @@ Beschriftung der App-Symbole auf 11 pt.
         <div style="position:absolute; inset:0; background:rgba(10,12,15,.36); z-index:10"></div>
       </div>
 
-      <div class="sheet" style="bottom:-34px">
+      <div class="sheet">
         <div class="sheet__grab"></div>
 
         <div class="sheet__hdr">
@@ -168,10 +186,6 @@ Beschriftung der App-Symbole auf 11 pt.
           <div class="appitem">
             <span class="appitem__sq"><span class="ico" data-ico="inbox"></span></span>
             <span class="appitem__lbl">Mail</span>
-          </div>
-          <div class="appitem">
-            <span class="appitem__sq"><span class="ico" data-ico="notes"></span></span>
-            <span class="appitem__lbl">Notizen</span>
           </div>
           <div class="appitem">
             <span class="appitem__sq"><span class="ico" data-ico="more"></span></span>
@@ -222,7 +236,7 @@ Beschriftung der App-Symbole auf 11 pt.
         <div style="position:absolute; inset:0; background:rgba(10,12,15,.36); z-index:10"></div>
       </div>
 
-      <div class="sheet" style="bottom:-34px">
+      <div class="sheet">
         <div class="sheet__grab"></div>
 
         <div class="sheet__hdr">
@@ -306,8 +320,8 @@ Beschriftung der App-Symbole auf 11 pt.
   <table>
     <tr><td>Blatt</td><td>8 pt Seitenabstand, oben Radius 13, 34 pt Fußraum (der Wert von --home-indicator aus system.css §1.5).</td></tr>
     <tr><td>Ziehgriff</td><td>36 × 5 pt, 6 pt unter der Kante.</td></tr>
-    <tr><td>App-Reihe</td><td>Symbol 60 pt, Radius 13,42 = 60 × 22,37 % (Anteil belegt), Abstand 18, Beschriftung 11 pt (iOS' Maß, nicht Velums Skala).</td></tr>
-    <tr><td>Aktionszeile</td><td>≥ 52 pt, Trennlinie ab 16 pt Innenabstand.</td></tr>
+    <tr><td>App-Reihe</td><td>Symbol 60 pt, Radius 13,42 = 60 × 22,37 % (Anteil belegt), Abstand 18, Beschriftung 11 pt (iOS' Maß, nicht Velums Skala). Vier Kacheln je Blatt: <span class="num">4 × 60 + 3 × 18 + 2 × 16 = 326 pt</span> in einem 377 pt breiten Blatt.</td></tr>
+    <tr><td>Aktionszeile</td><td>≥ 52 pt, Schrift 17/23 wie jede Listenzeile, Trennlinie ab 16 pt Innenabstand.</td></tr>
   </table>
 
   <h3>Kontrast (gerechnet)</h3>
@@ -321,6 +335,13 @@ Beschriftung der App-Symbole auf 11 pt.
 
   <h3>Warum das linke Blatt keinen Faden trägt</h3>
   <p>Eine Notiz nach draußen zu geben erzeugt keine Kante im Datenmodell — sie verlässt es. Der Faden steht nur, wo wirklich eine Beziehung entsteht, und das ist im rechten Blatt der Fall: dort wird aus einer Webseite eine Notiz, und diese Kante bleibt danach begehbar. Die Aktion „Mit Herkunft teilen" im linken Blatt ist der Grenzfall — sie legt einen Link bei, der beim Empfänger zur Kante wird, aber erst dann. Deshalb steht dort ein Satz und kein Strich.</p>
+
+  <h3>Was die Aufräumrunde korrigiert hat</h3>
+  <table>
+    <tr><td>Aktionszeile</td><td>Sie war ungesetzt und erbte <span class="num">16 px / line-height: normal</span> aus dem Browser — eine sechste Größe und die einzige nicht festgelegte Zeilenhöhe im Paket. Jetzt <span class="num">400 17/23</span>, bei „Aa groß" <span class="num">21/28</span> wie <span class="num">.t-body</span>.</td></tr>
+    <tr><td>App-Reihe</td><td>Fünf Kacheln ergaben 404 pt in einem 377-pt-Blatt; <span class="num">overflow: hidden</span> hat die fünfte abgeschnitten, und das war ausgerechnet „Mehr". Jetzt vier Kacheln zu 326 pt, in beiden Blättern gleich, und die Reihe klippt nichts mehr.</td></tr>
+    <tr><td>Blattfuß</td><td>Das Blatt saß auf <span class="num">bottom: -34px</span> und schob damit genau den Fußraum vom Schirm, den es für den Home-Indikator eingeplant hatte: die letzte Zeile links und der Knopf „Sichern" rechts lagen unter dem Indikator. Ohne den Versatz endet der Inhalt bei 1110 bzw. 1113 px, der Indikator beginnt bei 1125.</td></tr>
+  </table>
 
   <h3>Das Zeichen</h3>
   <p>In der App-Reihe des rechten Blatts steht der reservierte leere Rahmen, 60 pt. Hier der vollständige Baustein mit seiner Warnung:</p>

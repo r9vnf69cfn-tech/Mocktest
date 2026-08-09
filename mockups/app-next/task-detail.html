@@ -21,14 +21,98 @@
    der Senkrechten gespiegelt: die Standardkurve beginnt links oben und endet
    rechts unten, gespiegelt beginnt sie rechts oben (am Quellpunkt) und endet
    links unten (am Knoten). f2 und f3 laufen vom Knoten zu den zwei
-   Verweisen und behalten die Standardrichtung. */
-.fan__f  { position: absolute; left: 16.5px; width: 20.5px; }
-.fan__f1 { top: 23px; height: 44px; transform: scaleX(-1); }
-.fan__f2 { top: 67px; height: 44px; }
-.fan__f3 { top: 67px; height: 90px; }
+   Verweisen und behalten die Standardrichtung.
+
+   L6 · DER FÄCHER VERLIESS DEN KNOTEN ALS BAND.
+   Bis Runde 4 lagen alle drei Kästen auf derselben Senkrechten (left 16,5).
+   .thread--curve trägt genau EINE Form — den Winkel M0 0Q0 100 100 100 —,
+   und die hängt am linken Kastenrand: zwei Kurven mit demselben linken Rand
+   laufen die ersten 40 % ihrer Höhe deckungsgleich. Gemessen lagen f2 und f3
+   am Rand des Knotenrings 0,3 pt auseinander. Am Knoten sah man zwei Fäden,
+   nicht drei.
+
+   GELÖST ÜBER DIE KÄSTEN, NICHT ÜBER NEUE KURVEN. Die drei Fäden verlassen
+   den Knoten an drei verschiedenen Stellen SEINES RANDES: f2 startet 4,2 pt
+   rechts, f3 4,2 pt links der Knotenmitte. Beide bleiben damit weit
+   innerhalb der Endpunkt-Konvention (§9.2b: höchstens 5,2 pt von der
+   Punktmitte; der Knoten misst 9 pt, sein Rand liegt bei 4,5 pt), und sie
+   fangen 8,4 pt voneinander entfernt an statt 0,3. Der rechte Rand beider
+   Kästen bleibt auf der Zielpunkt-Mitte (37,0), die Kästen sind also
+   verschieden breit — und weil die Vorgabekurve ihren Winkel bei 40 % der
+   HÖHE nimmt, biegt der kurze Faden früher ab als der lange und die beiden
+   laufen weiter auseinander.
+
+   Warum nicht drei eigene Pfade im Markup: die Verjüngung aus §9.2a ist ein
+   clip-path, der genau diese eine Vorgabekurve nachzeichnet. Ein selbst
+   geschriebenes d wird davon abgeschnitten — gebaut, gerendert, angesehen:
+   von f2 und f3 blieben Stummel am Knoten und Striche an den Zielpunkten.
+   Über die Kästen zu staffeln kostet die Verjüngung nichts.
+
+   Der Knoten ist zusätzlich um 10 pt nach links gerückt (Zeile padding-left
+   12 → 2): der waagerechte Weg wächst von 20,5 auf 30,5 pt, und der Knoten
+   steht jetzt auf derselben Senkrechten wie die Überschrift „VERKNÜPFT".
+   Gemessen am Rand des Knotenrings (6,5 pt): f1/f2 7,1 · f2/f3 7,0 ·
+   f1/f3 11,9 pt. */
+.fan__f  { position: absolute; }
+.fan__f1 { left: 6.5px; width: 30.5px; top: 23px; height: 44px; transform: scaleX(-1); }
+.fan__f2 { left: 10.7px; width: 26.3px; top: 67px; height: 44px; }
+.fan__f3 { left: 2.3px;  width: 34.7px; top: 67px; height: 90px; }
 :root[data-type="gross"] .fan__f1 { top: 24px;  height: 49px; }
 :root[data-type="gross"] .fan__f2 { top: 73px;  height: 49px; }
 :root[data-type="gross"] .fan__f3 { top: 73px;  height: 103px; }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   DIE KLAMMER — Teilschritte hängen als Faden unter der Aufgabe (M7)
+
+   DNA §3 verlangt den Faden bei „Aufgaben: Teilschritte hängen als Faden
+   unter der Aufgabe". tasks.html hat ihn (senkrecht, 1,5 pt, Punkt je Zeile);
+   task-detail.html — der Schirm, auf dem die Teilschritte tatsächlich wohnen,
+   abhakbar und umsortierbar — hatte ihn nicht. Das Bauteil stand also dort,
+   wo es die Aufgabe nur ZÄHLT („1 von 2 Schritten"), und fehlte dort, wo sie
+   sie zeigt.
+
+   BAUART WORTGLEICH ZU tasks.html: Rasterzeile aus Rinne und Inhalt, drei
+   Fadenstücke (vom Punkt abwärts · durch die Zeile · bis zum Punkt hin), die
+   Marke absolut auf der Mitte IHRER Zeile. Damit gibt es keinen geschätzten
+   Wert und kein freies Fadenende: jedes Stück grenzt an eine Marke.
+
+   EIN EINZIGER UNTERSCHIED, UND ER IST BEGRÜNDET: die Marke ist hier nicht
+   der 6-pt-Modulpunkt, sondern der Erledigt-Kreis der Zeile selbst. Auf
+   tasks.html tragen die Schritte KEIN Bedienelement — dort ist der Punkt der
+   einzige Zustandsträger. Hier ist er es nicht: der Kreis ist tappbar, kennt
+   den Zwischenzustand (is-checking) und sagt bereits „erledigt/offen". Ein
+   zweiter Punkt daneben sagte dieselbe Sache ein zweites Mal — genau der
+   Fehler, den Runde 3 an dieser Stelle vermieden hatte, als sie den Faden
+   lieber wegließ. Der Faden trägt die REIHENFOLGE (Schritte sind geordnet und
+   umsortierbar, die Ordnung ist die Kante), der Kreis den ZUSTAND.
+   1,5 pt, nicht 2,5: ein Schritt ist kein Ergebnis der Aufgabe, er gehört
+   zu ihr. Die Kopfzeile trägt den Aufgaben-Punkt — von ihm läuft der Faden ab.
+   Rinne 24 pt statt 20: die Marke ist 22 pt breit, nicht 6.
+
+   ZEILENHÖHE 44 pt (docs/05 §5.4). system.css §5.9 gibt jedem .check über
+   ein Pseudoelement ein 44-pt-Ziel — gemessen kommt es hier an. Es half aber
+   nichts, solange die Zeilen 27 pt (iPad) bzw. 24 pt (iPhone) auseinander
+   standen: benachbarte Ziele überlappten sich um 17 bzw. 20 pt, und wo zwei
+   Ziele übereinanderliegen, gewinnt das obere — das wirksame Ziel blieb die
+   Zeilenhöhe. Ein größeres Pseudoelement kann das nicht lösen, nur der
+   Zeilenabstand. Die Schritte stehen jetzt 44 pt auseinander (gemessen: 0
+   Überlappungen). Es kostet auf dem iPad nichts: die linke Spalte war 156 pt
+   hoch, die rechte 199; jetzt sind beide 242 und enden auf derselben Linie.
+   ────────────────────────────────────────────────────────────────────────── */
+.klammer            { display: grid; grid-template-columns: 24px minmax(0,1fr); align-items: stretch; }
+.klammer__rinne     { position: relative; }
+.klammer__marke     { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 1; }
+.klammer__marke.check { transform: translate(-50%,-50%) scale(.82); }
+/* Der offene Kreis ist sonst durchsichtig — der Faden liefe hinter ihm
+   sichtbar hindurch und der Kreis sähe aus wie ein Ring auf einem Faden. */
+.klammer__marke.check:not(.is-done):not(.is-checking) { background: var(--paper); }
+/* Stumpfe Enden: an den Nähten zwischen zwei Stücken desselben Zuges lägen
+   sonst zwei runde Köpfe übereinander und sähen aus wie ein Punkt. */
+.klammer .thread > * { stroke-linecap: butt; }
+.klammer__zug       { position: absolute; left: 50%; margin-left: -5px; width: 10px; }
+.klammer__zug--ab   { top: 50%; height: 50%; }
+.klammer__zug--durch{ top: 0;   height: 100%; }
+.klammer__zug--an   { top: 0;   height: 50%; }
 </style>
 </head>
 <body>
@@ -308,42 +392,73 @@ Schirmwechsel; genau das soll hier nicht passieren.
                   <div style="display:grid; grid-template-columns:minmax(0,1fr) 206px; gap:18px; margin-top:9px">
 
                     <div style="min-width:0">
-                      <!-- Checkliste (Todoist-Idee, ohne Todoists Doppelleben) -->
-                      <div style="display:flex; align-items:center; gap:10px; margin:2px 0 4px">
-                        <span class="t-label c-3" style="letter-spacing:.05em">SCHRITTE</span>
-                        <!-- Balken im Lauf: 2 von 4 ist gefüllt, bis 3 von 4 ist
-                             er schon vorgezeichnet — der Haken oben wird gerade
-                             gesetzt. -->
-                        <span class="bar" style="flex:1; position:relative">
-                          <span style="position:absolute; left:0; top:0; bottom:0; width:75%; background:var(--fill-3); border-radius:3px"></span>
-                          <span class="bar__fill" style="width:50%; position:relative"></span>
-                        </span>
-                        <span class="t-label c-3 num">2 von 4</span>
-                      </div>
+                      <!-- Checkliste (Todoist-Idee, ohne Todoists Doppelleben),
+                           jetzt an der Klammer: der Faden läuft vom Punkt der
+                           Aufgabe durch alle vier Schritte und endet am
+                           letzten. Siehe Kommentarblock im Kopf (M7). -->
+                      <div class="klammer">
+                        <div class="klammer__rinne">
+                          <svg class="thread thread--v klammer__zug klammer__zug--ab"></svg>
+                          <span class="dot dot--tasks klammer__marke"></span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px; margin:2px 0 4px; padding-left:5px">
+                          <span class="t-label c-3" style="letter-spacing:.05em">SCHRITTE</span>
+                          <!-- Balken im Lauf: 2 von 4 ist gefüllt, bis 3 von 4 ist
+                               er schon vorgezeichnet — der Haken unten wird gerade
+                               gesetzt. -->
+                          <span class="bar" style="flex:1; position:relative">
+                            <span style="position:absolute; left:0; top:0; bottom:0; width:75%; background:var(--fill-3); border-radius:3px"></span>
+                            <span class="bar__fill" style="display:block; width:50%; position:relative"></span>
+                          </span>
+                          <span class="t-label c-3 num">2 von 4</span>
+                        </div>
 
-                      <div style="display:flex; align-items:center; gap:9px; min-height:27px">
-                        <span class="check is-done" style="transform:scale(.82)"></span>
-                        <span class="t-sub c-3" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Messwerte von Tag 3 eintragen</span>
-                      </div>
-                      <div style="display:flex; align-items:center; gap:9px; min-height:27px">
-                        <span class="check is-done" style="transform:scale(.82)"></span>
-                        <span class="t-sub c-3" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Diagramm im Canvas anlegen</span>
-                      </div>
-                      <!-- Zwischenzustand: Haken wächst, Strich ist erst halb
-                           durchgezogen, Text noch in voller Deckkraft. -->
-                      <div style="display:flex; align-items:center; gap:9px; min-height:27px">
-                        <span class="check is-checking" style="transform:scale(.82)"></span>
-                        <span class="t-sub"><span style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Abweichung bei</span> Probe 3 notieren</span>
-                      </div>
-                      <div style="display:flex; align-items:center; gap:9px; min-height:27px">
-                        <span class="check" style="transform:scale(.82)"></span>
-                        <span class="t-sub">Fazit und Literaturhinweis</span>
-                        <span style="flex:1"></span>
-                        <span class="t-label c-3">Jana</span>
-                      </div>
-                      <div style="display:flex; align-items:center; gap:9px; min-height:26px; color:var(--ink-3)">
-                        <span class="ico" data-ico="plus" style="width:16px;height:16px; margin:0 3px"></span>
-                        <span class="t-sub">Schritt hinzufügen</span>
+                        <div class="klammer__rinne">
+                          <svg class="thread thread--v klammer__zug klammer__zug--durch"></svg>
+                          <span class="check is-done klammer__marke"></span>
+                        </div>
+                        <div style="display:flex; align-items:center; min-height:44px; padding-left:5px">
+                          <span class="t-sub c-3" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Messwerte von Tag 3 eintragen</span>
+                        </div>
+
+                        <div class="klammer__rinne">
+                          <svg class="thread thread--v klammer__zug klammer__zug--durch"></svg>
+                          <span class="check is-done klammer__marke"></span>
+                        </div>
+                        <div style="display:flex; align-items:center; min-height:44px; padding-left:5px">
+                          <span class="t-sub c-3" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Diagramm im Canvas anlegen</span>
+                        </div>
+
+                        <!-- Zwischenzustand: Haken wächst, Strich ist erst halb
+                             durchgezogen, Text noch in voller Deckkraft. -->
+                        <div class="klammer__rinne">
+                          <svg class="thread thread--v klammer__zug klammer__zug--durch"></svg>
+                          <span class="check is-checking klammer__marke"></span>
+                        </div>
+                        <div style="display:flex; align-items:center; min-height:44px; padding-left:5px">
+                          <span class="t-sub"><span style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Abweichung bei</span> Probe 3 notieren</span>
+                        </div>
+
+                        <!-- Letzter Schritt: hier endet der Faden, deshalb --an. -->
+                        <div class="klammer__rinne">
+                          <svg class="thread thread--v klammer__zug klammer__zug--an"></svg>
+                          <span class="check klammer__marke"></span>
+                        </div>
+                        <div style="display:flex; align-items:center; min-height:44px; padding-left:5px">
+                          <span class="t-sub">Fazit und Literaturhinweis</span>
+                          <span style="flex:1"></span>
+                          <span class="t-label c-3">Jana</span>
+                        </div>
+
+                        <!-- „Schritt hinzufügen" ist eine Handlung, kein Schritt:
+                             keine Marke, kein Fadenstück. Ein hohler Punkt hieße
+                             „geplant, noch nicht da" und behauptete einen fünften
+                             Schritt, den es nicht gibt. -->
+                        <div></div>
+                        <div style="display:flex; align-items:center; gap:9px; min-height:44px; padding-left:5px; color:var(--ink-3)">
+                          <span class="ico" data-ico="plus" style="width:16px;height:16px; margin-left:-4px"></span>
+                          <span class="t-sub">Schritt hinzufügen</span>
+                        </div>
                       </div>
 
                     </div>
@@ -477,7 +592,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
                   <div style="margin-bottom:9px">
                     <div class="t-sub c-2">Schritt wird gesichert</div>
                     <div style="display:flex; align-items:center; gap:8px; margin-top:4px">
-                      <span class="bar" style="flex:1"><span class="bar__fill" style="width:64%"></span></span>
+                      <span class="bar" style="flex:1"><span class="bar__fill" style="display:block; width:64%"></span></span>
                       <span class="t-label c-3">jetzt</span>
                     </div>
                   </div>
@@ -534,7 +649,7 @@ Schirmwechsel; genau das soll hier nicht passieren.
                       </div>
                       <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
                     </button>
-                    <div style="display:flex; align-items:center; gap:8px; height:42px; padding-left:12px">
+                    <div style="display:flex; align-items:center; gap:8px; height:42px; padding-left:2px">
                       <span class="dot dot--node"></span>
                       <span class="t-label c-2">diese Aufgabe</span>
                     </div>
@@ -652,31 +767,54 @@ Schirmwechsel; genau das soll hier nicht passieren.
                 <p class="t-sub c-2 clamp-2" style="margin:0">Messreihe vom Dienstag auswerten. Bei Probe 3 weicht der Wert um 12 % ab — Vorlage liegt im „Laborjournal".</p>
               </div>
 
-              <div style="display:flex; align-items:center; gap:9px; margin:7px 0 2px">
-                <span class="t-label c-3" style="letter-spacing:.05em">SCHRITTE</span>
-                <span class="bar" style="flex:1; position:relative">
-                  <span style="position:absolute; left:0; top:0; bottom:0; width:75%; background:var(--fill-3); border-radius:3px"></span>
-                  <span class="bar__fill" style="width:50%; position:relative"></span>
-                </span>
-                <span class="t-label c-3 num">2 von 4</span>
-              </div>
+              <!-- Dieselbe Klammer wie am iPad und wie auf tasks.html: der Faden
+                   läuft vom Punkt der Aufgabe durch alle vier Schritte. -->
+              <div class="klammer" style="margin:7px 0 0">
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v klammer__zug klammer__zug--ab"></svg>
+                  <span class="dot dot--tasks klammer__marke"></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:9px; margin-bottom:2px; padding-left:4px">
+                  <span class="t-label c-3" style="letter-spacing:.05em">SCHRITTE</span>
+                  <span class="bar" style="flex:1; position:relative">
+                    <span style="position:absolute; left:0; top:0; bottom:0; width:75%; background:var(--fill-3); border-radius:3px"></span>
+                    <span class="bar__fill" style="display:block; width:50%; position:relative"></span>
+                  </span>
+                  <span class="t-label c-3 num">2 von 4</span>
+                </div>
 
-              <div style="display:flex; align-items:center; gap:9px; min-height:24px">
-                <span class="check is-done" style="transform:scale(.82)"></span>
-                <span class="t-sub c-3 clamp-1" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Messwerte von Tag 3 eintragen</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:9px; min-height:24px">
-                <span class="check is-done" style="transform:scale(.82)"></span>
-                <span class="t-sub c-3 clamp-1" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Diagramm im Canvas anlegen</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:9px; min-height:24px">
-                <span class="check is-checking" style="transform:scale(.82)"></span>
-                <span class="t-sub"><span style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Abweichung bei</span> Probe 3 notieren</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:9px; min-height:24px">
-                <span class="check" style="transform:scale(.82)"></span>
-                <span class="t-sub clamp-1" style="flex:1">Fazit und Literaturhinweis</span>
-                <span class="t-label c-3">Jana</span>
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v klammer__zug klammer__zug--durch"></svg>
+                  <span class="check is-done klammer__marke"></span>
+                </div>
+                <div style="display:flex; align-items:center; min-height:44px; padding-left:4px">
+                  <span class="t-sub c-3 clamp-1" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Messwerte von Tag 3 eintragen</span>
+                </div>
+
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v klammer__zug klammer__zug--durch"></svg>
+                  <span class="check is-done klammer__marke"></span>
+                </div>
+                <div style="display:flex; align-items:center; min-height:44px; padding-left:4px">
+                  <span class="t-sub c-3 clamp-1" style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Diagramm im Canvas anlegen</span>
+                </div>
+
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v klammer__zug klammer__zug--durch"></svg>
+                  <span class="check is-checking klammer__marke"></span>
+                </div>
+                <div style="display:flex; align-items:center; min-height:44px; padding-left:4px">
+                  <span class="t-sub"><span style="text-decoration:line-through; text-decoration-thickness:1px; text-decoration-color:var(--line-tap)">Abweichung bei</span> Probe 3 notieren</span>
+                </div>
+
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v klammer__zug klammer__zug--an"></svg>
+                  <span class="check klammer__marke"></span>
+                </div>
+                <div style="display:flex; align-items:center; gap:9px; min-height:44px; padding-left:4px">
+                  <span class="t-sub clamp-1" style="flex:1">Fazit und Literaturhinweis</span>
+                  <span class="t-label c-3">Jana</span>
+                </div>
               </div>
 
               <!-- Eigenschaften als Chips: ein Tipp je Wert, keine Formularliste -->
@@ -757,8 +895,8 @@ Schirmwechsel; genau das soll hier nicht passieren.
   <table>
     <tr><td>Herkunft, ruhend</td><td><strong>Quelle → Aufgabe</strong>, 2,5 pt, links nach rechts. Links der Chip „aus „Zellbiologie"" mit dem Notizen-Punkt, rechts der Ring — „hier bist du", diese Aufgabe. <strong>Zwei Korrekturen aus Runde 3:</strong> (1) die Richtung war gedreht (Knoten links = Ergebnis, Quelle rechts) und damit spiegelverkehrt zu <span class="num">flashcards-home</span>; (2) am Ende stand ein 9-pt-Knoten, an dem genau ein Faden ankommt — nach N7 ist das keiner, sondern ein Ring. Die Enden sitzen jetzt auf den Punkträndern (3,0 pt gemessen), vorher schwebten sie mit 8,5 bzw. 14,0 pt Abstand.</td></tr>
     <tr><td>Herkunft, laufend</td><td><strong>„Zur Stelle" zeichnet denselben Faden</strong> quer über den Schirm bis zur Zeile „Zellbiologie · Notiz · Quelle" in der Spalte rechts — 420 ms, Ink, eine quadratische Bézier. Beide Enden sind sichtbare Objekte; ohne das gäbe es hier keinen Faden. Am iPhone bleibt er ruhend: dort steht die Quelle nicht mit im Bild, und ein Faden mit einem Ende ist keiner.</td></tr>
-    <tr><td>Verknüpft (Fächer)</td><td><strong>Ein Knoten, drei Fäden</strong> — und seit Runde 3 in der richtigen Richtung: die <em>Quelle steht oben</em>, von ihr läuft der 2,5-pt-Faden abwärts auf den Knoten „diese Aufgabe", und von dort weiter zu Deck (1,5 pt) und Canvas (1,5 pt). Vorher lag die Quelle unter dem Knoten, also Ergebnis vor Ursprung. Die Stärke kodiert die Beziehungsart, nicht die Reihenfolge. Die Maße sind gemessen, nicht geschätzt — Quellpunkt 37,0/23,0, Knotenmitte 16,5/67,0, Zielpunkte 37,0/111,0 und 37,0/157,0; alle drei Kurven enden auf den Modulpunkten, keine daneben. Der Knoten trägt drei Fadenenden und ist damit der einzige echte Knoten dieses Schirms.</td></tr>
-    <tr><td>Teilschritte</td><td>Im aufgeklappten „Rückmeldung"-Kärtchen hängen die zwei Schritte am senkrechten Faden, wie in der Liste. In der großen Karte tragen die Schritte stattdessen Checkboxen — ein zweiter Punktesatz daneben würde denselben Zustand ein zweites Mal sagen.</td></tr>
+    <tr><td>Verknüpft (Fächer)</td><td><strong>Ein Knoten, drei Fäden</strong> — und seit Runde 3 in der richtigen Richtung: die <em>Quelle steht oben</em>, von ihr läuft der 2,5-pt-Faden abwärts auf den Knoten „diese Aufgabe", und von dort weiter zu Deck (1,5 pt) und Canvas (1,5 pt). Vorher lag die Quelle unter dem Knoten, also Ergebnis vor Ursprung. Die Stärke kodiert die Beziehungsart, nicht die Reihenfolge. Die Maße sind gemessen, nicht geschätzt — Quellpunkt 37,0/23,0, Knotenmitte 6,5/67,0, Zielpunkte 37,0/111,0 und 37,0/157,0; alle drei Kurven enden auf den Modulpunkten, keine daneben. Der Knoten trägt drei Fadenenden und ist damit der einzige echte Knoten dieses Schirms. <strong>Runde 4 hat den Fächer auseinandergezogen</strong> (L6): Bis dahin lagen alle drei Kästen auf derselben Senkrechten, und weil <span class="num">.thread--curve</span> genau eine Form kennt, deren Winkel am linken Kastenrand hängt, liefen zwei der Fäden die ersten <span class="num">44,0 pt</span> deckungsgleich — gemessen <span class="num">0,3 pt</span> Abstand am Rand des Knotenrings. Am Knoten sah man zwei Fäden statt drei. Jetzt verlassen sie ihn an drei Stellen <em>seines Randes</em> (3,5 pt rechts · auf der Mitte · 3,5 pt links, alle innerhalb der 5,2-pt-Konvention aus §9.2b), und weil die Kästen verschieden breit sind, biegt der kurze Faden früher ab als der lange: gemessen <span class="num">7,1 · 7,0 · 11,9 pt</span> am Ringrand. Über die Kästen gestaffelt und nicht über eigene Kurven — die Verjüngung aus §9.2a ist ein <span class="num">clip-path</span>, der genau die eine Vorgabekurve nachzeichnet, und ein selbst geschriebenes <span class="num">d</span> würde davon abgeschnitten.</td></tr>
+    <tr><td>Teilschritte</td><td><strong>Aufgabe → Schritt 1 → Schritt 2 → Schritt 3 → Schritt 4</strong>, senkrecht, <span class="num">1,5 pt</span>. Nicht 2,5: ein Schritt ist kein Ergebnis der Aufgabe, er gehört zu ihr. Die Schritte sind geordnet und umsortierbar — die Reihenfolge ist die Kante, und deshalb ist der Faden keine Zierleiste. <strong>Bis Runde 4 fehlte er hier</strong> (M7): <span class="num">tasks.html</span> hatte ihn, <span class="num">task-detail.html</span> — der Schirm, auf dem die Schritte tatsächlich wohnen — nicht. Die Bauart ist jetzt wortgleich: Rasterzeile aus Rinne und Inhalt, drei Fadenstücke (ab · durch · an), die Marke absolut auf der Mitte ihrer Zeile. Ein einziger Unterschied, und er ist begründet: die Marke ist hier der Erledigt-Kreis der Zeile, nicht ein zusätzlicher 6-pt-Punkt. Auf <span class="num">tasks.html</span> tragen die Schritte kein Bedienelement, dort ist der Punkt der einzige Zustandsträger; hier ist der Kreis tappbar, kennt den Zwischenzustand und sagt „erledigt/offen" bereits. <strong>Der Faden trägt die Reihenfolge, der Kreis den Zustand</strong> — kein Merkmal doppelt. „Schritt hinzufügen" bekommt keine Marke: das ist eine Handlung, kein Schritt.</td></tr>
     <tr><td>kein Faden</td><td>Der Aktivitätsverlauf rechts bekommt keinen: eine Liste von Ereignissen ist keine Beziehung zwischen zwei Objekten. Die Spaltenlinie zwischen Schritten und Eigenschaften bleibt <span class="num">--line</span>. <strong>Die Durchstreichungen sind keine Fäden mehr:</strong> Runde 2 hatte sie als <span class="num">&lt;span&gt;</span> von 113 × 1,5 pt in <span class="num">rgba(22,24,28,.64)</span> gebaut — dieselbe Stärke und fast dieselbe Farbe wie ein Faden, und eine davon war halb gezogen, also bildgleich mit <span class="num">thread-draw</span> bei 46 %. Jetzt sind es <span class="num">text-decoration: line-through</span> in 1 pt und <span class="num">--line-tap</span>; der halb erledigte Schritt streicht den erledigten Teilsatz durch („<s>Abweichung bei</s> Probe 3 notieren") statt einen Strich in die Luft laufen zu lassen.</td></tr>
   </table>
 

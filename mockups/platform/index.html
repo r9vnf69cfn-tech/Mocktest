@@ -54,6 +54,22 @@ table.uebersicht th { font-weight:600; color:var(--ink-1); font-size:13px; line-
         letter-spacing:.05em; text-transform:uppercase; color:var(--ink-3); }
 table.uebersicht td:first-child { color:var(--ink-1); font-weight:600; width:220px; }
 
+/* Unter 560 px stapelt die Tabelle: Begriff über Beschreibung statt daneben.
+   Zwei Spalten passen dort nicht mehr — die schmalste Form, die der Satz aus
+   Begriff und Beschreibung noch annehmen kann, war 292,6 pt und schob die
+   Seite bei 320 px Fensterbreite um 3 pt zur Seite (30 pt Rand je Seite lassen
+   260). Das ist eine Textseite, keine Bühne; die Ausnahme fürs Querscrollen
+   deckt sie nicht. Gestapelt statt querscrollbar, weil eine Tabelle, die man
+   schieben muss, ihre Zeilen nicht mehr nebeneinander zeigt — dann kann sie
+   gleich untereinander stehen. Die Kopfzeile entfällt dabei: über einem
+   gestapelten Paar benennt sie nichts mehr. */
+@media (max-width: 560px) {
+  table.uebersicht tr:first-child { display:none; }
+  table.uebersicht td { display:block; width:auto; padding:0 0 9px; border-bottom:0; }
+  table.uebersicht td:first-child { padding:12px 0 2px; }
+  table.uebersicht tr { display:block; border-bottom:1px solid var(--line); }
+}
+
 .foot { margin:56px 0 0; padding:22px 0 70px; border-top:1px solid var(--line); }
 .foot p { font:400 15px/21px var(--sans); color:var(--ink-3); margin:0 0 8px; max-width:44em; }
 .foot code { font:400 13px/16px var(--mono); color:var(--ink-2); }

@@ -24,6 +24,15 @@ Zahlen daneben. Wo eine Zahl schlechter geworden ist, steht die Ursache dabei �
 und in einem Fall ist die schlechtere Zahl der Beleg für die größte
 Verbesserung dieses Laufs (§3.1).
 
+**Dritter Lauf — die Abnahme (Aufräumrunde).** Nach den Nachträgen N10–N12
+(Ink nur noch für „aktiv", Verjüngung des Fadens, Endpunkt-Konvention) sind
+alle 115 Vorschaubilder und alle 76 markierten Bilder erneut erzeugt und beide
+Affordanz-Läufe wiederholt worden. **Die Affordanz hat sich dabei um vier
+Elemente bewegt und sonst um nichts** — die Zahlen stehen in §3.2. Was sich
+verschoben hat, steht nicht in diesem Test, sondern am Faden selbst: §3.3
+misst die Verjüngung im Bild und zeigt, dass sie das Maß, das `system.css`
+§9.2a nennt, nur bei achtfacher Vergrößerung hält.
+
 ---
 
 ## 1 · Was geprüft wurde, und was nicht
@@ -146,8 +155,8 @@ lassen).
 | app-next/journal-entry | iPhone | 13 | 0 | 4 | 9 | 0 | 2 | 1 | 0 | 2 | 0 | 1 |
 | app-next/tasks | iPad | 41 | 3 | 7 | 31 | 0 | 9 | 25 | 0 | 8 | 0 | 28 |
 | app-next/tasks | iPhone | 26 | 0 | 4 | 22 | 0 | 8 | 6 | 0 | 7 | 0 | 7 |
-| app-next/task-detail | iPad | 51 | 1 | 17 | 33 | 0 | 18 | 22 | 0 | 9 | 0 | 38 |
-| app-next/task-detail | iPhone | 23 | 0 | 14 | 9 | 0 | 8 | 4 | 0 | 0 | 0 | 12 |
+| app-next/task-detail | iPad | 50 | 1 | 16 | 33 | 0 | 17 | 22 | 0 | 9 | 0 | 37 |
+| app-next/task-detail | iPhone | 20 | 0 | 12 | 8 | 0 | 6 | 4 | 0 | 0 | 0 | 10 |
 | app-next/flashcards-home | iPad | 26 | 2 | 9 | 15 | 0 | 0 | 19 | 0 | 0 | 0 | 19 |
 | app-next/flashcards-home | iPhone | 13 | 2 | 5 | 6 | 0 | 0 | 3 | 0 | 0 | 0 | 3 |
 | app-next/review-session | iPad | 20 | 1 | 13 | 6 | 0 | 2 | 6 | 0 | 0 | 0 | 8 |
@@ -170,12 +179,18 @@ lassen).
 | best-of/tasks | iPhone | 25 | 1 | 12 | 12 | 0 | 6 | 9 | 0 | 0 | 0 | 15 |
 | best-of/flashcards | iPad | 32 | 1 | 11 | 20 | 0 | 4 | 15 | 0 | 1 | 0 | 18 |
 | best-of/flashcards | iPhone | 16 | 1 | 5 | 10 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |
-| **Summe** | | **1 033** | **38** | **323** | **672** | **46** | **186** | **390** | **0** | **130** | **46** | **547** |
+| **Summe** | | **1 029** | **38** | **320** | **671** | **46** | **183** | **390** | **0** | **130** | **46** | **544** |
 
-Dazu, nicht in den 1 033 enthalten: **179** Elemente ohne Bedien-Semantik im
-Markup und **123** Elemente mit Bedien-Optik ohne Semantik.
+Dazu, nicht in den 1 029 enthalten: **175** Elemente ohne Bedien-Semantik im
+Markup und **122** Elemente mit Bedien-Optik ohne Semantik.
 
-### 3.1 · Was sich gegen den letzten Lauf verschoben hat
+*Die Tabelle steht auf dem Stand der Abnahme (dritter Lauf). Gegen den zweiten
+Lauf hat sich genau eine Zeile bewegt — `task-detail`; alle 36 übrigen sind
+elementweise identisch. Der zweite Lauf las dort 51/1/17/33/0/18/22/0/9/0/38
+(iPad) und 23/0/14/9/0/8/4/0/0/0/12 (iPhone), die Summe 1 033/38/323/672 ·
+46/186/390 · 0/130/46/547 bei 179 ohne Semantik und 123 Fehlaffordanzen.*
+
+### 3.1 · Was sich im zweiten Lauf gegen den ersten verschoben hatte
 
 | | vorher | jetzt | |
 |---|--:|--:|---|
@@ -224,14 +239,92 @@ nicht an den Screens.
   haben Bedienelemente **dazubekommen** (50 → 55 bzw. gleich viele, aber
   umgebaut). Die neuen sind nicht schlechter als die alten, es sind mehr.
 
-### Dunkelmodus — dieselben 1 033 Elemente
+### 3.2 · Die Abnahme — was N10 bis N12 an der Affordanz verändert haben
+
+Nichts, bis auf vier Elemente. Das ist keine Nachlässigkeit der Messung,
+sondern die Auskunft: die drei Nachträge betreffen den **Faden**, und der Faden
+ist kein Bedienelement.
+
+| | zweiter Lauf | Abnahme | |
+|---|--:|--:|---|
+| geprüft | 1 033 | **1 029** | −4, alle vier in `task-detail` |
+| primär | 38 | 38 | |
+| sekundär | 323 | **320** | −3, dieselben vier Elemente |
+| tertiär | 672 | **671** | −1 |
+| **schwer** | **46** | **46** | **elementweise dieselben 46** |
+| mittel | 186 | **183** | −3 |
+| leicht | 390 | 390 | |
+| R1 | 0 | 0 | |
+| R2 | 130 | 130 | |
+| R3 | 46 | 46 | |
+| R4 | 547 | **544** | −3 |
+| ohne Semantik (B) | 179 | **175** | −4 |
+| Fehlaffordanz (C) | 123 | **122** | −1 |
+
+**Alle 36 übrigen Zeilen der Tabelle in §3 sind Zahl für Zahl identisch.** Die
+33 Graph-Knoten stehen unverändert, `journal-home` trägt weiter seinen einen
+schweren Befund, die vier alten Punkte der Aufgabenliste sind unverändert offen
+(Erledigt-Kreis 66 × 22 pt, `.navitem` unter 44 pt, Wiki-Link auf
+Etikettenlinie, Karte gegen Grund im Dunkelmodus mit 1,089:1).
+
+### 3.3 · Die Verjüngung im Bild — gemessen bei 2×, 3× und 8×
+
+`system.css` §9.2a schreibt: 1,0 → 0,60 · 1,5 → 0,90 · 2,5 → 1,50 pt, gemessen
+bei 8×. Das stimmt. Der Maßstab der Geräte ist aber 2× (iPad) und 3× (iPhone),
+und dort stimmt es nicht. Gemessen wurde die Deckung des Querschnitts über die
+ganze Länge, Ausreißer (Punkte, Kreuzungen) verworfen, eine Gerade angepasst
+und auf Ursprung und Ergebnis hochgerechnet:
+
+| Faden | Sollmaß | 2× | 3× | 8× |
+|---|---|--:|--:|--:|
+| schwach `--weak` | 1,00 → 0,60 (0,60) | 1,00 → 0,54 (0,54) | 0,82 → 0,67 (0,81) | 0,98 → 0,63 (0,64) |
+| normal | 1,50 → 0,90 (0,60) | **1,23 → 1,00 (0,81)** | 1,37 → 0,89 (0,65) | 1,45 → 0,94 (0,65) |
+| Herkunft `--origin` | 2,50 → 1,50 (0,60) | **2,22 → 1,54 (0,69)** | 2,33 → 1,56 (0,67) | 2,43 → 1,56 (0,64) |
+
+Dazu kommt eine zweite, größere Abweichung: **der Zuschnitt (`clip-path`) und
+der Strich werden in verschiedenen Koordinatenräumen gerastert.** Liegt der
+Kasten eines Fadens auf einem halben Bildpunkt, schneidet die Maske in den
+Strich. Gemessen an einer Probe, die denselben Faden in Schritten von ⅛ px
+verschiebt:
+
+| Versatz des Kastens | 0 | ⅛ | ¼ | ⅜ | ½ |
+|---|--:|--:|--:|--:|--:|
+| normaler Faden am Ursprung (8×) | 1,49 | 1,37 | 1,24 | 1,12 | **0,99** |
+| normaler Faden am Ergebnis (8×) | 0,88 | 0,88 | 0,88 | 0,81 | **0,69** |
+
+**Ein normaler Faden auf halbem Bildpunkt misst 0,99 pt — genau das Maß, das
+laut §2.2 „schwache Beziehung" bedeutet.** Damit hängt die Stärke, die die
+einzige inhaltliche Aussage des Fadens trägt, an der Zufälligkeit einer
+Layout-Position.
+
+Wie oft das vorkommt, im Bestand gezählt (260 Fäden mit Formklasse, iPad):
+
+| | Fäden | auf gebrochener Zeile | davon stark (> 0,30 px) |
+|---|--:|--:|--:|
+| **Summe** | **260** | **49** | **29** |
+| `library` | 16 | **16** | 7 |
+| `note-editor` | 17 | 12 | 9 |
+| `settings` | 7 | 6 | 2 |
+| `task-detail` | 15 | 4 | 2 |
+| `journal-home` | 19 | 3 | 1 |
+| `motion/index` | 6 | 3 | 3 |
+| `leere-zustaende` | 8 | 2 | 2 |
+| `tasks` · `live-activity` · `kontextmenue` | je 23/5/13 | je 1 | je 1 |
+| `today` · `journal-entry` · `flashcards-home` · `review-session` · `graph` · acht Plattform-Schirme | 0 | 0 | 0 |
+
+Auf `leere-zustaende` stehen dadurch zwei Fäden derselben Klasse mit sichtbar
+verschiedener Stärke nebeneinander: 1,50 pt und 1,00 pt.
+
+### Dunkelmodus — dieselben 1 029 Elemente
 
 | | schwer | mittel | leicht | R1 | R2 | R3 | R4 | Linie < 3:1 | Fläche grenzwertig |
 |---|--:|--:|--:|--:|--:|--:|--:|--:|--:|
-| hell | 46 | 186 | 390 | 0 | 130 | 46 | 547 | 7 | 2 |
-| dunkel | 46 | 200 | 390 | 0 | 144 | 51 | 547 | **46** | **46** |
-| *hell, vorher* | *33* | *161* | *409* | *0* | *97* | *33* | *575* | *7* | *2* |
-| *dunkel, vorher* | *33* | *177* | *408* | *0* | *113* | *38* | *575* | *46* | *47* |
+| hell | 46 | 183 | 390 | 0 | 130 | 46 | 544 | 7 | 2 |
+| dunkel | 46 | 197 | 390 | 0 | 144 | 51 | 544 | **46** | **46** |
+| *hell, zweiter Lauf* | *46* | *186* | *390* | *0* | *130* | *46* | *547* | *7* | *2* |
+| *dunkel, zweiter Lauf* | *46* | *200* | *390* | *0* | *144* | *51* | *547* | *46* | *47* |
+| *hell, erster Lauf* | *33* | *161* | *409* | *0* | *97* | *33* | *575* | *7* | *2* |
+| *dunkel, erster Lauf* | *33* | *177* | *408* | *0* | *113* | *38* | *575* | *46* | *47* |
 
 **Die schweren Befunde sind in beiden Erscheinungsbildern dieselben 46** —
 elementweise verglichen, nicht nur der Summe nach. Der
@@ -549,6 +642,22 @@ braucht, war nicht zu finden.
 | **Ja** | 5 | **9** |
 | **Fast** | 6 | **3** |
 | **Nein** | 2 | **1** |
+
+**Bei der Abnahme neu beantwortet — dieselbe Bilanz: 9 × Ja, 3 × Fast,
+1 × Nein.** Kein Screen ist auf- oder abgestiegen, und das ist erwartbar: die
+Affordanz-Zahlen sind elementweise dieselben (§3.2). Die Nachprüfung nach
+Runde 4 hatte **10 × Ja, 3 × Fast, 0 × Nein** notiert. Diese Zahl ist durch die
+Messung nicht gedeckt: `graph` trägt in beiden Läufen dieselben 23 (iPad) + 10
+(iPhone) schweren Befunde, und im unmarkierten Bild ist keiner der 27 Knoten
+als Bedienelement zu erkennen. **`graph` bleibt Nein.** Wer die 0 will, muss
+den Knoten eine Fläche geben, nicht das Urteil ändern.
+
+Die zweite Frage — **erkennt man den Screen ohne Logo als Velum?** — steht bei
+der Abnahme auf **13 × Ja** (zuletzt 12 Ja, 1 Nein). Jeder der dreizehn Screens
+trägt auf **beiden** Geräten mindestens einen Faden mit echter Kante; der
+schwächste Fall ist `notes-list` auf dem iPhone mit zwei Fäden, der stärkste
+`flashcards-home` mit 18 (iPad) und 15 (iPhone). Gezählt wurden nur Fäden, die
+im Geräteausschnitt wirklich liegen.
 
 Fünf Screens sind aufgestiegen (`today`, `notes-list`, `journal-entry`,
 `task-detail`, `review-session`), **einer ist abgestiegen** (`journal-home`),
@@ -961,10 +1070,15 @@ node tools/affordanz.js --json befunde.json
 Das Werkzeug braucht `playwright-core` und einen Chromium-Pfad
 (`VELUM_PLAYWRIGHT`, `VELUM_CHROME`), kein npm install, keine externe URL. Es
 schreibt nach `mockups/_renders/affordanz/` und gibt die Tabelle aus §3 auf der
-Konsole aus. Die Zahlen dieses Dokuments stammen aus einem Lauf vom **9. August 2026,
-nach dem Umbau von `system.css` und allen 13 Screens**; jeder spätere Lauf
-gegen dieselben Dateien liefert sie wieder. Die kursiven Vergleichswerte
-stammen aus dem Lauf davor.
+Konsole aus. Die Zahlen dieses Dokuments stammen aus dem **Abnahme-Lauf vom
+9. August 2026, nach den DNA-Nachträgen N10–N12**; jeder spätere Lauf gegen
+dieselben Dateien liefert sie wieder. Die kursiven Vergleichswerte stammen aus
+den beiden Läufen davor.
+
+Die Zahlen in §3.3 kommen nicht aus diesem Werkzeug, sondern aus einer eigenen
+Messung: Ausschnitt jedes Fadens bei `deviceScaleFactor` 2, 3 und 8, Deckung
+des Querschnitts über die ganze Länge, robuste Geradenanpassung, hochgerechnet
+auf Ursprung und Ergebnis. Gemessen wird das **Bild**, nicht `stroke-width`.
 
 ### Alle 76 Bilder
 

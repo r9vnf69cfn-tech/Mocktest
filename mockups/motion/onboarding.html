@@ -73,6 +73,13 @@
 .fortschritt .bar__fill { width: 0; }
 .fortschritt .t-label { color: var(--ink-3); }
 
+/* Die Takt-Spalte. Sie lag auf min-width:300px und schob die Seite bei
+   320 px Fensterbreite 12 px zur Seite: 32 pt Rumpfrand + 300 = 332. Der
+   Ablauf ist eine Textseite, keine Bühne — die Bühnen-Ausnahme fürs
+   Querscrollen deckt ihn nicht. Sie darf schrumpfen wie ihre Schwester
+   .ob-halter; die Zeitmarke bleibt 62 pt breit, der Rest der Zeile bricht
+   um. Bei 320 px bleiben 256 pt, davon 182 für den Text. */
+.ob-takte { flex: 1 1 340px; min-width: 0; }
 .takte { margin: 0; padding: 0; list-style: none; max-width: 460px; }
 .takte li { display: flex; gap: 12px; align-items: baseline;
             font: 400 15px/22px var(--sans); color: var(--ink-3);
@@ -275,7 +282,7 @@ Probe, ob die Bewegung geschmückt oder getragen hat.
     </div>
 
     <!-- ══ DIE TAKTE ═══════════════════════════════════════════════════ -->
-    <div style="flex:1 1 340px;min-width:300px">
+    <div class="ob-takte">
       <span class="t-label c-3">Die elf Takte</span>
       <ol class="takte" id="taktliste" style="margin-top:10px"></ol>
 

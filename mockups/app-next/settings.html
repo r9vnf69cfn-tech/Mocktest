@@ -28,18 +28,48 @@
    offen, noch nicht da", und genau das ist der Zustand.
 
    Gemessen im Browser bei 1440 pt Fensterbreite (Werte in pt):
-     Knotenmitte 14,5 / 8,0      Zielpunkte 30,0 / 34,0 · 58,0 · 82,0
+     Knotenmitte 6,5 / 8,0       Zielpunkte 39,0 / 34,0 · 58,0 · 82,0
    Bei „Aa groß" wachsen Etikett- und Zeilenhöhen; die Werte stehen deshalb
    ein zweites Mal in der großen Stufe.
+
+   L6 · DER FÄCHER VERLIESS DEN KNOTEN ALS BAND.
+   Bis Runde 4 lagen alle drei Kästen auf derselben Senkrechten (left 15,5).
+   .thread--curve trägt genau EINE Form — den Winkel M0 0Q0 100 100 100 —,
+   und die hängt am linken Kastenrand: drei Kurven mit demselben linken Rand
+   laufen die ersten 40 % ihrer Höhe deckungsgleich. Gemessen: 0,1 pt zwischen
+   f2 und f3 am Rand des Knotenrings. Das war ein Strang, kein Fächer.
+
+   GELÖST ÜBER DIE KÄSTEN, NICHT ÜBER NEUE KURVEN. Die drei Fäden verlassen
+   den Knoten an drei Stellen SEINES RANDES: f1 4,2 pt rechts, f2 auf der
+   Mitte, f3 4,2 pt links. Alle drei bleiben innerhalb der Endpunkt-Konvention
+   (§9.2b: höchstens 5,2 pt von der Punktmitte; der Knoten misst 9 pt, sein
+   Rand liegt bei 4,5 pt). Der rechte Rand aller drei Kästen bleibt auf der
+   Zielpunkt-Mitte (39,0), die Kästen sind also verschieden breit; weil die
+   Vorgabekurve ihren Winkel bei 40 % der HÖHE nimmt, biegt der kurze Faden
+   früher ab als der lange, und die drei laufen weiter auseinander.
+   Gemessen am Rand des Knotenrings (6,5 pt): f1/f2 4,9 · f2/f3 4,6 ·
+   f1/f3 8,8 pt.
+
+   Warum nicht drei eigene Pfade im Markup: die Verjüngung aus §9.2a ist ein
+   clip-path, der genau diese eine Vorgabekurve nachzeichnet. Ein selbst
+   geschriebenes d wird davon abgeschnitten — gebaut, gerendert, angesehen:
+   von den Kurven blieben Stummel am Knoten und Striche an den Zielpunkten.
+   Über die Kästen zu staffeln kostet die Verjüngung nichts.
+
+   Dazu ist der waagerechte Weg gewachsen: Knoten 9 pt nach links (Zeile
+   padding-left 11 → 2), Gerätezeilen 9 pt nach rechts (27 → 36), also 32,5
+   statt 14,5 pt. Ohne diesen Weg bleibt für drei Bögen kein Platz.
+   Dasselbe Bauteil und dieselbe Staffelung wie der Fächer „VERKNÜPFT" auf
+   task-detail.html.
    ────────────────────────────────────────────────────────────────────────── */
-.dev__f  { position: absolute; left: 15.5px; top: 8px; width: 14.5px; }
-.dev__f1 { height: 19px; }
-.dev__f2 { height: 41px; }
-.dev__f3 { height: 63px; }
+.dev__f  { position: absolute; top: 8px; }
+.dev__f1 { left: 10.7px; width: 28.3px; height: 19px; }
+.dev__f2 { left: 6.5px;  width: 32.5px; height: 41px; }
+.dev__f3 { left: 2.3px;  width: 36.7px; height: 63px; }
 :root[data-type="gross"] .dev__f1 { height: 21px; }
 :root[data-type="gross"] .dev__f2 { height: 47px; }
 :root[data-type="gross"] .dev__f3 { height: 73px; }
-.dev__row { display: flex; align-items: center; gap: 8px; height: 22px; padding-left: 27px; }
+.dev__row { display: flex; align-items: center; gap: 8px; height: 22px; padding-left: 36px; }
 :root[data-type="gross"] .dev__row { height: 26px; }
 
 /* Der Marken-Baustein steht in einer 236-pt-Spalte. Die Pfadangabe des
@@ -106,7 +136,8 @@ sind bei fünf getrennten Apps fünf Fragen mit fünf Antworten — bei Velum is
 es EINE. Und es ist die Frage, die man mitbringt, wenn man Einstellungen
 öffnet. Also steht sie oben:
 
-  1 DEINE SACHEN            Sync · Speicher · Export & Backup · Datenschutz
+  1 DEINE SACHEN            Synchronisierung · Speicher · Export & Backup ·
+                            Datenschutz
   2 WIE VELUM SICH VERHÄLT  Darstellung · Benachrichtigungen · Tastatur & Pencil
   3 ÜBER VELUM              Abo · Was ist neu · Hilfe · Rechtliches + das Zeichen
 
@@ -489,7 +520,7 @@ Skala selbst, keine Simulation.
                     <span class="t-label c-3" style="flex:none">hohl = wartet</span>
                   </div>
                   <div style="position:relative">
-                    <div style="display:flex; align-items:center; gap:8px; height:16px; padding-left:11px">
+                    <div style="display:flex; align-items:center; gap:8px; height:16px; padding-left:2px">
                       <span class="dot dot--node"></span>
                       <span class="t-label c-2">Emils iCloud</span>
                     </div>
@@ -800,7 +831,7 @@ Skala selbst, keine Simulation.
               <span class="t-label c-3" style="white-space:nowrap">hohl = wartet</span>
             </div>
             <div style="position:relative">
-              <div style="display:flex; align-items:center; gap:8px; height:16px; padding-left:11px">
+              <div style="display:flex; align-items:center; gap:8px; height:16px; padding-left:2px">
                 <span class="dot dot--node"></span>
                 <span class="t-label c-2">Emils iCloud</span>
               </div>
@@ -1086,7 +1117,7 @@ Skala selbst, keine Simulation.
   <h3>Wonach diese Liste geordnet ist — und warum nicht anders</h3>
   <p>In Runde 1 stand die Bereichsliste in <strong>Obsidians Reihenfolge auf Deutsch</strong>: Darstellung · Sync · Mitteilungen · Datenschutz · Speicher · Export · Abo. Das ist keine Entscheidung, das ist eine Übernahme. Jetzt folgt sie Velums eigenem Versprechen.</p>
   <table>
-    <tr><td>1 · <strong>Deine Sachen</strong></td><td>Sync · Speicher · Export &amp; Backup · Datenschutz. <strong>Warum zuerst:</strong> Velum hält fünf Module in <em>einem</em> Datenmodell. Bei fünf getrennten Apps sind „wo liegen meine Sachen, wie viel sind es, wie kommen sie hier wieder heraus, wer sieht sie" fünf Fragen mit fünf Antworten — bei Velum ist es eine einzige. Und es ist genau die Frage, die man mitbringt, wenn man Einstellungen öffnet. Die Ordnung folgt also aus Velums Versprechen, nicht aus einer Faustregel.</td></tr>
+    <tr><td>1 · <strong>Deine Sachen</strong></td><td>Synchronisierung · Speicher · Export &amp; Backup · Datenschutz. <strong>Warum zuerst:</strong> Velum hält fünf Module in <em>einem</em> Datenmodell. Bei fünf getrennten Apps sind „wo liegen meine Sachen, wie viel sind es, wie kommen sie hier wieder heraus, wer sieht sie" fünf Fragen mit fünf Antworten — bei Velum ist es eine einzige. Und es ist genau die Frage, die man mitbringt, wenn man Einstellungen öffnet. Die Ordnung folgt also aus Velums Versprechen, nicht aus einer Faustregel.</td></tr>
     <tr><td>2 · <strong>Wie Velum sich verhält</strong></td><td>Darstellung · Benachrichtigungen · Tastatur &amp; Pencil. Alles, was das Verhalten der App ändert, ohne die Daten anzufassen.</td></tr>
     <tr><td>3 · <strong>Über Velum</strong></td><td>Abo · Was ist neu · Hilfe &amp; Feedback · Rechtliches — und am Fuß das Zeichen mit der Version. Die App selbst, zuletzt.</td></tr>
   </table>
@@ -1110,7 +1141,7 @@ Skala selbst, keine Simulation.
     <tr><td>gefüllt</td><td>Der gezeigte Zustand: Design „Automatisch", Schrift „Standard", Papier „Punkte", drei Schalter, 4,2 GB belegt.</td></tr>
     <tr><td>aktiv</td><td>„Einstellungen" in der App-Sidebar und „Darstellung" in der Bereichsliste: Fläche + Gewicht + Ink-Balken links — drei Merkmale, keine Farbe.</td></tr>
     <tr><td>ausgewählt</td><td>Design-Kachel „Automatisch" und Papier „Punkte": getönte Fläche + 2-pt-Ring + Häkchen bzw. Gewicht.</td></tr>
-    <tr><td>Fehler</td><td><strong>Sync:</strong> <code>.notice--error</code> — „Letzte Synchronisierung fehlgeschlagen", darunter „Verbindung prüfen · 3 Änderungen warten" und rechts der Knopf „Erneut versuchen". Der Satz steht bewusst auf zwei Zeilen: „Synchronisierung" ist so lang, dass eine einzige Zeile dreizeilig umbrechen würde. Derselbe Fehler ist an drei Stellen sichtbar — im Banner, als rotes Zeichen neben „Sync" in der Bereichsliste und als „wartet" in der Geräteliste. So findet man ihn auch, wenn man von woanders kommt.</td></tr>
+    <tr><td>Fehler</td><td><strong>Synchronisierung:</strong> <code>.notice--error</code> — „Letzte Synchronisierung fehlgeschlagen", darunter „Verbindung prüfen · 3 Änderungen warten" und rechts der Knopf „Erneut versuchen". Der Satz steht bewusst auf zwei Zeilen: „Synchronisierung" ist so lang, dass eine einzige Zeile dreizeilig umbrechen würde. Derselbe Fehler ist an drei Stellen sichtbar — im Banner, als rotes Zeichen neben „Synchronisierung" in der Bereichsliste und als „wartet" in der Geräteliste. So findet man ihn auch, wenn man von woanders kommt.</td></tr>
     <tr><td>Zwischenzustand</td><td><strong>Der Schalter „Bewegung reduzieren" steht mitten im Umlegen</strong> — die Spur ist zu 56 % gefüllt, der Knopf sitzt zwischen den Positionen, um ihn liegt der Druck-Ring. Zweiter Zwischenzustand: Der Schriftgrößen-Regler wird gerade gezogen — der Knopf ist angehoben (Schatten + Ring), darüber steht die Wertblase „Standard". Dritter: Die Kachel „Automatisch" zeigt die Überblendung zwischen Hell und Dunkel eingefroren, mit hellem Grat an der Naht.</td></tr>
     <tr><td>nicht gewählt</td><td>Die Vorschauzeile „Groß" liegt auf 42 % Deckkraft und trägt keine Fläche — die beiden Merkmale für „aus".</td></tr>
     <tr><td>scrollt weiter</td><td>Auf dem iPhone endet der sichtbare Bereich an der Oberkante der Design-Kacheln: erst der Fehler, dann „Deine Sachen" mit Speicher und Geräten, dann beginnt „Wie Velum sich verhält". Der erste Bildschirm beantwortet damit genau die Frage, nach der die Liste geordnet ist — die Ordnung ist nicht behauptet, sondern zu sehen. Alles Weitere (Schriftgröße, Papier, Schalter, Über) steht darunter in derselben Liste; auf dem iPad ist es gleichzeitig sichtbar, weil die Fläche es hergibt. Beide Geräte erlauben dieselbe Aufgabe, das iPhone kostet keinen zusätzlichen Tipp.</td></tr>

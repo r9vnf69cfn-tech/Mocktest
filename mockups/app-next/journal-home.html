@@ -7,17 +7,81 @@
 <link rel="stylesheet" href="../shared/system.css">
 <style>
 /* Der Wochen-Fächer: drei Herkunfts-Fäden aus EINEM Knoten.
-   Maße gemessen, nicht geschätzt — Knotenmitte 16,5/8,0 pt, Zielpunkte
+   Maße gemessen, nicht geschätzt — Knotenmitte 6,5/8,0 pt, Zielpunkte
    37,0/45,0 · 37,0/89,0 · 37,0/133,0. Dieselbe Rechnung wie der Fächer
    „VERKNÜPFT" auf task-detail.html; ein Bauteil, zwei Schirme. */
-.wfan__f  { position: absolute; left: 16.5px; top: 8px; width: 20.5px; }
-.wfan__f1 { height: 37px; }
-.wfan__f2 { height: 81px; }
-.wfan__f3 { height: 125px; }
+/* L6 · GESTAFFELT WIE AUF task-detail UND settings. Alle drei Fäden beginnen
+   am selben Punkt; mit demselben linken Kastenrand liefen sie die ersten 40 %
+   ihrer Höhe deckungsgleich, weil .thread--curve genau EINE Form kennt und
+   die am linken Rand hängt. Sie verlassen den Knoten deshalb an drei Stellen
+   SEINES RANDES: 4,2 pt rechts · auf der Mitte · 4,2 pt links. Der Knoten
+   misst 9 pt (Rand bei 4,5), die Endpunkt-Konvention erlaubt 5,2 — alle drei
+   Enden sitzen also auf dem Knoten. Der rechte Kastenrand bleibt auf der
+   Zielpunkt-Mitte (37,0), die Kästen sind darum verschieden breit.
+   Nicht über eigene Pfade gestaffelt: die Verjüngung (system.css §9.2a) ist
+   ein clip-path entlang genau dieser Vorgabekurve und schnitte jedes selbst
+   geschriebene d ab. */
+.wfan__f  { position: absolute; top: 8px; }
+.wfan__f1 { left: 10.7px; width: 26.3px; height: 37px; }
+.wfan__f2 { left: 6.5px;  width: 30.5px; height: 81px; }
+.wfan__f3 { left: 2.3px;  width: 34.7px; height: 125px; }
 :root[data-type="gross"] .wfan__f  { top: 10px; }
 :root[data-type="gross"] .wfan__f1 { height: 43.5px; }
 :root[data-type="gross"] .wfan__f2 { height: 95px; }
 :root[data-type="gross"] .wfan__f3 { height: 146.5px; }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   DIE ZEITACHSEN-SPALTE — Datum daneben, Punkt AUF dem Faden
+
+   Bis Runde 4 stand die Datumsmarke in einer einzigen Spalte übereinander:
+   Punkt · „13" · „Nov." · Faden. Der Faden begann dadurch 45,0 pt UNTER dem
+   Punkt, zu dem er gehört — gemessen an fünf Marken auf beiden Geräten. Die
+   Zeitachse war damit kein durchgehender Faden, sondern eine Reihe von
+   Stücken, die je zwei Textblöcke verband.
+
+   Jetzt trägt die Spalte zwei Zellen: links das Datum, rechts die 10 pt
+   breite Schiene aus Faden · Punkt · Faden. Der Punkt sitzt exakt zwischen
+   den beiden Fadenstücken (Abstand = Punktradius 3,0 pt), das Datum steht
+   auf seiner Höhe daneben. Die Mitte der ersten Datumszeile (26 pt
+   Zeilenhöhe, 3 pt Vorlauf → 16,0 pt) liegt auf der Punktmitte (13 pt
+   Vorlauf + 3 pt Radius → 16,0 pt); bei „Aa groß" wächst die Zeilenhöhe auf
+   30 pt, deshalb dort 1 pt Vorlauf.
+   ────────────────────────────────────────────────────────────────────────── */
+.jz           { flex: none; display: flex; gap: 5px; }
+.jz--pad      { width: 54px; }
+.jz--phone    { width: 46px; }
+.jz__datum    { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column;
+                align-items: flex-end; padding-top: 3px; white-space: nowrap; }
+:root[data-type="gross"] .jz__datum { padding-top: 4px; }
+.jz__schiene  { width: 10px; flex: none; display: flex; flex-direction: column;
+                align-items: center; }
+/* EIN FADEN JE LÜCKE, NICHT ZWEI.
+   Naheliegend wäre gewesen: in jeder Zeile ein kurzes Stück oberhalb des
+   Punktes und ein langes darunter, beide an der Zeilengrenze aneinander
+   stoßend. Mit der Verjüngung aus system.css §9.2a geht das nicht mehr —
+   jedes .thread-Element verjüngt sich für sich, und an der Naht 13 pt über
+   jedem Punkt sprang die Stärke von 0,6 auf 1,0 pt zurück. Im Bild bei
+   14-facher Vergrößerung ist das ein Absatz im Strich; gemessen an der
+   Deckung: 0,27 → 0,44 pt.
+   Deshalb trägt jetzt jede Zeile GENAU EIN Fadenstück, und zwar das von
+   ihrem Punkt zum Punkt der nächsten Zeile: negativer Außenabstand von
+   13 pt (die Höhe des Vorlaufs), damit es 13 pt in die nächste Zeile
+   hineinragt und dort auf deren Punkt endet. Der Vorlauf ist nur noch ein
+   Abstandhalter ohne Faden. Ein Punkt, ein Faden, eine Verjüngung:
+   voll am oberen Punkt, 60 % am unteren.
+
+   RICHTUNG: Die Schiene läuft von heute nach hinten. Das ist die Kante,
+   die der Eintrags-Schirm mit seinen ‹ ›-Knöpfen abläuft („Eintrag 34 von
+   41"), und die Richtung, in der man eine Zeitachse liest, die oben mit
+   heute beginnt. Die Verjüngung sagt genau das: dick an der Marke, an der
+   man steht, dünner in die Vergangenheit hinein. */
+.jz__vor      { flex: none; height: 13px; }
+:root[data-type="gross"] .jz__vor { height: 16px; }
+.jz__ab       { flex: 1 1 0; min-height: 8px; margin-bottom: -13px; }
+:root[data-type="gross"] .jz__ab { margin-bottom: -16px; }
+/* Stumpfe Enden wie in der Klammer auf tasks.html: eine runde Kappe am
+   dünnen Ende säße als Knubbel unter dem Punkt. */
+.jz__schiene .thread > * { stroke-linecap: butt; }
 </style>
 </head>
 <body>
@@ -32,12 +96,18 @@ KOMMENTARBLOCK — Journal-Home
   eine einzige Überschrift zu lesen. Anders als Day One sitzt die Marke
   außerhalb der Karte auf der Linie, damit die Karte selbst ruhig bleibt.
   Verschärft in Runde 2: Die Linie ist keine Linie mehr, sondern ein FADEN
-  (1,5 pt, --thread). Er verbindet je zwei benachbarte Einträge desselben
+  (1 pt, --thread). Er verbindet je zwei benachbarte Einträge desselben
   Journals — genau die Kante, die der Eintrags-Schirm mit ‹ › abläuft. Jeder
-  Eintrag sitzt als Knoten darauf, jeder Tag ohne Eintrag als hohler Punkt
+  Eintrag sitzt als PUNKT darauf, jeder Tag ohne Eintrag als hohler Punkt
   („11. Nov. · kein Eintrag"), und unten endet der Faden in einem hohlen Punkt,
   weil Oktober noch nicht geladen ist. Day One zeigt eine Zierleiste; hier ist
   der Strich die Datenkante.
+  Verschärft in Runde 4: Das Datum steht NEBEN der Schiene, nicht darin. Es
+  stand darin — Punkt, dann „13", dann „Nov.", dann der Faden —, und dadurch
+  begann der Faden 45,0 pt unter dem Punkt, zu dem er gehört. Die Zeitachse war
+  eine Reihe von Stücken zwischen Textblöcken. Jetzt läuft sie ohne
+  Unterbrechung durch, und die Punkte sitzen darauf (Abstand 3,0 pt =
+  Punktradius, gemessen an fünf Marken auf beiden Geräten).
 · Day One (Rückblick „On this day"): Übernommen als „Vor einem Jahr"-Karte in
   der Seitenspalte — dieselbe Karte wie auf „Today", damit der Rückblick überall
   gleich aussieht. Bewertung: gut, aber nur als Angebot. Day One unterbricht
@@ -184,26 +254,38 @@ Text der App).
               <!-- ══ Timeline — die Zeitachse IST ein senkrechter Faden ══
                    Der Faden verbindet je zwei benachbarte Einträge desselben
                    Journals; genau diese Kante läuft der Eintrags-Schirm mit
-                   seinen ‹ ›-Knöpfen ab („Eintrag 34 von 41"). Jeder Eintrag
-                   sitzt als Knoten darauf, ein Tag ohne Eintrag als hohler
-                   Punkt. Die Marke ist die Serif-Datumsmarke.
+                   seinen ‹ ›-Knöpfen ab („Eintrag 34 von 41").
+
+                   N7 · DIE DATUMSMARKE IST KEIN KNOTEN, SIE IST EIN PUNKT AUF
+                   DEM FADEN. Ein Knoten ist laut §2.3 der Ort, an dem Fäden
+                   sich TREFFEN — zwei verschiedene Beziehungen. An einer
+                   Datumsmarke trifft sich nichts: derselbe eine Faden („Tag
+                   folgt auf Tag", 1 pt) läuft durch sie hindurch. Sie trägt
+                   deshalb den Journal-Punkt, gefüllt = Eintrag vorhanden;
+                   „heute" bekommt zusätzlich den Ink-Ring, ein Tag ohne
+                   Eintrag den hohlen Punkt. Der einzige Knoten dieses Schirms
+                   steht in „DARAUS ENTSTANDEN": ein Punkt, drei Fäden zu drei
+                   verschiedenen Modulen. Trügen die Marken dieselbe 9-pt-Form
+                   in Ink, hieße dieselbe Form auf einem Schirm zweierlei.
+
                    Kein Abstand zwischen den Zeilen: der Faden liefe sonst
                    alle 11 pt ins Leere. Der Abstand sitzt am Kartenrand. -->
               <div style="display:flex; flex-direction:column">
 
                 <!-- Eintrag 1 — heute, die Sprachnotiz läuft noch ein (Zwischenzustand) -->
                 <div style="display:flex; gap:14px">
-                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <!-- vor dem ersten Knoten liegt nichts: kein Faden, nur der
-                         gleiche Vorlauf, damit alle Knoten auf einer Höhe sitzen -->
-                    <span style="height:13px; flex:none"></span>
-                    <!-- N7: An dieser Marke endet genau EIN Faden (nach unten) —
-                         ein Knoten ist sie damit nicht. Sie ist „heute", und dafür
-                         hat das System den Ring. -->
-                    <span class="dot dot--journal dot--ring" title="Heute, 13. November"></span>
-                    <span class="serif--journal-date" style="margin-top:3px">13</span>
-                    <span class="t-label c-3">Nov.</span>
-                    <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
+                  <div class="jz jz--pad">
+                    <div class="jz__datum">
+                      <span class="serif--journal-date">13</span>
+                      <span class="t-label c-3">Nov.</span>
+                    </div>
+                    <div class="jz__schiene">
+                      <!-- vor dem ersten Punkt liegt nichts: kein Faden, nur der
+                           gleiche Vorlauf, damit alle Marken auf einer Höhe sitzen -->
+                      <span class="jz__vor"></span>
+                      <span class="dot dot--journal dot--ring" title="Heute, 13. November"></span>
+                      <svg class="thread thread--v thread--weak jz__ab"></svg>
+                    </div>
                   </div>
                   <article class="card" style="flex:1 1 auto; min-width:0; padding:13px; margin-bottom:7px">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
@@ -245,14 +327,21 @@ Text der App).
                   </article>
                 </div>
 
-                <!-- Eintrag 2 — gestern, Entwurf mit Foto-Streifen -->
+                <!-- Eintrag 2 — gestern, Entwurf mit Foto-Streifen.
+                     Der Punkt trug bis Runde 4 den Ink-Ring und den Titel
+                     „Heute, 13. November" — auf einem Schirm standen damit
+                     zwei „heute"-Marken. Der Ring gehört dem 13. -->
                 <div style="display:flex; gap:14px">
-                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <svg class="thread thread--v thread--weak" style="height:13px; flex:none"></svg>
-                    <span class="dot dot--journal dot--ring" title="Heute, 13. November"></span>
-                    <span class="serif--journal-date" style="margin-top:3px">12</span>
-                    <span class="t-label c-3">Nov.</span>
-                    <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
+                  <div class="jz jz--pad">
+                    <div class="jz__datum">
+                      <span class="serif--journal-date">12</span>
+                      <span class="t-label c-3">Nov.</span>
+                    </div>
+                    <div class="jz__schiene">
+                      <span class="jz__vor"></span>
+                      <span class="dot dot--journal" title="Eintrag vom 12. November"></span>
+                      <svg class="thread thread--v thread--weak jz__ab"></svg>
+                    </div>
                   </div>
                   <article class="card" style="flex:1 1 auto; min-width:0; padding:13px; margin-bottom:7px">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
@@ -306,13 +395,22 @@ Text der App).
                      Ohne diesen Griff wäre „hohl" an dieser Stelle „vorbei und nicht
                      geschehen" gewesen — dieselbe Form mit der entgegengesetzten
                      Zeitrichtung. -->
-                <div style="display:flex; gap:14px; margin-bottom:7px">
-                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <svg class="thread thread--v thread--weak" style="height:13px; flex:none"></svg>
-                    <span class="dot dot--hollow"></span>
-                    <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:8px"></svg>
+                <!-- Der Zeilenabstand sitzt am Knopf, nicht an der Zeile:
+                     läge er an der Zeile, entstünde in der Schiene ein
+                     sichtbarer Riss von 7,0 pt zwischen zwei Fadenstücken. -->
+                <div style="display:flex; gap:14px">
+                  <div class="jz jz--pad">
+                    <!-- Der 11. trägt kein Datum in Serif: die Serif-Marke ist
+                         die Marke eines EINTRAGS, und hier ist keiner. Das
+                         Datum steht daneben im Knopf („11. Nov. nachtragen"). -->
+                    <div class="jz__datum"></div>
+                    <div class="jz__schiene">
+                      <span class="jz__vor"></span>
+                      <span class="dot dot--hollow"></span>
+                      <svg class="thread thread--v thread--weak jz__ab"></svg>
+                    </div>
                   </div>
-                  <button style="flex:1 1 auto; min-width:0; min-height:44px; display:flex; align-items:center; gap:8px; text-align:left">
+                  <button style="flex:1 1 auto; min-width:0; min-height:44px; margin-bottom:7px; display:flex; align-items:center; gap:8px; text-align:left">
                     <span class="chip chip--ghost"><span class="ico" data-ico="plus" style="width:13px;height:13px"></span>11. Nov. nachtragen</span>
                     <span class="t-label c-3">noch kein Eintrag</span>
                   </button>
@@ -320,12 +418,16 @@ Text der App).
 
                 <!-- Eintrag 3 — 10. Nov, mit Herkunfts-Chip statt Fotos -->
                 <div style="display:flex; gap:14px">
-                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <svg class="thread thread--v thread--weak" style="height:13px; flex:none"></svg>
-                    <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
-                    <span class="serif--journal-date" style="margin-top:3px">10</span>
-                    <span class="t-label c-3">Nov.</span>
-                    <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
+                  <div class="jz jz--pad">
+                    <div class="jz__datum">
+                      <span class="serif--journal-date">10</span>
+                      <span class="t-label c-3">Nov.</span>
+                    </div>
+                    <div class="jz__schiene">
+                      <span class="jz__vor"></span>
+                      <span class="dot dot--journal" title="Eintrag vom 10. November"></span>
+                      <svg class="thread thread--v thread--weak jz__ab"></svg>
+                    </div>
                   </div>
                   <article class="card" style="flex:1 1 auto; min-width:0; padding:13px; margin-bottom:7px">
                     <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px">
@@ -357,9 +459,12 @@ Text der App).
                 <!-- Der Faden endet nicht, er endet nur hier: der hohle Punkt
                      sagt „es geht weiter, ist aber noch nicht geladen". -->
                 <div style="display:flex; gap:14px">
-                  <div style="width:44px; flex:none; display:flex; flex-direction:column; align-items:center">
-                    <svg class="thread thread--v thread--weak" style="height:13px; flex:none"></svg>
-                    <span class="dot dot--hollow"></span>
+                  <div class="jz jz--pad">
+                    <div class="jz__datum"></div>
+                    <div class="jz__schiene">
+                      <span class="jz__vor"></span>
+                      <span class="dot dot--hollow"></span>
+                    </div>
                   </div>
                   <button class="btn btn--sm btn--text" style="flex:1 1 auto; min-width:0; justify-content:flex-start; padding-left:0; height:44px">
                     <span class="ico" data-ico="chevD" style="width:16px;height:16px"></span>Ältere Einträge · Oktober
@@ -498,7 +603,7 @@ Text der App).
                     <span class="t-label c-3 card__title">DARAUS ENTSTANDEN</span>
                   </div>
                   <div style="position:relative">
-                    <div style="display:flex; align-items:center; gap:8px; padding:0 0 6px 12px">
+                    <div style="display:flex; align-items:center; gap:8px; padding:0 0 6px 2px">
                       <span class="dot dot--node"></span>
                       <span class="t-label c-2"><span class="num">3</span> Einträge dieser Woche</span>
                     </div>
@@ -656,15 +761,19 @@ Text der App).
             <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
           </button>
 
-          <!-- Timeline — dieselbe Zeitachse als Faden, dieselben Knoten -->
+          <!-- Timeline — dieselbe Zeitachse als Faden, dieselben Punkte darauf -->
           <div style="display:flex; flex-direction:column">
           <div style="display:flex; gap:10px">
-            <div style="width:34px; flex:none; display:flex; flex-direction:column; align-items:center">
-              <span style="height:11px; flex:none"></span>
-              <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
-              <span class="serif--journal-date" style="margin-top:3px">13</span>
-              <span class="t-label c-3">Nov.</span>
-              <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
+            <div class="jz jz--phone">
+              <div class="jz__datum">
+                <span class="serif--journal-date">13</span>
+                <span class="t-label c-3">Nov.</span>
+              </div>
+              <div class="jz__schiene">
+                <span class="jz__vor"></span>
+                <span class="dot dot--journal dot--ring" title="Heute, 13. November"></span>
+                <svg class="thread thread--v thread--weak jz__ab"></svg>
+              </div>
             </div>
             <article class="card" style="flex:1 1 auto; min-width:0; padding:12px; margin-bottom:12px">
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px">
@@ -701,12 +810,16 @@ Text der App).
           </div>
 
           <div style="display:flex; gap:10px">
-            <div style="width:34px; flex:none; display:flex; flex-direction:column; align-items:center">
-              <svg class="thread thread--v thread--weak" style="height:11px; flex:none"></svg>
-              <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
-              <span class="serif--journal-date" style="margin-top:3px">12</span>
-              <span class="t-label c-3">Nov.</span>
-              <svg class="thread thread--v thread--weak" style="flex:1 1 0; min-height:10px"></svg>
+            <div class="jz jz--phone">
+              <div class="jz__datum">
+                <span class="serif--journal-date">12</span>
+                <span class="t-label c-3">Nov.</span>
+              </div>
+              <div class="jz__schiene">
+                <span class="jz__vor"></span>
+                <span class="dot dot--journal" title="Eintrag vom 12. November"></span>
+                <svg class="thread thread--v thread--weak jz__ab"></svg>
+              </div>
             </div>
             <article class="card" style="flex:1 1 auto; min-width:0; padding:12px">
               <div style="display:flex; align-items:center; gap:8px; margin-bottom:3px">
@@ -755,12 +868,12 @@ Text der App).
 <!-- Steckbrief -->
 <div class="sheetnote">
   <h2>Journal-Home — Steckbrief</h2>
-  <p>Vier Ansichten auf dieselben Einträge: Timeline, Kalender, Medien, Karte. Der Schirm zeigt die Timeline — links die Einträge an der Zeitachse, rechts das, was sie im Zusammenhang bedeuten. Die Zeitachse ist ein Faden, die Einträge sind Knoten darauf.</p>
+  <p>Vier Ansichten auf dieselben Einträge: Timeline, Kalender, Medien, Karte. Der Schirm zeigt die Timeline — links die Einträge an der Zeitachse, rechts das, was sie im Zusammenhang bedeuten. Die Zeitachse ist ein Faden, die Einträge sind Punkte darauf.</p>
 
   <h3>Der Faden auf diesem Schirm</h3>
   <table>
     <tr><td>Zeitachse</td><td><strong>Eintrag ↔ benachbarter Eintrag</strong> desselben Journals, jetzt <strong>1 pt</strong>. Sie trug 1,5 pt („Verweis") und zeichnete damit dieselbe Beziehung wie die Serie zwei Karten weiter mit einer anderen Stärke. Tag folgt auf Tag ist Nachbarschaft, und Nachbarschaft ist in diesem System 1 pt — beide tragen jetzt dieselbe Zahl, weil sie dieselbe Aussage machen. Genau diese Kante läuft der Eintrags-Schirm mit seinen ‹ ›-Knöpfen ab („Eintrag 34 von 41").</td></tr>
-    <tr><td>Die Marken der Zeitachse</td><td><strong>Heute ist kein Knoten.</strong> An der Marke „13. Nov." endet genau <em>ein</em> Faden (nach unten); ein Knoten ist laut DNA-Nachtrag N7 nur, wo zwei oder mehr zusammenlaufen. Sie trägt deshalb den Journal-Punkt mit dem Ink-Ring — dieselbe Form, mit der „heute" auf jedem anderen Schirm markiert ist. Die Marken vom 12. und 10. November haben oben und unten einen Faden und bleiben Knoten. Der hohle Punkt unten („Ältere Einträge · Oktober") hat einen Faden und heißt „noch nicht geladen".</td></tr>
+    <tr><td>Die Marken der Zeitachse</td><td><strong>Keine Marke ist ein Knoten — alle fünf sind Punkte auf einem Faden.</strong> Ein Knoten ist laut §2.3 der Ort, an dem Fäden sich <em>treffen</em>, also wo zwei verschiedene Beziehungen zusammenlaufen. An einer Datumsmarke trifft sich nichts: derselbe eine Faden („Tag folgt auf Tag", <span class="num">1 pt</span>) läuft durch sie hindurch. Sie trägt deshalb den Journal-Punkt, gefüllt = Eintrag vorhanden; der 13. bekommt zusätzlich den Ink-Ring („heute" — dieselbe Form wie auf jedem anderen Schirm), der 11. den hohlen Punkt („noch kein Eintrag"), und unten steht der hohle Punkt für „Oktober noch nicht geladen". Bis Runde 4 waren drei Marken <span class="num">.dot--node</span> und zwei trugen den Ring — vier Formen für eine Sache, und die iPhone-Marke „13. Nov." hatte gar keinen Faden in Reichweite (nächster Fadenanfang <span class="num">45,0 pt</span>). <strong>Der einzige Knoten dieses Schirms steht im Wochen-Fächer</strong>, und dort laufen wirklich drei Fäden zusammen. Trügen die Marken dieselbe 9-pt-Ink-Form, hieße sie auf einem Schirm zweierlei — und der Ink-Akzent stünde in einer vierten Rolle („Station"), die die DNA nicht kennt.</td></tr>
     <tr><td>Der 11. November</td><td>Der hohle Punkt <em>markiert</em> eine fehlende Beziehung — jetzt <em>stellt</em> er sie auch her: die Zeile ist ein Knopf mit 44-pt-Ziel und dem Chip „11. Nov. nachtragen". Damit heißt „hohl" hier dasselbe wie überall im Bestand — <strong>offen, noch nicht da</strong> — und nicht „vorbei und nicht geschehen". Diese eine Zeile entscheidet, ob die Form auf diesem Schirm dieselbe Bedeutung trägt wie auf review-session, note-editor, settings und library.</td></tr>
     <tr><td>Serie</td><td><strong>Woche ↔ Folgewoche</strong>, 1 pt, zwölf Wochen. Eine Woche ohne Eintrag bekommt <strong>keinen Punkt und keinen Faden</strong>, sondern eine Lücke — keine Beziehung, kein Faden. Vorher stand dort ein hohler Punkt mit der Legende „hohl = Lücke", also dieselbe Form für die entgegengesetzte Zeitrichtung. Die laufende Woche trägt den Ring; vorher war sie <strong>halb gefüllt</strong> und damit ein fünfter Punkt-Zustand, den die DNA nicht kennt — und sie trug Ring <em>und</em> Halbfüllung für dieselbe einzige Aussage.</td></tr>
     <tr><td>Der Wochen-Fächer</td><td><strong>Neu, und der Grund, warum dieser Schirm jetzt Velum ist.</strong> Ein Knoten, drei Herkunfts-Fäden zu 2,5 pt, drei Modulpunkte: aus den Einträgen dieser Woche sind eine Aufgabe, eine Notiz und zwei Lernkarten geworden. Der Knoten verdient seinen Namen — dort laufen drei Fäden zusammen. Die Kante ist echt und auf dem Nachbarschirm nachlesbar: <span class="num">journal-entry.html</span> zeichnet dieselbe Kette („ENTSTANDEN AUS → DIESER EINTRAG → DARAUS WURDE"). Es ist dasselbe Bauteil wie der Fächer „VERKNÜPFT" auf <span class="num">task-detail.html</span>, mit derselben gemessenen Geometrie — ein Bauteil, zwei Schirme, kein zweites Vokabular.</td></tr>

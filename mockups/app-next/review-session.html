@@ -76,6 +76,15 @@
    Knubbel, der wie ein Knoten aussähe, wo keiner ist. Die beiden echten
    Enden stecken unter den 6-pt-Punkten und brauchen keine Rundung. */
 .hk__f > * { stroke-linecap: butt; }
+
+/* N10 · Ink am Faden heißt ausschließlich „aktiv". Die Intervall-Leiter hat
+   es für „bereits gelaufen" benutzt; das Markup ist bereinigt. bewegung.js
+   setzt es beim Bewerten jedoch weiterhin (intervallVorschau, Zeile 645:
+   stuecke.forEach(… toggle('is-active', k < i)) ) — und diese Datei gehört
+   nicht diesem Schirm. Bis sie nachzieht, nimmt diese Regel das Ink für die
+   Leiter zurück, ohne .is-active anderswo anzutasten. Fällt die Zeile in
+   bewegung.js weg, ist diese Regel wirkungslos und kann verschwinden. */
+.bw-intervall > .thread.is-active { stroke: var(--thread); }
 </style>
 </head>
 <body>
@@ -361,7 +370,7 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
                             </button>
                             <span class="threadrow" style="flex:1 1 auto; min-width:80px">
                               <span class="dot dot--notes"></span>
-                              <svg class="thread thread--h thread--origin is-active" style="flex:62 1 0"></svg>
+                              <svg class="thread thread--h thread--origin" style="flex:62 1 0"></svg>
                               <span class="dot dot--ring"></span>
                               <svg class="thread thread--h thread--origin" style="flex:38 1 0"></svg>
                               <span class="dot dot--hollow"></span>
@@ -424,7 +433,22 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
                      Wiederholung folgt auf die vorige. Gefüllt = schon
                      gelaufen, Ring = jetzt fällig, hohl = noch geplant. Die
                      vier Knöpfe darunter sagen, auf welchen Punkt sie führen —
-                     und beim Tippen wandert der Ring wirklich dorthin. -->
+                     und beim Tippen wandert der Ring wirklich dorthin.
+
+                     N10 · DER FADEN IST DURCHGEHEND --thread. Die gelaufenen
+                     Stücke trugen volles Ink; das hieß dort „liegt hinter mir",
+                     und das ist keine der drei erlaubten Rollen des Akzents
+                     (aktiv · primärer CTA · Auswahl). Es war außerdem ein
+                     zweites Merkmal für dieselbe Aussage, die der gefüllte
+                     Punkt bereits macht. Der Faden sagt jetzt, DASS es diese
+                     Kette gibt; der Punkt sagt, WO die Karte darauf steht.
+
+                     ACHTUNG bewegung.js: intervallVorschau() setzt beim
+                     Bewerten weiterhin .is-active auf die Stücke bis zum neuen
+                     Punkt (Zeile 645). Das ist dieselbe Bedeutung „gelaufen"
+                     und gehört nach N10 ebenfalls entfernt — die Datei gehört
+                     nicht diesem Schirm. Bis dahin nimmt die Regel unten am
+                     Kopf dieser Datei das Ink für die Leiter zurück. -->
                 <div>
                   <div style="display:flex; align-items:baseline; gap:12px">
                     <span class="t-label c-3">WIEDERHOLUNGEN DIESER KARTE</span>
@@ -435,11 +459,11 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
                     <div class="threadrow bw-intervall" id="rev-intervall" data-bw-index="3"
                          aria-label="Wiederholungsleiter dieser Karte: gleich, 1 Tag, 3 Tage — gelaufen; 8 Tage — jetzt fällig; 21 Tage und 55 Tage — geplant">
                       <span class="iv"><span class="dot dot--cards"></span><span class="iv__t t-label c-3">gleich</span></span>
-                      <svg class="thread thread--h is-active"></svg>
+                      <svg class="thread thread--h"></svg>
                       <span class="iv"><span class="dot dot--cards"></span><span class="iv__t t-label c-3 num">1 d</span></span>
-                      <svg class="thread thread--h is-active"></svg>
+                      <svg class="thread thread--h"></svg>
                       <span class="iv"><span class="dot dot--cards"></span><span class="iv__t t-label c-3 num">3 d</span></span>
-                      <svg class="thread thread--h is-active"></svg>
+                      <svg class="thread thread--h"></svg>
                       <span class="iv"><span class="dot dot--cards dot--ring"></span><span class="iv__t t-label c-3 num">8 d</span></span>
                       <svg class="thread thread--h"></svg>
                       <span class="iv"><span class="dot dot--cards dot--hollow"></span><span class="iv__t t-label c-3 num">21 d</span></span>
@@ -721,7 +745,7 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
                     </button>
                     <span class="threadrow" style="flex:1 1 auto; min-width:40px">
                       <span class="dot dot--notes"></span>
-                      <svg class="thread thread--h thread--origin is-active" style="flex:62 1 0"></svg>
+                      <svg class="thread thread--h thread--origin" style="flex:62 1 0"></svg>
                       <span class="dot dot--ring"></span>
                       <svg class="thread thread--h thread--origin" style="flex:38 1 0"></svg>
                       <span class="dot dot--hollow"></span>
@@ -807,11 +831,11 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
               <div class="threadrow bw-intervall" id="rev-intervall-p" data-bw-index="3"
                    aria-label="Wiederholungsleiter dieser Karte: gleich, 1 Tag, 3 Tage — gelaufen; 8 Tage — jetzt fällig; 21 Tage und 55 Tage — geplant">
                 <span class="iv"><span class="dot dot--cards"></span><span class="iv__t t-label c-3">gleich</span></span>
-                <svg class="thread thread--h is-active"></svg>
+                <svg class="thread thread--h"></svg>
                 <span class="iv"><span class="dot dot--cards"></span><span class="iv__t t-label c-3 num">1 d</span></span>
-                <svg class="thread thread--h is-active"></svg>
+                <svg class="thread thread--h"></svg>
                 <span class="iv"><span class="dot dot--cards"></span><span class="iv__t t-label c-3 num">3 d</span></span>
-                <svg class="thread thread--h is-active"></svg>
+                <svg class="thread thread--h"></svg>
                 <span class="iv"><span class="dot dot--cards dot--ring"></span><span class="iv__t t-label c-3 num">8 d</span></span>
                 <svg class="thread thread--h"></svg>
                 <span class="iv"><span class="dot dot--cards dot--hollow"></span><span class="iv__t t-label c-3 num">21 d</span></span>
@@ -892,7 +916,7 @@ system.css, mock.js, bewegung.css und bewegung.js bleiben unangetastet; der
   <table>
     <tr><td>Der Herkunftsfaden auf der Karte</td><td>Zwei Objekte, eine Kante aus dem Datenmodell: <em>Absatz 7 der Notiz „Zellbiologie"</em> und <em>diese Lernkarte</em>. Die Karte ist aus diesem Absatz gemacht — deshalb Stärke <span class="num">--origin</span> (2,5 pt), die starke Beziehung. <strong>Richtung (Nachtrag 2, N6):</strong> der Ursprung steht oben. Der Zitatkasten mit dem Notizen-Punkt ist nach Runde 3 der obere Block, die Etikettzeile „ANTWORT" mit dem Lernkarten-Punkt der untere; der Faden liest von der Notiz zur Karte. Bis dahin war es umgekehrt — dasselbe Bauteil wie auf <span class="num">flashcards-home</span>, spiegelverkehrt, und rückwärts zu der Richtung, in der <span class="num">bewegung.js</span> jeden Faden zeichnet. Die Modulfarbe gehört dem Punkt, der Faden bleibt <span class="num">--thread</span>. Er besteht aus zwei Abschnitten, weil er zwei Zeilenblöcke überspannt — sie stoßen ohne Rand aneinander, die Abstände stehen im Block, und die Enden sind stumpf, damit an der Naht kein doppelter Rundkopf wie ein Knoten aussieht. Gemessen: Punktmitte im Zitatkasten 19 pt unter dessen Oberkante, Punktmitte an „ANTWORT" 22 pt unter dessen Oberkante; beide Abschnitte enden auf den Punktmitten, kein freies Ende auf diesem Schirm.</td></tr>
     <tr><td>Die sechs Sekunden am Faden</td><td><strong>Die Karte spielt die Sekunde ab, in der sie entstand.</strong> Der Herkunfts-Chip trägt die Uhrzeit der Stelle (<span class="num">16:42</span>) und ein Abspielzeichen; gedrückt halten spielt sechs Sekunden Vorlesung. Kein Schirmwechsel, kein Abspieler, der Sitzungszähler bleibt auf „<span class="num">7</span> von <span class="num">23</span>". Gezeigt ist der laufende Zustand: der Chip gedrückt (Fläche + Ring), daneben der 2,5-pt-Faden zwischen Anfang und Ende der Stelle. Die Punkte folgen der Legende dieses Schirms — <strong>gefüllt = gelaufen · Ring = hier · hohl = noch nicht</strong> —, und daneben steht die Sekundenangabe. Zwei Merkmale, keine Farbe. Der Satz „Diese Lernkarte kann die Sekunde abspielen, in der sie entstand" ist in keinem der geprüften Produkte sagbar: Notability besitzt die Kante Strich ↔ Sekunde, aber bei Notability entsteht aus einer Seite nichts, also kann die Sekunde nirgendwohin weiterwandern.</td></tr>
-    <tr><td>Die Intervall-Leiter</td><td>Sechs Punkte auf einem Faden: <span class="num">gleich · 1 d · 3 d · 8 d · 21 d · 55 d</span>. Jede Kante heißt „diese Wiederholung folgt auf jene" — das ist die stärkste Idee, die Anki hat, und sie ist hier zum ersten Mal sichtbar statt nur ausgerechnet. <strong>Gefüllt</strong> = schon gelaufen (drei Wiederholungen), <strong>Ring</strong> = jetzt fällig (8 d), <strong>hohl</strong> = noch geplant. Die gelaufenen Fadenstücke sind Ink, die geplanten <span class="num">--thread</span>: der Weg, den die Karte wirklich genommen hat, gegen den, der ihr bevorsteht. Jeder der vier Knöpfe nennt den Punkt, auf den er führt, und beim Tippen wandert der Ring wirklich dorthin (<span class="num">data-bw="bewerten"</span>).</td></tr>
+    <tr><td>Die Intervall-Leiter</td><td>Sechs Punkte auf einem Faden: <span class="num">gleich · 1 d · 3 d · 8 d · 21 d · 55 d</span>. Jede Kante heißt „diese Wiederholung folgt auf jene" — das ist die stärkste Idee, die Anki hat, und sie ist hier zum ersten Mal sichtbar statt nur ausgerechnet. <strong>Gefüllt</strong> = schon gelaufen (drei Wiederholungen), <strong>Ring</strong> = jetzt fällig (8 d), <strong>hohl</strong> = noch geplant. <strong>Der Faden ist durchgehend <span class="num">--thread</span></strong>. Bis Runde 4 waren die gelaufenen Stücke Ink — sechs Fäden auf diesem Schirm. Das war ein zweites Merkmal für dieselbe Aussage, die der gefüllte Punkt schon macht, und es besetzte den Ink-Akzent mit einer vierten Bedeutung („vergangen"), die die DNA nicht kennt: Ink am Faden heißt ausschließlich <em>aktiv</em> (ausgewählt, wird gerade gezeichnet, gehört zum aktiven Objekt). Jetzt trägt der Faden eine Auskunft — dass es diese Kette gibt — und der Punkt eine andere: wo die Karte darauf steht. Im Bild nachgesehen: die Leiter erzählt dasselbe, und der Ink-Ring auf „8 d" ist jetzt die stärkste Marke der Zeile statt eines schwarzen Balkens links davon. Genau das ist die Auskunft, auf die es ankommt. Jeder der vier Knöpfe nennt den Punkt, auf den er führt, und beim Tippen wandert der Ring wirklich dorthin (<span class="num">data-bw="bewerten"</span>).</td></tr>
   </table>
   <p><strong>Wo bewusst kein Faden steht:</strong> zwischen den vier Bewertungsknöpfen (sie sind Alternativen, keine Kette), zwischen den Zeilen unter „Zuletzt bewertet" (eine Liste ist keine Beziehung), in der Zeichenfläche (die Skizze ist Handschrift, kein Datenmodell) und zwischen Karte und Kartenstapel. Die Falzkante auf dem Blatt und die Trennlinien in der Seitenspalte bleiben <span class="num">--line</span> und sehen deshalb anders aus als ein Faden.</p>
 

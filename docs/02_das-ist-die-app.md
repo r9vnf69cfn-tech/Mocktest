@@ -24,16 +24,20 @@ Kein Konkurrent kann das. RemNote kommt am nächsten, bezahlt es aber mit einer 
 
 Drei Bausteine, mehr gibt es nicht: der **Punkt** ist ein Objekt, der **Faden** eine Beziehung, der **Knoten** die Stelle, an der Fäden sich treffen. Ein Faden ist immer ein Strich, nie eine Fläche; seine Stärke sagt, wie nah die Beziehung ist (1 pt Tag · 1,5 pt Verweis · 2,5 pt Herkunft), und in Bewegung zeichnet er sich vom Ursprung zum Ergebnis.
 
+**Auch im Stillstand hat er eine Richtung.** Er verjüngt sich vom Ursprung zum Ergebnis auf 60 % seiner Stärke — 1,0 → 0,6 · 1,5 → 0,9 · 2,5 → 1,5 pt. Keine Pfeilspitze: die käme aus dem Flussdiagramm und machte den Faden zu einem Konnektor zwischen zwei Kästen. Die Verjüngung dagegen ist das, was ein Stift ohnehin tut — ein Strich beginnt mit Druck und läuft aus. Das Motiv borgt sich sein Richtungszeichen also nicht, es hat es schon.
+
 Dazu die eine Regel, die das Motiv von Dekoration trennt:
 
 > **Kein Faden ohne echte Beziehung im Datenmodell.** Wenn sich nicht sagen lässt, welche zwei Objekte ein Strich verbindet, darf dort keiner sein.
 
-**Was das für die App bedeutet — vier Wirkungen:**
+**Was das für die App bedeutet — sechs Wirkungen:**
 
 1. **Die Kette am Morgen ist gezeichnet, nicht behauptet.** „Zellbiologie“ → 12 Karten → 8 heute fällig sind drei Knoten auf einem Herkunftsfaden, nicht drei Kästen mit Winkelzeichen dazwischen.
 2. **Der Rückweg wird sichtbar.** Ein Faden hat zwei Enden. Der Herkunfts-Chip auf einer Lernkarte zeichnet ihn beim Antippen zurück bis in den Absatz, aus dem die Karte kam.
 3. **Wo nichts verbunden ist, steht auch nichts.** Im Zwölf-Wochen-Raster, in den Prognose-Balken, im Fortschrittsbalken liegt kein Faden — dort ist nur Nachbarschaft, Skala oder Summe. Das kostet: mit Strichen hätten diese Stellen „reicher“ ausgesehen. Ein Motiv, das nichts kostet, ist Zierrat.
 4. **Trennlinien bleiben Trennlinien.** Der Faden tritt nie als Rahmen, Unterstreichung oder Zierleiste auf. Er ist an seiner Aufgabe erkennbar, nicht an seinem Aussehen.
+5. **Kein Ende hängt frei.** Ein Fadenende sitzt auf der Punktmitte oder am Punktrand, höchstens 5,2 pt daneben. Hängt eines frei, verbindet der Faden ein Objekt mit nichts — dann ist er keiner. Die einzige Ausnahme ist der gekappte Faden: Er endet ohne Punkt und sagt damit, dass die Quelle gelöscht wurde.
+6. **Ink am Faden heißt „aktiv“ und sonst nichts.** Der Akzent hat drei Rollen — aktiver Zustand, primäre Aktion, Auswahl. „Liegt hinter mir“ ist keine davon; das sagt der Punkt (gefüllt = gelaufen, Ring = jetzt fällig, hohl = geplant). So trägt der Faden eine Information und der Punkt eine andere, statt beide dieselbe.
 
 Warum ausgerechnet dieses Motiv — der Name (*velum*, gewebter Stoff), das Zeichen (zwei Striche, die sich in einem Punkt treffen), der Rohstoff (ein Handschrift-Strich *ist* ein Faden) — steht in [`04_velum-dna.md`](04_velum-dna.md). Hier steht nur die Wirkung. Alle drei Bausteine in jedem Zustand: [`mockups/shared/faden-probe.html`](../mockups/shared/faden-probe.html).
 

@@ -178,10 +178,43 @@ zwei der fünf Modulfarben halten im hellen Modus nur 2,95:1 (Notizen) und
   normale (Verweis) · 2,5 pt = starke (Herkunft: A wurde zu B).
 * **Richtung ist Kausalität.** In Bewegung zeichnet er sich immer vom Ursprung
   zum Ergebnis, nie umgekehrt. Beim Zurückgehen läuft er rückwärts ein.
+* **Verjüngung.** Am Ursprung trägt er seine volle Stärke, am Ergebnis 60 %
+  davon: 1,0 → 0,6 · 1,5 → 0,9 · 2,5 → 1,5 pt. Damit ist die Richtung auch im
+  Standbild lesbar. Gemessen wird am Ursprung, deshalb bleiben die drei
+  Stärken so unterscheidbar wie vorher.
 * **Form:** gerade oder eine quadratische Bézier. Keine S-Kurven, keine
   Schnörkel, keine Bögen um Ecken.
-* **Farbe:** ruhend grau, Ink wenn aktiv. **Niemals bunt** — Modulfarben
-  gehören dem Punkt, nicht dem Faden.
+* **Farbe:** ruhend grau, Ink **nur wenn aktiv**. **Niemals bunt** —
+  Modulfarben gehören dem Punkt, nicht dem Faden.
+
+**Warum eine Verjüngung und keine Pfeilspitze.** Eine Bewerbung besteht aus
+Standbildern, und das Versprechen „man kann ihn in beide Richtungen ablaufen“
+setzt voraus, dass man die Ruhelage einer Richtung ansieht. Die Verjüngung
+folgt dabei aus dem Rohstoff (§0.3): Ein Handschrift-Strich beginnt mit Druck
+und läuft aus — sie ist das, was ein Stift ohnehin tut, kein Zeichen, das dem
+Motiv aufgesetzt wird. Eine Pfeilspitze käme aus dem Flussdiagramm und machte
+den Faden zum Konnektor: genau das, was die Recherche an Freeform als
+„Geometrie zwischen zwei Kästen, keine Beziehung“ verworfen hat. Sie kostet
+außerdem nichts — kein zusätzliches Element, kein zusätzliches Wort.
+
+Gebaut ist sie als `clip-path` auf dem einen Strich, im Kastenmaß statt in der
+viewBox, damit die ungleichmäßige Dehnung sie nicht erreicht; Farbe, runde
+Kappe und die Zeichen-Animation bleiben am Strich. **Ihre Grenze steht
+mitgeschrieben:** Eine Maske braucht die Senkrechte auf den Faden, und die ist
+nur dort aus dem Kastenmaß zu gewinnen, wo `system.css` die Form vorgibt.
+262 der 282 Fäden im Bestand verjüngen sich (93 %); die zwanzig frei
+gezeichneten — Kantenbündel im Graph, von `MOCK.thread()` gespannte Fäden,
+drei handgezeichnete, die Handschriftprobe — bleiben gleich stark, weil eine
+Maske, die den Winkel raten müsste, den Strich schief abschnitte. Die Rechnung
+und die Messung am dünnen Ende stehen in `system.css` §9.2.
+
+**Ink am Faden heißt ausschließlich „aktiv“.** Ink hat drei Rollen — aktiver
+Zustand, primäre Aktion, Auswahl —, und „liegt hinter mir“ ist keine davon.
+Auf den Intervall-Leitern von `flashcards-home` und `review-session` trugen
+die bereits gelaufenen Fadenstücke volles Ink; sie stehen jetzt auf `--thread`
+wie jeder ruhende Faden. Was „gelaufen“ sagt, ist **der Punkt**: gefüllt für
+gelaufen, Ring für jetzt fällig, hohl für geplant (§1.1). Vorher trugen Faden
+und Punkt dieselbe Aussage doppelt; jetzt trägt jeder eine eigene.
 
 ### 1.3 Der Knoten — wo Fäden sich treffen
 
@@ -228,6 +261,27 @@ Verbindlich, alle Schirme:
 | Übergabe | Der Faden wächst vom Ursprung zum Ziel, während die Karte wandert |
 
 Der Stand dieser elf Orte steht in §5.8 — ungeschönt.
+
+### 1.6 Die Endpunkt-Konvention
+
+**Ein Fadenende sitzt auf der Punktmitte oder am Punktrand — höchstens
+5,2 pt Abstand.** Alles darüber ist ein Fehler, keine Gestaltung.
+
+Die Regel ist nicht neu, sie war nur nirgends aufgeschrieben: Drei
+Prüfrunden haben gegen sie gemessen, ohne dass das Gestaltungssystem sie
+führte. Sie steht deshalb jetzt als Kommentarblock in `system.css` §9.2b, dort,
+wo der Faden gebaut wird — eine Regel, die man messen kann, aber nicht lesen,
+ist keine. Dort steht auch, woher die 5,2 kommen: Ein Knoten misst 9 pt und hat
+4,5 pt Radius; 5,2 lassen zusätzlich die halbe Fadenstärke und das
+Rundungsspiel des Layouts zu.
+
+Der Grund ist der Kern des Motivs: Ein Faden verbindet zwei Objekte. Hängt ein
+Ende frei, verbindet er ein Objekt mit nichts, und dann ist er kein Faden,
+sondern ein Strich — die eine Form, die §1.2 verbietet.
+
+**Die einzige Ausnahme ist der gekappte Faden.** Er endet ohne Punkt und sagt
+damit, dass die Quelle gelöscht wurde. Das ist keine Nachlässigkeit, sondern
+eine Aussage: Die Kante hat es gegeben, ihr anderes Ende gibt es nicht mehr.
 
 ---
 

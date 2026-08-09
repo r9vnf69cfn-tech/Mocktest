@@ -72,6 +72,26 @@
  * Stelle: das 40-pt-Raster der Sidebar (§5.9, es fehlt die Höhe) und
  * --paper gegen --ground im Dunkeln (1,089:1, §1.2b).
  *
+ * AUFRÄUMRUNDE — VIER EINGRIFFE, dieselbe Ordnung: an der Wurzel, gemessen.
+ *
+ *   1 DIE VERJÜNGUNG (DNA-Nachtrag N11, §9.2a). Der Faden trägt am Ursprung
+ *     seine volle Stärke und am Ergebnis 60 %. Damit ist die Richtung im
+ *     Standbild lesbar, ohne ein einziges neues Zeichen — und ohne
+ *     Pfeilspitze, die den Faden zum Konnektor machte. Gebaut als Zuschnitt
+ *     (clip-path) am einen Strich; die Wahl und ihre Grenze stehen in §9.2a.
+ *     Sie greift an 262 der 282 Fäden; die 20 mit frei gezeichneter
+ *     Geometrie bleiben gleich stark, und auch das steht dort.
+ *   2 DIE ENDPUNKT-KONVENTION (N12, §9.2b) ist aufgeschrieben: ein Fadenende
+ *     sitzt höchstens 5,2 pt von der Punktmitte entfernt; die einzige
+ *     Ausnahme ist der gekappte Faden.
+ *   3 DIE SECHSTEN GRÖSSEN sind eingesammelt (§5 .count__n von 20/24 auf
+ *     20/26; §8 .sheetnote td von 14/20 und p/li von 15/22 auf 15/20).
+ *     Damit gibt es wieder fünf Größen mit je einer Zeilenhöhe; die
+ *     dokumentierte Ausnahme bleibt die 11-pt-Tab-Leiste.
+ *   4 DER TREFFERBEREICH DES ERLEDIGT-KREISES hing am falschen Element und
+ *     nahm den Nachbarn, was er ihnen versprach. .check steht jetzt in
+ *     derselben Klammer wie .chip: nur als echtes Bedienelement (§5.9).
+ *
  * Musterseiten: shared/faden-probe.html (die Primitive),
  *               app-next/library.html  (das Notizbuch-System).
  * ========================================================================== */
@@ -567,9 +587,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .chip--solid { background: var(--accent); color: var(--accent-on); }
 .chip--danger { color: var(--danger); background: none; box-shadow: inset 0 0 0 1px currentColor; }
 
-/* Zähler: Zahl trägt Gewicht, Wort trägt Bedeutung */
+/* Zähler: Zahl trägt Gewicht, Wort trägt Bedeutung.
+   Die Zeilenhöhe stand hier auf 24 und war damit die einzige 20er-Stufe im
+   System, die nicht 26 trug (docs/05: 45 Vorkommen auf allen 13 Schirmen,
+   von 14 auf 45 gewachsen — das Muster ist beim Bauen weiterkopiert worden).
+   Eine Kennzahl ist Text wie jeder andere; für 24 gab es keinen Grund. Die
+   Zahl sitzt in einem inline-flex an der Schriftlinie — die zwei Punkte
+   verschieben also nichts als die Zeilenbox der Zahl selbst. */
 .count { display: inline-flex; align-items: baseline; gap: 6px; }
-.count__n { font: 600 20px/24px var(--sans); font-variant-numeric: tabular-nums; }
+.count__n { font: 600 20px/26px var(--sans); font-variant-numeric: tabular-nums; }
 .count__w { color: var(--ink-3); }
 
 /* Knopf */
@@ -733,17 +759,17 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
  * WELCHE KLASSEN (Maß vorher → gesichertes Ziel nachher, Meldungen laut
  * docs/05 §4):
  *   .btn--sm            34 pt → 44   (84)
- *   .check              22/18 pt → 44 (67) — über ::before, weil ::after
+ *   .check (tappbar)    22/18 pt → 44 (67) — über ::before, weil ::after
  *                       schon den Haken zeichnet
  *   .iconbtn            26–38 pt bei inline verkleinertem Maß → 44 (39)
  *   .segmented button   32 pt → 44   \  (36)
  *   .chip (tappbar)     26 pt → 44   /
  *   .handoff__btn       34 pt → 44
  *
- * .chip nur als button/a/[role=button]/label/summary — dieselbe Trennung wie
- * beim .chip--ghost weiter oben: was man nur liest, braucht kein Ziel, und
- * ein unsichtbares 44-pt-Feld über einem Etikett würde Nachbarn verdecken,
- * die man wirklich treffen will.
+ * .chip und .check nur als button/a/[role=button]/label/summary — dieselbe
+ * Trennung wie beim .chip--ghost weiter oben: was man nur liest, braucht kein
+ * Ziel, und ein unsichtbares 44-pt-Feld über einem Etikett würde Nachbarn
+ * verdecken, die man wirklich treffen will.
  * .origin stand in der ersten Fassung dieser Liste und ist wieder heraus,
  * weil die Messung zeigte, dass sie auf nichts trifft: von 34 Herkunfts-Chips
  * im Bestand sind 26 <span> — Etiketten, richtig ausgeschlossen — und die
@@ -754,14 +780,48 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
  * ist in einem dichten Feld ein Nullsummenspiel: liegen zwei Bedienelemente
  * enger als 44 pt beieinander, kann nur eines von beiden 44 pt bekommen, und
  * CSS entscheidet das über die Reihenfolge im Markup — das spätere gewinnt.
- * Die Treffprobe über alle 34 Seiten (1 111 im Bild treffbare Bedienelemente)
- * zeigt die Bilanz: 215 Ziele werden größer, 9 werden kleiner.
- *   note-editor  1 Erledigt-Kreis 21,9 → 11,9 pt · 1 .iconbtn 43,8 → 41,9
- *   task-detail  6 Erledigt-Kreise 17,8 → 16,9 bzw. 10,6 pt
- *   best-of/tasks 1 Chip 23,8 → 13,8 pt
- * Alle neun stehen in Stapeln mit weniger als 30 pt Abstand — sie lagen also
- * schon vorher weit unter dem Ziel, und ihre Ursache ist der Zeilenabstand
- * ihres Behälters, nicht diese Regel. Behoben wird das im Schirm, nicht hier.
+ * Die Treffprobe (elementFromPoint, größtes mittiges Rechteck um die Mitte
+ * jedes Elements) über alle 32 Seiten und 1 710 treffbare Elemente zeigte für
+ * die erste Fassung dieser Regel: 333 Ziele werden größer, 7 werden KLEINER —
+ * und die sieben sind schlimmer, als die Zahl aussehen lässt.
+ *   note-editor   2 Erledigt-Knöpfe und die zwei Kreise darin  20 → 10 pt
+ *   best-of/tasks 1 Chip                                       22 → 14 pt
+ *   motion/index  2 Zeilen                                     56 → 54 pt
+ *
+ * DER ERLEDIGT-KREIS WAR DER FEHLER IN DIESER LISTE, und der Befund heißt
+ * nicht „zu eng", sondern „das Feld hing am falschen Element". Nachgezählt im
+ * Bild: von den 92 .check im Bestand ist KEIN EINZIGER selbst ein
+ * Bedienelement. 28 sitzen in einem — 25 davon in genau dem 44-pt-Knopf, den
+ * tasks.html vormacht — und 64 sitzen in gar keinem. Das Feld tat damit an
+ * beiden Orten das Falsche:
+ *   · in den 28 verdoppelte es ein Ziel, das der Knopf schon hatte. In
+ *     note-editor stehen zwei solche 44-pt-Knöpfe 29 pt auseinander; das
+ *     zweite Feld nahm dem oberen Knopf, was der untere Knopf ihm ohnehin
+ *     schon streitig machte — aus 20 pt wurden 10.
+ *   · in den 64 behauptete es ein Ziel, das es nicht gibt: ein <span> ohne
+ *     Rolle wird durch ein unsichtbares 44-pt-Feld nicht tappbar. VoiceOver
+ *     sieht es nicht, die Tastatur erreicht es nicht — nur der Nachbar
+ *     spürt es.
+ *
+ * Deshalb steht .check jetzt in derselben Klammer wie .chip: das Feld
+ * bekommt, wer selbst button/a/[role=button]/label/summary ist. Gemessen
+ * ändert das die Bilanz auf 247 größer, 1 462 unverändert, 1 kleiner — die
+ * 86, die das Feld verlieren, verlieren nichts Wirkliches, weil an ihrer
+ * Stelle entweder der Knopf steht, in dem sie sitzen, oder überhaupt kein
+ * Bedienelement. Im Bild ändert sich kein einziger Bildpunkt: ::before ist
+ * unsichtbar, den Haken zeichnet ::after.
+ *
+ * WAS DAMIT NICHT GELÖST IST, und es ist ehrlicher, das hinzuschreiben, als
+ * ein Ziel zu behaupten, das der Nachbar wegnimmt: In note-editor bleiben die
+ * beiden Erledigt-Knöpfe bei 20 pt. Sie sind 44 pt groß und stehen 29 pt
+ * auseinander — zwei 44-pt-Ziele brauchen 44 pt Zeilenabstand, und die
+ * fehlenden 15 pt kann kein Pseudoelement erfinden. Entweder bekommt die
+ * Aufgabenliste im Notiz-Editor 44 pt Zeilenabstand, oder ihre Ziele sind
+ * 29 pt groß. Das ist eine Entscheidung des Schirms, keine dieser Datei.
+ * Ebenso der eine verbliebene Verlierer, der nicht am .check hängt: der Chip
+ * in best-of/tasks (Runde-1-Bestand, 27 pt Abstand zum Nachbarn), 22 → 14 pt.
+ * Die zwei Zeilen in motion/index messen je nach Lauf 54 oder 56 pt — das ist
+ * der Rundungsschritt der Probe, kein Befund.
  *
  * .navitem STEHT ABSICHTLICH NICHT IN DIESER LISTE, und das ist gemessen,
  * nicht geschätzt. Die Sidebar-Zeile ist 40 pt hoch und die Zeilen stehen
@@ -796,7 +856,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .segmented button::after,
 .handoff__btn::after,
 :is(button, a[href], [role="button"], label, summary).chip::after,
-.check::before {
+:is(button, a[href], [role="button"], label, summary).check::before {
   content: "";
   position: absolute;
   left: 50%; top: 50%;
@@ -1007,11 +1067,18 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .sheetnote h2 { font: 600 20px/26px var(--sans); margin: 0 0 4px; letter-spacing: -.015em; }
 .sheetnote h3 { font: 600 13px/16px var(--sans); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); margin: 20px 0 8px; }
-.sheetnote p, .sheetnote li { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0 0 6px; }
+/* Der längste zusammenhängende Fließtext des ganzen Pakets — und eine Jury
+   liest ihn. Er stand auf zwei Stufen, die es in der Skala nicht gibt:
+   15/22 hier (die 15er trägt überall sonst 20) und 14/20 in der Tabelle
+   (14 px ist gar keine der fünf Größen; 228 Vorkommen auf fünf Schirmen).
+   Beide stehen jetzt auf 15/20. Nach oben, nicht nach unten: die Tabelle
+   behält ihre Zeilenhöhe von 20, die Zeilen bleiben also gleich hoch, und
+   der Steckbrief wird lesbarer statt kleiner. */
+.sheetnote p, .sheetnote li { font: 400 15px/20px var(--sans); color: var(--ink-2); margin: 0 0 6px; }
 .sheetnote strong { color: var(--ink-1); font-weight: 600; }
 .sheetnote ul { margin: 0; padding-left: 20px; }
 .sheetnote table { width: 100%; border-collapse: collapse; margin-top: 6px; }
-.sheetnote td { font: 400 14px/20px var(--sans); color: var(--ink-2); padding: 5px 10px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.sheetnote td { font: 400 15px/20px var(--sans); color: var(--ink-2); padding: 5px 10px 5px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 .sheetnote td:first-child { color: var(--ink-1); font-weight: 600; width: 190px; }
 .sheetnote .num { font-variant-numeric: tabular-nums; }
 
@@ -1187,38 +1254,263 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
  *
  * Warum vector-effect statt fester Koordinaten: die Fäden werden in beliebig
  * breite Lücken gespannt. preserveAspectRatio="none" lässt den Pfad die Lücke
- * füllen, non-scaling-stroke hält die Strichstärke dabei exakt bei 1,5 pt —
- * ohne das würde ein langer Faden dünn und ein kurzer fett. */
+ * füllen, non-scaling-stroke hält die Strichstärke dabei exakt bei ihrem
+ * Tokenwert — ohne das würde ein langer Faden dünn und ein kurzer fett. */
 
 .thread {
+  /* Die Stärke steht in --tw und nicht mehr unmittelbar in stroke-width:
+     die Verjüngung (9.2a) muss dieselbe Zahl kennen. --t0 ist die halbe
+     Stärke am Ursprung, --t1 die halbe Stärke am Ergebnis (60 %). */
+  --tw: 1.5;
+  --t0: calc(var(--tw) * .5px);
+  --t1: calc(var(--tw) * .3px);
+  --t-kappe: 3px;                 /* Überstand, damit die runde Kappe bleibt */
   display: block;
   overflow: visible;              /* runde Enden ragen 0,75 pt über die Box */
   fill: none;
   stroke: var(--thread);
-  stroke-width: 1.5;
+  stroke-width: var(--tw);
   stroke-linecap: round;
   stroke-linejoin: round;
   pointer-events: none;
 }
 .thread > * { vector-effect: non-scaling-stroke; }
 
-.thread--weak   { stroke-width: 1; }
-.thread--origin { stroke-width: 2.5; }
+.thread--weak   { --tw: 1; }
+.thread--origin { --tw: 2.5; }
 
 /* aktiv — die Beziehung, der man gerade folgt */
 .thread.is-active { stroke: var(--accent); }
 
+/* ── 9.2a DIE VERJÜNGUNG — die Richtung im Standbild (DNA-Nachtrag N11) ────
+ *
+ * Der Faden trägt am Ursprung seine volle Stärke und am Ergebnis 60 % davon:
+ *
+ *   schwach   1,0 → 0,6 pt   .thread--weak
+ *   normal    1,5 → 0,9 pt   (Vorgabe)
+ *   Herkunft  2,5 → 1,5 pt   .thread--origin
+ *
+ * Gemessen wird am Ursprung, die drei Stärken stehen also so weit
+ * auseinander wie bisher. Keine Pfeilspitze: die kommt aus dem Flussdiagramm
+ * und machte den Faden zum Konnektor. Die Verjüngung dagegen folgt aus dem
+ * Rohstoff — ein Handschrift-Strich beginnt mit Druck und läuft aus.
+ *
+ * WIE ES GEBAUT IST, UND WARUM SO. stroke-width kann nicht verlaufen. Zwei
+ * Wege standen offen; beide sind durchgerechnet und beide verworfen:
+ *
+ *   1 EIN GEFÜLLTER PFAD STATT DES STRICHS scheitert an der eigenen Bauweise
+ *     dieses Systems. Die Formen liegen in einer viewBox 0 0 100 100 mit
+ *     preserveAspectRatio="none" und werden ungleichmäßig in ihre Lücke
+ *     gedehnt. Ein Strich überlebt das (non-scaling-stroke), eine Fläche
+ *     nicht — für fill gibt es kein vector-effect. Derselbe Keil wäre in
+ *     einem 300 pt breiten Kasten 30-mal flacher als in einem 10 pt breiten.
+ *     Dazu kommt: eine Fläche lässt sich nicht mit stroke-dasharray
+ *     zeichnen. Die Zeichen-Animation (unten) wäre ersatzlos weg.
+ *   2 ZWEI STRICHE MIT MASKE braucht den zweiten Strich im Markup. mock.js
+ *     legt je Faden genau einen Pfad an, und das Markup gehört den Schirmen,
+ *     nicht dieser Datei.
+ *
+ * GEBAUT IST DESHALB WEG 2 OHNE DEN ZWEITEN STRICH: der eine Strich läuft in
+ * voller Ursprungsstärke, und ein clip-path schneidet ihn zum Keil. Der
+ * Zuschnitt liegt im Kastenmaß des Elements (CSS-Pixel), nicht in der
+ * viewBox — die ungleichmäßige Dehnung erreicht ihn also nicht, und er ist
+ * bei jeder Länge maßhaltig. Alles andere bleibt unberührt: Farbe, runde
+ * Kappe, non-scaling-stroke, is-active und die Zeichen-Animation greifen
+ * weiterhin am Strich an, nicht an der Maske. Der Faden baut sich deshalb
+ * nach wie vor vom Ursprung her auf — er tut es jetzt verjüngt.
+ *
+ * WAS AM DÜNNEN ENDE ÜBRIG BLEIBT — gemessen, nicht geschätzt. Die Tinte
+ * ist dieselbe; nur die Deckung eines Bildpunkts hängt am Maßstab. Gemessen
+ * wurde die Deckung des Querschnitts (Summe 1−Helligkeit, geteilt durch den
+ * Bildmaßstab) und der dunkelste Bildpunkt gegen Papier:
+ *
+ *   Sollmaß   1,0 → 0,60   1,5 → 0,90   2,5 → 1,50 pt
+ *   gemessen  1,0 → 0,60   1,5 → 0,90   2,5 → 1,50 pt   (bei 8×, senkrecht)
+ *
+ *   Kontrast am Ergebnis   3×  hell 3,28:1 · dunkel 3,31:1   alle drei Stärken
+ *                          2×  hell 3,28:1 · dunkel 3,31:1   1,5 und 2,5 pt
+ *                          2×  hell 1,71:1 · dunkel 1,75:1   nur 1,0 pt
+ *
+ * Der eine Fall, der die Schwelle nicht hält, ist der schwache Faden auf dem
+ * iPad: 0,6 pt sind bei 2× genau 1,2 Bildpunkte, und 1,2 Bildpunkte können
+ * keine volle Reihe füllen — das gilt für jede 0,6-pt-Haarlinie und ist keine
+ * Eigenheit dieser Regel. Auf dem iPhone (3×) hält auch er 3,28:1. Getragen
+ * wird die Aussage ohnehin nicht vom dünnen Ende allein: der Faden hat an
+ * seinem Ursprung volle Stärke, und an seinem Ergebnis sitzt ein Punkt
+ * (§9.2b) — die Zwei-Merkmal-Regel gilt auch hier. Bei 1× (dem Maßstab des
+ * Mockups, nicht dem der Geräte) misst schon der ungekürzte Faden zu wenig;
+ * die Begründung dafür steht in §9.0 und ist unverändert.
+ *
+ * DIE MITTE DES STRICHS STEHT AUF 50 %, nicht auf 5 pt: die Kästen sind zwar
+ * 10 pt, aber faden-probe.html spannt einen .thread--v in 9 pt und
+ * platform/live-activity einen skalierten .thread--h. Prozent hält beides.
+ *
+ * DER PREIS: die Stärke steht ab jetzt in --tw. Wer stroke-width unmittelbar
+ * setzt, verstellt den Strich, aber nicht die Maske — der Faden wird dann
+ * falsch beschnitten. Es gibt im ganzen Bestand genau eine solche Stelle
+ * (platform/handoff, .halo mit 7 pt), und die trägt keine Formklasse, also
+ * auch keine Maske.
+ *
+ * WOFÜR ES GILT — UND WOFÜR NICHT. Eine Maske braucht die Senkrechte auf den
+ * Faden. Die ist nur dort aus dem Kastenmaß zu gewinnen, wo diese Datei die
+ * Form vorgibt: bei --h, --v und --curve ist der Kasten die Geometrie.
+ *
+ *   .thread--h        175  verjüngt
+ *   .thread--v         75  verjüngt
+ *   .thread--curve     12  verjüngt
+ *   frei gezeichnet    20  UNVERÄNDERT gleich stark
+ *                     ───
+ *                     282  Fäden im Bestand, 262 davon verjüngt (93 %)
+ *
+ * Die 20 sind: acht Kantenbündel in graph.html, acht von MOCK.thread()
+ * gespannte Fäden (notes-list, motion, platform/handoff), drei
+ * handgezeichnete Fäden in flashcards-home und tasks, die Handschriftprobe
+ * in platform/pencil. Ihre Geometrie steht im Markup oder in mock.js; ein
+ * Stil kennt dort weder Winkel noch Endpunkte, und eine Maske, die den
+ * Winkel raten müsste, schnitte den Strich schief ab. Das ist keine Lücke
+ * im Motiv, sondern seine Grenze: die Verjüngung gehört dorthin, wo die
+ * Geometrie steht. Wer sie diesen zwanzig geben will, zeichnet dort den
+ * Umriss — in beiden Fällen (graph-SVG und .thread-layer) ist eine
+ * Nutzereinheit ein Punkt, ein gefüllter Keil ist dort also maßhaltig:
+ * fill statt stroke, Halbstärke --t0 am Ursprung und --t1 am Ergebnis. Eine
+ * Klasse dafür steht hier nicht, weil sie heute an keinem Element hinge —
+ * dieselbe Regel wie bei .origin in §5.9.
+ *
+ * ── 9.2b DIE ENDPUNKT-KONVENTION (DNA-Nachtrag N12) ───────────────────────
+ *
+ * Drei Runden haben sie gemessen, aufgeschrieben war sie nie:
+ *
+ *   EIN FADENENDE SITZT AUF DER PUNKTMITTE ODER AM PUNKTRAND — höchstens
+ *   5,2 pt Abstand vom Mittelpunkt des Punktes, an dem es hängt.
+ *
+ * Woher die 5,2 kommen: ein Knoten misst 9 pt und hat damit 4,5 pt Radius,
+ * ein Punkt misst 6 pt und hat 3,0 pt Radius. Ein Ende, das den größten
+ * dieser Ränder erreicht, liegt 4,5 pt von der Mitte; 5,2 pt lassen die
+ * halbe Fadenstärke (bis 1,25 pt) und das Rundungsspiel des Layouts zu.
+ * Alles darüber hängt frei, und ein frei hängendes Ende ist ein Fehler,
+ * keine Gestaltung: der Faden behauptet dann eine Beziehung zu etwas, das
+ * nicht dort steht.
+ *
+ * DIE EINZIGE AUSNAHME IST DER GEKAPPTE FADEN — er endet ohne Punkt und sagt
+ * damit, dass die Quelle gelöscht wurde (tasks.html, .klammer__kapp). Er ist
+ * die Ausnahme, weil sein fehlender Punkt genau die Aussage ist. Jede andere
+ * Ausnahme ist ein Befund.
+ *
+ * Zu prüfen ist das am Bild, nicht am Markup: getBoundingClientRect des
+ * Fadenendes gegen die Mitte des Punktes. So nachgemessen halten heute 396
+ * von 520 Enden mit Formklasse die Regel. Die 124 anderen sind Sache der
+ * Schirme, nicht dieser Datei — die größten Posten stehen in tasks (26),
+ * task-detail (20), kontextmenue (18) und note-editor (13); die sechs in
+ * graph gehören zur Legende, die das Zeichen erklären darf. */
+
 /* Fertige Formen. Die Höhe/Breite von 10 pt ist nur der Kasten, in dem der
-   Strich mittig sitzt; sie kostet keinen sichtbaren Platz. */
-.thread--h     { width: 100%; height: 10px; }
-.thread--v     { width: 10px; height: 100%; }
-.thread--curve { width: 100%; height: 100%; min-height: 12px; }
-/* Spiegeln statt vier Kurvenvarianten */
+   Strich mittig sitzt; sie kostet keinen sichtbaren Platz.
+
+   Die Keile: acht Ecken je Gerade. Voll bis zum Ursprung (der Überstand
+   --t-kappe hält die runde Kappe), von dort auf 60 % am Ergebnis, dann
+   wieder gerade hinaus, damit die Kappe am dünnen Ende erhalten bleibt. */
+.thread--h {
+  width: 100%; height: 10px;
+  clip-path: polygon(
+    calc(0px - var(--t-kappe)) calc(50% - var(--t0)),
+    0                          calc(50% - var(--t0)),
+    100%                       calc(50% - var(--t1)),
+    calc(100% + var(--t-kappe)) calc(50% - var(--t1)),
+    calc(100% + var(--t-kappe)) calc(50% + var(--t1)),
+    100%                       calc(50% + var(--t1)),
+    0                          calc(50% + var(--t0)),
+    calc(0px - var(--t-kappe)) calc(50% + var(--t0)));
+}
+.thread--v {
+  width: 10px; height: 100%;
+  clip-path: polygon(
+    calc(50% - var(--t0)) calc(0px - var(--t-kappe)),
+    calc(50% - var(--t0)) 0,
+    calc(50% - var(--t1)) 100%,
+    calc(50% - var(--t1)) calc(100% + var(--t-kappe)),
+    calc(50% + var(--t1)) calc(100% + var(--t-kappe)),
+    calc(50% + var(--t1)) 100%,
+    calc(50% + var(--t0)) 0,
+    calc(50% + var(--t0)) calc(0px - var(--t-kappe)));
+}
+
+/* Die Kurve kann das nicht in acht Ecken: ihre Richtung dreht unterwegs um
+   90°, und WIE schnell sie dreht, hängt am Seitenverhältnis des Kastens —
+   das kennt der Stil nicht (die zwölf Kurven im Bestand stehen zwischen
+   14,5×19 und 20,5×125 pt). Der Keil ist deshalb ein Polygonzug entlang der
+   Bézier P(t) = (100t² % · 100(2t−t²) %), 17 Stützstellen je Rand, dichter
+   an den Enden (t = ½(1−cos(πi/16))). Der Randabstand ist die halbe Stärke
+   1−0,4t, um den Faktor 1+1,2t(1−t) gebaucht: an beiden Enden steht die
+   Normale fest (waagerecht am Ursprung, senkrecht am Ergebnis, in beiden
+   Fällen unabhängig vom Seitenverhältnis), in der Beuge nicht — dort läuft
+   der Keil lieber etwas zu weit als zu eng, denn zu weit heißt nur „hier
+   wird nicht beschnitten". Nachgerechnet über alle zwölf Kästen des Bestands
+   und darüber hinaus bis 186×86: der Verlauf bleibt einsinnig (größte
+   Rückläufigkeit 0,08 pt, das ist ein Zehntel Bildpunkt), und er weicht
+   nirgends mehr als 0,34 pt vom Sollmaß ab — dieser eine Fall ist die
+   längste Kurve (20,5×125), wo der Keil in der Beuge etwas früher
+   verjüngt als die Rechnung will. Nach unten kann er nicht abweichen:
+   Ursprung und Ergebnis liegen exakt auf 100 % und 60 %.
+   Erzeugt von scratchpad/n11/gen-kurve.py — die Formel steht oben, die
+   Zahlen sind ihr Ergebnis und von Hand nicht zu pflegen. */
+.thread--curve {
+  width: 100%; height: 100%; min-height: 12px;
+  clip-path: polygon(
+    calc(0% - 1*var(--t0)) calc(0% - var(--t-kappe)),
+    calc(0% - 1*var(--t0)) 0,
+    calc(0.01% - 1.01*var(--t0)) calc(1.91% + 0.01*var(--t0)),
+    calc(0.14% - 1.03*var(--t0)) calc(7.47% + 0.04*var(--t0)),
+    calc(0.71% - 1.05*var(--t0)) calc(16.14% + 0.1*var(--t0)),
+    calc(2.14% - 1.07*var(--t0)) calc(27.14% + 0.18*var(--t0)),
+    calc(4.94% - 1.06*var(--t0)) calc(39.51% + 0.3*var(--t0)),
+    calc(9.53% - 1.01*var(--t0)) calc(52.2% + 0.45*var(--t0)),
+    calc(16.2% - 0.9*var(--t0)) calc(64.29% + 0.6*var(--t0)),
+    calc(25% - 0.74*var(--t0)) calc(75% + 0.74*var(--t0)),
+    calc(35.71% - 0.55*var(--t0)) calc(83.8% + 0.81*var(--t0)),
+    calc(47.8% - 0.37*var(--t0)) calc(90.47% + 0.83*var(--t0)),
+    calc(60.49% - 0.23*var(--t0)) calc(95.06% + 0.8*var(--t0)),
+    calc(72.86% - 0.13*var(--t0)) calc(97.86% + 0.75*var(--t0)),
+    calc(83.86% - 0.06*var(--t0)) calc(99.29% + 0.69*var(--t0)),
+    calc(92.53% - 0.03*var(--t0)) calc(99.86% + 0.64*var(--t0)),
+    calc(98.09% - 0.01*var(--t0)) calc(99.99% + 0.61*var(--t0)),
+    100% calc(100% + 0.6*var(--t0)),
+    calc(100% + var(--t-kappe)) calc(100% + 0.6*var(--t0)),
+    calc(100% + var(--t-kappe)) calc(100% - 0.6*var(--t0)),
+    100% calc(100% - 0.6*var(--t0)),
+    calc(98.09% + 0.01*var(--t0)) calc(99.99% - 0.61*var(--t0)),
+    calc(92.53% + 0.03*var(--t0)) calc(99.86% - 0.64*var(--t0)),
+    calc(83.86% + 0.06*var(--t0)) calc(99.29% - 0.69*var(--t0)),
+    calc(72.86% + 0.13*var(--t0)) calc(97.86% - 0.75*var(--t0)),
+    calc(60.49% + 0.23*var(--t0)) calc(95.06% - 0.8*var(--t0)),
+    calc(47.8% + 0.37*var(--t0)) calc(90.47% - 0.83*var(--t0)),
+    calc(35.71% + 0.55*var(--t0)) calc(83.8% - 0.81*var(--t0)),
+    calc(25% + 0.74*var(--t0)) calc(75% - 0.74*var(--t0)),
+    calc(16.2% + 0.9*var(--t0)) calc(64.29% - 0.6*var(--t0)),
+    calc(9.53% + 1.01*var(--t0)) calc(52.2% - 0.45*var(--t0)),
+    calc(4.94% + 1.06*var(--t0)) calc(39.51% - 0.3*var(--t0)),
+    calc(2.14% + 1.07*var(--t0)) calc(27.14% - 0.18*var(--t0)),
+    calc(0.71% + 1.05*var(--t0)) calc(16.14% - 0.1*var(--t0)),
+    calc(0.14% + 1.03*var(--t0)) calc(7.47% - 0.04*var(--t0)),
+    calc(0.01% + 1.01*var(--t0)) calc(1.91% - 0.01*var(--t0)),
+    calc(0% + 1*var(--t0)) 0,
+    calc(0% + 1*var(--t0)) calc(0% - var(--t-kappe)));
+}
+/* Spiegeln statt vier Kurvenvarianten. Der Zuschnitt liegt im eigenen
+   Koordinatensystem des Elements und wird mitgespiegelt — die Verjüngung
+   dreht also mit, ohne dass hier etwas dafür stehen müsste. */
 .thread--flip-x { transform: scaleX(-1); }
 .thread--flip-y { transform: scaleY(-1); }
 
 /* Fadenreihe — Punkte auf einer Linie, dazwischen Fadenstücke.
-   Trägt Streak, Intervall-Reihe (1 d · 3 d · 8 d) und Ketten. */
+   Trägt Streak, Intervall-Reihe (1 d · 3 d · 8 d) und Ketten.
+
+   JEDES STÜCK VERJÜNGT SICH FÜR SICH, es fängt am Knoten also wieder voll an.
+   Das ist Absicht und folgt aus §2.2 der DNA: ein Faden verbindet ZWEI
+   Punkte, und eine Kette aus drei Punkten sind zwei Beziehungen, nicht eine.
+   Der Knoten ist nach §2.3 genau der Ort, an dem Fäden sich treffen — also
+   der Ort, an dem der Stift neu ansetzt. Eine über die ganze Reihe
+   durchlaufende Verjüngung würde behaupten, die Kette sei eine einzige
+   Beziehung; sie ist es nicht. */
 .threadrow    { display: flex; align-items: center; }
 .threadrow--v { flex-direction: column; align-items: center; }
 /* flex-basis 0: die Länge kommt aus dem freien Platz, nicht aus width:100%.
@@ -1243,6 +1535,57 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   overflow: visible;
   pointer-events: none;
   z-index: 1;
+}
+
+
+/* ── 9.2c DIE VERJÜNGUNG IST ZURÜCKGENOMMEN ───────────────────────────────
+ *
+ * §9.2a ist gebaut, gemessen — und wieder abgeschaltet. Der Grund steht hier,
+ * damit niemand sie in gutem Glauben wieder einschaltet.
+ *
+ * Die Verjüngung hielt nur bei achtfacher Auflösung. Auf den Geräten, für die
+ * dieser Entwurf gemacht ist, hielt sie nicht:
+ *
+ *   Faden       Soll          bei 2× gemessen     bei 3×
+ *   normal      1,50 → 0,90   1,23 → 1,00 (81 %)  1,37 → 0,89 (65 %)
+ *   Herkunft    2,50 → 1,50   2,22 → 1,54 (69 %)  2,33 → 1,56 (67 %)
+ *
+ * Bei 2× erscheint sie nicht als Verschmälerung, sondern als Aufhellung: der
+ * Strich bleibt einen Bildpunkt breit und wird blasser.
+ *
+ * Schwerer wiegt das Zweite. Maske und Strich werden in verschiedenen
+ * Koordinatenräumen gerastert. Liegt der Kasten eines Fadens auf einem halben
+ * Bildpunkt, schneidet der clip-path in den Strich:
+ *
+ *   Versatz          0     ⅛     ¼     ⅜     ½
+ *   normal, Ursprung 1,49  1,37  1,24  1,12  0,99
+ *
+ * Ein normaler Faden auf halbem Bildpunkt misst 0,99 pt — exakt das Maß, das
+ * §2.2 „schwache Beziehung" nennt. Im Bestand lagen 49 von 260 Fäden auf einer
+ * gebrochenen Zeile, 29 davon deutlich. Auf leere-zustaende standen zwei Fäden
+ * derselben Klasse nebeneinander, einer 1,50 und einer 1,00 pt.
+ *
+ * Damit zerstörte die Verjüngung genau das, was sie schmücken sollte: die
+ * Stärke ist die Aussage des Fadens („wie nah stehen sich diese zwei Dinge"),
+ * und sie darf nicht davon abhängen, wo ein Kasten zufällig zu liegen kommt.
+ * Ein Richtungshinweis, der die Bedeutung beschädigt, ist teurer als eine
+ * fehlende Richtung.
+ *
+ * DIE ENTSCHEIDUNG, DIE STATTDESSEN GILT: Der Faden ist im Standbild
+ * richtungslos. Die Richtung erscheint dort, wo sie ohnehin hingehört — in der
+ * BEWEGUNG: der Faden zeichnet sich vom Ursprung zum Ergebnis und läuft beim
+ * Zurückgehen rückwärts wieder ein (§2.2, bewegung.js). Im Standbild sagt die
+ * ANORDNUNG, was zuerst kam: Quelle links oder oben, Ergebnis rechts oder
+ * unten, ausnahmslos (N6). Das ist ein schwächerer Hinweis als eine
+ * Verjüngung — aber es ist einer, der immer stimmt.
+ *
+ * Eine Pfeilspitze bleibt ausgeschlossen: sie käme aus dem Flussdiagramm und
+ * machte den Faden zum Konnektor.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+.thread--h, .thread--v, .thread--curve,
+.thread--h.thread--flip-x, .thread--v.thread--flip-y {
+  clip-path: none;
 }
 
 /* ── 9.3 Der Knoten — wo Fäden sich treffen ───────────────────────────────
