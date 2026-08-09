@@ -1,0 +1,307 @@
+/* ============================================================================
+ * prototyp.css — die Hülle des begehbaren Prototyps
+ *
+ * Nur die Hülle. Alles, was im Rahmen steht, kommt unverändert aus
+ * system.css, bewegung.css und den seiteneigenen Blöcken der 13 Schirme.
+ * Diese Datei führt KEINE neue Gestaltung ein: keine eigene Farbe, keine
+ * sechste Schriftgröße, kein drittes Gewicht. Sie stellt ein Gerät in die
+ * Mitte und tritt zurück.
+ *
+ *   1  Die Seite drumherum        (Kopf, Bühne, Fußzeile)
+ *   2  Das Gerät                  (Glas, Maßstab, Umschalter)
+ *   3  Der Schirmwechsel          (Rolle WECHSELN aus bewegung.css)
+ *   4  Die Regel für tote Ziele   (das Wichtigste in dieser Datei)
+ * ========================================================================== */
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 1 · DIE SEITE DRUMHERUM
+ *
+ * „Außerhalb des Rahmens so wenig wie möglich." Ein Titel, der Umschalter,
+ * ein Satz Hinweis. Die Bedienleiste (hell/dunkel · Aa) legt mock.js selbst
+ * oben rechts an — deshalb hält der Kopf rechts 260 pt frei.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+body.pv {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ground);
+  color: var(--ink-1);
+  overflow-x: hidden;
+}
+
+.pv-kopf {
+  flex: none;
+  padding: 18px 24px 12px;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.pv-kopf__zeile {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-right: 260px;   /* Platz für die Bedienleiste von mock.js */
+}
+.pv-kopf__titel {
+  font: 600 20px/26px var(--sans);
+  letter-spacing: -.015em;
+  margin: 0;
+  color: var(--ink-1);
+}
+.pv-kopf__hinweis {
+  font: 400 13px/18px var(--sans);
+  color: var(--ink-3);
+  margin: 8px 0 0;
+  max-width: 78ch;
+}
+.pv-kopf__hinweis kbd {
+  font: 600 13px/18px var(--sans);
+  color: var(--ink-2);
+  background: var(--fill);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.pv-kopf__hinweis a {
+  color: var(--ink-2);
+  text-decoration: none;
+  box-shadow: inset 0 -1px 0 var(--line-2);
+  /* Der Unterstrich soll nicht über einen Zeilenumbruch hinweg reißen —
+     ein halb unterstrichener Satz sieht aus wie ein Fehler. */
+  white-space: nowrap;
+}
+.pv-kopf__hinweis a:hover { color: var(--ink-1); box-shadow: inset 0 -1px 0 var(--ink-1); }
+
+/* Die Fußzeile nennt den Schirm, auf dem man steht — sie ist zugleich die
+   Live-Region, die Bildschirmleser vorlesen, wenn sich der Schirm ändert.
+   Ohne sie wäre der Wechsel für sie stumm. */
+.pv-fuss {
+  flex: none;
+  margin: 0;
+  padding: 10px 24px 20px;
+  text-align: center;
+  font: 400 13px/16px var(--sans);
+  color: var(--ink-3);
+  min-height: 16px;
+}
+.pv-fuss b { font-weight: 600; color: var(--ink-2); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 2 · DAS GERÄT
+ *
+ * Die Bühne ist immer 1194 × 852 pt groß — das Maß, in das BEIDE Geräte
+ * passen (iPad 1194 × 834, iPhone 393 × 852). Dadurch ist der Maßstab vom
+ * Gerät unabhängig: beim Umschalten springt weder die Seite noch die Schrift,
+ * das Glas verwandelt sich nur.
+ *
+ * Der Maßstab sitzt als transform: scale() an .pv-skala. Die Innenmaße
+ * ändern sich dadurch NICHT: der iPad-Schirm bleibt intern 1194 × 834 pt,
+ * jede Zeile, jeder Abstand, jede Schriftgröße bleibt dieselbe Zahl.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+.pv-buehne {
+  --pv-scale: 1;
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Der Maßstab steht außerhalb des Flusses: eine 1194 pt breite Kiste in
+   einem 700 pt breiten Fenster würde sonst die ganze Seite mitziehen,
+   obwohl sie sichtbar nur 700 pt einnimmt. */
+.pv-skala {
+  position: absolute;
+  left: 50%;
+  margin-left: -597px;
+  top: max(0px, calc((100% - 852px * var(--pv-scale)) / 2));
+  width: 1194px;
+  height: 852px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(var(--pv-scale));
+  transform-origin: top center;
+}
+/* Passt das Gerät in voller Größe, fällt der Maßstab ganz weg. scale(1) ist
+   nicht dasselbe wie kein transform: es legt eine eigene Zeichenebene an,
+   auf der Chromium Schrift und Haarlinien um Bruchteile anders rastert. Im
+   Regelfall — großes Fenster, 1194 pt — steht der Schirm deshalb genau so
+   scharf wie im Schaubild. */
+.pv-buehne[data-pv-massstab="voll"] .pv-skala { transform: none; }
+
+/* Das Glas ist der Rahmen. Es trägt Schatten, Rand und Eckradius; die
+   Schirme darin geben ihre eigenen ab, sonst lägen zwei Schatten
+   übereinander, sobald zwei Schirme sich beim Wechsel 60 ms überlappen. */
+.pv-glas {
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  background: var(--ground);
+  box-shadow: var(--sh-float), 0 0 0 1px var(--line);
+  /* Rolle ÖFFNEN, 320 ms: das Glas ändert Ort und Größe, nichts sonst. */
+  transition:
+    width         320ms cubic-bezier(.216,.052,.330,1.110),
+    height        320ms cubic-bezier(.216,.052,.330,1.110),
+    border-radius 320ms cubic-bezier(.216,.052,.330,1.110);
+}
+.pv-glas[data-pv-geraet="ipad"]   { width: 1194px; height: 834px; border-radius: 22px; }
+/* 1194 − 393 = 801, eine ungerade Zahl: mittig gestellt läge die linke Kante
+   des iPhone-Glases auf einer halben Bildpunktreihe, und jede 1-pt-Linie im
+   Schirm würde weichgezeichnet. Ein Punkt Außenabstand rückt es aufs Raster —
+   ein halber Punkt aus der Mitte, den niemand sieht, gegen 852 Zeilen, die
+   sonst unscharf wären. */
+.pv-glas[data-pv-geraet="iphone"] { width:  393px; height: 852px; border-radius: 44px; margin-left: 1px; }
+
+/* Der Positionierer je Schirm. Er hält den Schirm mittig und nimmt die
+   Wechsel-Bewegung auf — der Schirm selbst behält sein natürliches Maß,
+   damit er beim Gerätewechsel beschnitten und nicht gestaucht wird. */
+.pv-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pv-screen[hidden] { display: none; }
+
+.pv-glas .screen {
+  flex: none;
+  box-shadow: none;
+  /* Der Rahmen des Glases schneidet ohnehin ab; ein zweiter Radius im
+     Inneren zöge beim Verwandeln eine helle Kante nach. */
+  border-radius: 0;
+}
+
+/* ── Der Umschalter iPad · iPhone ──────────────────────────────────────────
+   Dieselbe Kapselform wie der Segment-Umschalter in system.css §6, aber mit
+   eigenen Klassen: er gehört zur Kulisse, nicht zur App, und darf deshalb
+   nicht in den Bestand der App-Bauteile hineinwachsen. Der aktive Zustand
+   trägt zwei Merkmale (Fläche + Gewicht), nicht nur Farbe. */
+.pv-geraetwahl {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--fill);
+  border-radius: var(--r-pill);
+}
+.pv-geraetwahl__knopf {
+  height: 32px;
+  min-width: 76px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: none;
+  font: 400 13px/16px var(--sans);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.pv-geraetwahl__knopf:hover { color: var(--ink-1); }
+.pv-geraetwahl__knopf[aria-checked="true"] {
+  background: var(--paper);
+  color: var(--ink-1);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(22,24,28,.10);
+}
+:root[data-theme="dark"] .pv-geraetwahl__knopf[aria-checked="true"] {
+  box-shadow: 0 1px 2px rgba(0,0,0,.5);
+}
+.pv-geraetwahl__knopf:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 3 · DER SCHIRMWECHSEL
+ *
+ * Die Klassen .bw-wechseln-raus / .bw-wechseln-rein stehen fertig in
+ * bewegung.css §2.2 (180 ms hinaus · 180 ms herein · 60 ms Überlappung ·
+ * 8 pt Versatz in Laufrichtung) und bringen ihren Reduce-Pfad mit. Hier wird
+ * nichts nachgebaut, nur die Richtung gesetzt — --bw-richtung: 1 vorwärts,
+ * -1 zurück. prototyp.js hängt die Klassen an .pv-screen.
+ *
+ * Der abtretende Schirm nimmt keine Eingaben mehr an: sonst könnte man
+ * während der 300 ms auf etwas klicken, das schon gegangen ist.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+.pv-screen.bw-wechseln-raus { z-index: 1; }
+.pv-screen.bw-wechseln-rein { z-index: 2; }
+.pv-screen[data-pv-richtung="zurueck"] { --bw-richtung: -1; }
+
+/* Der abtretende Schirm nimmt keine Eingaben mehr an. Ohne diese Zeile
+   könnte man in den 300 ms der Bewegung noch auf ein Ziel klicken, das
+   gerade hinausläuft — und landete zwei Schirme weiter, ohne zu wissen wie. */
+.pv-glas .bw-wechseln-raus .pv-lebt,
+.pv-glas .bw-wechseln-raus .scroll { pointer-events: none; }
+
+/* Nach dem Wechsel bekommt der neue Schirm den Tastaturfokus (prototyp.js
+   §3). Sichtbar soll das nicht sein — der Fokusring gehört auf Knöpfe, nicht
+   um die ganze Fläche. */
+.pv-screen:focus { outline: none; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 4 · DIE REGEL FÜR TOTE ZIELE
+ *
+ * „Was nicht führt, muss sich als nicht führend anfühlen — kein Klickfinger,
+ * kein Druckzustand, kein Hover."
+ *
+ * Diese vier Regeln sind die ganze Umsetzung. Es gibt keine Liste toter
+ * Elemente, die gepflegt werden müsste, und keine Gegenregel je Hover-Effekt.
+ * Der Hebel ist pointer-events:
+ *
+ *   1  Der ganze Schirm ist tot.        .pv-screen
+ *   2  Rollflächen bleiben rollbar.     .scroll
+ *   3  Aber nichts darin ist ein Ziel.  .scroll *
+ *   4  Außer, was einen Weg hat.        .pv-lebt
+ *
+ * Ein Element ohne pointer-events bekommt vom Browser überhaupt kein :hover
+ * und kein :active — damit greift KEINE der Hunderten Zustandsregeln aus
+ * system.css, ohne dass eine davon hier genannt werden müsste. Kommt morgen
+ * eine neue Hover-Regel dazu, gilt diese Regel weiter. Ein neuer Weg wird
+ * nicht hier eingetragen, sondern in der Wegekarte (wege.js); prototyp.js §4
+ * setzt .pv-lebt und sonst nichts.
+ *
+ * Der Mauszeiger kommt bei toten Elementen vom Vorfahren; deshalb steht am
+ * Glas ausdrücklich cursor: default. Den Tabstopp nimmt prototyp.js §4:
+ * ein totes Bedienelement ist auch für die Tastatur kein Ziel.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+.pv-glas { cursor: default; }
+
+/* 1 · alles tot */
+.pv-screen { pointer-events: none; }
+
+/* 2 · nichts, was in einer Rollfläche liegt, ist ein Ziel */
+.pv-glas .scroll * { pointer-events: none; }
+
+/* 3 · die Rollfläche selbst bleibt rollbar — eine Liste, die sich nicht
+ *     schieben lässt, fühlt sich kaputt an, auch wenn keine ihrer Zeilen
+ *     irgendwohin führt. Sie ist Fläche, kein Ziel: kein Klickfinger.
+ *     Steht NACH Regel 2, damit auch eine Rollfläche in einer Rollfläche
+ *     rollbar bleibt (gleiche Spezifität, die spätere gewinnt). */
+.pv-glas .scroll { pointer-events: auto; cursor: default; }
+
+/* 4 · außer, was einen Weg hat. Steht zuletzt und gewinnt gegen 2 und 3. */
+.pv-glas .pv-lebt { pointer-events: auto; cursor: pointer; }
+
+/* Wo ein Weg hinführt, ist auch die Tastatur zu Hause. */
+.pv-glas .pv-lebt:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 5 · KLEINIGKEITEN
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* Vor dem ersten Lauf von prototyp.js ist noch kein Schirm gewählt. Ohne
+   diese Zeile blitzten für einen Bildaufbau alle 26 Rahmen übereinander. */
+.pv-glas:not([data-pv-bereit]) .pv-screen { visibility: hidden; }
+
+/* Auf sehr schmalen Fenstern rutscht der Kopf unter die Bedienleiste. */
+@media (max-width: 900px) {
+  .pv-kopf__zeile { padding-right: 0; flex-wrap: wrap; }
+  .pv-kopf { padding-top: 64px; }
+}
