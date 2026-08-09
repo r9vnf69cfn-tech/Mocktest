@@ -135,8 +135,12 @@ const MESSEN = function (selektor) {
      auch wo das Mockup sie als <div>/<span> setzt. Der Test fragt nach dem
      Bild, nicht nach der HTML-Semantik. */
   const IMMER = ['.row', '.navitem', '.tab', '.iconbtn', '.check', '.switch',
-    '.origin', '.rate__btn', '.chain__link:not(.chain__link--end)', '.book',
+    '.origin', '.rate__btn', '.chain__link:not(.chain__link--end)',
     '.fab', '.toolbtn', '.segmented > *'];
+  /* `.book` steht bewusst NICHT hier: <article class="book"> ist der
+     Behaelter, das Bedienelement ist das <a class="book__cover"> darin.
+     Beide zu zaehlen haette denselben Deckel zweimal gemeldet — einmal als
+     Link mit Papierbild, einmal als Kasten ohne Flaeche. */
   /* Diese sind IMMER ein eigenes Ziel, auch wenn sie in einem anderen
      Bedienelement liegen: die Kreisfläche erledigt die Aufgabe, die Zeile
      öffnet sie — zwei Aktionen, zwei Ziele. */
@@ -169,14 +173,23 @@ const MESSEN = function (selektor) {
        was dort oben liegt. Zaehlt nur, wenn mindestens einer der Punkte
        dieses Element (oder eines seiner Kinder) trifft. */
     const punkte = [[0.5,0.5],[0.25,0.3],[0.75,0.3],[0.25,0.7],[0.75,0.7]];
-    let treffbar = false;
+    let treffbar = false, gefragt = 0;
+    const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
     for (const [fx, fy] of punkte) {
       const px = r.left + r.width * fx, py = r.top + r.height * fy;
       if (px < sbox.left || px > sbox.right || py < sbox.top || py > sbox.bottom) continue;
+      /* elementFromPoint rechnet im SICHTFENSTER, nicht im Dokument. Liegt
+         der Punkt ausserhalb, antwortet es null — das heisst „nicht im Bild",
+         nicht „verdeckt". Solche Punkte werden nicht gezaehlt, und wurde gar
+         keiner gezaehlt, gilt das Element als treffbar. Ohne diese
+         Unterscheidung verschwindet jedes Geraet unterhalb des Falzes. */
+      if (px < 0 || px > vw || py < 0 || py > vh) continue;
+      gefragt++;
       const oben = document.elementFromPoint(px, py);
       if (oben && (oben === el || el.contains(oben) || oben.contains(el))) { treffbar = true; break; }
     }
-    if (!treffbar) continue;
+    if (gefragt > 0 && !treffbar) continue;
 
     treffer.push({ el, r, cs });
   }
@@ -193,6 +206,11 @@ const MESSEN = function (selektor) {
 
     const schatten = (cs.boxShadow && cs.boxShadow !== 'none') ? cs.boxShadow : '';
     const hatSchlagschatten = !!schatten && !/inset/.test(schatten);
+    /* Ein Bild ist eine Flaeche. Die Notizbuch-Deckel tragen ihr Papier als
+       background-image bzw. als <img>; die background-color darunter misst
+       1,09:1 gegen das Regal und sagt damit das Gegenteil dessen, was im
+       Bild zu sehen ist. Wer nur Farben misst, uebersieht Fotos. */
+    const bildHier = cs.backgroundImage && cs.backgroundImage !== 'none';
 
     const bw = ['borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth']
       .map((k) => parseFloat(cs[k]) || 0);
@@ -251,7 +269,7 @@ const MESSEN = function (selektor) {
     /* Die Flaeche kann von einem Kind kommen: <button> transparent, darin
        ein <span class="origin"> mit Fuellung, der den Knopf ausfuellt.
        Gemessen wird jedes Kind, das >= 55 % der Knopfflaeche deckt. */
-    let flVonKind = 0, kindFlaeche = null;
+    let flVonKind = 0, kindFlaeche = null, bildDrin = bildHier;
     const flaechenGrund = eigenBg.a > 0 ? flaeche : grund;
     for (const k of el.querySelectorAll('*')) {
       const kb = k.getBoundingClientRect();
@@ -259,7 +277,10 @@ const MESSEN = function (selektor) {
       const deckung = (kb.width * kb.height) / (r.width * r.height);
       const breit = kb.width / r.width >= 0.8 && kb.height / r.height >= 0.45;
       if (deckung < 0.55 && !breit) continue;
-      const kbg = parse(getComputedStyle(k).backgroundColor);
+      const kcs = getComputedStyle(k);
+      if ((kcs.backgroundImage && kcs.backgroundImage !== 'none') ||
+          k.tagName === 'IMG' || k.tagName === 'CANVAS') bildDrin = true;
+      const kbg = parse(kcs.backgroundColor);
       if (!kbg || kbg.a <= 0) continue;
       const kf = ueber(kbg, flaechenGrund);
       const kk = kontrast(kf, flaechenGrund);
@@ -332,7 +353,8 @@ const MESSEN = function (selektor) {
       flKontrast:   Math.round(flKontrast * 100) / 100,
       randKontrast: Math.round(randKontrast * 100) / 100,
       randStaerke:  Math.round(randStaerke * 10) / 10,
-      hatSchlagschatten, hatSymbol, hatChevron, unter, lage, drin, icoNamen,
+      hatSchlagschatten, hatBild: !!bildDrin,
+      hatSymbol, hatChevron, unter, lage, drin, icoNamen,
       randArt, kante: Math.round(kante * 10) / 10,
       flVonKind,
       grundHex:   '#' + [grund.r, grund.g, grund.b].map((v) => Math.round(v).toString(16).padStart(2,'0')).join(''),
@@ -355,14 +377,14 @@ const istPrimaerGemeint = (e) =>
    damit nicht zwei Regeln dieselbe Frage verschieden beantworten.
    F Flaeche · R Rand · S Symbol · U Unterstreichung · L Lage in einer Leiste */
 const besteFlaeche = (e) => Math.max(e.flKontrast || 1, e.flVonKind || 1);
-const F = (e) => besteFlaeche(e) >= 1.10 || e.hatSchlagschatten;
+const F = (e) => besteFlaeche(e) >= 1.10 || e.hatSchlagschatten || e.hatBild;
 /* Zwischen 1,04 und 1,10 IST eine Flaeche da, sie liegt nur unter der
    Schwelle. Diese Faelle duerfen nicht mit „gar kein Merkmal" in denselben
    Topf: der Unterschied zwischen 1,09 und 1,12 ist keiner, den ein Auge
    sieht — die Schwelle ist meine Setzung, nicht die Wahrnehmung. Sie werden
    deshalb als „Flaeche grenzwertig" um eine Stufe milder gewertet und mit
    ihrem gemessenen Wert genannt. */
-const Fschwach = (e) => besteFlaeche(e) >= 1.04 && besteFlaeche(e) < 1.10;
+const Fschwach = (e) => !e.hatBild && besteFlaeche(e) >= 1.04 && besteFlaeche(e) < 1.10;
 const R = (e) => e.randStaerke > 0 && e.randKontrast >= 1.6;
 const S = (e) => e.hatSymbol;
 const U = (e) => e.unter;
@@ -470,6 +492,10 @@ function stufe(e) {
 
     for (const [geraet, sel] of [['ipad', '.screen--ipad'], ['iphone', '.screen--iphone']]) {
       if (!(await page.locator(sel).count())) continue;
+      /* Das Geraet muss im Sichtfenster stehen, sonst kann die Treffprobe
+         nicht fragen, was oben liegt. */
+      await page.locator(sel).first().scrollIntoViewIfNeeded();
+      await page.waitForTimeout(80);
       const roh = await page.evaluate(MESSEN, sel);
       if (!roh) continue;
 
