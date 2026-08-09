@@ -654,6 +654,14 @@ async function main() {
       try { await document.fonts.ready; } catch (e) {}
     });
     await page.waitForTimeout(2500);
+    /* Nicht die Kopfzeile aufnehmen, sondern die Kacheln: das Bild soll
+       zeigen, was im Ordner liegt, nicht was darüber steht. */
+    await page.evaluate(() => {
+      const g = document.getElementById('gridNext');
+      const kopf = g && g.closest('.sec') ? g.closest('.sec') : g;
+      if (kopf) window.scrollTo(0, Math.max(0, window.scrollY + kopf.getBoundingClientRect().top - 24));
+    });
+    await page.waitForTimeout(700);
     await page.screenshot({ path: path.join(ZIEL, 'uebersicht.png'), ...SCHUSS });
     bericht.push({ name: 'uebersicht.png', w: 1400, h: 1000 });
     await ctx.close();
