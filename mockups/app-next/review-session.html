@@ -53,16 +53,14 @@
 .iv        { display: flex; align-items: center; justify-content: center; flex: none; position: relative; }
 .iv__t     { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
 
-/* BEFUND, hier vorläufig behoben. .rate__btn (system.css §13) umrandet die
-   drei sekundären Stufen mit --line-2. Gerechnet hält diese Umrandung
-   1,47:1 (hell) und 1,83:1 (dunkel) — deutlich unter den 3:1, die dieselbe
-   DNA für Bedienoberfläche verlangt, und die Umrandung ist bei diesen
-   Knöpfen das einzige Merkmal neben Wort und Ort. --thread liegt auf
-   demselben Pegel wie der ruhende Faden und hält 3,11:1 in BEIDEN Modi.
-   Der Wert gehört auf Dauer in §13; system.css ist in dieser Runde gesperrt,
-   deshalb steht er hier — und .rate wird nur auf diesem Schirm benutzt, es
-   entsteht also kein zweiter Wahrheitsstand. */
-.rate__btn:not(.rate__btn--primary) { box-shadow: inset 0 0 0 1px var(--thread); }
+/* Hier stand eine örtliche Notlösung: .rate__btn umrandete seine drei
+   sekundären Stufen in --line-2 (1,47:1 hell · 1,83:1 dunkel), und weil
+   system.css in jener Runde gesperrt war, hob dieser Schirm den Wert für
+   sich allein auf --thread. Der Befund ist jetzt an der Wurzel behoben —
+   system.css §13 setzt --line-tap, den gerechneten 3:1-Pegel (§1.4b) —, und
+   die Notlösung ist zurückgebaut. Sie hätte den Knopf sonst weiter aus
+   diesem Schirm heraus bestimmt, und niemand hätte gesehen, dass §13 den
+   Wert längst selbst mitbringt. */
 
 /* Die drei Abschnitte des Herkunftsfadens stoßen stumpf aneinander. Mit
    runden Enden läge an jeder Naht eine doppelte Kappe — im Bild ein dunkler

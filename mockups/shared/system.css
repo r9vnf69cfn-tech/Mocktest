@@ -25,14 +25,31 @@
  *  13. Die Bewertungsknöpfe
  *
  * §9–11 kamen in der Fundament-Runde dazu (Velum-DNA), §12–13 in Runde 2.
- * Sie fügen nur neue Klassennamen hinzu.
  *
- * DIE EINZIGE ÄNDERUNG AN BESTEHENDEM: §6.1, die Ketten-Karte. Sie war ein
- * Breadcrumb und ist jetzt ein Faden (DNA-Nachtrag N2). Das verschiebt genau
- * zwei Schirme — today.html und journal-entry.html —, und zwar genau um die
- * 45°-Kerbe, die dort verschwindet. Alle übrigen Schirme rendern pixelgleich
- * weiter; nachgewiesen mit je einem Bild vor und nach der Änderung bei
- * 1440 × 1000 in beiden Modi.
+ * RUNDE 3 — DER KONTRAST DER UMRANDUNGEN. Ein Befund („.rate__btn umrandet
+ * in --line-2 und hält 1,47:1") war an der Wurzel zu beheben. Beim Durchgehen
+ * der ganzen Datei kamen drei weitere Stellen desselben Fehlers dazu. Die
+ * Trennung, nach der entschieden wurde, steht in §1.2 und lautet:
+ *
+ *   Ein Strich muss 3:1 halten, wenn er die Auskunft trägt, DASS hier etwas
+ *   zu bedienen ist. Das ist genau dort der Fall, wo das Bedienelement keine
+ *   eigene Fläche hat und die Umrandung deshalb alles ist, was es hat.
+ *
+ * Danach angehoben (auf --line-tap, §1.4b):
+ *   §13 .rate__btn · §5 .check · §5 .chip--ghost, ABER nur als button/a/
+ *   [role=button] — als <span> ist er ein Etikett und bleibt leise.
+ * Danach NICHT angehoben, mit Begründung an Ort und Stelle:
+ *   alle Trennlinien (--line) · .notice und .card--flat (haben eine eigene
+ *   Fläche; die Umrandung ist ihre Kante, nicht ihr Erkennungsmerkmal) ·
+ *   .book__cover--laden (Skelett, kein aktives Bedienelement).
+ * Mitgezogen: --thread und --dot-hollow von .47/.36 auf .49/.38, weil beide
+ * auf getönten Flächen unter 3:1 fielen — die Kette in today.html hat ein
+ * Glied auf --accent-soft, und ein Faden läuft mitten hindurch (§9.0).
+ *
+ * Alle drei Zahlen des Systems stehen jetzt genau einmal in dieser Datei
+ * (--ink-ui-hell, sein Dunkelwert, --line/--line-2). Gestrichen sind
+ * .flight/.flight__trail/.flight__ghost (§6) und .book__mod (§12.8): Regeln,
+ * die auf nichts mehr trafen.
  *
  * Musterseiten: shared/faden-probe.html (die Primitive),
  *               app-next/library.html  (das Notizbuch-System).
@@ -55,6 +72,19 @@
   --ink-2:     rgba(22,24,28,0.64);        /*  5,3:1 auf Papier — Sekundärtext */
   --ink-3:     rgba(22,24,28,0.62);        /*  4,8:1 auf Grund  — Tertiärtext  */
   --ink-4:     rgba(22,24,28,0.30);        /* nur Icons/Deko, nie Text        */
+  /* Die Linien-Leiter — drei Stufen, drei Aufgaben. Welche gilt, entscheidet
+     NICHT die Optik, sondern eine Frage: Trägt der Strich die Auskunft, dass
+     hier etwas zu bedienen ist?
+       --line      trennt (Liste, Leiste, Karte, Tabelle). Trennlinien dürfen
+                   leise sein — sie sagen „hier hört das eine auf", und das
+                   liest man aus der Anordnung, nicht aus dem Strich.
+       --line-2    umrandet einen Kasten, der KEIN Bedienelement ist (.notice).
+       --line-tap  umrandet ein Bedienelement OHNE eigene Fläche — dort ist
+                   die Umrandung das Merkmal, an dem man es überhaupt erkennt.
+                   Steht in §1.4b, weil derselbe gerechnete Pegel wie der Faden.
+     Gerechnet auf Papier: --line 1,23:1 hell / 1,39:1 dunkel ·
+     --line-2 1,46:1 / 1,82:1. Beide sind für eine Umrandung, die Bedienbarkeit
+     meldet, zu schwach — deshalb gibt es die dritte Stufe. */
   --line:      rgba(22,24,28,0.10);
   --line-2:    rgba(22,24,28,0.18);
   --fill:      rgba(22,24,28,0.05);
@@ -82,14 +112,32 @@
   --danger:  #D02B20;   /* 5,19:1 — Löschen, Deadline */
   --success: #1D7F4E;   /* 5,00:1 — Erfolg */
 
-  /* 1.4b Die drei Primitive des Fadens (§9). Werte gerechnet, nicht geschätzt.
-     --thread ist der ruhende Faden, --dot-hollow der Ring des hohlen Punktes.
-     Beide liegen bewusst auf demselben Pegel: „gerade eben sichtbar, aber
-     gerechnet über 3:1". Die DNA nennt für beide --line-2 bzw. --ink-4; diese
-     halten 1,46:1 und 1,95:1 und fallen damit unter die 3:1-Schwelle, die
-     dieselbe DNA für Bedienoberfläche verlangt. Begründung siehe §9.0. */
-  --thread:      rgba(22,24,28,0.47);   /* 3,10:1 Papier · 3,03:1 Grund · 3,07:1 Papier-2 */
-  --dot-hollow:  rgba(22,24,28,0.47);   /* derselbe Pegel, andere Rolle    */
+  /* 1.4b DIE 3:1-SCHWELLE ALS EINE EINZIGE ZAHL
+     --ink-ui ist der kleinste Auftrag, der auf JEDER Fläche dieses Systems
+     3:1 hält — gerechnet, nicht geschätzt; die volle Tabelle steht in §9.0.
+     Drei Rollen teilen ihn, weil hinter allen dieselbe Rechnung steht:
+       --thread      der ruhende Faden (§9.2)
+       --dot-hollow  der Ring des hohlen Punktes (§9.1)
+       --line-tap    die Umrandung eines Bedienelements ohne eigene Fläche
+                     (§5 .check und der tappbare .chip--ghost, §13 .rate__btn)
+     Getrennte Namen, weil getrennte Regeln: ein Faden darf seine Stärke
+     ändern, eine Umrandung nicht, und umgekehrt. Gleicher Pegel heute heißt
+     nicht gleicher Pegel für immer.
+     Wer den Pegel verschieben will, ändert --ink-ui-hell und den Dunkelwert
+     in §1.2 des Dunkelblocks — sonst nichts. Beide Zahlen stehen genau
+     einmal in dieser Datei.
+     --ink-ui-hell ist der Hellwert unter seinem eigenen Namen. Er wird
+     gebraucht, weil ein Gegenstand seinen Modus festhalten können muss
+     (§12.0, der Notizbuch-Deckel dreht sich nachts nicht um) — und weil
+     var() beim Erben NICHT noch einmal aufgelöst wird: ein Nachkomme, der
+     --ink-ui neu setzt, ändert damit kein --thread, das von :root kommt.
+     Wer den Pegel festhalten will, muss deshalb --thread und --dot-hollow
+     bei sich selbst noch einmal ausschreiben. Genau das tut .book__cover. */
+  --ink-ui-hell: rgba(22,24,28,0.49);
+  --ink-ui:      var(--ink-ui-hell);
+  --thread:      var(--ink-ui);
+  --dot-hollow:  var(--ink-ui);
+  --line-tap:    var(--ink-ui);
   --node-ring:   var(--paper);          /* Ring des Knotens — auf Grund überschreiben */
 
   /* 1.5 Maße (1 px im Mockup = 1 pt auf dem Gerät) */
@@ -159,11 +207,12 @@
   --success: #4ED18B;   /* 9,07:1 */
 
   /* Im Dunkeln reicht ein schwächerer Auftrag für dieselbe Sichtbarkeit:
-     0,36 statt 0,47. Bei 0,35 fiele der Faden auf dem dunklen Grund auf
-     2,99:1 — knapp darunter, deshalb 0,36. */
-  --thread:      rgba(242,243,245,0.36);  /* 3,13:1 Papier · 3,10:1 Grund · 3,11:1 Papier-2 */
-  --dot-hollow:  rgba(242,243,245,0.36);
-  --node-ring:   var(--paper);
+     0,38 statt 0,49. Diese eine Zeile trägt --thread, --dot-hollow und
+     --line-tap mit; sie stehen auf :root als var(--ink-ui) und rechnen sich
+     hier von selbst neu. --node-ring braucht aus demselben Grund keine
+     zweite Zeile: es ist var(--paper), und --paper steht drei Zeilen weiter
+     oben schon auf seinem Dunkelwert. */
+  --ink-ui:      rgba(242,243,245,0.38);
 
   --sh-card:  0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.45);
   --sh-float: 0 2px 8px rgba(0,0,0,.5), 0 16px 40px rgba(0,0,0,.6);
@@ -421,7 +470,17 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   font: 600 13px/16px var(--sans);
   white-space: nowrap;
 }
+/* Der Ghost-Chip hat als einziger Chip KEINE eigene Fläche — seine Umrandung
+   ist alles, was er hat. Daraus folgt die Trennung: ist er tappbar, dann ist
+   diese Umrandung genau die Auskunft „hier ist ein Bedienelement", und dann
+   muss sie 3:1 halten. Steht er als Etikett (<span>: „Entwurf", „vorläufig",
+   „1 Foto"), umrandet sie eine Beschriftung und darf leise bleiben.
+   Das ist keine Inkonsequenz, sondern der Affordanz-Test in CSS: ein Chip,
+   den man drücken kann, sieht anders aus als einer, den man nur liest. */
 .chip--ghost { background: none; box-shadow: inset 0 0 0 1px var(--line-2); }
+:is(button, a[href], [role="button"], label, summary).chip--ghost {
+  box-shadow: inset 0 0 0 1px var(--line-tap);
+}
 .chip--solid { background: var(--accent); color: var(--accent-on); }
 .chip--danger { color: var(--danger); background: none; box-shadow: inset 0 0 0 1px currentColor; }
 
@@ -465,10 +524,14 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .segmented button.is-on { background: var(--paper); color: var(--ink-1); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
 :root[data-theme="dark"] .segmented button.is-on { background: var(--fill-3); }
 
-/* Checkbox — Things-Prinzip: großes Ziel, ruhiger Ring */
+/* Checkbox — Things-Prinzip: großes Ziel, ruhiger Ring.
+   Im unerledigten Zustand ist der Ring das ganze Bedienelement: keine Fläche,
+   kein Text, kein Symbol. In --line-2 hielt er 1,45:1 hell und 1,77:1 dunkel
+   und war im Bild kaum zu finden — die erledigte Schwester daneben ist eine
+   volle Ink-Scheibe. Ruhig heißt leise, nicht unsichtbar: --line-tap. */
 .check {
   width: 22px; height: 22px; border-radius: 50%;
-  box-shadow: inset 0 0 0 1.5px var(--line-2);
+  box-shadow: inset 0 0 0 1.5px var(--line-tap);
   flex: none; position: relative;
 }
 .check.is-done { background: var(--accent); box-shadow: none; }
@@ -634,29 +697,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   z-index: 1;
 }
 
-/* Der Signature-Moment: die Übergabe fliegt.
-   Im Mockup als eingefrorener Zwischenzustand sichtbar. */
-.flight {
-  position: absolute; z-index: 60;
-  padding: 10px 12px;
-  border-radius: 11px;
-  background: var(--paper);
-  box-shadow: var(--sh-float);
-  transform: rotate(-4deg) scale(.92);
-  opacity: .96;
-}
-.flight__trail {
-  position: absolute; z-index: 59;
-  border-radius: var(--r-pill);
-  background: linear-gradient(90deg, transparent, var(--accent-soft) 30%, var(--accent-soft));
-  filter: blur(.5px);
-}
-.flight__ghost {
-  position: absolute; z-index: 58;
-  border-radius: 10px;
-  box-shadow: inset 0 0 0 1.5px var(--accent-ring);
-  background: var(--accent-soft);
-}
+/* HIER STANDEN .flight, .flight__trail und .flight__ghost — die Übergabe als
+   gemalter, eingefrorener Zwischenzustand. Sie sind ersatzlos gestrichen:
+   Runde 2 hat die Übergabe zu einer echten Bewegung gemacht (bewegung.js,
+   data-bw="uebergeben"), und die Schirme haben die drei Klassen dabei
+   abgelegt. note-editor.html schreibt es in seinem Steckbrief selbst hin.
+   Kein class="flight" mehr in 35 Dateien, kein Vorkommen in mock.js oder
+   bewegung.js — die Regeln trafen auf nichts mehr. Ein Baustein, der einen
+   Moment einfriert, den es jetzt in Bewegung gibt, ist nicht Reserve,
+   sondern eine zweite Fassung derselben Sache. */
 
 /* ── 7. Zustände ──────────────────────────────────────────────────────── */
 
@@ -762,28 +811,58 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
  * --line und sind kein Faden. .thread ist nie Rahmen, Unterstreichung oder
  * Zierleiste.
  * ──────────────────────────────────────────────────────────────────────────
- * 9.0 WARUM --thread UND NICHT --line-2 (begründete Abweichung von DNA §2.2)
+ * 9.0 DER PEGEL --ink-ui (begründete Abweichung von DNA §2.2)
  *
- * Die DNA schreibt für den ruhenden Faden --line-2 vor. Gerechnet:
+ * Die DNA schreibt für den ruhenden Faden --line-2 vor, für den hohlen Punkt
+ * --ink-4. Gerechnet auf Papier:
  *
- *   --line-2 auf Papier      hell 1,46:1   dunkel 1,82:1
- *   --ink-4  auf Papier      hell 1,95:1   dunkel 2,56:1
+ *   --line-2      hell 1,46:1   dunkel 1,82:1
+ *   --ink-4       hell 1,95:1   dunkel 2,56:1
  *
  * Beide liegen unter den 3:1, die dieselbe DNA (§5) für Bedienoberfläche
  * verlangt. Ein Faden ist kein Dekor: er trägt die Aussage „diese beiden
  * Objekte hängen zusammen" — genau der Fall, für den die Schwelle gilt.
- * Zudem ist --line-2 der Wert der Trennlinien; ein Faden in Trennlinienfarbe
- * sähe aus wie eine Trennlinie, und das ist ausdrücklich verboten.
  *
- * Deshalb --thread als kleinster Auftrag, der die Schwelle sicher hält:
+ * EINE BEHAUPTUNG AUS RUNDE 2 IST GESTRICHEN, WEIL SIE FALSCH WAR. Hier stand
+ * bis eben: „Zudem ist --line-2 der Wert der Trennlinien; ein Faden in
+ * Trennlinienfarbe sähe aus wie eine Trennlinie." Das stimmt nicht. Jede
+ * Trennlinie dieser Datei — Listenzeile, Sidebar, Tab-Leiste, Navigations-
+ * leiste, .divider, Tabelle im Steckbrief, Rückfall der Kette — läuft auf
+ * --line. --line-2 hat in der ganzen Datei nie etwas getrennt; es umrandete
+ * Kästen. Das Argument für einen eigenen Pegel bleibt trotzdem stehen, es ist
+ * nur ein anderes: --line-2 war schlicht zu schwach. (§1.2 zieht daraus die
+ * Leiter --line / --line-2 / --line-tap.)
  *
- *              Papier    Grund     Papier-2
- *   hell  .47   3,10:1    3,03:1    3,07:1
- *   dunkel .36   3,13:1    3,10:1    3,11:1
+ * DER FLÄCHENSATZ, GEGEN DEN GERECHNET WIRD. Runde 2 hat gegen drei Flächen
+ * gerechnet und daraus .47/.36 abgeleitet. Das war zu wenig: Fäden und
+ * Umrandungen liegen im Betrieb auch auf getönten Flächen — die Kette in
+ * today.html und journal-entry.html hat ein Glied auf --accent-soft, und ein
+ * Faden läuft mitten hindurch. Auf dieser Fläche hielt der Faden im Dunkeln
+ * 2,94:1 und fiel damit durch die eigene Schwelle. Gerechnet wird deshalb
+ * gegen alle sieben Flächen, auf denen im System wirklich eine Umrandung oder
+ * ein Faden liegt (--fill-2 und --fill-3 sind nicht dabei: sie tragen nur die
+ * Rinne des Fortschrittsbalkens, den Sockel des angehobenen Buchs und den
+ * Segment-Schalter im Dunkeln, und auf keinem davon liegt je ein Strich):
  *
- * Alles darunter wurde durchgerechnet: hell .45 → 2,92:1, dunkel .35 auf
- * Grund → 2,99:1. Beide fallen durch. --line-2 bleibt unangetastet und
- * weiter die Farbe der Trennlinien.
+ *                        hell .49   dunkel .38
+ *   Papier                3,29        3,34
+ *   Grund                 3,20        3,32
+ *   Papier-2              3,26        3,31
+ *   fill / Papier         3,21        3,20
+ *   fill / Grund          3,13        3,31
+ *   accent-soft / Papier  3,18        3,10
+ *   accent-soft / Grund   3,10        3,24
+ *
+ * Die Schwelle liegt rechnerisch bei hell .4785 und dunkel .3685; .48/.37
+ * hielten also gerade eben (3,01:1) und .47/.36 nicht mehr. Genommen sind
+ * .49/.38, weil das denselben Sicherheitsabstand ergibt (3,10:1 in beiden
+ * Modi), den Runde 2 auf ihrem kleineren Flächensatz hatte. Der Unterschied
+ * zu .47/.36 ist im Bild nicht zu sehen und in der Rechnung der ganze Punkt.
+ *
+ * Nachgemessen wird bei deviceScaleFactor 2, nicht 1: ein 1,5-pt-Strich deckt
+ * bei 1× keine volle Bildpunktreihe und misst sich dadurch auf 2,25:1 herunter
+ * — das ist der Maßstab des Mockups, nicht die Gestaltung. Bei 2× (und auf
+ * jedem echten Gerät) trifft der Strich seinen Tokenwert.
  * ══════════════════════════════════════════════════════════════════════════ */
 
 /* ── 9.1 Der Punkt — vier Zustände ─────────────────────────────────────────
@@ -811,7 +890,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* hohl — der Ring liegt innen, der Punkt behält seine 6 pt Standfläche.
    background:none steht hier absichtlich: die Regel kommt später als
    .dot--canvas usw. und löscht deren Füllung, falls jemand beide setzt.
-   Kontrast Ring: hell 3,10:1 Papier / 3,03:1 Grund · dunkel 3,13 / 3,10. */
+   Kontrast Ring: hell 3,29:1 Papier / 3,20:1 Grund · dunkel 3,34 / 3,32. */
 .dot--hollow {
   background: none;
   box-shadow: inset 0 0 0 1.4px var(--dot-hollow);
@@ -851,7 +930,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
  *
  * FARBE: --thread im Ruhezustand, --accent wenn aktiv (.is-active).
  * Niemals bunt — Modulfarben gehören dem Punkt, nicht dem Faden.
- *   Ruhe   hell 3,10:1 Papier / 3,03:1 Grund · dunkel 3,13 / 3,10
+ *   Ruhe   hell 3,29:1 Papier / 3,20:1 Grund · dunkel 3,34 / 3,32
  *   aktiv  hell 17,77:1 Papier / 15,90:1 Grund · dunkel 15,86 / 17,27
  *
  * FORM: gerade oder eine quadratische Bézier. Keine S-Kurven, keine Schnörkel.
@@ -923,8 +1002,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
      <span class="dot dot--node" style="--node-ring: var(--ground)"></span>
 
    Kontrast   Knotenfüllung gegen Papier   hell 17,77:1 · dunkel 15,86:1
-              Knotenfüllung gegen Faden    hell  5,74:1 · dunkel  5,07:1
-              Knotenring gegen Faden       hell  3,10:1 · dunkel  3,13:1
+              Knotenfüllung gegen Faden    hell  5,41:1 · dunkel  4,75:1
+              Knotenring gegen Faden       hell  3,29:1 · dunkel  3,34:1
    Der Ring ist das, was den Knoten auf dem Faden sichtbar macht — er hält
    die Schwelle gegen den Faden, nicht gegen das Papier (gegen das Papier hat
    er naturgemäß 1:1, er IST das Papier).
@@ -1002,12 +1081,19 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
  * keine eigene Größe; sie tauscht nur die Schrift, nicht das Maß. Deshalb
  * darf .serif--voice neben .t-body stehen, ohne es zu überschreiben.
  *
- * ── 10.3 Das blanke .serif verschwindet ───────────────────────────────────
- * .serif (nur Schriftfamilie) bleibt als Klasse bestehen, weil 51 Stellen in
- * den Schirmen sie noch tragen; die Liste, welche Stelle auf welche Rolle
- * wechselt, liegt in der Rückgabe dieser Runde. Sobald die Schirme
- * umgestellt sind, ist .serif ersatzlos zu löschen — eine Schriftklasse ohne
- * Rolle ist genau die Textur, die §4.1 verbietet. */
+ * ── 10.3 Das blanke .serif — Stand ────────────────────────────────────────
+ * Hier stand, .serif trage noch 51 Stellen und sei zu löschen, sobald die
+ * Schirme umgestellt sind. Nachgezählt: es sind noch 10, und sie liegen
+ * ALLE in best-of/ — best-of/library.html (4 Notizbuch-Titel) und
+ * best-of/journal.html (6 Listen-Vorschauen). app-next/ trägt kein blankes
+ * .serif mehr; dort ist die Umstellung durch.
+ *
+ * best-of/ ist die Runde-1-Auswahl und bleibt ausdrücklich unangetastet.
+ * .serif kann also NICHT gelöscht werden — es wäre kein Aufräumen, sondern
+ * ein Bruch von zehn Stellen in einem eingefrorenen Ordner. Die Regel bleibt
+ * bestehen und behält ihre Begründung: eine Schriftklasse ohne Rolle ist die
+ * Textur, die §4.1 verbietet — deshalb steht sie noch, aber nur für best-of,
+ * und für app-next gilt sie als abgeschafft. */
 
 .serif--screen-title,
 .serif--journal-date,
@@ -1085,7 +1171,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* Der reservierte, sichtbar leere Platz. Gestrichelt, damit er sich von jeder
    echten Fläche unterscheidet, und in --thread, also gerechnet über 3:1
-   (hell 3,10:1 · dunkel 3,13:1). Innerhalb von .brandmark wird daraus Kupfer
+   (hell 3,29:1 · dunkel 3,34:1). Innerhalb von .brandmark wird daraus Kupfer
    (4,44:1 hell · 3,96:1 dunkel) — siehe 11.2. */
 .appicon__frame {
   border: 1.5px dashed var(--brand-copper, var(--thread));
@@ -1274,9 +1360,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* ── 12.3 Der Deckel ────────────────────────────────────────────────────── */
 
 .book__cover {
-  /* Der Gegenstand hält seine Hellwerte fest — siehe 12.0 */
-  --thread:     rgba(22,24,28,0.47);
-  --dot-hollow: rgba(22,24,28,0.47);
+  /* Der Gegenstand hält seine Hellwerte fest — siehe 12.0. Drei Zeilen und
+     keine Zahl: --ink-ui-hell kommt von :root, --thread und --dot-hollow
+     müssen hier stehen, weil ein geerbtes var() nicht noch einmal aufgelöst
+     wird (§1.4b). Vorher stand der Pegel hier zweimal als Zahl und musste
+     bei jeder Änderung mitgepflegt werden — das war der zweite
+     Wahrheitsstand. Jetzt steht die Zahl einmal in der ganzen Datei. */
+  --ink-ui:     var(--ink-ui-hell);
+  --thread:     var(--ink-ui);
+  --dot-hollow: var(--ink-ui);
   --book-band:  rgba(252,252,253,0.93);   /* der Halbband-Streifen */
   --node-ring:  var(--book-band);
 
@@ -1321,7 +1413,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* Der Halbband: ein eigener Materialstreifen, in dem die Bindung sitzt.
    Er ist leicht durchscheinend, damit die Papierstruktur durchkommt — und
    er gibt Faden und Punkten auf allen zwölf Papieren denselben Grund.
-   Rechnung auf diesem Grund: Faden 3,05:1 · hohler Punkt 3,05:1 ·
+   Rechnung auf diesem Grund, nachgemessen an den Bandtönen aller zwölf
+   Papiere: Faden 3,20:1 bis 3,29:1 hell und 3,20:1 bis 3,26:1 dunkel, der
+   hohle Punkt ebenso (derselbe Pegel --ink-ui). Der Deckel hält seine
+   Hellwerte fest, deshalb liegen beide Modi so dicht beieinander.
    Modulpunkte 2,74:1 (Journal) bis 4,95:1 (Canvas) — die Punkte stehen
    deshalb nie allein, sondern auf dem Faden und neben dem Wort in der
    Bildunterschrift (Zwei-Merkmal-Regel, §9.1). */
@@ -1473,10 +1568,11 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* Modul links, Zeit rechts. Ein Mittelpunkt dazwischen kostet vier Zeichen,
    die auf 124 pt fehlen — die Spalte sagt dasselbe umsonst. */
 .book__meta--split { justify-content: space-between; gap: 8px; }
-.book__mod {
-  display: inline-flex; align-items: center; gap: 6px;
-  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
+/* .book__mod ist gestrichen: eine Modulzelle mit Ellipse für die geteilte
+   Zeile. Kein Schirm hat sie je gesetzt — library.html schreibt in seine 21
+   geteilten Zeilen zwei blanke <span>, und die Ellipse liefert ihnen bereits
+   die Regel darüber (.book__meta > span:not(.dot)). Die Klasse war eine
+   zweite Lösung für ein bereits gelöstes Problem. */
 
 /* ── 12.9 Zustände ──────────────────────────────────────────────────────── */
 
@@ -1576,7 +1672,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   border-radius: 12px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
   background: none; color: var(--ink-1);
-  box-shadow: inset 0 0 0 1px var(--line-2);   /* Umrandung = zweites Merkmal */
+  /* Umrandung = das zweite Merkmal, und bei diesen drei Knöpfen das einzige:
+     keine Fläche, kein Symbol, nur Wort und Rahmen. In --line-2 hielt er
+     1,47:1 hell und 1,82:1 dunkel — gegen die 3:1, die dieselbe DNA (§6) für
+     Bedienoberfläche verlangt. review-session.html hatte den Wert deshalb
+     örtlich angehoben; hier ist er an der Wurzel behoben, und die örtliche
+     Notlösung ist zurückgebaut. Ein Wahrheitsstand, nicht zwei. */
+  box-shadow: inset 0 0 0 1px var(--line-tap);
 }
 .rate__btn:hover { background: var(--fill); }
 .rate__word { font: 600 17px/23px var(--sans); letter-spacing: -.01em; }
