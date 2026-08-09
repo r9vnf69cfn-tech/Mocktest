@@ -161,6 +161,23 @@ const MESSEN = function (selektor) {
         r.bottom <= sbox.top || r.top >= sbox.bottom) continue;
     /* Die Statusleiste ist Kulisse, kein Bedienelement des Entwurfs. */
     if (el.closest('.statusbar')) continue;
+
+    /* TREFFPROBE — was man nicht treffen kann, ist kein Ziel.
+       Die Rueckseite einer gedrehten Lernkarte steht im Layout, ist im Bild
+       aber nicht da; ein Blatt deckt den Schirm darunter zu. Statt solche
+       Faelle einzeln zu erraten, wird an fuenf Punkten im Element gefragt,
+       was dort oben liegt. Zaehlt nur, wenn mindestens einer der Punkte
+       dieses Element (oder eines seiner Kinder) trifft. */
+    const punkte = [[0.5,0.5],[0.25,0.3],[0.75,0.3],[0.25,0.7],[0.75,0.7]];
+    let treffbar = false;
+    for (const [fx, fy] of punkte) {
+      const px = r.left + r.width * fx, py = r.top + r.height * fy;
+      if (px < sbox.left || px > sbox.right || py < sbox.top || py > sbox.bottom) continue;
+      const oben = document.elementFromPoint(px, py);
+      if (oben && (oben === el || el.contains(oben) || oben.contains(el))) { treffbar = true; break; }
+    }
+    if (!treffbar) continue;
+
     treffer.push({ el, r, cs });
   }
 
@@ -179,18 +196,29 @@ const MESSEN = function (selektor) {
 
     const bw = ['borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth']
       .map((k) => parseFloat(cs[k]) || 0);
-    let randFarbe = null, randStaerke = 0;
+    let randFarbe = null, randStaerke = 0, randArt = null, kante = 0;
     if (bw.some((w) => w > 0)) {
       randFarbe = parse(cs.borderTopColor) || parse(cs.borderLeftColor);
       randStaerke = Math.max(...bw);
     } else if (/inset/.test(schatten)) {
+      /* inset 0 0 0 1.5px  = Ring rundum (Spread)
+         inset 0 -1.5px 0   = Kante unten, also eine Unterstreichung.
+         Beides sieht im Quelltext gleich aus und ist im Bild etwas voellig
+         anderes: der Ring umschliesst eine Flaeche, die Kante ist ein Strich
+         unter Text. Nur der Ring beantwortet R2, nur die Kante R3. */
       const m = schatten.match(/rgba?\([^)]+\)/);
       randFarbe = m ? parse(m[0]) : null;
       const px = (schatten.match(/-?\d+(?:\.\d+)?px/g) || []).map(parseFloat);
-      randStaerke = px.length >= 4 ? Math.abs(px[3]) : (px.length ? Math.abs(px[px.length-1]) : 1);
+      const ox = px[0] || 0, oy = px[1] || 0, spread = px[3] || 0;
+      if (spread > 0) { randStaerke = spread; randArt = 'ring'; }
+      else if (Math.abs(oy) > 0 || Math.abs(ox) > 0) {
+        kante = Math.max(Math.abs(ox), Math.abs(oy));
+        randArt = oy < 0 ? 'unterstrich' : 'kante';
+      }
     }
     const randKontrast = randFarbe && randFarbe.a > 0
       ? kontrast(ueber(randFarbe, grund), grund) : 1;
+    if (bw.some((w) => w > 0)) randArt = randArt || 'ring';
 
     const textFarbe = ueber(parse(cs.color) || { r:0,g:0,b:0,a:1 }, flaeche);
     const istInk = eigenBg.a > 0.5 && AKZENT && AKZENT_ON &&
@@ -217,7 +245,8 @@ const MESSEN = function (selektor) {
     const icoNamen = icoEls.map((s) => s.dataset.ico || '?');
     const hatSymbol  = icoEls.length > 0 || svgEls.length > 0;
     const hatChevron = icoNamen.some((n) => /chev|arrow|disclos|more|caret|plus|ellips/i.test(n));
-    const unter      = /underline/.test(cs.textDecorationLine || '');
+    const unter = /underline/.test(cs.textDecorationLine || '') ||
+                  (randArt === 'unterstrich' && randKontrast >= 1.25);
 
     /* Die Flaeche kann von einem Kind kommen: <button> transparent, darin
        ein <span class="origin"> mit Fuellung, der den Knopf ausfuellt.
@@ -241,15 +270,40 @@ const MESSEN = function (selektor) {
     const lage = (() => {
       const n = ['.navbar','.tabbar','.toolbar','.sidebar','.sheet__head',
         '.segmented','.keyboard','.rate','.editor__tools','.tools','.searchbar',
-        '.dock','.menu','.popover','.kbd','.tooldock','.inspector__head']
+        '.dock','.menu','.popover','.kbd','.tooldock','.inspector__head','.handoff']
         .find((s) => { try { return el.closest(s); } catch (e) { return false; } });
       if (n) return n.slice(1);
       /* Listenlage: eine Zeile unter Geschwisterzeilen mit Haarlinie ist die
          iOS-Liste. Sie sagt „tappbar" durch Bauform, nicht durch Farbe —
-         genau das, was R2 unter „Position" meint. Gilt erst ab drei Zeilen,
-         damit zwei zufaellig gleiche Kaesten keine Liste ergeben. */
-      if (el.matches('.row') && el.parentElement &&
-          el.parentElement.querySelectorAll(':scope > .row').length >= 3) return 'liste';
+         genau das, was R2 unter „Position" meint.
+         ES IST EIN URTEIL, kein Messwert, und es steht hier, damit man es
+         nachschlagen kann: eine Zeile gilt als Listenzeile, wenn sie eine
+         Geschwisterzeile hat ODER einen Erledigt-Kreis traegt. Beides ist
+         Bauform, nicht Farbe. Ohne diese Regel faellt jede Aufgabenzeile
+         durch — und damit auch Reminders und Things, die es genauso machen.
+         Der Preis: eine EINZELNE Zeile ohne Kreis bleibt ein Befund. */
+      if (el.matches('.row') && (
+            (el.parentElement &&
+             el.parentElement.querySelectorAll(':scope > .row').length >= 2) ||
+            el.querySelector('.check, .bw-check')))
+        return 'liste';
+      /* Leistenlage OHNE Klassennamen: >= 3 gleichartige Geschwister in einem
+         Behaelter, der selbst abgesetzt ist (eigene Flaeche oder Trennkante).
+         Genau so ist die Blockleiste des Editors gebaut — inline gesetzt,
+         ohne Klasse. Ein Behaelter ohne eigene Flaeche und ohne Kante zaehlt
+         NICHT: eine blosse Untereinander-Anordnung ist keine Leiste. */
+      const p = el.parentElement;
+      if (p) {
+        const gesch = Array.from(p.children).filter((c) => {
+          try { return c.matches(SEL); } catch (x) { return false; } });
+        if (gesch.length >= 3) {
+          const ps = getComputedStyle(p);
+          const pbg = parse(ps.backgroundColor);
+          const kante = ['borderTopWidth','borderBottomWidth']
+            .some((k) => parseFloat(ps[k]) > 0);
+          if ((pbg && pbg.a > 0.05) || kante) return 'leiste';
+        }
+      }
       return null;
     })();
 
@@ -279,6 +333,7 @@ const MESSEN = function (selektor) {
       randKontrast: Math.round(randKontrast * 100) / 100,
       randStaerke:  Math.round(randStaerke * 10) / 10,
       hatSchlagschatten, hatSymbol, hatChevron, unter, lage, drin, icoNamen,
+      randArt, kante: Math.round(kante * 10) / 10,
       flVonKind,
       grundHex:   '#' + [grund.r, grund.g, grund.b].map((v) => Math.round(v).toString(16).padStart(2,'0')).join(''),
       flaecheHex: '#' + [flaeche.r, flaeche.g, flaeche.b].map((v) => Math.round(v).toString(16).padStart(2,'0')).join(''),
@@ -293,13 +348,21 @@ const MESSEN = function (selektor) {
  * ═══════════════════════════════════════════════════════════════════════ */
 
 const istPrimaerGemeint = (e) =>
-  /(^|\s)(btn--primary|chip--solid|rate__btn--primary|fab|handoff__btn)(\s|$)/.test(e.klasse) ||
+  /(^|\s)(btn--primary|chip--solid|rate__btn--primary|fab)(\s|$)/.test(e.klasse) ||
   /is-primary/.test(e.klasse);
 
 /* Die sichtbaren Merkmale, aus denen R2 und R3 rechnen. Einmal definiert,
    damit nicht zwei Regeln dieselbe Frage verschieden beantworten.
    F Flaeche · R Rand · S Symbol · U Unterstreichung · L Lage in einer Leiste */
-const F = (e) => e.flKontrast >= 1.10 || e.hatSchlagschatten || e.flVonKind >= 1.10;
+const besteFlaeche = (e) => Math.max(e.flKontrast || 1, e.flVonKind || 1);
+const F = (e) => besteFlaeche(e) >= 1.10 || e.hatSchlagschatten;
+/* Zwischen 1,04 und 1,10 IST eine Flaeche da, sie liegt nur unter der
+   Schwelle. Diese Faelle duerfen nicht mit „gar kein Merkmal" in denselben
+   Topf: der Unterschied zwischen 1,09 und 1,12 ist keiner, den ein Auge
+   sieht — die Schwelle ist meine Setzung, nicht die Wahrnehmung. Sie werden
+   deshalb als „Flaeche grenzwertig" um eine Stufe milder gewertet und mit
+   ihrem gemessenen Wert genannt. */
+const Fschwach = (e) => besteFlaeche(e) >= 1.04 && besteFlaeche(e) < 1.10;
 const R = (e) => e.randStaerke > 0 && e.randKontrast >= 1.6;
 const S = (e) => e.hatSymbol;
 const U = (e) => e.unter;
@@ -338,6 +401,7 @@ function bewerten(e) {
 function schwere(e, v) {
   const r = v.map((x) => x.regel);
   const k = (v.find((x) => x.regel === 'R4') || {}).wert;
+  if (r.includes('R3') && Fschwach(e)) return 'mittel';
   if (r.includes('R3') || r.includes('R1')) return 'schwer';
   if (r.includes('R2')) return 'mittel';
   if (r.includes('R4')) return k < 30 ? 'mittel' : 'leicht';
@@ -437,10 +501,27 @@ function stufe(e) {
         verschluckt.add(k.i);
       }
 
-      const eintraege = roheListe.filter((e) => !verschluckt.has(e.i)).map((e) => {
-        const v = bewerten(e);
-        return { ...e, verstoesse: v, schwere: v.length ? schwere(e, v) : null, stufe: stufe(e) };
-      });
+      /* Ein Etikett mit Bedien-Klasse zaehlt nur dann als „sieht tappbar aus",
+         wenn es tatsaechlich wie ein Bedienelement aussieht — eigene Flaeche
+         oder sichtbarer Rand. `<span class="chip">` ohne beides ist schlicht
+         Text und gehoert nicht in diesen Test. Genau hier zahlt sich §6 der
+         system.css aus: der nicht-tappbare Ghost-Chip traegt --line-2 (1,46:1)
+         und faellt damit unter die Schwelle, der tappbare --line-tap. */
+      const eintraege = roheListe
+        .filter((e) => !verschluckt.has(e.i))
+        .filter((e) => e.art !== 'C' || F(e) || R(e) || e.istInk)
+        .map((e) => {
+          const v = bewerten(e);
+          /* Nebenbefund, keine der vier Regeln: ein Bedienelement, dessen
+             einziges Merkmal ein Strich ist, muss diesen Strich auf >= 3:1
+             halten — sonst ist das Merkmal zwar da und trotzdem nicht zu
+             sehen. Gerechnet, nicht geschaetzt. */
+          const linieAllein = !!e.randArt && !F(e) && !e.istInk;
+          return { ...e, verstoesse: v, schwere: v.length ? schwere(e, v) : null,
+                   stufe: stufe(e),
+                   linieSchwach: linieAllein && e.randKontrast < 3,
+                   flaecheGrenz: Fschwach(e) ? besteFlaeche(e) : 0 };
+        });
 
       /* ── unmarkiert und markiert, exakt derselbe Ausschnitt ───────────── */
       const el = page.locator(sel).first();
