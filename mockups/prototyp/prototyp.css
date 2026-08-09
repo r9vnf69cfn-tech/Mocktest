@@ -9,7 +9,8 @@
  *
  *   1  Die Seite drumherum        (Kopf, Bühne, Fußzeile)
  *   2  Das Gerät                  (Glas, Maßstab, Umschalter)
- *   3  Der Schirmwechsel          (Rolle WECHSELN aus bewegung.css)
+ *   3  Der Schirmwechsel          (Rolle WECHSELN und ÖFFNEN aus bewegung.css)
+ *   3b Was ein Schirm können muss, was ein Schaubild nicht muss (Rollen)
  *   4  Die Regel für tote Ziele   (das Wichtigste in dieser Datei)
  * ========================================================================== */
 
@@ -229,6 +230,29 @@ body.pv {
 .pv-screen.bw-wechseln-rein { z-index: 2; }
 .pv-screen[data-pv-richtung="zurueck"] { --bw-richtung: -1; }
 
+/* ── Die Rolle ÖFFNEN ─────────────────────────────────────────────────────
+   Der Zwilling wächst auf das Rechteck des Schirms und übernimmt dessen
+   Eckradius. Der Positionierer .pv-screen hat für sich genommen keinen —
+   also bekommt er hier den des Geräts, damit die Kopie am Ende nicht mit
+   quadratischen Ecken über die runden des Rahmens steht. Sichtbar wird die
+   Angabe nur an dieser einen Stelle; .pv-screen hat weder Fläche noch Rand. */
+.pv-glas[data-pv-geraet="ipad"]   .pv-screen { border-radius: 22px; }
+.pv-glas[data-pv-geraet="iphone"] .pv-screen { border-radius: 44px; }
+
+/* Die Hülle kommt zurück. bewegung.css kennt für .bw-huelle-zurueck nur den
+   Hinweg: die Übergangsangabe steht in der Klasse selbst und verschwindet mit
+   ihr — die Deckkraft spränge zurück statt zu laufen. Für den Rückweg
+   (prototyp.js §5c) trägt die Hülle so lange ein eigenes Merkmal. Dieselbe
+   Dauer, dieselbe Kurve, dieselbe Eigenschaft; nichts Neues, nur andersherum. */
+.pv-glas [data-pv-huelle] { transition: opacity var(--bw-d-oeffnen) var(--bw-e-io); }
+
+/* Solange ein Übergang läuft, nimmt KEIN Ziel mehr etwas an — auch nicht der
+   Schirm, der gerade kommt. Ein zweiter Tap mitten im Hero führte in einen
+   dritten Schirm, und man käme an, ohne zu wissen, wie. Der Zeiger bleibt
+   dabei, was er war: kein Warte-Cursor, kein Grauschleier. Es ist eine
+   Drittelsekunde, keine Ladezeit. */
+.pv-glas[data-pv-sperre] .pv-lebt { pointer-events: none; }
+
 /* Der abtretende Schirm nimmt keine Eingaben mehr an. Ohne diese Zeile
    könnte man in den 300 ms der Bewegung noch auf ein Ziel klicken, das
    gerade hinausläuft — und landete zwei Schirme weiter, ohne zu wissen wie. */
@@ -239,6 +263,47 @@ body.pv {
    §3). Sichtbar soll das nicht sein — der Fokusring gehört auf Knöpfe, nicht
    um die ganze Fläche. */
 .pv-screen:focus { outline: none; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 3b · WAS EIN BEGEHBARER SCHIRM KANN UND EIN SCHAUBILD NICHT KÖNNEN MUSS
+ *
+ * Drei Regeln. Alle drei gelten NUR hier — die dreizehn Schaubilder bleiben
+ * Zeichen für Zeichen, wie sie sind.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1 · Jeder Schirm ist höher als sein Rahmen ────────────────────────────
+   system.css setzt .scroll { overflow: hidden } — für ein Schaubild richtig,
+   für ein Gerät tödlich: die letzten Notizzeilen, „Eintrag beginnen", die
+   Aufgabe „Bücher verlängern" und zwei Drittel des Notizbuch-Regals lägen
+   unerreichbar unter der Kante. Ein Gerät, in dem man nicht scrollen kann,
+   ist kein Gerät.
+   Ohne Rollbalken: auf iPad und iPhone gibt es keinen, und ein grauer Balken
+   am Rand ist das erste, woran man eine Webseite erkennt. Der Rahmen selbst
+   rollt nicht — overscroll-behavior hält den Schwung im Schirm, statt die
+   Seite darunter mitzuziehen. */
+.pv-glas .scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+.pv-glas .scroll::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+/* ── 2 · Das Kästchen, das sich zeichnen kann ──────────────────────────────
+   Die Erledigen-Bewegung braucht .bw-check (SVG) statt .check (zwei Ränder).
+   Beide sind Zeichen für Zeichen dasselbe Bild — bis auf den Ring: .check
+   trägt seit dem Kontrast-Befund --line-tap, .bw-check noch --line-2, und in
+   --line-2 hält der leere Kreis nur 1,45:1 und ist im Bild kaum zu finden.
+   Ruhig heißt leise, nicht unsichtbar. Hier gilt deshalb überall die Farbe,
+   für die sich das Gestaltungssystem entschieden hat — keine neue.
+   :not(.is-an), damit der Ring beim Zeichnen weiter verschwinden darf. */
+.pv-glas .bw-check:not(.is-an) { box-shadow: inset 0 0 0 1.5px var(--line-tap); }
+
+/* ── 3 · Was im Schaubild der Gegenstand ist und im Gerät im Weg steht ─────
+   library.html zeigt ein geöffnetes Kontextmenü — dort ist es der Gegenstand
+   des Bildes. Im begehbaren Regal stünde es ohne Anlass offen, verdeckte zwei
+   Notizbücher und sähe aus, als hinge der Prototyp.
+   Gesetzt wird das Merkmal beim Auszug (tools/prototyp-bauen.js §3b). */
+[data-pv-aus] { display: none !important; }
 
 /* ══════════════════════════════════════════════════════════════════════════
  * 4 · DIE REGEL FÜR TOTE ZIELE
