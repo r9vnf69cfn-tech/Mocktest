@@ -209,15 +209,34 @@
    * ==================================================================== */
 
   var WECHSEL_MS = 300;      /* 180 + 180 − 60 Überlappung */
+  var OEFFNEN_MS = 320;      /* die Rolle ÖFFNEN, bewegung.css §2.1 */
   var laeuft = null;
+
+  /* Was bewegung.js gerade wirklich tut — nicht, was das System meldet.
+     MOTION.modus('reduce') kann es von Hand erzwingen; beides muss hier
+     dasselbe Ergebnis haben, sonst liefe eine Bewegung reduziert und die
+     nächste voll. */
+  function MOTION_REDUZIERT() {
+    return !!(global.MOTION && global.MOTION.reduziert && global.MOTION.reduziert());
+  }
 
   function alleRahmen(fn) {
     Array.prototype.forEach.call(GLAS.querySelectorAll('.pv-screen'), fn);
   }
 
   function aufraeumen(rahmen) {
-    rahmen.classList.remove('bw-wechseln-raus', 'bw-wechseln-rein');
+    rahmen.classList.remove('bw-wechseln-raus', 'bw-wechseln-rein',
+                            'bw-oeffnen-blatt', 'bw-huelle-zurueck');
     rahmen.removeAttribute('data-pv-richtung');
+    rahmen.style.opacity = '';
+    rahmen.style.zIndex = '';
+    /* Der Hero lässt eine laufende Animation mit fill:forwards zurück. Bliebe
+       sie hängen, gewönne sie später gegen jede CSS-Animation dieses Rahmens
+       (Web Animations schlägt CSS): der nächste Wechsel führe ohne Blende
+       herein, und niemand fände den Grund. */
+    if (rahmen.getAnimations) {
+      rahmen.getAnimations().forEach(function (a) { try { a.cancel(); } catch (e) {} });
+    }
   }
 
   function zeigen(schluessel, geraet, richtung) {
@@ -244,8 +263,20 @@
       return;
     }
 
+    /* Die Rolle ÖFFNEN als BLATT (bewegung.css §2.1, kleine Fassung): der
+       neue Schirm steigt 14 pt auf und blendet in 320 ms herein, der alte
+       tritt dahinter auf 0,55 zurück. Sie gilt, wo etwas geöffnet wird, das
+       keinen Ursprung auf dem Schirm hat — ein Knopf ist kein Gegenstand,
+       der wachsen könnte. Wo einer da ist, läuft stattdessen der Hero (§5c). */
+    var dauer = WECHSEL_MS;
     var zurueck = richtung === 'zurueck';
-    if (richtung !== 'seitlich') {
+    if (richtung === 'oeffnen') {
+      neu.style.zIndex = '3';
+      alt.style.zIndex = '1';
+      alt.classList.add('bw-huelle-zurueck');
+      neu.classList.add('bw-oeffnen-blatt');
+      dauer = OEFFNEN_MS;
+    } else if (richtung !== 'seitlich') {
       if (zurueck) { alt.setAttribute('data-pv-richtung', 'zurueck'); neu.setAttribute('data-pv-richtung', 'zurueck'); }
       alt.classList.add('bw-wechseln-raus');
       neu.classList.add('bw-wechseln-rein');
@@ -260,9 +291,15 @@
       aufraeumen(neu);
       alleRahmen(function (r) { if (r !== neu) r.hidden = true; });
     }
-    laeuft = { fertig: fertig, uhr: setTimeout(fertig, WECHSEL_MS + 60) };
+    laeuft = { fertig: fertig, uhr: setTimeout(fertig, tempo(dauer) + 60) };
     fokusMitnehmen(neu);
     nachWechsel(schirm, geraet);
+  }
+
+  /* Dauern mit dem Verlangsamer aus bewegung.js. Ohne ihn räumte die Uhr hier
+     nach 300 ms auf, während die Bewegung bei Tempo 4 noch 900 ms läuft. */
+  function tempo(ms) {
+    return global.MOTION && global.MOTION.ms ? global.MOTION.ms(ms) : ms;
   }
 
   /* Wer mit der Tastatur navigiert hat, stünde nach dem Wechsel im Nichts:
@@ -293,14 +330,31 @@
      Erst der Zustand, dann das Bild. zeigen() meldet am Ende, wie tief man
      steht — stünde die Geschichte da noch auf dem alten Wert, wäre der
      Zurück-Knopf des neuen Schirms für einen Wimpernschlag tot. */
-  function gehen(zielSchluessel, richtung, ersetzen) {
+  function gehen(zielSchluessel, richtung, ersetzen, quelle) {
     var k = loesen(zielSchluessel);
     if (!k) return false;
     if (k === jetzt.schirm) return false;
+    if (gesperrt) return false;
     var geraet = jetzt.geraet;
+
+    /* Vorwärts über einen Gegenstand: der Gegenstand wächst zum Schirm (§5c).
+       Das ist der Hero — und es ist zugleich das Aufklappen, das die DNA für
+       das Aufgaben-Detail verlangt: „Das Detail ist kein Ort, sondern ein
+       Zustand der Zeile." Eine Zeile, die zum Detail wächst, hat den Ort nie
+       verlassen; eine Zeile, die nach links hinausschiebt, schon. */
+    if (!ersetzen && (richtung || 'vor') === 'vor' && quelle && istGegenstand(quelle)) {
+      if (heroVor(k, quelle)) return true;
+    }
+
     var tiefe = ersetzen ? jetzt.tiefe : jetzt.tiefe + 1;
+    if (!ersetzen) stapel[tiefe] = null;    /* kein Hero — der Rückweg ist der Wechsel */
     zustandSetzen(k, geraet, tiefe, !!ersetzen);
-    zeigen(k, geraet, richtung || 'vor');
+    /* Ein Weg vorwärts, der von keinem Gegenstand ausgeht, ÖFFNET trotzdem —
+       nur eben als Blatt. „Seitlich" bleibt seitlich: zwischen zwei Einträgen
+       der Seitenleiste geht man hinüber, nicht hinein. */
+    var r = richtung || 'vor';
+    if (r === 'vor' && quelle && !ersetzen) r = 'oeffnen';
+    zeigen(k, geraet, r);
     return true;
   }
 
@@ -376,7 +430,11 @@
     if (weg && weg.titel && !el.getAttribute('aria-label')) merken(el, 'aria-label', weg.titel);
   }
 
-  /* Ein Klick im Glas. Ein einziger Zuhörer für 26 Rahmen. */
+  /* Ein Klick im Glas. Ein einziger Zuhörer für 26 Rahmen.
+     Gesucht wird vom Ereignisziel aus nach OBEN der erste lebende Vorfahr —
+     also der INNERSTE Weg. Das Erledigen-Kästchen liegt in einer Zeile, die
+     ins Aufgaben-Detail führt; ohne diese Regel erledigte man die Aufgabe und
+     landete gleichzeitig im Detail. */
   GLAS.addEventListener('click', function (e) {
     var el = e.target.closest ? e.target.closest('.pv-lebt') : null;
     /* Anker mit href="#" stehen im Bestand (die Buchdeckel der Bibliothek).
@@ -386,13 +444,49 @@
     if (anker) e.preventDefault();
     if (!el) return;
     var weg = el.__pvWeg;
-    if (!weg) return;                       /* lebendig, aber ohne Weg (data-bw) */
+
+    /* Elemente mit eigener Bewegung. bewegung.js horcht selbst am Dokument —
+       hier wird nur eines vorweggenommen: die Herkunft. Sie muss von hier aus
+       laufen, weil danach der Weg zum Ursprung kommt und weil ihr Faden beim
+       Verlassen des Schirms wieder eingeholt gehört (§5d). */
+    if (el.hasAttribute('data-bw') && !el.hasAttribute('data-bw-aus')) {
+      schmutzig(el);
+      if (el.getAttribute('data-bw') === 'herkunft') {
+        e.preventDefault();
+        e.stopPropagation();               /* sonst liefe bewegung.js sie ein zweites Mal */
+        herkunftZeigen(el, weg);
+        return;
+      }
+      if (!weg || weg.ziel === 'nichts') return;   /* erledigen · übergeben · drehen · bewerten */
+    }
+
+    if (!weg) return;                       /* lebendig, aber ohne Weg */
     e.preventDefault();
     if (weg.ziel === 'zurueck') { zurueck(); return; }
     if (weg.ziel === 'nichts') return;
+    if (weg.ziel === 'canvas') { canvasOeffnen(); return; }
     if (weg.ziel.indexOf('extern:') === 0) { location.href = weg.ziel.slice(7); return; }
-    gehen(weg.ziel, weg.richtung || 'vor');
+    gehen(weg.ziel, weg.richtung || 'vor', false, el);
   });
+
+  /* Das Canvas ist ein eigenes, lauffähiges Mockup im Wurzelordner — kein
+     Schirm dieses Prototyps. Es öffnet in einem neuen Tab, damit der Weg
+     hierher nicht verloren geht: wer aus der Bibliothek ein Canvas-Notizbuch
+     antippt, will das Canvas sehen und danach weitersuchen. Ein Sprung, der
+     den Prototyp unter einem wegzieht, wäre der teuerste Klick der Seite. */
+  function canvasOeffnen() {
+    var url = '../../index.html';
+    var w = null;
+    try { w = global.open(url, '_blank'); } catch (e) { w = null; }
+    if (!w) { location.href = url; return; }
+    sagen('Das Canvas ist ein eigenes Mockup — es läuft jetzt in einem neuen Tab.');
+  }
+
+  /* Ein Satz in der Fußzeile, der den Schirmnamen für einen Moment ablöst.
+     Der nächste Wechsel schreibt ihn ohnehin neu. */
+  function sagen(text) {
+    if (FUSS) FUSS.textContent = text;
+  }
 
   /* Leertaste und Enter auf einem belebten Element, das kein Knopf ist. */
   GLAS.addEventListener('keydown', function (e) {
@@ -531,28 +625,93 @@
     aufbauen();
   }
 
+  /* Die Kurzschreibung der Karte (§10) und die ausgeschriebene sind dasselbe.
+     s/g/wo/ziel/art/t liest sich in 142 Zeilen besser; schirm/geraet/richtung/
+     titel liest sich in einer fremden Datei besser. Beides wird angenommen. */
   function karteAnwenden(rahmen, geraet) {
     if (!KARTE || !KARTE.wege) return;
     var schirm = rahmen.getAttribute('data-pv-screen');
     KARTE.wege.forEach(function (eintrag) {
-      if (!eintrag || !eintrag.wo || !eintrag.ziel) return;
-      if (loesen(eintrag.schirm) !== schirm) return;
-      var g = eintrag.geraet || 'beide';
-      if (g !== 'beide' && g !== geraet) return;
+      if (!eintrag) return;
+      var wo = eintrag.wo;
       var ziel = eintrag.ziel;
-      if (ziel !== 'zurueck' && ziel !== 'nichts' && ziel.indexOf('extern:') !== 0) {
+      if (!wo || !ziel) return;
+      if (loesen(eintrag.s || eintrag.schirm) !== schirm) return;
+      var g = eintrag.g || eintrag.geraet || 'beide';
+      if (g !== 'beide' && g !== geraet) return;
+      if (ziel !== 'zurueck' && ziel !== 'nichts' && ziel !== 'canvas' &&
+          ziel.indexOf('extern:') !== 0) {
         var k = loesen(ziel);
-        if (!k) { melden('Wegekarte: unbekanntes Ziel "' + ziel + '" (' + schirm + ' · ' + eintrag.wo + ')'); return; }
+        if (!k) { melden('Wegekarte: unbekanntes Ziel "' + ziel + '" (' + schirm + ' · ' + wo + ')'); return; }
         ziel = k;
       }
-      var treffer = rahmen.querySelectorAll(eintrag.wo);
+      var treffer;
+      try { treffer = rahmen.querySelectorAll(wo); }
+      catch (e) { melden('Wegekarte: "' + wo + '" ist kein gültiger Wähler (' + schirm + ')'); return; }
       if (!treffer.length) {
-        melden('Wegekarte: "' + eintrag.wo + '" trifft nichts in ' + schirm + ' · ' + geraet);
+        melden('Wegekarte: "' + wo + '" trifft nichts in ' + schirm + ' · ' + geraet);
         return;
       }
+      var art = eintrag.art || 'oeffnen';
+      var richtung = eintrag.richtung || (art === 'zurueck' ? 'zurueck' : 'vor');
       Array.prototype.forEach.call(treffer, function (el) {
-        beleben(el, { ziel: ziel, richtung: eintrag.richtung || 'vor', titel: eintrag.titel });
+        beleben(el, { ziel: ziel, richtung: richtung, art: art, titel: eintrag.t || eintrag.titel });
       });
+    });
+  }
+
+  /* ── Die drei Schalter in den Einstellungen ───────────────────────────────
+     Hell · Dunkel · Automatisch sind der einzige Ort im Prototyp, an dem ein
+     Bedienelement wirklich etwas tut — und sie kosten nichts, weil die Seite
+     beides ohnehin kann. Alles andere in den Einstellungen ändert Daten, die
+     es hier nicht gibt, und bleibt darum tot.
+     Gefunden wird über das WORT, nicht über die Stelle: „Auto" auf dem iPhone,
+     „Automatisch" auf dem iPad, und die Reihenfolge der Abschnitte ist auf den
+     beiden Geräten nicht dieselbe. */
+  var ERSCHEINUNG = { 'hell': 'light', 'dunkel': 'dark', 'automatisch': 'auto', 'auto': 'auto' };
+
+  function schalter(rahmen) {
+    if (rahmen.getAttribute('data-pv-screen') !== 'einstellungen') return;
+    var gruppe = rahmen.querySelector('.segmented');
+    if (!gruppe) return;
+    Array.prototype.forEach.call(gruppe.querySelectorAll('button'), function (knopf) {
+      var modus = ERSCHEINUNG[wortVon(knopf)];
+      if (!modus) return;
+      beleben(knopf, { ziel: 'nichts', titel: 'Erscheinungsbild: ' + knopf.textContent.trim() });
+      knopf.__pvSchalter = modus;
+    });
+  }
+
+  GLAS.addEventListener('click', function (e) {
+    var k = e.target.closest ? e.target.closest('.pv-lebt') : null;
+    if (!k || !k.__pvSchalter) return;
+    erscheinungSetzen(k.__pvSchalter);
+  });
+
+  function erscheinungSetzen(modus) {
+    var wurzel = DOK.documentElement;
+    if (modus === 'auto') {
+      var dunkel = global.matchMedia && global.matchMedia('(prefers-color-scheme: dark)').matches;
+      wurzel.setAttribute('data-theme', dunkel ? 'dark' : 'light');
+    } else {
+      wurzel.setAttribute('data-theme', modus);
+    }
+    /* Die Bedienleiste von mock.js sitzt außerhalb des Rahmens und zeigt
+       dasselbe an — sie darf jetzt nicht das Gegenteil behaupten. */
+    Array.prototype.forEach.call(DOK.querySelectorAll('[data-theme-set]'), function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-set') === wurzel.getAttribute('data-theme')));
+    });
+    alleRahmen(zustandDerSchalter);
+  }
+
+  /* Der aktive Zustand steht im Bestand als .is-active am Segment. */
+  function zustandDerSchalter(rahmen) {
+    var jetztTheme = DOK.documentElement.getAttribute('data-theme');
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.segmented button'), function (b) {
+      if (!b.__pvSchalter) return;
+      var an = b.__pvSchalter === jetztTheme;
+      b.classList.toggle('is-active', an);
+      b.setAttribute('aria-selected', String(an));
     });
   }
 
@@ -572,6 +731,273 @@
       karteAnwenden(rahmen, geraet);
     });
     rueckwegPruefen();
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * 5c · DIE ÜBERGÄNGE — die Rolle ÖFFNEN, vorwärts und rückwärts
+   *
+   * 320 ms, springStandard. Ein Zwilling der angetippten Karte legt sich über
+   * die Seite und wechselt in einem Zug Ort, Breite, Höhe und Eckradius bis
+   * zum Rechteck des Schirms; was ringsum liegt, geht auf 0,55. Gebaut ist
+   * das in bewegung.js (MOTION.oeffnen) — hier steht nur, WORAUS gewachsen
+   * wird und was danach mit dem Schirm geschieht.
+   *
+   * Zwei Regeln:
+   *
+   *   Ein GEGENSTAND wächst.       Notizbuch · Zeile · Karte · Graph-Knoten ·
+   *                                Kettenstation. Sie sind die „Punkte" des
+   *                                Leitmotivs: Dinge, die man in die Hand
+   *                                nimmt. Sie tragen den Hero.
+   *   Eine AKTION öffnet ein Blatt. „Eintrag beginnen", „Lernen", ein
+   *                                Herkunfts-Chip. Ein Knopf ist kein
+   *                                Gegenstand; er hat keine Gestalt, die
+   *                                wachsen könnte. Für ihn steht die kleine
+   *                                Fassung derselben Rolle bereit
+   *                                (.bw-oeffnen-blatt, §3 dieser Datei).
+   *
+   * Gewachsen wird aus dem DECKEL, nicht aus der ganzen Karte: bei einem
+   * Notizbuch ist .book__cover der Gegenstand, die Zeile darunter (Modul,
+   * Seitenzahl, Datum) ist Beschriftung und bleibt beim Regal.
+   *
+   * Und der Rückweg ist derselbe Weg rückwärts: der Schirm schrumpft in die
+   * Karte zurück, aus der er kam, während das Regal ringsum von 0,55 auf 1
+   * zurückkommt. Dieselbe Dauer, dieselbe Kurve, dieselben Rechtecke — nur
+   * die Richtung ist umgedreht. Unter Reduce gibt es keinen Zwilling; dort
+   * gilt der gebaute Reduce-Pfad der Rolle WECHSELN (120 ms Kreuzblende),
+   * und die Richtung sagt die Navigationsleiste.
+   * ==================================================================== */
+
+  var OBJEKT = '.book, .row, .card, .gn, .chain__link';
+  var stapel = [];          /* je Tiefe: woraus dieser Schirm gewachsen ist */
+  var gesperrt = false;
+
+  function istGegenstand(el) {
+    return !!(el && el.matches && el.matches(OBJEKT));
+  }
+
+  /* Der Deckel ist der Gegenstand, nicht die Karte samt Beschriftung. */
+  function wachstumsKern(el) {
+    return el.querySelector('.book__cover') || el;
+  }
+
+  /* Was ringsum zurücktritt: die Rollfläche, in der die Karte liegt — das
+     Regal, die Liste, das Raster. Findet sich keine, tritt der Schirm zurück. */
+  function huelleVon(quelle, rahmen) {
+    return quelle.closest('.scroll') || rahmen;
+  }
+
+  function sperren(an) {
+    gesperrt = !!an;
+    if (an) GLAS.setAttribute('data-pv-sperre', '1');
+    else GLAS.removeAttribute('data-pv-sperre');
+  }
+
+  function stapelKuerzen(tiefe) {
+    for (var i = tiefe + 1; i < stapel.length; i++) stapel[i] = null;
+  }
+
+  function sichtbarerRahmen() {
+    var s = NACH_SCHLUESSEL[jetzt.schirm];
+    return s ? s.rahmen[jetzt.geraet] : null;
+  }
+
+  function heroVor(k, quelle) {
+    if (MOTION_REDUZIERT() || !global.MOTION || !global.MOTION.oeffnen) return false;
+    var geraet = jetzt.geraet;
+    var ziel = NACH_SCHLUESSEL[k];
+    var neu = ziel && ziel.rahmen[geraet];
+    var alt = sichtbarerRahmen();
+    if (!neu || !alt || neu === alt) return false;
+
+    if (laeuft) { clearTimeout(laeuft.uhr); laeuft.fertig(); }
+    var huelle = huelleVon(quelle, alt);
+    var kern = wachstumsKern(quelle);
+    var tiefe = jetzt.tiefe + 1;
+    var vonSchirm = jetzt.schirm;
+
+    sperren(true);
+    neu.style.zIndex = '3';
+    alt.style.zIndex = '1';
+
+    global.MOTION.oeffnen({ von: kern, nach: neu, huelle: huelle }).then(function () {
+      huelle.classList.remove('bw-huelle-zurueck');
+      stapelKuerzen(tiefe - 1);
+      stapel[tiefe] = { schirm: vonSchirm, geraet: geraet, quelle: quelle, huelle: huelle };
+      zustandSetzen(k, geraet, tiefe, false);
+      zeigen(k, geraet, 'keine');
+      alt.style.zIndex = '';
+      neu.style.zIndex = '';
+      sperren(false);
+    });
+    return true;
+  }
+
+  /* Der Rückweg. Der Zwilling wird hier selbst gestellt, weil bewegung.js für
+     das Öffnen nur die eine Richtung kennt — die Zahlen kommen trotzdem von
+     dort (MOTION.ms, MOTION.kurven), damit es nicht zwei Wahrheiten gibt. */
+  function heroZurueck(hero) {
+    var alt = NACH_SCHLUESSEL[jetzt.schirm];   /* jetzt ist schon das ZIEL gesetzt */
+    var neu = alt && alt.rahmen[jetzt.geraet]; /* der Schirm, auf den wir zurückgehen */
+    var detail = null;
+    alleRahmen(function (r) { if (r !== neu && !r.hidden) detail = detail || r; });
+    if (!neu || !detail) { zeigen(jetzt.schirm, jetzt.geraet, 'zurueck'); return; }
+
+    if (laeuft) { clearTimeout(laeuft.uhr); laeuft.fertig(); }
+    sperren(true);
+    aufraeumen(neu);
+    neu.hidden = false;
+    neu.style.zIndex = '1';
+    detail.style.zIndex = '3';
+    /* Das Regal kommt zurück: die Klasse steht, der Übergang läuft beim
+       Entfernen von selbst — 320 ms, dieselbe Kurve wie hinein. */
+    if (hero.huelle) hero.huelle.classList.add('bw-huelle-zurueck');
+
+    var kern = wachstumsKern(hero.quelle);
+    var rA = detail.getBoundingClientRect();
+    var rB = kern.getBoundingClientRect();
+    var dauer = tempo(OEFFNEN_MS);
+    var kurve = (global.MOTION && global.MOTION.kurven && global.MOTION.kurven.standard) ||
+                'cubic-bezier(.216,.052,.330,1.110)';
+
+    var zwilling = kern.cloneNode(true);
+    zwilling.className = (kern.className + ' bw-zwilling').replace(/\bbw-tap[^\s]*/g, '');
+    zwilling.removeAttribute('id');
+    zwilling.setAttribute('aria-hidden', 'true');
+    zwilling.style.left = rA.left + 'px';
+    zwilling.style.top = rA.top + 'px';
+    zwilling.style.width = rA.width + 'px';
+    zwilling.style.height = rA.height + 'px';
+    DOK.body.appendChild(zwilling);
+    kern.style.visibility = 'hidden';
+
+    var lauf = zwilling.animate(
+      [{ left: rA.left + 'px', top: rA.top + 'px', width: rA.width + 'px', height: rA.height + 'px',
+         borderRadius: getComputedStyle(detail).borderRadius },
+       { left: rB.left + 'px', top: rB.top + 'px', width: rB.width + 'px', height: rB.height + 'px',
+         borderRadius: getComputedStyle(kern).borderRadius }],
+      { duration: dauer, easing: kurve, fill: 'forwards' });
+
+    /* Der Detailschirm geht unter dem Zwilling weg — spiegelbildlich zum
+       Hereinblenden beim Öffnen (dort ab 55 % der Zeit, hier bis dahin). */
+    detail.animate([{ opacity: 1 }, { opacity: 0 }],
+      { duration: Math.round(dauer * 0.55), easing: 'linear', fill: 'forwards' });
+
+    function fertig() {
+      zwilling.remove();
+      kern.style.visibility = '';
+      if (hero.huelle) hero.huelle.classList.remove('bw-huelle-zurueck');
+      detail.style.zIndex = '';
+      neu.style.zIndex = '';
+      alleRahmen(function (r) { if (r !== neu) { r.hidden = true; aufraeumen(r); } });
+      sperren(false);
+    }
+    lauf.finished.catch(function () {}).then(fertig);
+    fokusMitnehmen(neu);
+    nachWechsel(alt, jetzt.geraet);
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * 5d · HERKUNFT ZEIGEN — der Faden, dann die Quelle
+   *
+   * Tap auf den Herkunfts-Chip: erst zeichnet sich die Verbindung zum
+   * Ursprung (420 ms), dann kommt, was am anderen Ende hängt.
+   *
+   * Zwei Fassungen, und der Unterschied steht im Markup, nicht in einer
+   * Ausnahmeliste:
+   *
+   *   Der Chip nennt eine QUELLE auf demselben Schirm (data-bw-quelle) —
+   *   dann ist die Frage dort beantwortet. Die Karte weicht, der Quellabsatz
+   *   kommt herein, der Faden bleibt gespannt. Es wird nicht navigiert; der
+   *   Weg weiter steht als Knopf im Quellfeld, der Rückweg heißt „Loslassen".
+   *
+   *   Der Chip nennt nur einen URSPRUNG (data-bw-ursprung) — dann zeigt der
+   *   Faden auf ein Element dieses Schirms, und danach geht es dorthin, wo
+   *   das Element hinführt. Faden zuerst, Schirm danach: die Antwort auf
+   *   „woher kommt das?" ist der Weg, nicht der Sprung.
+   *
+   * Kein Ursprung im Bild, kein Faden: an den übrigen 15 Chips gibt es nichts
+   * zu zeichnen — dort öffnet der Chip als Blatt. Kein Faden ohne echte,
+   * zeichenbare Kante (DNA §2.2).
+   * ==================================================================== */
+
+  var offeneHerkunft = null;
+
+  function herkunftZeigen(chip, weg) {
+    var M = global.MOTION;
+    if (!M || !M.herkunft) { if (weg && weg.ziel) gehen(weg.ziel, 'vor', false, chip); return; }
+    var rahmen = chip.closest('.pv-screen');
+    var hol = function (name) {
+      var s = chip.getAttribute('data-bw-' + name);
+      return s ? rahmen.querySelector(s) : null;
+    };
+    var ursprung = hol('ursprung');
+    if (!ursprung) { if (weg && weg.ziel) gehen(weg.ziel, 'vor', false, chip); return; }
+
+    herkunftEinholen();
+    var kurve = chip.getAttribute('data-bw-kurve');
+    offeneHerkunft = M.herkunft({
+      chip: chip, ursprung: ursprung,
+      karte: hol('karte'), quelle: hol('quelle'),
+      box: hol('box') || rahmen,
+      kurve: kurve == null ? 20 : +kurve,
+    });
+
+    /* Beantwortet der Chip die Frage an Ort und Stelle, bleibt man stehen. */
+    if (chip.getAttribute('data-bw-quelle')) return;
+    if (!weg || !weg.ziel || weg.ziel === 'nichts') return;
+
+    /* Sonst: der Faden zuerst, der Schirm danach. Gegangen wird aus dem
+       URSPRUNG heraus — der Faden endet dort, und dort wächst es weiter. */
+    var ziel = weg.ziel;
+    global.setTimeout(function () {
+      if (jetzt.schirm !== rahmen.getAttribute('data-pv-screen')) return;
+      gehen(ziel, 'vor', false, istGegenstand(ursprung) ? ursprung : chip);
+    }, tempo(420) + 60);
+  }
+
+  function herkunftEinholen() {
+    if (!offeneHerkunft) return;
+    try { offeneHerkunft.zurueck(); } catch (e) { /* der Faden ist schon fort */ }
+    offeneHerkunft = null;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * 5e · DER ZUSTAND DER SCHIRME
+   *
+   * „Ohne Funktion" heißt auch: keine Spuren. Eine erledigte Aufgabe fällt
+   * aus der Liste, eine übergebene Auswahl zählt den Zähler hoch, eine
+   * bewertete Karte ist durch. Das ist richtig — im Augenblick. Bliebe es
+   * stehen, wäre der Prototyp nach zwei Minuten eine leergeräumte App, und
+   * die wichtigste Bewegung der Anwendung ließe sich genau einmal je
+   * Seitenaufruf vorführen.
+   *
+   * Deshalb merkt sich jeder Rahmen beim Start seinen Anfangszustand
+   * (MOTION.merken) und stellt ihn wieder her, sobald man ihn verlässt —
+   * unsichtbar, hinter dem Schirm, der gerade kommt. Wer zurückkommt, findet
+   * denselben Schirm wie beim ersten Mal.
+   *
+   * Zurückgesetzt wird nur, was eine Bewegung wirklich angefasst hat. Der
+   * Rest bleibt unberührt: das Zurückschreiben kostet einen Aufbau, und den
+   * für 26 Rahmen bei jedem Wechsel zu zahlen wäre die Verzögerung, an der
+   * man eine Webseite von einer App unterscheidet.
+   * ==================================================================== */
+
+  var schmutz = [];
+
+  function schmutzig(el) {
+    var rahmen = el.closest ? el.closest('.pv-screen') : null;
+    if (rahmen && schmutz.indexOf(rahmen) < 0) schmutz.push(rahmen);
+  }
+
+  function schirmeAufraeumen(ausser) {
+    if (!global.MOTION || !global.MOTION.zuruecksetzen) return;
+    for (var i = schmutz.length - 1; i >= 0; i--) {
+      var rahmen = schmutz[i];
+      if (rahmen === ausser) continue;
+      schmutz.splice(i, 1);
+      global.MOTION.zuruecksetzen(rahmen);
+      frischAufbauen(rahmen);
+    }
   }
 
   /* ══════════════════════════════════════════════════════════════════════
