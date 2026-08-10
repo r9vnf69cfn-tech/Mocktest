@@ -91,13 +91,25 @@ for wurzel, _, dateien in os.walk(quelle):
     for name in sorted(dateien):
         if not name.lower().endswith('.png'):
             continue
-        bild = Image.open(os.path.join(wurzel, name))
+        bild = Image.open(os.path.join(wurzel, name)).convert('RGB')
         b, h = bild.size
         f = 0.5
         if max(b, h) * f > LANG:
             f = LANG / max(b, h)
-        bild.resize((max(1, int(b * f)), max(1, int(h * f))), Image.LANCZOS).save(
-            os.path.join(aus, name), optimize=True)
+        klein = bild.resize((max(1, int(b * f)), max(1, int(h * f))), Image.LANCZOS)
+        ziel_datei = os.path.join(aus, name)
+        # Ein Schirmbild ist flaechig: wenige hundert Farben, harte Kanten,
+        # antialiasierte Schrift. Solche Bilder gehen ohne sichtbaren Verlust
+        # auf eine Palette von 256 Farben und werden dabei zweieinhalbmal
+        # leichter. Ein Foto tut das nicht — es bekaeme Streifen. Also wird
+        # gezaehlt statt geraten: getcolors() gibt None zurueck, sobald es
+        # mehr Farben findet als die Obergrenze.
+        farben = klein.getcolors(maxcolors=48000)
+        if farben is not None:
+            klein.quantize(colors=256, method=Image.MEDIANCUT,
+                           dither=Image.FLOYDSTEINBERG).save(ziel_datei, optimize=True)
+        else:
+            klein.save(ziel_datei, optimize=True)
         n += 1
 print(n)
 `;
