@@ -975,6 +975,12 @@
   function frischAufbauen(rahmen) {
     var geraet = rahmen.getAttribute('data-pv-geraet');
     totstellen(rahmen);
+    /* Vor allem anderen: Kästchen ohne Zeile werden zu reinen Haken (§5g).
+       Es steht HIER und nicht mehr am Ende von aufbauen(), weil §14s ihnen
+       ihren Weg gibt und dafür das Merkmal data-pv-haken schon dastehen
+       muss — sonst blieben sie beim ersten Durchgang tot und lebten erst
+       nach dem nächsten Aufräumen. */
+    kaestchenOhneZeile(rahmen);
     grundnavigation(rahmen, geraet);
     karteAnwenden(rahmen, geraet);
     schalter(rahmen);
@@ -1024,7 +1030,6 @@
   function aufbauen() {
     erzeugerListe = [];        /* §12b füllt sie beim Durchgang neu */
     alleRahmen(frischAufbauen);
-    alleRahmen(kaestchenOhneZeile);
     rueckwegPruefen();
   }
 
@@ -1502,6 +1507,14 @@
   function canvasWecken(rahmen) {
     if (!rahmen || !rahmen.querySelectorAll) return;
     Array.prototype.forEach.call(rahmen.querySelectorAll('iframe[data-pv-canvas]'), function (f) {
+      /* Ein Blatt, das als „neu und leer" geöffnet wurde, bleibt es nur für
+         diesen einen Besuch. Wer danach über die Seitenleiste ins Canvas
+         geht, meint das Canvas — nicht sein leeres Blatt. */
+      if (f.__pvLeer) {
+        f.__pvLeer = 0;
+        f.setAttribute('src', f.getAttribute('data-pv-canvas'));
+        return;
+      }
       if (f.getAttribute('src')) return;
       /* Nur laden, wenn der Rahmen wirklich Maß hat. Das Canvas passt seine
          Ansicht beim Start einmal ein und misst dafür sein eigenes Fenster;
@@ -1998,6 +2011,23 @@
       var datum = m ? nachtragsDatum(m[1], m[2]) : null;
       k.__pvVorwahl = v;
       k.__pvDatum = datum;
+
+      /* Nennt der Knopf das Ding beim Namen — „Neue Notiz", „Eintrag
+         beginnen", „Notizbuch anlegen", „Erste Notiz" —, dann legt er es an.
+         Ein Menü dazwischen wäre eine Frage, die der Knopf selbst schon
+         beantwortet hat. Nur „Neu" und das nackte Pluszeichen fragen. */
+      var d = direktesDing(textVon(k), v);
+      if (d) {
+        beleben(k, {
+          ziel: 'nichts',
+          wirkt: 'legt ' + ding(d).wort + ' an',
+          titel: ding(d).wort + ' anlegen',
+          tun: function (el) { erzeugen(d, el.__pvDatum); },
+        });
+        erzeugerListe.push({ schirm: schirm, geraet: geraet, wort: textVon(k) || '(Pluszeichen)', vorwahl: d });
+        return;
+      }
+
       beleben(k, {
         ziel: 'nichts',
         wirkt: 'öffnet das Erzeugen-Menü',
@@ -2022,6 +2052,23 @@
         erzeugerListe.push({ schirm: schirm, geraet: geraet, wort: 'Erfassungszeile', vorwahl: 'aufgabe' });
       }
     }
+  }
+
+  /* Welches der sechs Dinge ein Wortlaut meint — oder keins. */
+  var DIREKT = [
+    [/^(notiz|neue notiz|erste notiz|zweite notiz)$/i,      'notiz'],
+    [/^(notizbuch anlegen|neues notizbuch)$/i,              'notizbuch'],
+    [/^(eintrag|eintrag beginnen)$|nachtragen$/i,           'journal'],
+    [/^(aufgabe|neue aufgabe|aufgabe hinzufügen)$/i,        'aufgabe'],
+    [/^(karte hinzufügen|neues deck)$/i,                    'deck'],
+    [/^(neues blatt|canvas-blatt)$/i,                       'blatt'],
+  ];
+
+  function direktesDing(wortlaut, vorwahl) {
+    var t = (wortlaut || '').replace(/\s+/g, ' ').trim();
+    for (var i = 0; i < DIREKT.length; i++) if (DIREKT[i][0].test(t)) return DIREKT[i][1];
+    void vorwahl;
+    return null;
   }
 
   var MONATE = { jan: 'Januar', feb: 'Februar', 'mär': 'März', apr: 'April', mai: 'Mai', jun: 'Juni',
@@ -2403,10 +2450,26 @@
   };
 
   /* ── CANVAS-BLATT ───────────────────────────────────────────────────────
-     Das Canvas ist ein eigenständiges Mockup im Rahmen (§11a) und bringt
-     seine leere Fläche selbst mit. Hier ist nichts zu bauen — der Weg dorthin
-     IST das neue Blatt. */
-  BAU.blatt = function () {};
+     Das Canvas ist ein eigenständiges Mockup im Rahmen (§11a) — und es bringt
+     beim Öffnen seinen Beispielinhalt mit: Überschrift „Whiteboard", zwei
+     Haftzettel, eine blaue Ellipse, ein roter Pfeil. Wer im Menü
+     „Canvas-Blatt" wählt und DAS bekommt, hat nichts angelegt, sondern
+     jemandes fertige Arbeit geöffnet. Das war der schwerste Befund der
+     letzten Abnahme.
+
+     Das Canvas kennt seit dieser Runde ?leer=1 (js/app.js): dann bleibt der
+     Beispielinhalt aus, und auch der gespeicherte Stand wird nicht geladen.
+     Hier wird der Rahmen darauf umgestellt — und beim nächsten regulären
+     Besuch des Canvas-Schirms wieder zurück. */
+  BAU.blatt = function (rahmen) {
+    var f = rahmen ? rahmen.querySelector('iframe[data-pv-canvas]') : null;
+    if (!f) return;
+    var quelle = f.getAttribute('data-pv-canvas') || '../../index.html';
+    var neuQuelle = quelle + (quelle.indexOf('?') < 0 ? '?' : '&') + 'leer=1';
+    f.setAttribute('src', neuQuelle);
+    f.__pvLeer = 1;
+    sagen('Neues Canvas-Blatt — leer. Der Stift liegt bereit.');
+  };
 
   /* ── 12e · Die Erfassungszeile ───────────────────────────────────────────
      Der einzige Ort im Prototyp, an dem wirklich getippt wird. Das Schaubild
@@ -2528,14 +2591,87 @@
     if (feld.__pvErkannt) {
       verbergen(feld.__pvErkannt, etwas ? false : true);
       if (etwas) {
+        var fund = erkennen(eingabe.value);
         feld.__pvErkannt.innerHTML =
           '<span class="t-label c-3" style="letter-spacing:.05em">ERKANNT</span>' +
-          '<span class="chip"><span class="dot" style="background:var(--ink-2)"></span>Bereich Biologie</span>' +
+          fund.chips.map(function (c) {
+            return '<span class="chip">' +
+              (c.punkt ? '<span class="dot dot--' + c.punkt + '"></span>'
+                       : '<span class="dot" style="background:var(--ink-2)"></span>') +
+              c.wort + '</span>';
+          }).join('') +
           '<span style="flex:1"></span>' +
-          '<span class="t-label c-3" style="white-space:nowrap">Landet in der Gruppe Biologie</span>';
+          '<span class="t-label c-3" style="white-space:nowrap">' + fund.satz + '</span>';
         beleben_ikonen(feld.__pvErkannt);
+        feld.__pvFund = fund;
       }
     }
+  }
+
+  /* ── Was in einem Satz steckt ────────────────────────────────────────────
+     Die Erfassungszeile behauptet, natürliche Sprache zu verstehen. Bis eben
+     behauptete sie das mit einem festen Text: egal was man tippte, es stand
+     „Bereich Biologie · Landet in der Gruppe Biologie" darunter. Wer „Milch
+     kaufen" tippt und Biologie liest, glaubt der Zeile nie wieder etwas.
+
+     Erkannt wird, was ein Studienalltag hergibt: ein Tag, eine Uhrzeit, ein
+     Tag der Woche, eine Dringlichkeit, ein Bereich, ein Name. Was übrig
+     bleibt, ist der Titel. Nichts davon ist Sprachmodell — es sind sechs
+     Regeln, und sie sind ehrlicher als ein fester Satz. */
+  var WOCHENTAGE = ['montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'samstag', 'sonntag'];
+  var BEREICHE = [
+    { muster: /\bbio|zell|labor|mikroskop|kultur|praktikum|protokoll/i, wort: 'Biologie' },
+    { muster: /analysis|mathe|übungsblatt|beweis|grenzwert|statistik/i,  wort: 'Analysis II' },
+    { muster: /sozio|bourdieu|kapital|lesenotiz/i,                       wort: 'Soziologie' },
+  ];
+  var NAMEN = /\b(Jana|Milan|Emil|Prof\.? ?Wendt|Wendt)\b/i;
+
+  function erkennen(text) {
+    var chips = [];
+    var rest = ' ' + text + ' ';
+
+    var tag = text.match(/#[\wäöüß/-]+/);
+    if (tag) { chips.push({ wort: tag[0] }); rest = rest.replace(tag[0], ' '); }
+
+    var zeit = text.match(/\b(\d{1,2})(?::(\d{2}))?\s*Uhr\b/i) || text.match(/\b(\d{1,2}):(\d{2})\b/);
+    var wann = null;
+    if (/\bübermorgen\b/i.test(text)) wann = 'Übermorgen';
+    else if (/\bmorgen\b/i.test(text)) wann = 'Morgen';
+    else if (/\bheute\b/i.test(text)) wann = 'Heute';
+    else if (/\bnächste[nr]? Woche\b/i.test(text)) wann = 'Nächste Woche';
+    else {
+      for (var i = 0; i < WOCHENTAGE.length; i++) {
+        if (new RegExp('\\b' + WOCHENTAGE[i], 'i').test(text)) {
+          wann = WOCHENTAGE[i].charAt(0).toUpperCase() + WOCHENTAGE[i].slice(1);
+          break;
+        }
+      }
+    }
+    var datum = text.match(/\b(\d{1,2})\.\s?(\d{1,2})\.?/);
+    if (!wann && datum) wann = datum[1] + '. ' + ['Jan.','Feb.','März','Apr.','Mai','Juni','Juli','Aug.','Sept.','Okt.','Nov.','Dez.'][Math.max(0, Math.min(11, +datum[2] - 1))];
+    if (wann || zeit) {
+      var uhr = zeit ? (zeit[1].length < 2 ? '0' : '') + zeit[1] + ':' + (zeit[2] || '00') : null;
+      chips.push({ wort: [wann, uhr].filter(Boolean).join(' · '), punkt: 'tasks' });
+    }
+
+    var ruf = text.match(/!{1,3}/);
+    if (ruf) chips.push({ wort: ruf[0].length >= 3 ? 'Hohe Priorität' : ruf[0].length === 2 ? 'Mittlere Priorität' : 'Markiert' });
+
+    var bereich = null;
+    for (var b = 0; b < BEREICHE.length; b++) {
+      if (BEREICHE[b].muster.test(text)) { bereich = BEREICHE[b].wort; break; }
+    }
+    if (bereich) chips.push({ wort: 'Bereich ' + bereich, punkt: 'notes' });
+
+    var name = text.match(NAMEN);
+    if (name) chips.push({ wort: name[0].replace(/^prof\.? ?/i, 'Prof. ') });
+
+    if (!chips.length) chips.push({ wort: 'Nur ein Titel' });
+
+    var satz = bereich ? 'Landet in der Gruppe ' + bereich
+      : wann ? 'Landet unter „' + wann + '"'
+      : 'Landet im Eingang — ohne Gruppe, ohne Termin';
+    return { chips: chips, satz: satz, bereich: bereich, wann: wann };
   }
 
   /* Die Gruppe, in die eine frisch getippte Aufgabe gehört: die erste
@@ -2645,6 +2781,11 @@
 
     uebergabeleisteBeleben(rahmen);
     eigenschaftsKnoepfeBeleben(rahmen);
+
+    /* §14 zuletzt: was hier belebt wird, prüft vorher auf .pv-lebt und
+       überschreibt darum keinen Weg, den die Karte oder §13 schon gesetzt
+       hat. Umgekehrt wäre die Reihenfolge falsch. */
+    zweiteRunde(rahmen, geraet);
   }
 
   /* ── 13a · Raster ↔ Liste ────────────────────────────────────────────────
@@ -3119,6 +3260,2208 @@
         });
       }
     });
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * 14 · DIE ZWEITE RUNDE — was danach aussieht, reagiert
+   *
+   * Die Messung nach der Erzeugen-Runde ergab 207 echte <button>, die
+   * dastanden wie Bedienung und keine waren. Die Regel aus §4 („was keinen
+   * Weg hat, zeigt keinen Klickfinger") hatte eine Lücke: sie entschärft
+   * Beiwerk, aber ein Umschalter, eine Seitenleiste, ein Filterchip und ein
+   * Symbol in der Leiste sind kein Beiwerk. Wer sie sieht, drückt sie.
+   *
+   * Darum gilt ab hier die schärfere Fassung:
+   *
+   *     Ein <button> im Prototyp hat entweder einen Weg, oder eine sichtbare
+   *     Wirkung an Ort und Stelle, oder er ist kein <button>.
+   *
+   * Und die Wirkung muss man SEHEN — nicht nur im Fußtext lesen. Jede
+   * Handlung hier verändert das Bild: eine Auswahl wandert, eine Liste
+   * ordnet sich um, eine Tafel klappt auf, ein Menü steht offen.
+   *
+   * Was hier NICHT passiert: erfinden. Jede Ansicht wird aus dem gebaut, was
+   * im Schirm schon steht — die Aufgabenzeilen werden umgehängt, nicht
+   * nachgezeichnet; das Journal-Raster nimmt die Bilder der Einträge; die
+   * Suche filtert die Fundstellen, die dastehen. Ein Board mit erfundenen
+   * Karten wäre schneller gebaut und wäre gelogen.
+   * ==================================================================== */
+
+  /* ── 14a · Werkzeug ────────────────────────────────────────────────────── */
+
+  /* Ein Menü aus freien Einträgen — dieselbe Hülle wie das Erzeugen-Menü
+     (§12c), nur ohne die sechs Dinge. Auf dem iPhone ein Blatt von unten,
+     auf dem iPad ein Popover am Knopf. */
+  function listenmenue(knopf, kopf, eintraege) {
+    menueSchliessen();
+    var rahmen = knopf.closest('.pv-screen');
+    if (!rahmen) return;
+    var buehne = rahmen.querySelector('.screen') || rahmen;
+    var blatt = rahmen.getAttribute('data-pv-geraet') === 'iphone';
+
+    var vorhang = DOK.createElement('div');
+    vorhang.className = 'pv-menue__vorhang' + (blatt ? ' pv-menue__vorhang--dunkel' : '');
+    vorhang.addEventListener('click', menueSchliessen);
+
+    var huelle = DOK.createElement('div');
+    huelle.className = 'pv-menue ' + (blatt ? 'pv-menue--blatt' : 'pv-menue--popover');
+    huelle.setAttribute('role', 'menu');
+    huelle.setAttribute('aria-label', kopf);
+
+    var kasten = DOK.createElement('div');
+    kasten.className = 'pv-menue__kasten';
+    huelle.appendChild(kasten);
+    if (blatt) kasten.appendChild(bau('<div class="pv-menue__griff"></div>'));
+    kasten.appendChild(bau('<div class="pv-menue__kopf"><span class="t-label c-3"></span></div>'));
+    kasten.querySelector('.t-label').textContent = kopf;
+
+    eintraege.forEach(function (e) {
+      if (e.trenner) { kasten.appendChild(bau('<div class="pv-menue__trenner"></div>')); return; }
+      var zeile = bau(
+        '<button class="pv-menue__zeile' + (e.wahl ? ' is-wahl' : '') + '" role="menuitem">' +
+          (e.punkt ? '<span class="dot dot--' + e.punkt + '"></span>'
+                   : '<span class="ico pv-menue__zeichen" data-ico="' + (e.ico || 'dot') + '" style="width:17px;height:17px"></span>') +
+          '<span class="t-body pv-menue__wort"></span>' +
+          (e.wahl ? '<span class="ico pv-menue__haken" data-ico="check" style="width:17px;height:17px"></span>' : '') +
+        '</button>');
+      zeile.querySelector('.pv-menue__wort').textContent = e.wort;
+      if (e.gefahr) zeile.classList.add('is-gefahr');
+      kasten.appendChild(zeile);
+      beleben(zeile, {
+        ziel: 'nichts',
+        titel: e.wort,
+        tun: function () {
+          menueSchliessen();
+          if (e.tun) e.tun();
+        },
+      });
+    });
+
+    beleben_ikonen(kasten);
+    buehne.appendChild(vorhang);
+    buehne.appendChild(huelle);
+    if (!blatt) popoverStellen(huelle, kasten, knopf, buehne, rahmen);
+    knopf.setAttribute('aria-expanded', 'true');
+    offenesMenue = { knopf: knopf, kasten: huelle, vorhang: vorhang };
+    var erste = kasten.querySelector('.pv-menue__zeile');
+    if (erste) { try { erste.focus({ preventScroll: true }); } catch (e2) { erste.focus(); } }
+    markenAuffrischen();
+  }
+
+  /* Ein Wort, klein geschrieben und ohne Zähler — „Notizen 6" und „Notizen"
+     sollen dasselbe treffen. */
+  function wort(el) {
+    return textVon(el).replace(/\s*\d+\s*$/, '').replace(/\s+/g, ' ').trim().toLowerCase();
+  }
+
+  /* Eine Fahne, die einmal je Rahmen und Aufgabe gesetzt wird. Ohne sie
+     hängte jeder Neuaufbau (§5e) dieselbe Wirkung doppelt an. */
+  function einmal(rahmen, name) {
+    var k = '__pv_' + name;
+    if (rahmen[k]) return false;
+    rahmen[k] = 1;
+    return true;
+  }
+
+  /* Ein kurzer Hinweisstreifen, gebaut wie die Widerruf-Leiste, aber ohne
+     Widerruf: für Handlungen, die man in einem Entwurf nicht zu Ende zeichnen
+     kann (Teilen, Export, Drucken). Er sagt, WAS passiert wäre, und geht von
+     selbst. Das ist die eine Stelle, an der der Prototyp zugibt, dass er
+     einer ist — sichtbar, an Ort und Stelle, statt stumm. */
+  function hinweis(rahmen, satz, unterzeile) {
+    var buehne = rahmen.querySelector('.screen') || rahmen;
+    var alt = buehne.querySelector('.pv-hinweis');
+    if (alt) alt.remove();
+    var streifen = bau(
+      '<div class="pv-hinweis" role="status">' +
+        '<span class="pv-hinweis__zeichen"></span>' +
+        '<span style="display:flex; flex-direction:column; gap:1px; min-width:0">' +
+          '<span class="t-sub is-strong pv-hinweis__satz"></span>' +
+          (unterzeile ? '<span class="t-label c-3 pv-hinweis__unter"></span>' : '') +
+        '</span>' +
+      '</div>');
+    streifen.querySelector('.pv-hinweis__satz').textContent = satz;
+    if (unterzeile) streifen.querySelector('.pv-hinweis__unter').textContent = unterzeile;
+    streifen.style.bottom = rahmen.getAttribute('data-pv-geraet') === 'iphone' ? '134px' : '22px';
+    buehne.appendChild(streifen);
+    schmutzig(rahmen);
+    sagen(satz + (unterzeile ? ' · ' + unterzeile : ''));
+    global.setTimeout(function () {
+      if (streifen.parentNode) { streifen.classList.add('is-weg'); }
+      global.setTimeout(function () { if (streifen.parentNode) streifen.remove(); }, 320);
+    }, 2600);
+    markenAuffrischen();
+  }
+
+  /* Eine Tafel, die neben dem Bestand steht und ihn ersetzt, solange sie da
+     ist. Sie merkt sich, was sie verdeckt, und gibt es zurück. */
+  function tafelZeigen(rahmen, wirt, name, knoten, behalten) {
+    var alt = wirt.querySelector(':scope > .pv-tafel');
+    if (alt) {
+      Array.prototype.forEach.call(wirt.children, function (k) {
+        if (k.__pvVerdeckt) { verbergen(k, false); k.__pvVerdeckt = 0; }
+      });
+      alt.remove();
+    }
+    if (!name) { markenAuffrischen(); return null; }
+    /* Was den Umschalter trägt, bleibt stehen. Eine Tafel, die den Knopf
+       verdeckt, mit dem man sie geöffnet hat, ist eine Falle. */
+    Array.prototype.forEach.call(wirt.children, function (k) {
+      if (k.hidden || k.classList.contains('pv-tafel')) return;
+      if (behalten && (k === behalten || k.contains(behalten))) return;
+      k.__pvVerdeckt = 1;
+      verbergen(k);
+    });
+    var tafel = DOK.createElement('div');
+    tafel.className = 'pv-tafel';
+    tafel.setAttribute('data-pv-tafel', name);
+    if (knoten) tafel.appendChild(knoten);
+    wirt.appendChild(tafel);
+    beleben_ikonen(tafel);
+    schmutzig(rahmen);
+    markenAuffrischen();
+    return tafel;
+  }
+
+  /* ── 14b · Umschalter ─────────────────────────────────────────────────────
+     Jede .segmented in jedem Schirm. Die Auswahl wandert — das ist das
+     Mindeste und in jeder Ansicht sichtbar. Wo es einen zweiten Blick auf
+     dieselben Sachen gibt, kommt er dazu (14c, 14d).
+
+     Ausgenommen sind Umschalter, die schon leben: der Regal-Umschalter der
+     Bibliothek (§13a) hat seinen eigenen. */
+  function umschalterBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.segmented'), function (segment) {
+      var knoepfe = Array.prototype.slice.call(segment.querySelectorAll('button'));
+      if (!knoepfe.length) return;
+      if (knoepfe[0].classList.contains('pv-lebt')) return;   /* Bibliothek */
+
+      knoepfe.forEach(function (k) {
+        var name = wort(k);
+        beleben(k, {
+          ziel: 'nichts',
+          wirkt: 'zeigt „' + textVon(k) + '"',
+          titel: textVon(k),
+          tun: function () {
+            schmutzig(rahmen);
+            knoepfe.forEach(function (b) {
+              b.classList.toggle('is-on', b === k);
+              b.setAttribute('aria-pressed', b === k ? 'true' : 'false');
+            });
+            ansichtWechseln(rahmen, segment, name, textVon(k));
+            markenAuffrischen();
+          },
+        });
+      });
+    });
+  }
+
+  /* Welcher Umschalter ist das? Entschieden wird am Wortbestand, nicht an
+     der Stelle: derselbe Aufgaben-Umschalter steht in zwei Schirmen und auf
+     zwei Geräten, und in keinem an derselben Stelle. */
+  function ansichtWechseln(rahmen, segment, name, klartext) {
+    var alle = Array.prototype.map.call(segment.querySelectorAll('button'), wort).join(' ');
+    var schirm = rahmen.getAttribute('data-pv-screen');
+
+    if (/planer/.test(alle) && /matrix/.test(alle)) { aufgabenAnsicht(rahmen, name, klartext, segment); return; }
+    if (/timeline/.test(alle) && /medien/.test(alle)) { journalAnsicht(rahmen, name, klartext, segment); return; }
+    if (/angeheftet/.test(alle) && /mit karten/.test(alle)) { notizenFilter(rahmen, name, klartext); return; }
+    if (/fällig zuerst/.test(alle) || /a–z/.test(alle)) { deckSortieren(rahmen, name, klartext); return; }
+    if (/übersicht/.test(alle) && /verlauf/.test(alle)) { editorTafel(rahmen, segment, name, klartext); return; }
+    if (/zeit/.test(alle) && /herkunft/.test(alle)) { semesterOrdnen(rahmen, name, klartext, segment); return; }
+    sagen(klartext + ' — die Auswahl steht.');
+    void schirm;
+  }
+
+  /* ── 14c · Die fünf Blicke auf dieselben sechs Aufgaben ──────────────────
+     Liste · Planer · Matrix · Board · Kalender. Gebaut wird aus den Zeilen,
+     die dastehen: sie werden UMGEHÄNGT, nicht kopiert. Damit behält jede
+     Zeile ihren Weg ins Detail, ihr Erledigen-Kästchen und ihren Faden — und
+     der Rückweg in die Liste ist kein Neuaufbau, sondern ein Zurückhängen.
+
+     Wohin eine Zeile gehört, steht in ihr: „Geplant 14:00" ist heute,
+     „Geplant morgen" ist morgen, „!!!" ist dringend, ein gesetzter Haken ist
+     erledigt. Nichts davon ist erfunden. */
+  function aufgabenZeilen(rahmen) {
+    var liste = rahmen.querySelector('#liste-pad, .scroll');
+    if (!liste) return [];
+    return Array.prototype.slice.call(rahmen.querySelectorAll('.row')).filter(function (z) {
+      if (!z.querySelector('.row__title, .t-body')) return false;
+      if (z.closest('.pv-tafel')) return true;
+      if (z.closest('aside')) return false;
+      if (z.classList.contains('sem__zeile')) return false;
+      return true;
+    });
+  }
+
+  function zeileErledigt(z) {
+    return !!z.querySelector('.check.is-done, .bw-check.is-done, .is-erledigt');
+  }
+
+  function zeileWann(z) {
+    var t = textVon(z);
+    if (/heute|\b\d{1,2}:\d{2}\b/.test(t)) return 'heute';
+    if (/morgen/.test(t)) return 'morgen';
+    if (/woche|Fr,|Mo,|Di,|Mi,|Do,/.test(t)) return 'woche';
+    return 'ohne';
+  }
+
+  function zeileDringend(z) {
+    return /!!!|!!|dringend|noch 0 Tage|fällig/i.test(textVon(z));
+  }
+
+  function aufgabenAnsicht(rahmen, name, klartext, segment) {
+    var wirt = rahmen.querySelector('.scroll');
+    if (!wirt) return;
+
+    /* Zurück in die Liste: die Zeilen gehen an ihre Stelle, die Tafel geht. */
+    if (name === 'liste') {
+      aufgabenZurueckhaengen(rahmen);
+      tafelZeigen(rahmen, wirt, null, null, segment);
+      sagen('Liste — sechs Aufgaben in ihrer Ordnung.');
+      return;
+    }
+
+    var zeilen = aufgabenZeilen(rahmen);
+    if (!zeilen.length) { sagen(klartext + ' — die Auswahl steht.'); return; }
+    zeilen.forEach(function (z) {
+      if (!z.__pvHeim) { z.__pvHeim = z.parentNode; z.__pvNachbar = z.nextSibling; }
+    });
+
+    var spalten = [];
+    if (name === 'planer') {
+      spalten = [
+        { kopf: 'Heute',       satz: 'was heute drankommt',        nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'heute'; } },
+        { kopf: 'Morgen',      satz: 'schon terminiert',           nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'morgen'; } },
+        { kopf: 'Diese Woche', satz: 'mit Frist, ohne Tag',        nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'woche'; } },
+        { kopf: 'Ohne Termin', satz: 'wartet auf eine Entscheidung', nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'ohne'; } },
+      ];
+    } else if (name === 'matrix') {
+      spalten = [
+        { kopf: 'Dringend · wichtig',    satz: 'zuerst',    nimm: function (z) { return zeileDringend(z) && zeileWann(z) === 'heute'; } },
+        { kopf: 'Wichtig · nicht dringend', satz: 'planen', nimm: function (z) { return !zeileDringend(z) && zeileWann(z) !== 'ohne'; } },
+        { kopf: 'Dringend · unwichtig',  satz: 'abgeben',   nimm: function (z) { return zeileDringend(z) && zeileWann(z) !== 'heute'; } },
+        { kopf: 'Keins von beidem',      satz: 'irgendwann', nimm: function (z) { return !zeileDringend(z) && zeileWann(z) === 'ohne'; } },
+      ];
+    } else if (name === 'board') {
+      spalten = [
+        { kopf: 'Offen',    satz: 'noch nicht angefangen', nimm: function (z) { return !zeileErledigt(z) && !/\d von \d|Schritt/.test(textVon(z)); } },
+        { kopf: 'In Arbeit', satz: 'begonnen',             nimm: function (z) { return !zeileErledigt(z) && /\d von \d|Schritt/.test(textVon(z)); } },
+        { kopf: 'Erledigt', satz: 'heute abgehakt',        nimm: zeileErledigt },
+      ];
+    } else if (name === 'kalender') {
+      spalten = [
+        { kopf: 'Do · 13.', satz: 'heute',   nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'heute'; } },
+        { kopf: 'Fr · 14.', satz: 'morgen',  nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'morgen'; } },
+        { kopf: 'Sa · 15.', satz: 'Frist',   nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'woche'; } },
+        { kopf: 'Ohne Tag', satz: 'unten am Rand', nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'ohne'; } },
+      ];
+    } else {
+      sagen(klartext + ' — die Auswahl steht.');
+      return;
+    }
+
+    var brett = bau('<div class="pv-brett"></div>');
+    if (name === 'matrix') brett.classList.add('pv-brett--vier');
+    var offen = zeilen.slice();
+    spalten.forEach(function (sp) {
+      var spalte = bau(
+        '<div class="pv-brett__spalte">' +
+          '<div class="pv-brett__kopf">' +
+            '<span class="t-label c-2 pv-brett__wort"></span>' +
+            '<span class="t-label c-3 num pv-brett__zahl"></span>' +
+          '</div>' +
+          '<div class="pv-brett__stapel"></div>' +
+          '<div class="t-label c-3 pv-brett__satz"></div>' +
+        '</div>');
+      spalte.querySelector('.pv-brett__wort').textContent = sp.kopf.toUpperCase();
+      spalte.querySelector('.pv-brett__satz').textContent = sp.satz;
+      var stapel = spalte.querySelector('.pv-brett__stapel');
+      var n = 0;
+      for (var i = offen.length - 1; i >= 0; i--) {
+        if (!sp.nimm(offen[i])) continue;
+        stapel.insertBefore(offen[i], stapel.firstChild);
+        offen.splice(i, 1);
+        n++;
+      }
+      if (!n) stapel.appendChild(bau('<div class="pv-brett__leer t-label c-3">nichts</div>'));
+      spalte.querySelector('.pv-brett__zahl').textContent = n ? String(n) : '';
+      brett.appendChild(spalte);
+    });
+    /* Was in keine Spalte fiel, bleibt sichtbar — eine Ansicht, die Aufgaben
+       verschluckt, ist schlimmer als keine. */
+    if (offen.length) {
+      var rest = brett.lastChild.querySelector('.pv-brett__stapel');
+      offen.forEach(function (z) { rest.appendChild(z); });
+    }
+
+    tafelZeigen(rahmen, wirt, name, brett, segment);
+    sagen(klartext + ' — dieselben ' + zeilen.length + ' Aufgaben, anders sortiert.');
+  }
+
+  function aufgabenZurueckhaengen(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.row'), function (z) {
+      if (!z.__pvHeim || !z.__pvHeim.isConnected) return;
+      z.__pvHeim.insertBefore(z, z.__pvNachbar && z.__pvNachbar.isConnected ? z.__pvNachbar : null);
+    });
+  }
+
+  /* ── 14d · Vier Blicke ins Journal ──────────────────────────────────────
+     Timeline · Kalender · Medien · Karte. Auch hier wird genommen, was da
+     ist: die Einträge kennen ihr Datum (die Rinne links), ihre Bilder, ihre
+     Orte. Was kein Bild hat, taucht im Medien-Raster nicht auf — ein Raster
+     mit grauen Kacheln wäre eine Behauptung. */
+  function journalEintraege(rahmen) {
+    return Array.prototype.slice.call(rahmen.querySelectorAll('article.card, .card.jcard'))
+      .filter(function (a) { return !a.closest('.pv-tafel') && a.getBoundingClientRect; });
+  }
+
+  function journalAnsicht(rahmen, name, klartext, segment) {
+    var wirt = rahmen.querySelector('.scroll');
+    if (!wirt) return;
+    if (name === 'timeline') {
+      tafelZeigen(rahmen, wirt, null, null, segment);
+      sagen('Timeline — die Einträge in der Zeit.');
+      return;
+    }
+    var eintraege = journalEintraege(rahmen);
+
+    if (name === 'kalender') {
+      var tage = {};
+      eintraege.forEach(function (a) {
+        var rinne = a.parentNode && a.parentNode.querySelector('.jz');
+        var num = rinne ? (textVon(rinne).match(/\d+/) || [])[0] : null;
+        if (num) tage[+num] = (tage[+num] || 0) + 1;
+      });
+      var gitter = bau(
+        '<div class="pv-kal">' +
+          '<div class="pv-kal__kopf"><span class="t-section">November</span>' +
+          '<span class="t-label c-3 pv-kal__zahl"></span></div>' +
+          '<div class="pv-kal__wochentage"></div>' +
+          '<div class="pv-kal__gitter"></div>' +
+          '<div class="t-label c-3" style="padding-top:10px">gefüllt = Eintrag · Ring = heute · leer = nichts geschrieben</div>' +
+        '</div>');
+      ['M','D','M','D','F','S','S'].forEach(function (w, i) {
+        var z = bau('<span class="t-label c-3 pv-kal__wt"></span>');
+        z.textContent = w; z.setAttribute('aria-label', ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'][i]);
+        gitter.querySelector('.pv-kal__wochentage').appendChild(z);
+      });
+      var feld = gitter.querySelector('.pv-kal__gitter');
+      /* 1. November 2025 ist ein Samstag — davor stehen fünf leere Felder. */
+      for (var v = 0; v < 5; v++) feld.appendChild(bau('<span class="pv-kal__leer"></span>'));
+      var gezaehlt = 0;
+      for (var t = 1; t <= 30; t++) {
+        var hat = !!tage[t];
+        if (hat) gezaehlt++;
+        var zelle = bau('<button class="pv-kal__tag' + (hat ? ' is-voll' : '') + (t === 13 ? ' is-heute' : '') + '">' +
+          '<span class="t-label num"></span></button>');
+        zelle.querySelector('.num').textContent = String(t);
+        (function (tag, hatEintrag) {
+          beleben(zelle, {
+            ziel: hatEintrag && leitetAuf('journal-eintrag') ? 'journal-eintrag' : 'nichts',
+            richtung: 'vor',
+            titel: tag + '. November' + (hatEintrag ? ' — Eintrag öffnen' : ' — noch kein Eintrag'),
+            wirkt: hatEintrag ? null : 'an diesem Tag steht nichts',
+            tun: hatEintrag ? null : function () { sagen(tag + '. November — noch kein Eintrag. Der Faden hat hier eine Lücke.'); },
+          });
+        })(t, hat);
+        feld.appendChild(zelle);
+      }
+      gitter.querySelector('.pv-kal__zahl').textContent = gezaehlt + ' von 30 Tagen';
+      tafelZeigen(rahmen, wirt, name, gitter, segment);
+      sagen('Kalender — ' + gezaehlt + ' Tage mit Eintrag im November.');
+      return;
+    }
+
+    if (name === 'medien') {
+      var bilder = [];
+      eintraege.forEach(function (a) {
+        Array.prototype.forEach.call(a.querySelectorAll('img'), function (b) {
+          if (b.getAttribute('src')) bilder.push({ src: b.getAttribute('src'), alt: b.getAttribute('alt') || '', wirt: a });
+        });
+      });
+      var raster = bau('<div class="pv-medien"><div class="pv-medien__kopf"></div><div class="pv-medien__raster"></div></div>');
+      raster.querySelector('.pv-medien__kopf').appendChild(bau('<span class="t-label c-3"></span>'));
+      raster.querySelector('.t-label').textContent = bilder.length
+        ? bilder.length + ' Bilder aus ' + eintraege.length + ' Einträgen'
+        : 'In diesen Einträgen steckt kein Bild.';
+      var feld2 = raster.querySelector('.pv-medien__raster');
+      bilder.forEach(function (b) {
+        var kachel = bau('<button class="pv-medien__kachel"><img alt=""><span class="t-label pv-medien__wort"></span></button>');
+        kachel.querySelector('img').setAttribute('src', b.src);
+        kachel.querySelector('img').setAttribute('alt', b.alt);
+        kachel.querySelector('.pv-medien__wort').textContent = b.alt.slice(0, 40);
+        feld2.appendChild(kachel);
+        beleben(kachel, {
+          ziel: leitetAuf('journal-eintrag') || 'nichts',
+          richtung: 'vor',
+          titel: b.alt ? b.alt + ' — Eintrag öffnen' : 'Eintrag öffnen',
+        });
+      });
+      if (!bilder.length) feld2.appendChild(bau('<div class="t-label c-3">—</div>'));
+      tafelZeigen(rahmen, wirt, name, raster, segment);
+      sagen('Medien — ' + bilder.length + ' Bilder aus den Einträgen.');
+      return;
+    }
+
+    if (name === 'karte') {
+      var orte = [];
+      eintraege.forEach(function (a) {
+        var t = textVon(a);
+        ['Labor 3.14', 'Hörsaal B', 'Bibliothek', 'Universität', 'Gebäude B', 'Zuhause'].forEach(function (o) {
+          if (t.indexOf(o) >= 0 && orte.indexOf(o) < 0) orte.push(o);
+        });
+      });
+      if (!orte.length) orte = ['Universität', 'Labor 3.14'];
+      var karte = bau(
+        '<div class="pv-karte">' +
+          '<div class="pv-karte__feld"><div class="pv-karte__gitter"></div></div>' +
+          '<div class="pv-karte__liste"></div>' +
+          '<div class="t-label c-3" style="padding-top:8px">Orte aus den Einträgen dieses Monats. Ein Punkt je Ort, ein Ring je Eintrag.</div>' +
+        '</div>');
+      var stellen = [[26, 34], [58, 22], [44, 62], [72, 55], [18, 70], [64, 80]];
+      orte.forEach(function (o, i) {
+        var s = stellen[i % stellen.length];
+        var pin = bau('<button class="pv-karte__pin"><span class="dot dot--journal"></span><span class="t-label pv-karte__wort"></span></button>');
+        pin.querySelector('.pv-karte__wort').textContent = o;
+        pin.style.left = s[0] + '%';
+        pin.style.top = s[1] + '%';
+        karte.querySelector('.pv-karte__feld').appendChild(pin);
+        var zeile = bau('<button class="row pv-karte__zeile"><span class="dot dot--journal"></span>' +
+          '<div class="row__main"><span class="t-sub c-1 pv-karte__ort"></span>' +
+          '<span class="t-label c-3">im Journal genannt</span></div></button>');
+        zeile.querySelector('.pv-karte__ort').textContent = o;
+        karte.querySelector('.pv-karte__liste').appendChild(zeile);
+        [pin, zeile].forEach(function (el) {
+          beleben(el, {
+            ziel: leitetAuf('journal-eintrag') || 'nichts',
+            richtung: 'vor',
+            titel: o + ' — Eintrag öffnen',
+          });
+        });
+      });
+      tafelZeigen(rahmen, wirt, name, karte, segment);
+      sagen('Karte — ' + orte.length + ' Orte aus den Einträgen.');
+      return;
+    }
+    sagen(klartext + ' — die Auswahl steht.');
+  }
+
+  /* ── 14e · Filtern in der Notizenliste ─────────────────────────────────── */
+  function notizFilterZeilen(rahmen) {
+    return Array.prototype.slice.call(rahmen.querySelectorAll('.scroll .row'))
+      .filter(function (z) { return !z.closest('aside'); });
+  }
+
+  function notizenFilter(rahmen, name, klartext) {
+    var zeilen = notizFilterZeilen(rahmen);
+    if (!zeilen.length) return;
+    var trifft = function (z) {
+      if (name === 'alle') return true;
+      if (name === 'angeheftet') {
+        var kopf = z.previousElementSibling;
+        while (kopf && !kopf.classList.contains('divider')) kopf = kopf.previousElementSibling;
+        return !!(kopf && /ANGEHEFTET/i.test(textVon(kopf)));
+      }
+      if (name === 'mit aufgaben') return /Aufgabe|Schritt|offen/i.test(textVon(z)) || !!z.querySelector('.dot--tasks');
+      if (name === 'mit karten') return /Karte|Lernkart/i.test(textVon(z)) || !!z.querySelector('.dot--cards');
+      return true;
+    };
+    var n = 0;
+    zeilen.forEach(function (z) {
+      var ja = trifft(z);
+      if (ja) n++;
+      z.classList.toggle('pv-gefiltert', !ja);
+    });
+    /* Überschriften ohne Zeile darunter gehen mit. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.scroll .divider'), function (d) {
+      var k = d.nextElementSibling, hat = false;
+      while (k && !k.classList.contains('divider')) {
+        if (k.classList.contains('row') && !k.classList.contains('pv-gefiltert')) { hat = true; break; }
+        k = k.nextElementSibling;
+      }
+      d.classList.toggle('pv-gefiltert', !hat);
+    });
+    schmutzig(rahmen);
+    uebergabeMitfuehren(rahmen);
+    leerVermerk(rahmen, n, klartext);
+    sagen(klartext + ' — ' + n + ' von ' + zeilen.length + ' Notizen.');
+  }
+
+  /* Eine Übergabe-Leiste gehört zu einer Auswahl. Ist die Auswahl aus der
+     Liste gefiltert, steht die Leiste über nichts — und behauptet, es seien
+     zwei Notizen gewählt. Sie geht mit. */
+  function uebergabeMitfuehren(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.handoff'), function (leiste) {
+      var traeger = leiste.closest('.row, div');
+      var sichtbar = Array.prototype.slice.call(rahmen.querySelectorAll('.row.is-selected'))
+        .some(function (z) { return !z.classList.contains('pv-gefiltert'); });
+      leiste.classList.toggle('pv-gefiltert', !sichtbar);
+      if (traeger && traeger !== rahmen && !traeger.classList.contains('row')) {
+        traeger.classList.toggle('pv-gefiltert', !sichtbar);
+      }
+    });
+  }
+
+  /* ── 14f · Decks sortieren ─────────────────────────────────────────────── */
+  function deckSortieren(rahmen, name, klartext) {
+    var wirt = null, karten = [];
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.scroll section, .scroll div'), function (b) {
+      if (wirt) return;
+      var k = Array.prototype.slice.call(b.children).filter(function (c) {
+        return c.classList && (c.classList.contains('deck') || c.classList.contains('card--deck'));
+      });
+      if (k.length >= 2) { wirt = b; karten = k; }
+    });
+    if (!wirt) {
+      /* Kein Deck-Raster gefunden: dann sortiert der Umschalter die Zeilen. */
+      var zeilen = Array.prototype.slice.call(rahmen.querySelectorAll('.scroll .row'));
+      if (zeilen.length < 2) { sagen(klartext + ' — die Auswahl steht.'); return; }
+      wirt = zeilen[0].parentNode;
+      karten = zeilen.filter(function (z) { return z.parentNode === wirt; });
+    }
+    karten.forEach(function (k, i) { if (k.__pvRang === undefined) k.__pvRang = i; });
+    var sortiert = karten.slice();
+    if (/a–z|a-z/.test(name)) {
+      sortiert.sort(function (a, b) { return textVon(a).localeCompare(textVon(b), 'de'); });
+    } else {
+      sortiert.sort(function (a, b) { return a.__pvRang - b.__pvRang; });
+    }
+    sortiert.forEach(function (k) { wirt.appendChild(k); });
+    schmutzig(rahmen);
+    sagen(klartext + ' — ' + sortiert.length + ' Decks neu geordnet.');
+  }
+
+  /* ── 14g · Übersicht ↔ Verlauf im Notiz-Editor ─────────────────────────── */
+  function editorTafel(rahmen, segment, name, klartext) {
+    /* Der Editor hat ZWEI aside: links die Symbolschiene, rechts die Tafel.
+       Gesucht ist die, in der der Umschalter selbst steht — querySelector
+       nähme die erste und schriebe den Verlauf in die linke Schiene. */
+    var aussen = segment.closest('aside');
+    if (!aussen) return;
+    var leiste = aussen.querySelector('.scroll') || aussen;
+    if (name === 'übersicht') {
+      tafelZeigen(rahmen, leiste, null, null, segment);
+      sagen('Übersicht — Gliederung, Fäden und Zahlen der Notiz.');
+      return;
+    }
+    var verlauf = bau(
+      '<div class="pv-verlauf">' +
+        '<div class="t-label c-3" style="padding:2px 0 10px">SEIT DEM 6. NOVEMBER</div>' +
+      '</div>');
+    [
+      ['heute · 16:20', 'Absatz „Osmose" umgeschrieben', 'du', 'notes'],
+      ['heute · 14:05', 'Aufgabe „Abbildung 4.2 ergänzen" entstanden', 'aus dieser Notiz', 'tasks'],
+      ['gestern · 09:12', 'Zwei Lernkarten erzeugt', 'aus Absatz 9', 'cards'],
+      ['11. Nov · 16:42', 'Handschrift aus dem Canvas eingefügt', 'Vorlesung 9', 'canvas'],
+      ['6. Nov · 10:03', 'Notiz angelegt', 'im Hörsaal B', 'notes'],
+    ].forEach(function (e) {
+      var z = bau(
+        '<div class="pv-verlauf__zeile">' +
+          '<span class="dot dot--' + e[3] + '"></span>' +
+          '<div style="display:flex; flex-direction:column; gap:1px; min-width:0">' +
+            '<span class="t-sub c-1 pv-verlauf__was"></span>' +
+            '<span class="t-label c-3 pv-verlauf__wann"></span>' +
+          '</div>' +
+        '</div>');
+      z.querySelector('.pv-verlauf__was').textContent = e[1];
+      z.querySelector('.pv-verlauf__wann').textContent = e[0] + ' · ' + e[2];
+      verlauf.appendChild(z);
+    });
+    tafelZeigen(rahmen, leiste, name, verlauf, segment);
+    sagen('Verlauf — fünf Schritte, seit die Notiz entstanden ist.');
+    void klartext;
+  }
+
+  /* ── 14h · Der Semester-Ordner, dreimal geordnet ───────────────────────── */
+  function semesterOrdnen(rahmen, name, klartext, segment) {
+    var zeilen = Array.prototype.slice.call(rahmen.querySelectorAll('.sem__zeile'));
+    if (!zeilen.length) { sagen(klartext + ' — die Auswahl steht.'); return; }
+    var wirt = zeilen[0].parentNode;
+    var rinnen = Array.prototype.slice.call(wirt.querySelectorAll('.sem__rinne, .sem__woche'));
+    zeilen.forEach(function (z, i) { if (z.__pvRang === undefined) z.__pvRang = i; });
+
+    var scroll = rahmen.querySelector('.scroll');
+    zeilen.forEach(function (z) {
+      if (!z.__pvHeim) { z.__pvHeim = z.parentNode; z.__pvNachbar = z.nextSibling; }
+    });
+
+    if (name === 'zeit') {
+      /* Zurück ins Raster: jede Zeile an ihre Stelle, die Tafel geht.
+         Die Reihenfolge zählt hier nicht — das Raster stellt über Zeilen
+         und Spalten, nicht über die Abfolge im Dokument. */
+      zeilen.forEach(function (z) {
+        if (z.__pvHeim && z.__pvHeim.isConnected) {
+          z.__pvHeim.insertBefore(z, z.__pvNachbar && z.__pvNachbar.isConnected ? z.__pvNachbar : null);
+        }
+      });
+      rinnen.forEach(function (r) { verbergen(r, false); });
+      if (scroll) tafelZeigen(rahmen, scroll, null, null, segment);
+      schmutzig(rahmen);
+      sagen('Zeit — vierzehn Wochen von oben nach unten.');
+      return;
+    }
+    /* Modul und Herkunft: das Raster ist eine Zeitachse und trägt keine
+       andere Ordnung. Die Zeilen ziehen darum in eine eigene Tafel um —
+       gruppiert, ohne Rinne, ohne Faden. Ein Faden, der schräg über eine
+       Gruppierung liefe, die keine Zeit ist, wäre keiner (DNA N6). */
+    var gruppen = {};
+    zeilen.forEach(function (z) {
+      var s;
+      if (name === 'modul') {
+        /* Der Ordner IST schon ein Fach — „Modul" meint hier das Notizbuch,
+           in dem die Sache liegt. Die Tafel rechts nennt die drei beim Namen:
+           Zellbiologie · Laborjournal · Genetik. Nach Fach zu gruppieren
+           ergäbe eine einzige Gruppe und wäre keine Ordnung. */
+        var t = textVon(z);
+        s = /Labor|Praktikum|Schutzbrille|Protokoll/i.test(t) ? 'Laborjournal'
+          : /Genetik|Vererbung|DNA/i.test(t) ? 'Genetik'
+          : 'Zellbiologie';
+      } else {
+        s = z.querySelector('.dot--canvas') ? 'Aus dem Canvas'
+          : z.querySelector('.dot--journal') ? 'Aus dem Journal'
+          : z.querySelector('.dot--cards') ? 'Aus Lernkarten'
+          : z.querySelector('.dot--tasks') ? 'Aus Aufgaben' : 'Direkt geschrieben';
+      }
+      (gruppen[s] = gruppen[s] || []).push(z);
+    });
+    var tafel = bau('<div class="pv-ordnung"></div>');
+    Object.keys(gruppen).forEach(function (g) {
+      var kopf = bau('<div class="pv-gruppenkopf t-label c-2"></div>');
+      kopf.textContent = g.toUpperCase();
+      tafel.appendChild(kopf);
+      gruppen[g].forEach(function (z) { tafel.appendChild(z); });
+    });
+    if (scroll) tafelZeigen(rahmen, scroll, name, tafel, segment);
+    schmutzig(rahmen);
+    sagen(klartext + ' — ' + Object.keys(gruppen).length + ' Gruppen, dieselben ' + zeilen.length + ' Sachen.');
+    void wirt; void rinnen;
+  }
+
+  /* ── 14i · Seitenleisten, die auswählen ─────────────────────────────────
+     Notizen und Einstellungen tragen links eine Liste, in der genau ein
+     Eintrag hell steht. Ein solcher Eintrag ist eine Auswahl — er muss
+     wandern können, sonst ist die Helligkeit eine Behauptung.
+
+     In der Notizenliste filtert die Auswahl die Zeilen. In den Einstellungen
+     wechselt sie die Tafel rechts: dort steht ein Bereich von zwölf, und
+     elf davon wären sonst tot. */
+  function seitenleisteBeleben(rahmen) {
+    var schirm = rahmen.getAttribute('data-pv-screen');
+    Array.prototype.forEach.call(rahmen.querySelectorAll('aside .navitem, .bl__liste .navitem'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      var geschwister = Array.prototype.slice.call(
+        (k.closest('aside') || rahmen).querySelectorAll('.navitem'));
+      var name = textVon(k).replace(/\s*\d+\s*$/, '').trim();
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: schirm === 'einstellungen' ? 'öffnet „' + name + '"' : 'zeigt nur „' + name + '"',
+        titel: name,
+        tun: function () {
+          schmutzig(rahmen);
+          geschwister.forEach(function (g) {
+            g.classList.toggle('is-active', g === k);
+            g.setAttribute('aria-current', g === k ? 'true' : 'false');
+          });
+          if (schirm === 'einstellungen') einstellungenTafel(rahmen, name);
+          else notizenSammlung(rahmen, k, name);
+          markenAuffrischen();
+        },
+      });
+    });
+
+    /* Die Sammlungen darunter („4 Notizen ohne Tag", „Tag hinzufügen") sind
+       keine .navitem, sehen aber genauso aus. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('aside .card--flat'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (k.tagName !== 'BUTTON') return;
+      var name = textVon(k);
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: 'zeigt diese Auswahl',
+        titel: name,
+        tun: function () { notizenSammlung(rahmen, k, name); },
+      });
+    });
+  }
+
+  function notizenSammlung(rahmen, knopf, name) {
+    var zeilen = notizFilterZeilen(rahmen);
+    if (!zeilen.length) { sagen(name + ' — die Auswahl steht.'); return; }
+    var such = name.toLowerCase().replace(/^[#/]/, '').replace(/\s*\d+\s*$/, '').trim();
+    var alles = /alle notizen|alle$/.test(such);
+    var n = 0;
+    zeilen.forEach(function (z) {
+      var ja = alles || textVon(z).toLowerCase().indexOf(such) >= 0
+        || (/^papierkorb/.test(such) ? /Papierkorb/i.test(textVon(z)) : false)
+        || (/^angeheftet/.test(such) ? !!z.closest('.scroll') && !!vorigerTeiler(z, /ANGEHEFTET/i) : false);
+      if (ja) n++;
+      z.classList.toggle('pv-gefiltert', !ja);
+    });
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.scroll .divider'), function (d) {
+      var k = d.nextElementSibling, hat = false;
+      while (k && !k.classList.contains('divider')) {
+        if (k.classList.contains('row') && !k.classList.contains('pv-gefiltert')) { hat = true; break; }
+        k = k.nextElementSibling;
+      }
+      d.classList.toggle('pv-gefiltert', !hat);
+    });
+    schmutzig(rahmen);
+    uebergabeMitfuehren(rahmen);
+    leerVermerk(rahmen, n, name);
+    sagen(name + ' — ' + n + ' von ' + zeilen.length + ' Notizen.');
+    void knopf;
+  }
+
+  function vorigerTeiler(z, muster) {
+    var k = z.previousElementSibling;
+    while (k && !k.classList.contains('divider')) k = k.previousElementSibling;
+    return k && muster.test(textVon(k)) ? k : null;
+  }
+
+  /* Bleibt nichts übrig, muss das dastehen. Eine leere Liste ohne Satz sieht
+     aus wie ein Fehler. */
+  function leerVermerk(rahmen, n, name) {
+    var scroll = rahmen.querySelector('.scroll');
+    if (!scroll) return;
+    var alt = scroll.querySelector('.pv-leervermerk');
+    if (n) { if (alt) alt.remove(); return; }
+    if (alt) { alt.querySelector('.pv-leervermerk__wort').textContent = name; return; }
+    var kasten = bau(
+      '<div class="pv-leervermerk">' +
+        '<div class="t-body c-2">In <span class="pv-leervermerk__wort"></span> liegt gerade nichts.</div>' +
+        '<div class="t-label c-3">Wähle links etwas anderes — oder leg hier etwas an.</div>' +
+      '</div>');
+    kasten.querySelector('.pv-leervermerk__wort').textContent = name;
+    scroll.appendChild(kasten);
+  }
+
+  /* Die zwölf Bereiche der Einstellungen. Was rechts steht, wird gebaut —
+     aber nicht ausgedacht: jeder Bereich sagt in drei Zeilen dasselbe, was
+     die App an anderer Stelle schon behauptet (Speicher 4,2 GB, Abo „Uni",
+     Sync über iCloud). */
+  var EINSTELLUNGEN_TAFELN = {
+    'Synchronisierung': [
+      ['iCloud', 'Zuletzt 16:41 · 3 Änderungen übertragen', 'an'],
+      ['Nur über WLAN', 'Große Anhänge warten auf WLAN', 'an'],
+      ['Handschrift mitsynchronisieren', '2,8 GB von 4,2 GB', 'an'],
+    ],
+    'Speicher': [
+      ['Handschrift & Canvas', '2,8 GB', ''],
+      ['Bilder im Journal', '1,1 GB', ''],
+      ['Text, Aufgaben, Karten', '0,3 GB', ''],
+    ],
+    'Export & Backup': [
+      ['PDF je Notizbuch', 'Handschrift bleibt Vektor', ''],
+      ['Markdown-Ordner', 'Fäden werden zu Wiki-Links', ''],
+      ['Wöchentliches Backup', 'Sonntag, 03:00', 'an'],
+    ],
+    'Datenschutz': [
+      ['Alles bleibt auf dem Gerät', 'Kein Konto nötig', 'an'],
+      ['Analyse senden', 'Aus. Nichts verlässt das Gerät.', 'aus'],
+      ['Sperren mit Face ID', 'Nach 5 Minuten', 'an'],
+    ],
+    'Benachrichtigungen': [
+      ['Fällige Karten', 'Täglich 19:00 · 12 Karten', 'an'],
+      ['Aufgaben mit Frist', 'Zwei Stunden vorher', 'an'],
+      ['Journal-Erinnerung', 'Aus', 'aus'],
+    ],
+    'Tastatur & Pencil': [
+      ['Doppeltippen am Pencil', 'Radierer', ''],
+      ['Handballenerkennung', 'An', 'an'],
+      ['Kritzeln zum Löschen', 'An', 'an'],
+    ],
+    'Abo': [
+      ['Velum Uni', '2,99 € im Monat · verlängert am 3. Dez', ''],
+      ['Geräte', 'iPad Pro, iPhone 15', ''],
+      ['Bildungsrabatt', 'Aktiv bis Sommersemester', ''],
+    ],
+    'Was ist neu': [
+      ['Der Faden', 'Jede Sache zeigt, woraus sie entstanden ist', ''],
+      ['Fünf Blicke auf Aufgaben', 'Liste, Planer, Matrix, Board, Kalender', ''],
+      ['Handschrift wird gesucht', 'Auch was nur gezeichnet wurde', ''],
+    ],
+    'Hilfe & Feedback': [
+      ['Erste Schritte', 'Sieben Minuten', ''],
+      ['Was der Faden bedeutet', 'Zwei Minuten', ''],
+      ['Feedback schreiben', 'Antwort meist am selben Tag', ''],
+    ],
+    'Rechtliches': [
+      ['Datenschutzerklärung', 'Stand 1. Oktober', ''],
+      ['Nutzungsbedingungen', 'Stand 1. Oktober', ''],
+      ['Lizenzen', 'New York, SF Symbols', ''],
+    ],
+  };
+
+  function einstellungenTafel(rahmen, name) {
+    var wirt = rahmen.querySelector('main.content .scroll') || rahmen.querySelector('.scroll');
+    if (!wirt) return;
+    if (/Darstellung/i.test(name)) {
+      tafelZeigen(rahmen, wirt, null);
+      sagen('Darstellung — Erscheinungsbild, Schrift, Papier.');
+      return;
+    }
+    var kurz = name.replace(/\s*\d.*$/, '').replace(/[0-9,.]+ ?GB$/, '').trim();
+    var zeilen = EINSTELLUNGEN_TAFELN[kurz] || EINSTELLUNGEN_TAFELN[kurz.split(' ')[0]] || null;
+    if (!zeilen) {
+      zeilen = [[kurz, 'In diesem Entwurf nicht ausgezeichnet', '']];
+    }
+    var tafel = bau('<section class="card pv-einst"><div class="card__head"><span class="t-section pv-einst__kopf"></span></div></section>');
+    tafel.querySelector('.pv-einst__kopf').textContent = kurz;
+    zeilen.forEach(function (z) {
+      var zeile = bau(
+        '<div class="row pv-einst__zeile">' +
+          '<div class="row__main">' +
+            '<span class="t-body pv-einst__was"></span>' +
+            '<span class="t-label c-3 pv-einst__dazu"></span>' +
+          '</div>' +
+          (z[2] ? '<span class="pv-schalter' + (z[2] === 'an' ? ' is-an' : '') + '" role="switch"></span>'
+                : '<span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>') +
+        '</div>');
+      zeile.querySelector('.pv-einst__was').textContent = z[0];
+      zeile.querySelector('.pv-einst__dazu').textContent = z[1];
+      var schalt = zeile.querySelector('.pv-schalter');
+      if (schalt) {
+        schalt.setAttribute('aria-checked', z[2] === 'an' ? 'true' : 'false');
+        beleben(schalt, {
+          ziel: 'nichts',
+          wirkt: 'schaltet um',
+          titel: z[0],
+          tun: function () {
+            var an = !schalt.classList.contains('is-an');
+            schalt.classList.toggle('is-an', an);
+            schalt.setAttribute('aria-checked', an ? 'true' : 'false');
+            schmutzig(rahmen);
+            sagen(z[0] + ' — ' + (an ? 'an' : 'aus') + '.');
+          },
+        });
+      }
+      tafel.appendChild(zeile);
+    });
+    tafelZeigen(rahmen, wirt, kurz, tafel);
+    sagen(kurz + ' — drei Einstellungen.');
+  }
+
+  /* ── 14j · Filterchips ───────────────────────────────────────────────────
+     Suche und Graph tragen Reihen von Chips: „Alle 12 · Notizen · Canvas ·
+     Journal · Lernkarten · Aufgaben 0". Der erste ist gefüllte Ink, die
+     anderen sind Umrisse — das ist die Auswahl-Rolle der Tinte (DNA §2), und
+     sie muss wandern können.
+
+     Die Wirkung ist echtes Filtern: die Fundstellen, die nicht zur Schicht
+     gehören, treten zurück, und die Zahl im ersten Chip zählt mit. */
+  function chipreiheBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.chip'), function (c) { void c; });
+
+    var reihen = [];
+    Array.prototype.forEach.call(rahmen.querySelectorAll('button.chip'), function (c) {
+      var eltern = c.parentNode;
+      if (!eltern) return;
+      if (reihen.indexOf(eltern) < 0) reihen.push(eltern);
+    });
+
+    reihen.forEach(function (reihe) {
+      var chips = Array.prototype.slice.call(reihe.children).filter(function (c) {
+        return c.tagName === 'BUTTON' && c.classList.contains('chip') && !c.classList.contains('gtag');
+      });
+      if (chips.length < 2) return;
+      if (chips[0].classList.contains('pv-lebt')) return;
+      var einzeln = !chips.some(function (c) { return /^alle\b/.test(wort(c)); });
+
+      chips.forEach(function (c) {
+        var name = wort(c);
+        beleben(c, {
+          ziel: 'nichts',
+          wirkt: einzeln ? 'schaltet „' + textVon(c) + '" zu' : 'zeigt nur „' + textVon(c) + '"',
+          titel: textVon(c),
+          tun: function () {
+            schmutzig(rahmen);
+            if (einzeln) {
+              var aus = c.classList.contains('is-off');
+              c.classList.toggle('is-off', !aus);
+              c.classList.toggle('chip--ghost', !aus);
+              c.setAttribute('aria-pressed', aus ? 'true' : 'false');
+            } else {
+              chips.forEach(function (b) {
+                var gewaehlt = b === c;
+                b.classList.toggle('chip--solid', gewaehlt);
+                b.classList.toggle('chip--ghost', !gewaehlt && b.classList.contains('is-off'));
+                b.setAttribute('aria-pressed', gewaehlt ? 'true' : 'false');
+              });
+            }
+            schichtFiltern(rahmen, chips);
+            markenAuffrischen();
+          },
+        });
+      });
+    });
+
+    /* Die Tag-Chips im Graphen: sie schalten einzeln zu und ab. */
+    var tags = Array.prototype.slice.call(rahmen.querySelectorAll('button.chip.gtag'));
+    tags.forEach(function (c) {
+      if (c.classList.contains('pv-lebt')) return;
+      beleben(c, {
+        ziel: 'nichts',
+        wirkt: 'hebt „' + textVon(c) + '" hervor',
+        titel: textVon(c),
+        tun: function () {
+          schmutzig(rahmen);
+          var an = !c.classList.contains('is-gewaehlt');
+          tags.forEach(function (b) { b.classList.toggle('is-gewaehlt', b === c && an); });
+          graphHervorheben(rahmen, an ? textVon(c) : null);
+          markenAuffrischen();
+        },
+      });
+    });
+  }
+
+  /* Welche Fundstellen bleiben stehen. Gesucht wird im Text der Stelle nach
+     dem Wort der Schicht — „Notiz · Absatz 9" trägt „Notiz". */
+  function schichtFiltern(rahmen, chips) {
+    var gewaehlt = [];
+    chips.forEach(function (c) {
+      var n = wort(c);
+      if (/^alle\b/.test(n)) return;
+      var an = c.classList.contains('chip--solid') || !c.classList.contains('is-off');
+      if (an) gewaehlt.push(n);
+    });
+    var alleAn = chips.some(function (c) { return /^alle\b/.test(wort(c)) && c.classList.contains('chip--solid'); });
+
+    var stellen = Array.prototype.slice.call(rahmen.querySelectorAll('.scroll section.card'))
+      .filter(function (s) { return s.querySelector('.row, .klammer'); });
+    if (!stellen.length) return;
+    var n = 0;
+    stellen.forEach(function (s) {
+      var t = textVon(s).toLowerCase();
+      var ja = alleAn || !gewaehlt.length || gewaehlt.some(function (g) {
+        return t.indexOf(g.replace(/n$/, '')) >= 0;
+      });
+      if (ja) n++;
+      s.classList.toggle('pv-gefiltert', !ja);
+    });
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.chip'), function (c) {
+      if (!/^alle\b/.test(wort(c))) return;
+      var z = c.querySelector('.num');
+      if (z) z.textContent = String(n);
+      else c.textContent = 'Alle ' + n;
+    });
+    sagen(n + ' von ' + stellen.length + ' Fundstellen.');
+  }
+
+  function graphHervorheben(rahmen, tag) {
+    var knoten = Array.prototype.slice.call(rahmen.querySelectorAll('.gn, .gnode'));
+    if (!knoten.length) return;
+    knoten.forEach(function (k) {
+      if (!tag) { k.classList.remove('pv-fern'); return; }
+      var passt = textVon(k).toLowerCase().indexOf(tag.replace(/^#/, '').split('/').pop().toLowerCase()) >= 0;
+      k.classList.toggle('pv-fern', !passt);
+    });
+    sagen(tag ? tag + ' — die anderen Knoten treten zurück.' : 'Alle Knoten wieder gleich hell.');
+  }
+
+  /* ── 14k · Die Symbole in den Leisten ────────────────────────────────────
+     ⟨more⟩ · ⟨sort⟩ · ⟨info⟩ · ⟨star⟩ · ⟨share⟩ · ⟨undo⟩ · ⟨filter⟩. Sie
+     sind das Gegenteil von Beiwerk: 44 × 44, ganz oben, in jeder Leiste. Ein
+     totes Symbol dort ist der Punkt, an dem ein Entwurf auffliegt.
+
+     Jedes bekommt, was es im System auch täte: „mehr" ein Menü, „sortieren"
+     ein Menü mit Haken, „Info" eine Tafel zum Auf- und Zuklappen, „Stern"
+     einen Zustand, „Teilen" einen Hinweis, „Widerrufen" einen Widerruf. */
+  var SYMBOL_WORT = {
+    more: 'Mehr', ellipsis: 'Mehr', sort: 'Sortieren', filter: 'Filtern',
+    info: 'Informationen', star: 'Merken', share: 'Teilen', undo: 'Widerrufen',
+    redo: 'Wiederholen', search: 'Suchen', close: 'Schließen', check: 'Fertig',
+    sidebar: 'Seitenleiste', calendar: 'Kalender', clock: 'Erinnerung',
+    trash: 'Löschen', plus: 'Neu', minus: 'Kleiner', pencil: 'Bearbeiten',
+  };
+
+  function symbolVon(k) {
+    var i = k.querySelector('.ico[data-ico]');
+    return i ? i.getAttribute('data-ico') : '';
+  }
+
+  function symbolknoepfeBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.iconbtn'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (k.hasAttribute('data-bw')) return;
+      var sym = symbolVon(k);
+      var name = SYMBOL_WORT[sym] || textVon(k) || 'Aktion';
+      var schirm = rahmen.getAttribute('data-pv-screen');
+
+      if (sym === 'more' || sym === 'ellipsis') {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'öffnet das Menü', titel: 'Mehr',
+          tun: function () { listenmenue(k, 'MEHR', mehrmenue(rahmen, schirm)); },
+        });
+        return;
+      }
+      if (sym === 'sort' || sym === 'filter') {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'öffnet die Ordnung', titel: name,
+          tun: function () { listenmenue(k, sym === 'sort' ? 'SORTIEREN' : 'FILTERN', ordnungsmenue(rahmen, k)); },
+        });
+        return;
+      }
+      if (sym === 'info') {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'klappt die Tafel zu und auf', titel: 'Informationen',
+          tun: function () { seiteneinschubUmschalten(rahmen, k); },
+        });
+        return;
+      }
+      if (sym === 'star') {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'merkt sich diese Sache', titel: 'Merken',
+          tun: function () {
+            schmutzig(rahmen);
+            var an = !k.classList.contains('is-active');
+            k.classList.toggle('is-active', an);
+            k.setAttribute('aria-pressed', an ? 'true' : 'false');
+            var stern = k.querySelector('.ico');
+            if (stern) stern.setAttribute('data-ico', an ? 'starFill' : 'star');
+            beleben_ikonen(k);
+            sagen(an ? 'Gemerkt — steht jetzt unter „Markiert".' : 'Nicht mehr gemerkt.');
+            markenAuffrischen();
+          },
+        });
+        return;
+      }
+      if (sym === 'share') {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'zeigt, was geteilt würde', titel: 'Teilen',
+          tun: function () {
+            listenmenue(k, 'TEILEN', [
+              { wort: 'Als PDF', ico: 'doc', tun: function () { hinweis(rahmen, 'Als PDF geteilt', 'Handschrift bleibt Vektor · 4 Seiten'); } },
+              { wort: 'Als Markdown', ico: 'doc', tun: function () { hinweis(rahmen, 'Als Markdown geteilt', 'Fäden werden zu Wiki-Links'); } },
+              { wort: 'Link zum Mitlesen', ico: 'link', tun: function () { hinweis(rahmen, 'Link kopiert', 'Nur Lesen · läuft in 7 Tagen ab'); } },
+            ]);
+          },
+        });
+        return;
+      }
+      if (sym === 'undo') {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'nimmt den letzten Schritt zurück', titel: 'Widerrufen',
+          tun: function () { hinweis(rahmen, 'Letzter Schritt zurückgenommen', 'Absatz „Osmose" · vor 4 Minuten'); },
+        });
+        return;
+      }
+      if (sym === 'close') {
+        var tafel = k.closest('aside, section, .ginspect, .card');
+        if (tafel && tafel !== rahmen) {
+          beleben(k, {
+            ziel: 'nichts', wirkt: 'schließt das hier', titel: 'Schließen',
+            tun: function () { schmutzig(rahmen); verbergen(tafel); markenAuffrischen(); },
+          });
+          return;
+        }
+      }
+      if (sym === 'sidebar') {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'blendet die Seitenleiste aus und ein', titel: 'Seitenleiste',
+          tun: function () { seitenleisteUmschalten(rahmen, k); },
+        });
+        return;
+      }
+      /* Alles andere: ein Menü mit dem, was der Schirm hergibt — nie nichts. */
+      beleben(k, {
+        ziel: 'nichts', wirkt: 'öffnet das Menü', titel: name,
+        tun: function () { listenmenue(k, name.toUpperCase(), mehrmenue(rahmen, schirm)); },
+      });
+    });
+  }
+
+  /* Was im „Mehr"-Menü steht, hängt vom Schirm ab — und jeder Eintrag tut
+     etwas, das man sieht. Ein Menü voll toter Zeilen wäre nur eine größere
+     Version desselben Fehlers. */
+  function mehrmenue(rahmen, schirm) {
+    var eintraege = [];
+    if (schirm === 'notizen' || schirm === 'bibliothek') {
+      eintraege.push({ wort: 'Auswählen', ico: 'check', tun: function () { auswahlModus(rahmen); } });
+      eintraege.push({ wort: 'Nach Änderung sortieren', ico: 'sort', tun: function () { listeSortieren(rahmen, 'geändert'); } });
+      eintraege.push({ wort: 'Nach Titel sortieren', ico: 'sort', tun: function () { listeSortieren(rahmen, 'titel'); } });
+      eintraege.push({ trenner: true });
+      eintraege.push({ wort: 'Papierkorb zeigen', ico: 'trash', tun: function () { hinweis(rahmen, 'Papierkorb', '3 Notizen · älteste seit 12 Tagen'); } });
+    } else if (schirm === 'notiz' || schirm === 'journal-eintrag') {
+      eintraege.push({ wort: 'In Notizbuch verschieben', ico: 'folder', tun: function () { hinweis(rahmen, 'Verschoben nach „Zellbiologie"', 'Die Fäden bleiben, wo sie waren'); } });
+      eintraege.push({ wort: 'Lernkarten erzeugen', ico: 'cards', tun: function () { hinweis(rahmen, 'Zwei Lernkarten entstanden', 'aus Absatz 9 · fällig in 1 Tag'); } });
+      eintraege.push({ wort: 'Drucken', ico: 'doc', tun: function () { hinweis(rahmen, 'Druckvorschau', '4 Seiten · Handschrift als Vektor'); } });
+      eintraege.push({ trenner: true });
+      eintraege.push({ wort: 'Löschen', ico: 'trash', gefahr: true, tun: function () { hinweis(rahmen, 'In den Papierkorb gelegt', 'Widerrufen ist 30 Tage möglich'); } });
+    } else if (schirm === 'aufgaben' || schirm === 'aufgabe') {
+      eintraege.push({ wort: 'Erledigte einblenden', ico: 'check', tun: function () { erledigteZeigen(rahmen); } });
+      eintraege.push({ wort: 'Nach Frist sortieren', ico: 'sort', tun: function () { listeSortieren(rahmen, 'frist'); } });
+      eintraege.push({ wort: 'Bereiche verwalten', ico: 'folder', tun: function () { hinweis(rahmen, 'Vier Bereiche', 'Biologie · Analysis II · Soziologie · Privat'); } });
+    } else if (schirm === 'lernkarten' || schirm === 'lernsitzung') {
+      eintraege.push({ wort: 'Deck bearbeiten', ico: 'pencil', tun: function () { hinweis(rahmen, 'Deck „Zellbiologie"', '84 Karten · 12 fällig'); } });
+      eintraege.push({ wort: 'Lernplan ändern', ico: 'clock', tun: function () { hinweis(rahmen, 'Lernplan', '12 Karten am Tag · 19:00'); } });
+      eintraege.push({ wort: 'Karten zurücksetzen', ico: 'undo', gefahr: true, tun: function () { hinweis(rahmen, 'Fortschritt zurückgesetzt', '84 Karten stehen wieder auf Anfang'); } });
+    } else {
+      eintraege.push({ wort: 'Ansicht anpassen', ico: 'sidebar', tun: function () { hinweis(rahmen, 'Ansicht angepasst', 'Dichte: mittel'); } });
+      eintraege.push({ wort: 'Diesen Schirm teilen', ico: 'share', tun: function () { hinweis(rahmen, 'Link kopiert', 'Nur Lesen · läuft in 7 Tagen ab'); } });
+    }
+    return eintraege;
+  }
+
+  function ordnungsmenue(rahmen, knopf) {
+    var art = knopf.__pvOrdnung || 'geändert';
+    var machen = function (n) {
+      return { wort: n.wort, ico: 'sort', wahl: art === n.id, tun: function () { knopf.__pvOrdnung = n.id; listeSortieren(rahmen, n.id); } };
+    };
+    return [
+      machen({ id: 'geändert', wort: 'Zuletzt geändert' }),
+      machen({ id: 'titel', wort: 'Titel A–Z' }),
+      machen({ id: 'erstellt', wort: 'Zuletzt erstellt' }),
+      machen({ id: 'faden', wort: 'Nach Fäden' }),
+    ];
+  }
+
+  /* Sortieren heißt hier: die Zeilen, die dastehen, wechseln die Reihenfolge.
+     Zwei Ordnungen sind echt (Titel, Bestand), zwei sind eine Umkehr —
+     mehr gibt der Bestand nicht her, und mehr braucht es nicht: sichtbar
+     anders ist die Anforderung, nicht vollständig simuliert. */
+  function listeSortieren(rahmen, art) {
+    var zeilen = Array.prototype.slice.call(rahmen.querySelectorAll('.scroll .row'))
+      .filter(function (z) { return !z.closest('aside') && !z.classList.contains('sem__zeile'); });
+    if (zeilen.length < 2) {
+      var buecher = Array.prototype.slice.call(rahmen.querySelectorAll('.shelf .book'));
+      if (buecher.length < 2) { hinweis(rahmen, 'Sortiert nach ' + art, 'Diese Ansicht hat nur eine Zeile'); return; }
+      zeilen = buecher;
+    }
+    var wirt = zeilen[0].parentNode;
+    zeilen = zeilen.filter(function (z) { return z.parentNode === wirt; });
+    zeilen.forEach(function (z, i) { if (z.__pvRang === undefined) z.__pvRang = i; });
+    var sortiert = zeilen.slice();
+    if (art === 'titel') sortiert.sort(function (a, b) { return titelVon(a).localeCompare(titelVon(b), 'de'); });
+    else if (art === 'erstellt') sortiert.sort(function (a, b) { return b.__pvRang - a.__pvRang; });
+    else if (art === 'frist') sortiert.sort(function (a, b) { return (zeileDringend(b) ? 1 : 0) - (zeileDringend(a) ? 1 : 0); });
+    else if (art === 'faden') sortiert.sort(function (a, b) { return fadenZahl(b) - fadenZahl(a); });
+    else sortiert.sort(function (a, b) { return a.__pvRang - b.__pvRang; });
+    sortiert.forEach(function (z) { wirt.appendChild(z); });
+    schmutzig(rahmen);
+    sagen('Sortiert nach ' + art + ' — ' + sortiert.length + ' Zeilen.');
+    markenAuffrischen();
+  }
+
+  function titelVon(z) {
+    var t = z.querySelector('.row__title, .book__title, .t-body');
+    return t ? textVon(t) : textVon(z);
+  }
+
+  function fadenZahl(z) {
+    return z.querySelectorAll('.dot--node, .thread, .klammer__zug').length;
+  }
+
+  function erledigteZeigen(rahmen) {
+    var an = !rahmen.__pvErledigte;
+    rahmen.__pvErledigte = an;
+    var zeilen = Array.prototype.slice.call(rahmen.querySelectorAll('.row')).filter(zeileErledigt);
+    if (!zeilen.length) {
+      var kasten = rahmen.querySelector('.card--flat');
+      if (kasten && /erledigt/i.test(textVon(kasten))) {
+        kasten.classList.toggle('is-open', an);
+        hinweis(rahmen, an ? 'Erledigte eingeblendet' : 'Erledigte ausgeblendet', '2 heute abgehakt');
+        return;
+      }
+    }
+    zeilen.forEach(function (z) { z.classList.toggle('pv-gefiltert', !an); });
+    schmutzig(rahmen);
+    hinweis(rahmen, an ? 'Erledigte eingeblendet' : 'Erledigte ausgeblendet', zeilen.length + ' Aufgaben');
+  }
+
+  /* „Auswählen" — der Modus, den jede Liste im System hat. Er setzt Kreise
+     vor die Zeilen und die Übergabeleiste an den unteren Rand, die es hier
+     schon gibt. */
+  function auswahlModus(rahmen) {
+    var an = !rahmen.__pvAuswahl;
+    rahmen.__pvAuswahl = an;
+    var zeilen = Array.prototype.slice.call(rahmen.querySelectorAll('.scroll .row'))
+      .filter(function (z) { return !z.closest('aside'); });
+    zeilen.forEach(function (z) { z.classList.toggle('pv-waehlbar', an); });
+    schmutzig(rahmen);
+    hinweis(rahmen, an ? 'Auswahl an' : 'Auswahl aus', an ? 'Tippe Zeilen an — unten steht, was du damit tun kannst' : null);
+  }
+
+  /* Info-Taste: die Tafel rechts geht zu und wieder auf. Auf dem iPhone gibt
+     es keine Tafel — dort wird sie als Blatt gezeigt. */
+  function seiteneinschubUmschalten(rahmen, knopf) {
+    schmutzig(rahmen);
+    var tafel = rahmen.querySelector('.body > aside:last-child, .inspector, .ginspect, main + aside');
+    if (tafel && tafel !== rahmen.querySelector('aside.sidebar')) {
+      var zu = !tafel.hidden;
+      verbergen(tafel, !zu ? false : true);
+      knopf.classList.toggle('is-active', !zu);
+      knopf.setAttribute('aria-expanded', !zu ? 'true' : 'false');
+      sagen(zu ? 'Tafel zu — mehr Platz für den Text.' : 'Tafel auf — Fäden, Zahlen, Herkunft.');
+      markenAuffrischen();
+      return;
+    }
+    listenmenue(knopf, 'DIESE NOTIZ', [
+      { wort: '1 240 Wörter · 6 Absätze', ico: 'doc' },
+      { wort: '4 Fäden — 2 hinein, 2 hinaus', ico: 'link' },
+      { wort: 'Angelegt 6. Nov, 10:03', ico: 'clock' },
+      { wort: 'Zuletzt geändert heute, 16:20', ico: 'clock' },
+    ]);
+  }
+
+  function seitenleisteUmschalten(rahmen, knopf) {
+    var leiste = rahmen.querySelector('aside.sidebar');
+    if (!leiste) return;
+    schmutzig(rahmen);
+    var zu = !leiste.hidden && leiste.style.display !== 'none';
+    verbergen(leiste, zu ? true : false);
+    knopf.setAttribute('aria-expanded', zu ? 'false' : 'true');
+    sagen(zu ? 'Seitenleiste eingeklappt.' : 'Seitenleiste ausgeklappt.');
+    markenAuffrischen();
+  }
+
+  /* ── 14l · Zeilen, die eine Auswahl sind ─────────────────────────────────
+     „Diese Woche 7", „Markiert mit Stern 4", „Notizen 14", „Tinte 3" — eine
+     Zeile mit einer Zahl rechts ist im System immer eine Auswahl. Sie führt
+     dorthin, wo diese Sachen liegen; gibt es den Schirm, wird navigiert, und
+     wenn nicht, wird an Ort und Stelle gefiltert. */
+  var SAMMLUNG_ZIEL = {
+    'notizen': 'notizen', 'notiz': 'notizen', 'alle notizen': 'notizen',
+    'canvas-blätter': 'canvas', 'canvas': 'canvas',
+    'journaleinträge': 'journal', 'journal': 'journal',
+    'aufgaben': 'aufgaben', 'lernkarten': 'lernkarten', 'karten': 'lernkarten',
+  };
+
+  function sammlungszeilenBeleben(rahmen) {
+    var kandidaten = Array.prototype.slice.call(
+      rahmen.querySelectorAll('button.row, button.card--flat, .scroll button.navitem'));
+    kandidaten.forEach(function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (k.closest('aside')) return;
+      var name = textVon(k).replace(/\s*\d+\s*$/, '').trim();
+      var ziel = leitetAuf(SAMMLUNG_ZIEL[name.toLowerCase()]);
+      if (ziel) {
+        beleben(k, { ziel: ziel, richtung: 'vor', titel: name + ' öffnen' });
+        return;
+      }
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: 'zeigt „' + name + '"',
+        titel: name,
+        tun: function () {
+          schmutzig(rahmen);
+          var geschwister = Array.prototype.slice.call(k.parentNode.children).filter(function (g) {
+            return g.tagName === 'BUTTON';
+          });
+          geschwister.forEach(function (g) {
+            g.classList.toggle('is-selected', g === k);
+            g.setAttribute('aria-pressed', g === k ? 'true' : 'false');
+          });
+          hinweis(rahmen, name, 'Diese Auswahl steht jetzt oben in der Liste.');
+        },
+      });
+    });
+  }
+
+  /* ── 14m · Das Aufgaben-Detail ───────────────────────────────────────────
+     „Geplant Heute", „Frist Fr, 15. Nov", „Bereich Biologie", „Wiederholung
+     Keine", „Ort Labor 3.14" — fünf Eigenschaftszeilen, die alle dasselbe
+     Versprechen geben: tipp mich an, ich ändere mich. Jede bekommt ein Menü
+     mit echten Werten; die gewählte Zeile schreibt den Wert hin.
+
+     Dazu „Verschieben", „Duplizieren", „Teilen" und „Ganzen Verlauf zeigen". */
+  var EIGENSCHAFT_WERTE = {
+    'geplant':      ['Heute', 'Morgen', 'Diese Woche', 'Ohne Termin'],
+    'frist':        ['Fr, 15. Nov', 'Mo, 18. Nov', 'Ende des Monats', 'Keine Frist'],
+    'bereich':      ['Biologie', 'Analysis II', 'Soziologie', 'Privat'],
+    'wiederholung': ['Keine', 'Täglich', 'Wöchentlich', 'Jeden Werktag'],
+    'ort':          ['Labor 3.14', 'Hörsaal B', 'Bibliothek', 'Zuhause'],
+    'priorität':    ['Keine', 'Mittel', 'Hoch', 'Sehr hoch'],
+  };
+
+  function aufgabenDetailBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('article button, .card button'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (k.classList.contains('iconbtn') || k.classList.contains('btn')) return;
+      var t = textVon(k);
+      var schluessel = null;
+      Object.keys(EIGENSCHAFT_WERTE).forEach(function (s) {
+        if (!schluessel && new RegExp('^' + s, 'i').test(t)) schluessel = s;
+      });
+      if (!schluessel) return;
+      var werte = EIGENSCHAFT_WERTE[schluessel];
+      var wertfeld = k.lastElementChild && k.lastElementChild !== k.firstElementChild
+        ? k.lastElementChild : null;
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: 'ändert „' + schluessel + '"',
+        titel: t,
+        tun: function () {
+          var jetztWert = wertfeld ? textVon(wertfeld) : '';
+          listenmenue(k, schluessel.toUpperCase(), werte.map(function (w) {
+            return {
+              wort: w, ico: 'check', wahl: w === jetztWert,
+              tun: function () {
+                schmutzig(rahmen);
+                if (wertfeld) wertfeld.textContent = w;
+                k.classList.toggle('is-off', /^kein/i.test(w));
+                sagen(schluessel.charAt(0).toUpperCase() + schluessel.slice(1) + ': ' + w + '.');
+                markenAuffrischen();
+              },
+            };
+          }));
+        },
+      });
+    });
+
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.btn'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      var t = textVon(k);
+      if (/^Verschieben$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'verschiebt in einen anderen Bereich', titel: 'Verschieben',
+          tun: function () {
+            listenmenue(k, 'VERSCHIEBEN NACH', EIGENSCHAFT_WERTE['bereich'].map(function (b) {
+              return { wort: b, ico: 'folder', tun: function () { hinweis(rahmen, 'Verschoben nach „' + b + '"', 'Die Fäden bleiben, wo sie waren'); } };
+            }));
+          },
+        });
+      } else if (/^Duplizieren$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'legt eine Kopie an', titel: 'Duplizieren',
+          tun: function () { aufgabeDuplizieren(rahmen); },
+        });
+      } else if (/^Teilen$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'zeigt, was geteilt würde', titel: 'Teilen',
+          tun: function () {
+            listenmenue(k, 'TEILEN', [
+              { wort: 'Als Text kopieren', ico: 'doc', tun: function () { hinweis(rahmen, 'Kopiert', 'Titel, Frist und zwei Schritte'); } },
+              { wort: 'An Jana schicken', ico: 'share', tun: function () { hinweis(rahmen, 'An Jana geschickt', 'Sie sieht die Aufgabe, nicht die Notiz dahinter'); } },
+              { wort: 'In den Kalender', ico: 'calendar', tun: function () { hinweis(rahmen, 'Im Kalender eingetragen', 'Freitag, 15. Nov · 14:00'); } },
+            ]);
+          },
+        });
+      } else if (/Ganzen Verlauf/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'klappt den ganzen Verlauf auf', titel: 'Ganzen Verlauf zeigen',
+          tun: function () { verlaufAufklappen(rahmen, k); },
+        });
+      } else if (/^Jetzt sortieren$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'sortiert die Liste nach Frist', titel: 'Jetzt sortieren',
+          tun: function () { listeSortieren(rahmen, 'frist'); },
+        });
+      } else if (/^Bereich$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'wählt den Bereich', titel: 'Bereich',
+          tun: function () {
+            listenmenue(k, 'BEREICH', ['Alle Bereiche'].concat(EIGENSCHAFT_WERTE['bereich']).map(function (b) {
+              return { wort: b, ico: 'folder', tun: function () { bereichFiltern(rahmen, b); } };
+            }));
+          },
+        });
+      }
+    });
+  }
+
+  function bereichFiltern(rahmen, bereich) {
+    var zeilen = Array.prototype.slice.call(rahmen.querySelectorAll('.scroll .row'))
+      .filter(function (z) { return !z.closest('aside'); });
+    var alles = /^alle/i.test(bereich);
+    var n = 0;
+    zeilen.forEach(function (z) {
+      var ja = alles || textVon(z).toLowerCase().indexOf(bereich.toLowerCase().split(' ')[0]) >= 0
+        || !!z.closest('[data-pv-bereich="' + bereich + '"]');
+      if (ja) n++;
+      z.classList.toggle('pv-gefiltert', !ja);
+    });
+    schmutzig(rahmen);
+    hinweis(rahmen, bereich, n + ' von ' + zeilen.length + ' Aufgaben');
+  }
+
+  function aufgabeDuplizieren(rahmen) {
+    var zeile = rahmen.querySelector('.row.is-selected') || rahmen.querySelector('.scroll .row');
+    if (!zeile) { hinweis(rahmen, 'Dupliziert', 'Die Kopie steht darunter'); return; }
+    var kopie = zeile.cloneNode(true);
+    kopie.removeAttribute('id');
+    kopie.classList.remove('is-selected', 'pv-lebt', 'pv-wege-ort');
+    kopie.classList.add('pv-waechst');
+    Array.prototype.forEach.call(kopie.querySelectorAll('.pv-lebt'), function (e) { e.classList.remove('pv-lebt', 'pv-wege-ort'); });
+    var titel = kopie.querySelector('.row__title, .t-body');
+    if (titel) titel.textContent = textVon(titel) + ' (Kopie)';
+    zeile.parentNode.insertBefore(kopie, zeile.nextSibling);
+    beleben_ikonen(kopie);
+    schmutzig(rahmen);
+    frischAufbauen(rahmen);
+    sagen('Dupliziert — die Kopie steht direkt darunter.');
+    markenAuffrischen();
+  }
+
+  function verlaufAufklappen(rahmen, knopf) {
+    if (knopf.__pvOffen) { hinweis(rahmen, 'Der ganze Verlauf steht schon da', null); return; }
+    knopf.__pvOffen = 1;
+    var kasten = knopf.closest('section, .card') || knopf.parentNode;
+    var mehr = bau('<div class="pv-verlauf pv-waechst"></div>');
+    [
+      ['13. Nov · 16:42', 'Aus der Notiz „Zellbiologie" entstanden', 'notes'],
+      ['13. Nov · 16:44', 'Frist auf Freitag gesetzt', 'tasks'],
+      ['14. Nov · 09:10', 'Erster Schritt abgehakt', 'tasks'],
+      ['14. Nov · 11:02', 'Ort „Labor 3.14" ergänzt', 'tasks'],
+    ].forEach(function (e) {
+      var z = bau('<div class="pv-verlauf__zeile"><span class="dot dot--' + e[2] + '"></span>' +
+        '<div style="display:flex; flex-direction:column; gap:1px; min-width:0">' +
+        '<span class="t-sub c-1 pv-verlauf__was"></span>' +
+        '<span class="t-label c-3 pv-verlauf__wann"></span></div></div>');
+      z.querySelector('.pv-verlauf__was').textContent = e[1];
+      z.querySelector('.pv-verlauf__wann').textContent = e[0];
+      mehr.appendChild(z);
+    });
+    kasten.insertBefore(mehr, knopf);
+    knopf.textContent = 'Verlauf einklappen';
+    beleben(knopf, {
+      ziel: 'nichts', wirkt: 'klappt den Verlauf ein', titel: 'Verlauf einklappen',
+      tun: function () {
+        mehr.remove();
+        knopf.textContent = 'Ganzen Verlauf zeigen';
+        knopf.__pvOffen = 0;
+        frischAufbauen(rahmen);
+        sagen('Verlauf eingeklappt.');
+      },
+    });
+    schmutzig(rahmen);
+    sagen('Vier weitere Schritte — von der Notiz bis zum Ort.');
+    markenAuffrischen();
+  }
+
+  /* ── 14n · Die Lernsitzung ───────────────────────────────────────────────
+     „Bis morgen zurücklegen", „Aussetzen", „Bearbeiten", „Leeren",
+     „Zurücknehmen" und der Herkunftsknopf auf der Kartenrückseite. Die
+     Sitzung ist der Ort des einen Moments, den diese App hat (DNA §1) — dass
+     dort fünf Knöpfe tot sind, war der teuerste Einzelbefund der Messung. */
+  function lernsitzungBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.btn'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      var t = textVon(k);
+
+      if (/zurücklegen/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'legt die Karte auf morgen', titel: 'Bis morgen zurücklegen',
+          tun: function () { kartenZahlAendern(rahmen, -1, 'Zurückgelegt', 'Diese Karte kommt morgen wieder.'); },
+        });
+      } else if (/^Aussetzen$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'setzt die Karte aus', titel: 'Aussetzen',
+          tun: function () { kartenZahlAendern(rahmen, -1, 'Ausgesetzt', 'Die Karte kommt erst wieder, wenn du sie holst.'); },
+        });
+      } else if (/^Bearbeiten$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'öffnet die Karte zum Ändern', titel: 'Bearbeiten',
+          tun: function () { karteBearbeiten(rahmen); },
+        });
+      } else if (/^Leeren$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'leert die Ablage', titel: 'Leeren',
+          tun: function () {
+            var kasten = k.closest('section, .card');
+            var zeilen = kasten ? Array.prototype.slice.call(kasten.querySelectorAll('.row, .chip')) : [];
+            zeilen.forEach(function (z) { z.classList.add('pv-gefiltert'); });
+            schmutzig(rahmen);
+            widerrufZeigen(rahmen, 'Ablage geleert', function () {
+              zeilen.forEach(function (z) { z.classList.remove('pv-gefiltert'); });
+            });
+            sagen('Ablage geleert — Widerrufen steht bereit.');
+          },
+        });
+      } else if (/^Zurücknehmen$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'nimmt die letzte Bewertung zurück', titel: 'Zurücknehmen',
+          tun: function () { kartenZahlAendern(rahmen, 1, 'Bewertung zurückgenommen', 'Die Karte steht wieder im Stapel.'); },
+        });
+      }
+    });
+
+    /* Der Knopf auf der Kartenrückseite: „aus ‚Zellbiologie', 16:42". Das ist
+       der Faden dieser Karte zu ihrem Ursprung — der eine Weg, der in dieser
+       App wirklich zählt. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.bw-flip__seite--hinten button'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (!leitetAuf('notiz')) return;
+      beleben(k, {
+        ziel: 'notiz', richtung: 'vor',
+        titel: 'Die Stelle öffnen, an der diese Karte entstanden ist',
+      });
+    });
+  }
+
+  function kartenZahlAendern(rahmen, delta, satz, dazu) {
+    schmutzig(rahmen);
+    var geaendert = false;
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.num'), function (n) {
+      if (geaendert) return;
+      var t = textVon(n);
+      var m = t.match(/^(\d+)\s*\/\s*(\d+)$/);
+      if (m) {
+        n.textContent = Math.max(0, +m[1] + delta) + ' / ' + m[2];
+        geaendert = true;
+      }
+    });
+    hinweis(rahmen, satz, dazu);
+  }
+
+  function karteBearbeiten(rahmen) {
+    var seite = rahmen.querySelector('.bw-flip__seite--hinten .t-body, .bw-flip__seite--vorn .t-body')
+      || rahmen.querySelector('.card .t-body');
+    if (!seite) { hinweis(rahmen, 'Karte bearbeiten', 'Vorder- und Rückseite ändern'); return; }
+    schmutzig(rahmen);
+    seite.setAttribute('contenteditable', 'true');
+    seite.classList.add('pv-schreibt');
+    try { seite.focus(); } catch (e) { /* egal */ }
+    hinweis(rahmen, 'Karte offen zum Ändern', 'Die Schreibmarke steht in der Antwort.');
+  }
+
+  /* ── 14o · Der Notiz-Editor ──────────────────────────────────────────────
+     Gliederung (sechs Zeilen rechts), Format (H1, Liste, Code), Ein- und
+     Ausklappen der Abschnitte. Die Gliederung führt an ihre Stelle im Text —
+     das ist der einzige Weg im Editor, der WIRKLICH etwas findet, weil die
+     Überschriften im Text stehen. */
+  function editorBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('aside button, .pv-tafel button'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      var t = textVon(k);
+      if (!/^#{1,3}\s|^Semesterplanung/.test(t)) return;
+      var ziel = t.replace(/^#+\s*/, '').trim();
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: 'springt zu „' + ziel + '"',
+        titel: ziel + ' im Text',
+        tun: function () {
+          schmutzig(rahmen);
+          Array.prototype.forEach.call(rahmen.querySelectorAll('aside button'), function (b) {
+            b.classList.toggle('is-active', b === k);
+          });
+          var treffer = null;
+          Array.prototype.forEach.call(rahmen.querySelectorAll('main .t-body, main h1, main h2, main h3, main .serif--voice'), function (e) {
+            if (!treffer && textVon(e).indexOf(ziel) === 0) treffer = e;
+          });
+          if (treffer) {
+            var scroll = treffer.closest('.scroll');
+            if (scroll) scroll.scrollTop = treffer.offsetTop - 40;
+            treffer.classList.add('pv-gefunden');
+            global.setTimeout(function () { treffer.classList.remove('pv-gefunden'); }, 1400);
+            sagen('„' + ziel + '" — die Stelle steht oben.');
+          } else {
+            sagen('„' + ziel + '" — im Text markiert.');
+          }
+          markenAuffrischen();
+        },
+      });
+    });
+
+    /* Ein- und Ausklappen der Abschnitte im Text. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('button'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      var t = textVon(k) + ' ' + (k.getAttribute('aria-label') || '');
+      if (!/Abschnitt (ein|auf)klappen/i.test(t)) return;
+      beleben(k, {
+        ziel: 'nichts', wirkt: 'klappt den Abschnitt zu und auf', titel: 'Abschnitt ein- und ausklappen',
+        tun: function () {
+          schmutzig(rahmen);
+          var kasten = k.closest('section, .card, div');
+          var zu = kasten ? !kasten.classList.contains('is-zu') : false;
+          if (kasten) kasten.classList.toggle('is-zu', zu);
+          k.setAttribute('aria-expanded', zu ? 'false' : 'true');
+          var pfeil = k.querySelector('.ico');
+          if (pfeil) { pfeil.setAttribute('data-ico', zu ? 'chevR' : 'chevD'); beleben_ikonen(k); }
+          sagen(zu ? 'Abschnitt eingeklappt.' : 'Abschnitt aufgeklappt.');
+          markenAuffrischen();
+        },
+      });
+    });
+
+    /* Die Formatleiste: H1, Liste, Code. Sie schaltet den Zustand um — mehr
+       kann eine Leiste ohne Auswahl im Text auch im System nicht. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.iconbtn, button'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      var t = textVon(k);
+      if (!/^(H1|H2|H3|B|I|<\/>)$/.test(t)) return;
+      beleben(k, {
+        ziel: 'nichts', wirkt: 'schaltet das Format um', titel: t,
+        tun: function () {
+          schmutzig(rahmen);
+          var an = !k.classList.contains('is-active');
+          k.classList.toggle('is-active', an);
+          k.setAttribute('aria-pressed', an ? 'true' : 'false');
+          sagen(t + (an ? ' an' : ' aus') + ' — gilt für den Absatz, in dem die Marke steht.');
+          markenAuffrischen();
+        },
+      });
+    });
+  }
+
+  /* ── 14p · Übergabe-Chips ────────────────────────────────────────────────
+     „Aufgabe", „Journal", „Notiz", „Bereich", „Frage/Antwort" in einer
+     .handoff-Leiste sind die Übergabe: aus dieser Sache wird jene. §13f
+     belebt bisher nur den primären und das Kreuz — die anderen bleiben
+     stehen wie Angebote, die niemand annimmt. */
+  var UEBERGABE_ZIEL = {
+    'aufgabe': 'aufgaben', 'aufgaben': 'aufgaben',
+    'notiz': 'notiz', 'notizen': 'notiz',
+    'journal': 'journal-eintrag', 'journaleintrag': 'journal-eintrag',
+    'karte': 'lernkarten', 'karten': 'lernkarten', 'lernkarten': 'lernkarten',
+    'frage/antwort': 'lernkarten', 'canvas': 'canvas',
+  };
+
+  function uebergabeChipsBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.handoff__btn'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (k.hasAttribute('data-bw')) return;
+      var name = wort(k);
+      if (!name) {
+        /* Der schmale Knopf ohne Wort ist das „mehr" der Leiste. */
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'zeigt die übrigen Übergaben', titel: 'Weitere Übergaben',
+          tun: function () {
+            listenmenue(k, 'ÜBERGEBEN AN', ['Notiz', 'Aufgabe', 'Journal', 'Lernkarten', 'Canvas'].map(function (w) {
+              var z = leitetAuf(UEBERGABE_ZIEL[w.toLowerCase()]);
+              return { wort: w, punkt: punktVon(w), tun: function () {
+                if (z) gehen(z, 'vor', false, k);
+                else hinweis(rahmen, 'Übergeben an ' + w, 'Der Faden zeigt von hier dorthin.');
+              } };
+            }));
+          },
+        });
+        return;
+      }
+      var ziel = leitetAuf(UEBERGABE_ZIEL[name]);
+      beleben(k, {
+        ziel: ziel || 'nichts',
+        richtung: 'vor',
+        wirkt: ziel ? null : 'übergibt an „' + textVon(k) + '"',
+        titel: 'Übergeben an ' + textVon(k),
+        tun: ziel ? null : function () {
+          hinweis(rahmen, 'Übergeben an ' + textVon(k), 'Der Faden zeigt von hier dorthin.');
+        },
+      });
+    });
+  }
+
+  function punktVon(w) {
+    var m = { 'notiz': 'notes', 'aufgabe': 'tasks', 'journal': 'journal', 'lernkarten': 'cards', 'canvas': 'canvas' };
+    return m[w.toLowerCase()] || 'notes';
+  }
+
+  /* ── 14q · Der Rest, einzeln ─────────────────────────────────────────────
+     Knöpfe, die keiner Familie angehören. Jeder steht hier mit seinem Wort,
+     weil jeder etwas anderes verspricht. */
+  function einzelneBeleben(rahmen) {
+    var schirm = rahmen.getAttribute('data-pv-screen');
+
+    Array.prototype.forEach.call(rahmen.querySelectorAll('button'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (k.hasAttribute('data-bw')) return;
+      var t = textVon(k);
+
+      /* Das Kreuz im Suchfeld. */
+      if (/Eingabe löschen/i.test(t + (k.getAttribute('aria-label') || ''))
+          || (symbolVon(k) === 'close' && k.closest('.field'))) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'löscht die Eingabe', titel: 'Eingabe löschen',
+          tun: function () {
+            schmutzig(rahmen);
+            var feld = k.closest('.field');
+            if (feld) {
+              var text = feld.querySelector('input, .t-body, .t-sub');
+              if (text) {
+                if (text.tagName === 'INPUT') text.value = '';
+                else text.textContent = '';
+              }
+            }
+            sucheLeeren(rahmen);
+            sagen('Eingabe gelöscht — die Suche wartet auf ein neues Wort.');
+            markenAuffrischen();
+          },
+        });
+        return;
+      }
+
+      if (/^Sichern$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'sichert die erfasste Aufgabe', titel: 'Sichern',
+          tun: function () { aufgabeSichern(rahmen); },
+        });
+        return;
+      }
+
+      if (/^Lernen$/i.test(t) && leitetAuf('lernsitzung')) {
+        beleben(k, { ziel: 'lernsitzung', richtung: 'vor', titel: 'Lernen — die fällige Karte kommt' });
+        return;
+      }
+
+      if (/^Bearbeiten$/i.test(t) && schirm === 'journal-eintrag') {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'öffnet den Eintrag zum Schreiben', titel: 'Bearbeiten',
+          tun: function () {
+            schmutzig(rahmen);
+            var text = rahmen.querySelector('.serif--voice, main .t-body');
+            if (text) {
+              text.setAttribute('contenteditable', 'true');
+              text.classList.add('pv-schreibt');
+              try { text.focus(); } catch (e) { /* egal */ }
+            }
+            k.textContent = 'Fertig';
+            sagen('Der Eintrag ist offen — die Schreibmarke steht im Text.');
+            markenAuffrischen();
+          },
+        });
+        return;
+      }
+
+      if (/^Ältere Einträge/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'holt die Einträge aus dem Oktober', titel: 'Ältere Einträge',
+          tun: function () { aeltereHolen(rahmen, k); },
+        });
+        return;
+      }
+
+      if (/nacharbeiten/i.test(t)) {
+        beleben(k, {
+          ziel: leitetAuf('lernkarten') || 'nichts', richtung: 'vor',
+          titel: 'Woche 6 nacharbeiten',
+          wirkt: leitetAuf('lernkarten') ? null : 'plant die Woche nach',
+          tun: leitetAuf('lernkarten') ? null : function () {
+            hinweis(rahmen, 'Woche 6 nachgearbeitet', '14 Sachen · verteilt auf vier Tage');
+          },
+        });
+        return;
+      }
+
+      if (/^Nur (diesen )?Cluster/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'zeigt nur diesen Cluster', titel: 'Nur diesen Cluster',
+          tun: function () { clusterZeigen(rahmen, k); },
+        });
+        return;
+      }
+
+      if (/^Foto$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'legt ein Foto in den Eingang', titel: 'Foto aufnehmen',
+          tun: function () { hinweis(rahmen, 'Foto liegt im Eingang', 'Der Text darauf ist schon durchsuchbar'); },
+        });
+        return;
+      }
+
+      if (/^(Zuletzt geändert|Geändert|Verweise)$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'ändert die Ordnung', titel: t,
+          tun: function () { listenmenue(k, 'SORTIEREN', ordnungsmenue(rahmen, k)); },
+        });
+        return;
+      }
+
+      /* Karten im leeren Zustand: „Zellbiologie, Hörsaal B — heute 10:15". */
+      if (k.classList.contains('card--flat') && /Kalender|Fotos|Eintrag|Notiz/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'nimmt den Vorschlag an', titel: t.slice(0, 60),
+          tun: function () { vorschlagAnnehmen(rahmen, k); },
+        });
+        return;
+      }
+    });
+
+    /* Die Zeile „Heute erledigt 2" klappt die erledigten Aufgaben auf. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('button.card--flat'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (!/erledigt/i.test(textVon(k))) return;
+      beleben(k, {
+        ziel: 'nichts', wirkt: 'klappt die erledigten Aufgaben auf', titel: 'Heute erledigt',
+        tun: function () { erledigteZeigen(rahmen); },
+      });
+    });
+  }
+
+  function sucheLeeren(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.scroll section.card'), function (s) {
+      s.classList.add('pv-gefiltert');
+    });
+    var scroll = rahmen.querySelector('.scroll');
+    if (!scroll) return;
+    if (scroll.querySelector('.pv-leervermerk')) return;
+    var kasten = bau(
+      '<div class="pv-leervermerk">' +
+        '<div class="t-body c-2">Vier Schichten warten: Text, Handschrift, Bild, Gesprochenes.</div>' +
+        '<div class="t-label c-3">Schreib ein Wort — gesucht wird auch, was du nur gezeichnet hast.</div>' +
+      '</div>');
+    scroll.appendChild(kasten);
+  }
+
+  function aeltereHolen(rahmen, knopf) {
+    if (knopf.__pvGeholt) { sagen('Der Oktober steht schon da.'); return; }
+    knopf.__pvGeholt = 1;
+    var wirt = knopf.parentNode;
+    [
+      ['31', 'Okt.', 'Letzter Labortag vor der Pause', 'Die Kultur läuft weiter, Jana schaut nach ihr.'],
+      ['24', 'Okt.', 'Nach der Übung bei Prof. Wendt', 'Der Beweis zum Satz von Bolzano ist jetzt klar.'],
+      ['17', 'Okt.', 'Erste Woche im Labor', 'Alles riecht nach Ethanol. Die Pipette sitzt schon besser.'],
+    ].forEach(function (e) {
+      var block = bau(
+        '<div class="pv-waechst" style="display:flex; gap:14px; padding:10px 0">' +
+          '<div class="jz jz--pad" style="flex:none">' +
+            '<span class="serif--journal-date num pv-alt__tag"></span>' +
+            '<span class="t-label c-3 pv-alt__monat"></span>' +
+          '</div>' +
+          '<article class="card" style="flex:1 1 auto; min-width:0">' +
+            '<div class="t-sub is-strong pv-alt__kopf"></div>' +
+            '<p class="serif--voice pv-alt__text"></p>' +
+          '</article>' +
+        '</div>');
+      block.querySelector('.pv-alt__tag').textContent = e[0];
+      block.querySelector('.pv-alt__monat').textContent = e[1];
+      block.querySelector('.pv-alt__kopf').textContent = e[2];
+      block.querySelector('.pv-alt__text').textContent = e[3];
+      wirt.insertBefore(block, knopf);
+      if (leitetAuf('journal-eintrag')) {
+        beleben(block.querySelector('article'), { ziel: 'journal-eintrag', richtung: 'vor', titel: e[2] });
+      }
+    });
+    knopf.textContent = 'Das war der Oktober';
+    knopf.classList.add('is-off');
+    schmutzig(rahmen);
+    sagen('Drei Einträge aus dem Oktober — der Faden reicht weiter zurück.');
+    markenAuffrischen();
+  }
+
+  function clusterZeigen(rahmen, knopf) {
+    var an = !knopf.__pvNur;
+    knopf.__pvNur = an;
+    var knoten = Array.prototype.slice.call(rahmen.querySelectorAll('.gn, .gnode'));
+    knoten.forEach(function (k, i) {
+      k.classList.toggle('pv-fern', an && i % 3 !== 0);
+    });
+    knopf.textContent = an ? 'Wieder alle zeigen' : 'Nur diesen Cluster';
+    schmutzig(rahmen);
+    sagen(an ? 'Nur dieser Cluster — die anderen Knoten treten zurück.' : 'Wieder alle Knoten.');
+    markenAuffrischen();
+  }
+
+  function vorschlagAnnehmen(rahmen, karte) {
+    schmutzig(rahmen);
+    karte.classList.add('pv-verblasst');
+    var was = /Foto/i.test(textVon(karte)) ? 'Journaleintrag' : 'Notiz';
+    widerrufZeigen(rahmen, was + ' angelegt', function () {
+      karte.classList.remove('pv-verblasst');
+    });
+    sagen(was + ' aus dem Vorschlag angelegt — Widerrufen steht bereit.');
+  }
+
+  /* ── 14s · Der Rest des Restes ───────────────────────────────────────────
+     Sieben Fälle, die keiner Familie folgen und einzeln nachgemessen wurden. */
+
+  /* Die Merken-Kästchen im Notiz-Editor. §5g macht aus ihnen reine Haken —
+     aber ohne .pv-lebt kommt kein Klick durch (prototyp.css §4, Regel 2:
+     nichts in einer Rollfläche ist ein Ziel). Sie haken jetzt wirklich ab. */
+  function hakenBeleben(rahmen) {
+    /* Dazu die Kästchen, die schon einen Haken tragen. Sie hatten nie eine
+       Erledigen-Bewegung — die hängt nur an den offenen —, und blieben
+       darum als einzige Kästchen der App unantastbar. Ein Haken, den man
+       nicht zurücknehmen kann, ist keiner. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('button'), function (k) {
+      if (k.hasAttribute('data-pv-haken') || k.hasAttribute('data-bw')) return;
+      if (k.children.length !== 1) return;
+      var kind = k.firstElementChild;
+      if (!kind || !kind.classList || !kind.classList.contains('check')) return;
+      k.setAttribute('data-pv-haken', '');
+      k.setAttribute('aria-pressed', kind.classList.contains('is-done') ? 'true' : 'false');
+    });
+
+    Array.prototype.forEach.call(rahmen.querySelectorAll('[data-pv-haken]'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: 'hakt ab',
+        titel: 'Abhaken',
+        tun: function () {
+          schmutzig(rahmen);
+          var an = k.getAttribute('aria-pressed') !== 'true';
+          k.setAttribute('aria-pressed', String(an));
+          var haken = k.querySelector('.bw-check');
+          if (haken) haken.classList.toggle('is-an', an);
+          var kasten = k.querySelector('.check');
+          if (kasten) kasten.classList.toggle('is-done', an);
+          sagen(an ? 'Abgehakt — der Punkt bleibt in der Notiz stehen.' : 'Haken zurückgenommen.');
+          markenAuffrischen();
+        },
+      });
+    });
+  }
+
+  /* Chipreihen aus <span> — auf dem iPhone sind die Filter der Notizenliste
+     keine Knöpfe. Gleiches Aussehen, gleiche Erwartung, also gleiche Wirkung. */
+  function spanChipsBeleben(rahmen) {
+    var reihen = [];
+    Array.prototype.forEach.call(rahmen.querySelectorAll('span.chip'), function (c) {
+      if (c.parentNode && reihen.indexOf(c.parentNode) < 0) reihen.push(c.parentNode);
+    });
+    reihen.forEach(function (reihe) {
+      var chips = Array.prototype.slice.call(reihe.children).filter(function (c) {
+        return c.tagName === 'SPAN' && c.classList.contains('chip');
+      });
+      if (chips.length < 3) return;                       /* zwei Chips sind Beiwerk */
+      if (!chips.some(function (c) { return c.classList.contains('chip--solid'); })) return;
+      if (chips[0].classList.contains('pv-lebt')) return;
+      /* Eine Reihe aus Tags („#uni/bio · #labor") ist kein Filter, sondern
+         eine Angabe. Erkannt am Rautezeichen. */
+      if (chips.filter(function (c) { return /^#/.test(textVon(c)); }).length > chips.length / 2) return;
+
+      chips.forEach(function (c) {
+        var name = wort(c);
+        beleben(c, {
+          ziel: 'nichts',
+          wirkt: 'zeigt nur „' + textVon(c) + '"',
+          titel: textVon(c),
+          tun: function () {
+            schmutzig(rahmen);
+            chips.forEach(function (b) { b.classList.toggle('chip--solid', b === c); });
+            notizenFilter(rahmen, name, textVon(c));
+            markenAuffrischen();
+          },
+        });
+      });
+    });
+  }
+
+  /* „Fäden" in der Leiste des Semester-Ordners: ein Umschalter für das
+     Fadenbild. Er ist gefüllte Tinte — also ein Zustand, der an und aus
+     gehen können muss. */
+  function fadenschalterBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('button.chip'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      var t = textVon(k);
+
+      if (/^Fäden$/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'blendet die Fäden aus und ein', titel: 'Fäden zeigen',
+          tun: function () {
+            schmutzig(rahmen);
+            var an = !k.classList.contains('is-aus');
+            k.classList.toggle('is-aus', an);
+            k.classList.toggle('chip--solid', !an);
+            k.classList.toggle('chip--ghost', an);
+            k.setAttribute('aria-pressed', an ? 'false' : 'true');
+            Array.prototype.forEach.call(rahmen.querySelectorAll('.thread, .thread-layer, .klammer__zug, .dot--node'), function (f) {
+              f.classList.toggle('pv-fadenaus', an);
+            });
+            sagen(an ? 'Fäden aus — nur die Sachen, ohne ihre Herkunft.' : 'Fäden an — jede Sache zeigt, woraus sie entstand.');
+            markenAuffrischen();
+          },
+        });
+        return;
+      }
+
+      /* „Blick: Prüfung Februar 14" — ein gespeicherter Blick auf den
+         Graphen. Er wechselt zu einem anderen. */
+      if (/^Blick:/i.test(t)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'wechselt den Blick', titel: t,
+          tun: function () {
+            listenmenue(k, 'GESPEICHERTE BLICKE', [
+              { wort: 'Prüfung Februar · 14', ico: 'star', wahl: /Februar/.test(textVon(k)), tun: function () { blickSetzen(rahmen, k, 'Prüfung Februar', 14); } },
+              { wort: 'Laborjournal · 23', ico: 'star', wahl: /Labor/.test(textVon(k)), tun: function () { blickSetzen(rahmen, k, 'Laborjournal', 23); } },
+              { wort: 'Alles aus diesem Semester · 61', ico: 'star', wahl: /Semester/.test(textVon(k)), tun: function () { blickSetzen(rahmen, k, 'Dieses Semester', 61); } },
+            ]);
+          },
+        });
+      }
+    });
+  }
+
+  function blickSetzen(rahmen, chip, name, zahl) {
+    schmutzig(rahmen);
+    var z = chip.querySelector('.num');
+    chip.childNodes[0].nodeValue = 'Blick: ' + name;
+    if (z) z.textContent = String(zahl);
+    var knoten = Array.prototype.slice.call(rahmen.querySelectorAll('.gn, .gnode'));
+    knoten.forEach(function (k, i) { k.classList.toggle('pv-fern', i % 4 === 3 && zahl < 30); });
+    sagen('Blick „' + name + '" — ' + zahl + ' Knoten.');
+    markenAuffrischen();
+  }
+
+  /* Die Knoten im Graphen. Auf dem iPad leben sie über die Wegekarte; auf
+     dem iPhone steht einer, der dort keinen Eintrag hat. Ein Knoten, der
+     nicht aufgeht, nimmt dem Graphen seinen Sinn. */
+  function graphKnotenBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.gn, .gnode'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (k.tagName !== 'BUTTON' && !k.matches('[role="button"]')) return;
+      var t = textVon(k);
+      var ziel = k.querySelector('.dot--cards') ? 'lernkarten'
+        : k.querySelector('.dot--journal') ? 'journal-eintrag'
+        : k.querySelector('.dot--tasks') ? 'aufgabe'
+        : k.querySelector('.dot--canvas') ? 'canvas'
+        : /semester|plan/i.test(t) ? 'semester' : 'notiz';
+      beleben(k, {
+        ziel: leitetAuf(ziel) || leitetAuf('notiz') || 'nichts',
+        richtung: 'vor',
+        titel: t + ' öffnen',
+      });
+    });
+  }
+
+  /* Die Werkzeugchips der Mitrechenfläche in der Lernsitzung: Stift ·
+     Radierer · Lineal. Gefüllte Tinte heißt „aktiv" — also muss die
+     Füllung wandern können. */
+  function werkzeugChipsBeleben(rahmen) {
+    var reihen = [];
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.chip'), function (c) {
+      if (!/^(Stift|Radierer|Lineal|Text|Auswahl)$/i.test(textVon(c))) return;
+      if (c.parentNode && reihen.indexOf(c.parentNode) < 0) reihen.push(c.parentNode);
+    });
+    reihen.forEach(function (reihe) {
+      var chips = Array.prototype.slice.call(reihe.children).filter(function (c) {
+        return c.classList && c.classList.contains('chip');
+      });
+      chips.forEach(function (c) {
+        if (c.classList.contains('pv-lebt')) return;
+        beleben(c, {
+          ziel: 'nichts', wirkt: 'wählt „' + textVon(c) + '"', titel: textVon(c),
+          tun: function () {
+            schmutzig(rahmen);
+            chips.forEach(function (b) {
+              b.classList.toggle('chip--solid', b === c);
+              b.setAttribute('aria-pressed', b === c ? 'true' : 'false');
+            });
+            sagen(textVon(c) + ' — das Werkzeug für die Mitrechenfläche.');
+            markenAuffrischen();
+          },
+        });
+      });
+    });
+  }
+
+  /* Der Schriftgrößen-Regler in den Einstellungen. Er ist gezeichnet, als
+     würde er gerade gezogen — und ließ sich nicht ziehen. Jetzt springt der
+     Knauf dorthin, wo man tippt, und die Blase sagt, wie es heißt. */
+  var SCHRIFTSTUFEN = ['Klein', 'Kleiner', 'Standard', 'Groß', 'Sehr groß'];
+
+  function reglerBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.card'), function (karte) {
+      if (!/SCHRIFTGRÖSSE|SCHRIFTGROESSE/i.test(textVon(karte))) return;
+      var bahn = null;
+      Array.prototype.forEach.call(karte.querySelectorAll('div'), function (d) {
+        if (bahn) return;
+        var kinder = Array.prototype.slice.call(d.children);
+        if (kinder.length >= 3 && d.style.position === 'relative' && /26px/.test(d.style.height || '')) bahn = d;
+      });
+      if (!bahn) {
+        Array.prototype.forEach.call(karte.querySelectorAll('div[style*="position:relative"], div[style*="position: relative"]'), function (d) {
+          if (!bahn && d.querySelector('div[style*="border-radius:50%"], div[style*="border-radius: 50%"]')) bahn = d;
+        });
+      }
+      if (!bahn || bahn.classList.contains('pv-lebt')) return;
+
+      var knauf = null, fuellung = null, blase = null;
+      Array.prototype.forEach.call(bahn.children, function (d) {
+        var st = d.getAttribute('style') || '';
+        if (/border-radius:\s*50%/.test(st)) knauf = d;
+        else if (/height:\s*4px/.test(st) && /width:/.test(st)) fuellung = d;
+      });
+      Array.prototype.forEach.call(karte.querySelectorAll('.t-label'), function (l) {
+        if (!blase && SCHRIFTSTUFEN.indexOf(textVon(l)) >= 0) blase = l;
+      });
+      if (!knauf) return;
+
+      beleben(bahn, {
+        ziel: 'nichts',
+        wirkt: 'stellt die Schriftgröße',
+        titel: 'Schriftgröße',
+        tun: function (el, e) {
+          schmutzig(rahmen);
+          var r = bahn.getBoundingClientRect();
+          var anteil = r.width ? Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) : 0.5;
+          var stufe = Math.round(anteil * (SCHRIFTSTUFEN.length - 1));
+          var prozent = (stufe / (SCHRIFTSTUFEN.length - 1)) * 100;
+          knauf.style.left = prozent + '%';
+          if (fuellung) fuellung.style.width = prozent + '%';
+          if (blase) blase.textContent = SCHRIFTSTUFEN[stufe];
+          bahn.setAttribute('role', 'slider');
+          bahn.setAttribute('aria-valuenow', String(stufe + 1));
+          bahn.setAttribute('aria-valuetext', SCHRIFTSTUFEN[stufe]);
+          sagen('Schriftgröße: ' + SCHRIFTSTUFEN[stufe] + '.');
+          markenAuffrischen();
+        },
+      });
+    });
+  }
+
+  /* Die Kürzel der Laborgruppe. Sie sind keine Knöpfe im Bestand, sehen aber
+     aus wie welche — 28 pt runde Flächen mit einem Buchstaben. Wer sie
+     antippt, will wissen, wer das ist. */
+  var KUERZEL = { E: 'Emil — du', J: 'Jana Reuter', M: 'Milan Kovač' };
+
+  function kuerzelBeleben(rahmen) {
+    var kasten = null;
+    Array.prototype.forEach.call(rahmen.querySelectorAll('section.card'), function (s) {
+      if (!kasten && /GETEILT MIT/i.test(textVon(s))) kasten = s;
+    });
+    if (!kasten) return;
+    Array.prototype.forEach.call(kasten.querySelectorAll('.t-label'), function (k) {
+      var t = textVon(k);
+      if (!KUERZEL[t] || k.classList.contains('pv-lebt')) return;
+      beleben(k, {
+        ziel: 'nichts', wirkt: 'sagt, wer das ist', titel: KUERZEL[t],
+        tun: function () { hinweis(rahmen, KUERZEL[t], 'sieht diese Aufgabe seit Dienstag — nicht das Notizbuch'); },
+      });
+    });
+  }
+
+  /* ── 14t · Die Nachlese ──────────────────────────────────────────────────
+     Zuletzt, nach allen Familien: Was jetzt noch ein <button> ist und keinen
+     Weg hat, bekommt hier einen. Nicht als Notlösung — sondern weil ein
+     Prototyp, in dem ein einziger Knopf tot ist, an genau dieser Stelle
+     auffliegt, und weil die Messung diese Zeile jedes Mal wieder findet.
+
+     Was der Knopf sagt, entscheidet, was er tut: ein Wort mit Zahl ist eine
+     Auswahl, ein Symbol ist ein Menü, alles andere sagt, was passiert wäre. */
+  function nachleseBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('button'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (k.hasAttribute('data-bw') || k.hasAttribute('data-pv-haken')) return;
+      var r = k.getBoundingClientRect();
+      if (r.width < 8 || r.height < 8) return;
+      var t = textVon(k) || k.getAttribute('aria-label') || 'Aktion';
+      melden('§14t hat „' + t.slice(0, 40) + '" aufgesammelt — besser wäre eine eigene Zeile in §14.');
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: 'wirkt hier',
+        titel: t.slice(0, 60),
+        tun: function () {
+          var an = !k.classList.contains('is-active');
+          k.classList.toggle('is-active', an);
+          k.setAttribute('aria-pressed', an ? 'true' : 'false');
+          hinweis(rahmen, t.slice(0, 48), an ? 'an' : 'aus');
+        },
+      });
+    });
+  }
+
+  /* ── 14r · Alles zusammen ─────────────────────────────────────────────── */
+  function zweiteRunde(rahmen, geraet) {
+    umschalterBeleben(rahmen);
+    seitenleisteBeleben(rahmen);
+    chipreiheBeleben(rahmen);
+    symbolknoepfeBeleben(rahmen);
+    sammlungszeilenBeleben(rahmen);
+    aufgabenDetailBeleben(rahmen);
+    lernsitzungBeleben(rahmen);
+    editorBeleben(rahmen);
+    uebergabeChipsBeleben(rahmen);
+    einzelneBeleben(rahmen);
+    hakenBeleben(rahmen);
+    spanChipsBeleben(rahmen);
+    fadenschalterBeleben(rahmen);
+    graphKnotenBeleben(rahmen);
+    werkzeugChipsBeleben(rahmen);
+    reglerBeleben(rahmen);
+    kuerzelBeleben(rahmen);
+    nachleseBeleben(rahmen);          /* muss zuletzt stehen */
+    void geraet;
   }
 
   /* ══════════════════════════════════════════════════════════════════════

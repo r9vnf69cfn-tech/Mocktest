@@ -19,9 +19,14 @@
       this.clipboard = null;
       this.editor = null;
 
+      /* ?leer=1 heißt: ein neu angelegtes Blatt. Dann wird der gespeicherte
+         Stand nicht geladen — sonst läge auf dem „neuen" Blatt, was beim
+         letzten Besuch daraufstand, und das wäre dasselbe Missverständnis
+         wie der Beispielinhalt, nur schwerer zu erkennen. */
+      this.leeresBlatt = /(^|[?&])leer=1(&|$)/.test(location.search) || /(^|#)leer$/.test(location.hash);
       this.ws = new M.Workspace();
-      const restored = this.ws.load();
-      if (!restored) this.ws.addBoard({ title: 'Whiteboard' });
+      const restored = this.leeresBlatt ? false : this.ws.load();
+      if (!restored) this.ws.addBoard({ title: this.leeresBlatt ? 'Neues Blatt' : 'Whiteboard' });
 
       this.renderer = new GN.Renderer(this.canvas);
       this.renderer.setBoard(this.board);
@@ -47,8 +52,15 @@
         this.renderer.cam.y = this.renderer.height / 2;
       }
 
-      if (!restored) this.seedDemo();
+      /* Ein NEUES Blatt ist leer. Der Prototyp ruft das Canvas mit ?leer=1,
+         wenn im „Neu"-Menü „Canvas-Blatt" gewählt wurde — wer ein Blatt
+         anlegt und fremde Haftzettel vorfindet, hat kein Blatt angelegt.
+         Ohne den Parameter bleibt alles, wie es war: das Canvas als eigene
+         Seite zeigt weiter seinen Beispielinhalt. */
+      const leer = this.leeresBlatt;
+      if (!restored && !leer) this.seedDemo();
       else this.renderer.invalidate();
+      if (leer) this.toast('Neues Canvas-Blatt — leer, wie du es angelegt hast.');
 
       this.centerRuler();
       this.toolMenu.render();

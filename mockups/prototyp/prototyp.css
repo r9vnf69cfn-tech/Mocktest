@@ -895,3 +895,311 @@ body.pv {
 .pv-gestrichen { text-decoration: line-through; text-decoration-thickness: 1.5px; }
 .pv-verblasst { opacity: .5; }
 .pv-glas .pv-verblasst .pv-lebt { pointer-events: none; cursor: default; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 9 · DIE ZWEITE RUNDE — was §14 auf den Schirm bringt
+ *
+ * Alles hier ist Bedienung, die im Bestand nicht gezeichnet war: das Brett
+ * der fünf Aufgaben-Blicke, das Journal-Raster, die Tafeln der
+ * Einstellungen, der Hinweisstreifen. Es benutzt ausschließlich die Marken
+ * des Gestaltungssystems (--paper, --line, --ink, die Typo-Klassen), damit
+ * ein neuer Blick nicht wie ein Fremdkörper aussieht.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* Was gefiltert wurde, ist weg — nicht blass. Ein blasses Element in einer
+   Liste liest sich als „deaktiviert", nicht als „nicht in dieser Auswahl". */
+.pv-gefiltert { display: none !important; }
+
+/* Eine Tafel ersetzt, was sie verdeckt. Sie erbt den Innenabstand ihres
+   Wirts nicht — der Wirt ist meist ein .scroll und bringt ihn mit. */
+.pv-tafel { display: block; animation: pv-tafel-auf var(--bw-d-wechseln) var(--bw-e-standard) both; }
+@keyframes pv-tafel-auf {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+:root[data-bw-reduce="1"] .pv-tafel { animation-name: pv-vorhang-auf; }
+
+/* ── Das Brett: Planer · Matrix · Board · Kalender ────────────────────── */
+.pv-brett {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.pv-brett--vier { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.screen--iphone .pv-brett,
+.screen--iphone .pv-brett--vier { grid-template-columns: minmax(0, 1fr); }
+
+.pv-brett__spalte {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: var(--r-card);
+  background: var(--paper-2, var(--paper));
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.pv-brett__kopf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--line);
+}
+.pv-brett__wort { letter-spacing: .04em; }
+.pv-brett__stapel { display: flex; flex-direction: column; gap: 6px; min-height: 44px; }
+/* Eine Zeile, die für eine breite Liste gezeichnet ist, steht in einer
+   schmalen Spalte quer: Titel und Angaben liegen nebeneinander, und
+   nebeneinander ist hier kein Platz. In der Spalte wird aus der Zeile ein
+   Zettel — Kästchen links, Titel daneben, Angaben darunter. */
+.pv-brett__stapel > .row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 6px 9px;
+  min-height: 0;
+  background: var(--paper);
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  padding: 9px 10px;
+}
+.pv-brett__stapel > .row::before { display: none; }   /* keine Trennlinie zwischen Zetteln */
+.pv-brett__stapel > .row > * { grid-column: 2; }
+.pv-brett__stapel > .row > button:first-child,
+.pv-brett__stapel > .row > .check:first-child,
+.pv-brett__stapel > .row > .bw-check:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+}
+.pv-brett__stapel > .row > .row__main { grid-row: 1; }
+.pv-brett__stapel > .row > .row__meta {
+  grid-row: 2;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-start;
+}
+.pv-brett__stapel > .row .row__title { white-space: normal; }
+/* Was zur Zeitachse der Liste gehört, gehört nicht auf einen Zettel: die
+   Rinnenpunkte und Fadenstummel hätten hier keine Kante, an der sie hingen
+   (DNA N6 — kein Faden ohne echte Kante). */
+.pv-brett__stapel > .row .klammer__marke,
+.pv-brett__stapel > .row .thread,
+.pv-brett__stapel .handoff { display: none; }
+.pv-brett__leer { padding: 12px 2px; }
+.pv-brett__satz { padding-top: 2px; }
+
+/* ── Der Journal-Kalender ─────────────────────────────────────────────── */
+.pv-kal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Ein Monat ist ein Monat, kein Plakat: das Gitter wächst nicht mit dem
+     iPad mit, sondern steht in seiner Größe links im Feld. */
+  max-width: 470px;
+}
+.pv-kal__tag .num { font-size: 15px; }
+.pv-kal__kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.pv-kal__wochentage,
+.pv-kal__gitter { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.pv-kal__wt { text-align: center; }
+.pv-kal__leer { display: block; aspect-ratio: 1; }
+.pv-kal__tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--c-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.pv-kal__tag.is-voll {
+  background: var(--ink);
+  color: var(--on-ink, #fff);
+  box-shadow: none;
+}
+/* Zwei Merkmale, nie nur Farbe: „heute" ist ein Ring UND ein Fettschnitt. */
+.pv-kal__tag.is-heute { box-shadow: inset 0 0 0 2px var(--ink); font-weight: 600; }
+.pv-kal__tag.is-voll.is-heute { box-shadow: inset 0 0 0 2px var(--paper), inset 0 0 0 4px var(--ink); }
+
+/* ── Das Medien-Raster ────────────────────────────────────────────────── */
+.pv-medien { display: flex; flex-direction: column; gap: 10px; }
+.pv-medien__raster {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+.pv-medien__kachel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+.pv-medien__kachel img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.pv-medien__wort { color: var(--c-3); }
+
+/* ── Die Journal-Karte ────────────────────────────────────────────────── */
+.pv-karte { display: flex; flex-direction: column; gap: 12px; }
+.pv-karte__feld {
+  position: relative;
+  aspect-ratio: 21 / 8;
+  max-width: 700px;
+  border-radius: var(--r-card);
+  background: var(--paper-2, var(--paper));
+  box-shadow: inset 0 0 0 1px var(--line);
+  overflow: hidden;
+}
+.pv-karte__gitter {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: .5;
+}
+.pv-karte__pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px 4px 6px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--paper);
+  box-shadow: var(--sh-card, 0 1px 3px rgba(0,0,0,.14)), inset 0 0 0 1px var(--line);
+}
+.pv-karte__wort { white-space: nowrap; color: var(--c-1); }
+.pv-karte__liste { display: flex; flex-direction: column; gap: 2px; }
+.pv-karte__zeile { width: 100%; text-align: left; }
+
+/* ── Verlauf und Gruppenköpfe ─────────────────────────────────────────── */
+.pv-verlauf { display: flex; flex-direction: column; gap: 2px; }
+.pv-verlauf__zeile {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.pv-verlauf__zeile:last-child { border-bottom: 0; }
+.pv-verlauf__zeile .dot { margin-top: 5px; flex: none; }
+.pv-gruppenkopf { padding: 14px 0 6px; letter-spacing: .04em; }
+.pv-gruppenkopf:first-child { padding-top: 0; }
+/* Die Ordnungstafel des Semesters: eine schlichte Spalte. Die Zeilen kommen
+   aus einem Raster und bringen dessen Platzierung mit — sie wird hier
+   ausdrücklich zurückgenommen, sonst lägen sie übereinander. */
+.pv-ordnung { display: flex; flex-direction: column; }
+.pv-ordnung > .sem__zeile {
+  grid-area: auto !important;
+  grid-column: auto !important;
+  grid-row: auto !important;
+  margin: 0;
+  width: 100%;
+}
+
+/* ── Die Tafeln der Einstellungen ─────────────────────────────────────── */
+.pv-einst__zeile { padding: 10px 0; }
+.pv-schalter {
+  position: relative;
+  flex: none;
+  width: 46px;
+  height: 28px;
+  border-radius: var(--r-pill);
+  background: var(--line);
+  transition: background var(--bw-d-wechseln) var(--bw-e-standard);
+}
+.pv-schalter::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .22);
+  transition: transform var(--bw-d-wechseln) var(--bw-e-standard);
+}
+.pv-schalter.is-an { background: var(--ink); }
+.pv-schalter.is-an::after { transform: translateX(18px); }
+/* Zwei Merkmale: Position UND Farbe — der Knauf wandert sichtbar. */
+:root[data-bw-reduce="1"] .pv-schalter,
+:root[data-bw-reduce="1"] .pv-schalter::after { transition: none; }
+
+/* ── Der Hinweisstreifen ──────────────────────────────────────────────── */
+.pv-hinweis {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - 32px);
+  padding: 10px 16px;
+  border-radius: var(--r-pill);
+  background: var(--paper);
+  box-shadow: var(--sh-float), inset 0 0 0 1px var(--line);
+  pointer-events: none;
+  animation: pv-widerruf-auf var(--bw-d-wechseln) var(--bw-e-quick) both;
+}
+.pv-hinweis.is-weg { opacity: 0; transition: opacity var(--bw-d-blende-kurz) var(--bw-e-io); }
+.pv-hinweis__zeichen {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+/* ── Der leere Vermerk ────────────────────────────────────────────────── */
+.pv-leervermerk {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 28px 4px;
+  text-align: center;
+}
+
+/* ── Kleinigkeiten ────────────────────────────────────────────────────── */
+.pv-waehlbar { box-shadow: inset 2px 0 0 var(--ink); }
+.pv-fern { opacity: .28; transition: opacity var(--bw-d-wechseln) var(--bw-e-standard); }
+.pv-gefunden {
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+  border-radius: 4px;
+  transition: background var(--bw-d-oeffnen) var(--bw-e-standard);
+}
+.pv-schreibt { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 4px; }
+.is-zu > *:not(:first-child) { display: none; }
+.pv-menue__trenner { height: 1px; margin: 6px 12px; background: var(--line); }
+.pv-menue__zeile.is-gefahr .pv-menue__wort { color: var(--rot, #D02B20); }
+
+/* Fäden aus: das Bild ohne Herkunft. Nicht gelöscht — ausgeblendet, damit
+   der Umschalter zurück kann. */
+.pv-fadenaus { opacity: 0; transition: opacity var(--bw-d-wechseln) var(--bw-e-standard); }
+:root[data-bw-reduce="1"] .pv-fadenaus { transition: none; }
+
+/* Chips sind für eine Zeile gebaut und laufen nicht um. In einer Spalte
+   müssen sie sich kürzen dürfen, sonst stehen sie über der Kante. */
+.pv-brett__stapel > .row > .row__meta { min-width: 0; overflow: hidden; }
+.pv-brett__stapel > .row > .row__meta > * {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
