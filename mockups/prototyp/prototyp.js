@@ -1,12 +1,22 @@
 /* ============================================================================
  * prototyp.js — die Bedienung des begehbaren Prototyps
  *
- * Ohne Funktion: es wird nichts gespeichert, nichts gerechnet, nichts
- * eingegeben. Diese Datei tut genau drei Dinge:
+ * Es wird nichts gespeichert und nichts gerechnet. Diese Datei tut vier Dinge:
  *
  *   sie bewegt einen von 34 Rahmen in den Vordergrund,
  *   sie merkt sich, woher man kam,
- *   und sie sagt jedem Element im Rahmen, ob es ein Ziel ist oder keines.
+ *   sie sagt jedem Element im Rahmen, ob es führt, ob es hier wirkt,
+ *     oder ob es entschärft ist,
+ *   und sie lässt neue Objekte entstehen — leer, mit Schreibmarke, für die
+ *     Dauer eines Besuchs (§12).
+ *
+ * Bis zur Runde des Erzeugen-Menüs kannte sie nur zwei Sorten: Elemente mit
+ * einem Weg und Elemente ohne. Die Regel „was keinen Weg hat, zeigt auch
+ * keinen Klickfinger" war richtig und hatte eine Lücke — manche Elemente
+ * sind zu auffällig, um tot sein zu dürfen. Ein entschärfter „+ Neu" sieht
+ * nicht nach Absicht aus, sondern nach kaputt. Seither gibt es drei Sorten
+ * und eine Auflage: kein primärer CTA und kein Erzeugen-Knopf darf in der
+ * dritten landen.
  *
  * ── INHALT ────────────────────────────────────────────────────────────────
  *   1  Der Bestand            welche Schirme es gibt, wie sie heißen
@@ -22,6 +32,8 @@
  *   7  Der Maßstab
  *   8  Der Gerätewechsel
  *  11  Das Prüfwerkzeug       das Canvas im Rahmen · der Wege-Modus
+ *  12  Der Prototyp erzeugt   das Erzeugen-Menü und die sechs neuen Objekte
+ *  13  Der Rest der toten Knöpfe   was an Ort und Stelle wirkt
  *   9  Start und Ankunft
  *  10  Die Wegekarte          liegt seit dieser Runde daneben: wege.js
  *
@@ -46,8 +58,10 @@
  * Seitenleiste, Symbolschiene, Lupe, Tab-Leiste und der Zurück-Weg (§5) —
  * sie sind in allen siebzehn Schirmen wortgleich, sie 34-mal aufzuzählen
  * hieße 34-mal dasselbe pflegen.
- * Dazu die drei Schalter Hell · Dunkel · Automatisch in den Einstellungen:
- * der einzige Ort, an dem im Prototyp ein Bedienelement wirklich etwas tut.
+ * Dazu die drei Schalter Hell · Dunkel · Automatisch in den Einstellungen,
+ * die Erzeugen-Knöpfe (§12) und alles, was an Ort und Stelle wirkt (§13).
+ * Sie stehen nicht in der Karte, weil sie kein Ziel haben — sie werden
+ * gemessen, nicht gepflegt: PROTOTYP.erzeuger() sagt, was dabei herauskam.
  * ========================================================================== */
 
 (function (global) {
@@ -255,6 +269,10 @@
     if (!schirm) return;
     var neu = schirm.rahmen[geraet];
     if (!neu) return;
+
+    /* Ein offenes Erzeugen-Menü gehört zu dem Schirm, auf dem es geöffnet
+       wurde. Bleibt es stehen, schwebt es über einem anderen (§12c). */
+    menueSchliessen();
 
     if (laeuft) { clearTimeout(laeuft.uhr); laeuft.fertig(); }
 
@@ -490,6 +508,17 @@
     }
 
     if (!weg) return;                       /* lebendig, aber ohne Weg */
+
+    /* Sorte 2: WIRKT AN ORT UND STELLE. Der Weg trägt eine Handlung; sie
+       entscheidet selbst, ob danach noch navigiert wird. Das ist die eine
+       Stelle, an der §12 und §13 in die Bedienung greifen — sie hängen keinen
+       zweiten Zuhörer ans Glas, sondern benutzen diesen. */
+    if (weg.tun) {
+      e.preventDefault();
+      weg.tun(el, e);
+      return;
+    }
+
     e.preventDefault();
     if (weg.ziel === 'zurueck') { zurueck(weg.rueckfall); return; }
     if (weg.ziel === 'nichts') return;
@@ -517,10 +546,15 @@
     if (FUSS) FUSS.textContent = text;
   }
 
-  /* Leertaste und Enter auf einem belebten Element, das kein Knopf ist. */
+  /* Leertaste und Enter auf einem belebten Element, das kein Knopf ist.
+     Wer in ein Feld schreibt, ist ausgenommen — sonst verschluckte diese
+     Zeile jedes Leerzeichen in der Erfassungszeile (§12e): das Feld liegt in
+     einem belebten Behälter, und closest() fände ihn statt des Feldes. */
   GLAS.addEventListener('keydown', function (e) {
     if (e.key !== 'Enter' && e.key !== ' ') return;
-    var el = e.target.closest ? e.target.closest('.pv-lebt') : null;
+    var t = e.target;
+    if (t && t.closest && t.closest('input,textarea,select,[contenteditable=""],[contenteditable="true"]')) return;
+    var el = t.closest ? t.closest('.pv-lebt') : null;
     if (!el || el.tagName === 'BUTTON' || el.tagName === 'A' || el.tagName === 'INPUT') return;
     e.preventDefault();
     el.click();
@@ -782,10 +816,12 @@
   }
 
   /* ── Die drei Erscheinungsbild-Kacheln in den Einstellungen ───────────────
-     Der einzige Ort im Prototyp, an dem ein Bedienelement wirklich etwas tut —
-     und er kostet nichts, weil die Seite hell und dunkel ohnehin kann. Alles
-     andere in den Einstellungen ändert Daten, die es hier nicht gibt, und
-     bleibt darum tot.
+     Der erste Ort im Prototyp, an dem ein Bedienelement wirklich etwas tat —
+     und er kostet nichts, weil die Seite hell und dunkel ohnehin kann. Seit
+     §12 und §13 ist er nicht mehr der einzige; die Bauart ist dieselbe
+     geblieben: der Zustand wird umgehängt, nicht neu erfunden. Was in den
+     Einstellungen Daten änderte, die es hier nicht gibt, bleibt tot — außer
+     „Erneut versuchen", das einen Fehler wegräumt und keine Daten anfasst.
      Gefunden wird über das WORT, nicht über die Stelle: die Kachel heißt auf
      dem iPad „Automatisch" und auf dem iPhone „Auto", und die Abschnitte
      stehen auf den beiden Geräten in verschiedener Reihenfolge.
@@ -930,13 +966,20 @@
     if (global.console && console.warn) console.warn('[prototyp] ' + text);
   }
 
-  /* Ein Rahmen, von Grund auf: erst alles tot, dann einzeln beleben. */
+  /* Ein Rahmen, von Grund auf: erst alles tot, dann einzeln beleben.
+     Die beiden letzten Zeilen sind neu und stehen mit Absicht ZULETZT: was
+     erzeugt und was an Ort und Stelle wirkt, überschreibt einen Weg aus der
+     Karte, wenn beide auf dasselbe Element zeigen. „Eintrag beginnen" führte
+     bisher in einen bestehenden Journaleintrag; jetzt legt es einen neuen an,
+     und das ist die Antwort, die der Knopf verspricht. */
   function frischAufbauen(rahmen) {
     var geraet = rahmen.getAttribute('data-pv-geraet');
     totstellen(rahmen);
     grundnavigation(rahmen, geraet);
     karteAnwenden(rahmen, geraet);
     schalter(rahmen);
+    erzeugenKnoepfe(rahmen, geraet);
+    wirkKnoepfe(rahmen, geraet);
   }
 
   /* Der ganze Aufbau in einem Zug — beim Start und bei jeder neuen Karte. */
@@ -979,6 +1022,7 @@
   });
 
   function aufbauen() {
+    erzeugerListe = [];        /* §12b füllt sie beim Durchgang neu */
     alleRahmen(frischAufbauen);
     alleRahmen(kaestchenOhneZeile);
     rueckwegPruefen();
@@ -1504,11 +1548,23 @@
     return s ? s.name : schluessel;
   }
 
-  /* Was steht an diesem Element? weg=true heißt: es führt auf einen anderen
-     Schirm. weg=false heißt: es lebt, bleibt aber hier. */
+  /* Was steht an diesem Element? Drei Sorten, zwei davon bekommen eine
+     Beschriftung:
+
+       1  FÜHRT                    „→ Notiz-Editor"
+       2  WIRKT AN ORT UND STELLE  „wirkt hier: Raster wird Liste"
+       3  ENTSCHÄRFT               gar nichts — es trägt kein .pv-lebt und
+                                   kommt hier nie an.
+
+     weg=true heißt Sorte 1, weg=false Sorte 2. Das Wort „wirkt hier" steht
+     genau einmal, hier — jede Handlung in §12 und §13 gibt nur ihren
+     Nachsatz an. */
+  function wirkt(text) { return { text: 'wirkt hier: ' + text, weg: false }; }
+
   function auskunft(el) {
     var w  = el.__pvWeg;
     var bw = el.getAttribute('data-bw');
+    if (w && w.wirkt) return wirkt(w.wirkt);
     if (w && w.ziel && w.ziel !== 'nichts') {
       if (w.ziel === 'zurueck') {
         return { text: '→ zurück' + (w.rueckfall ? ' · ' + schirmName(w.rueckfall) : ''), weg: true };
@@ -1520,12 +1576,12 @@
       return { text: '→ ' + schirmName(w.ziel), weg: true };
     }
     if (el.__pvSchalter) {
-      return { text: 'schaltet ' + (ERSCHEINUNG_WORT[el.__pvSchalter] || el.__pvSchalter), weg: false };
+      return wirkt('schaltet ' + (ERSCHEINUNG_WORT[el.__pvSchalter] || el.__pvSchalter));
     }
-    if (bw) return { text: 'Bewegung: ' + (BEWEGUNG_WORT[bw] || bw), weg: false };
-    if (el.hasAttribute('data-pv-haken')) return { text: 'Bewegung: Haken', weg: false };
+    if (bw) return wirkt(BEWEGUNG_WORT[bw] || bw);
+    if (el.hasAttribute('data-pv-haken')) return wirkt('Haken');
     if (w && w.ziel === 'nichts') return { text: 'dieser Schirm', weg: false };
-    return { text: 'lebt, ohne Weg', weg: false };
+    return wirkt('ohne Wort — das ist ein Befund, kein Zustand');
   }
 
   function schicht() {
@@ -1611,6 +1667,13 @@
     }
 
     Array.prototype.forEach.call(rahmen.querySelectorAll('.pv-lebt'), function (el) {
+      /* Was gar nicht gerendert wird, zählt nicht. Seit die Bibliothek
+         zwischen Regal und Liste umschaltet (§13a), steht der jeweils andere
+         Bestand auf display:none im Dokument — er trüge sonst achtzehn Wege
+         zur Zahl bei, die auf dem Schirm niemand sehen kann. Das ist etwas
+         anderes als „aus dem Bild gerollt": eine Zeile weiter unten in der
+         Liste zählt weiter mit, sie ist nur einen Wisch entfernt. */
+      if (!el.getClientRects().length) return;
       var a = auskunft(el);
       if (a.weg) { wege++; } else { orte++; el.classList.add('pv-wege-ort'); }
       anmelden(el, a.text, a.weg);
@@ -1724,6 +1787,1340 @@
      wieder, aber erst nach ihr — deshalb ein zweiter Blick, wenn sie durch ist. */
   GLAS.addEventListener('click', function () { global.setTimeout(markenAuffrischen, 420); });
 
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * 12 · DER PROTOTYP ERZEUGT ETWAS
+   *
+   * Der erste Weg, den ein Fremder geht, ist nicht „Notiz öffnen", sondern
+   * „Neu". Bis zu dieser Runde stand dieser Knopf auf zwölf Schirmen als
+   * gefüllte Ink-Fläche — der lauteste Knopf des Bildschirms — und tat
+   * nichts. Die Regel „was keinen Weg hat, zeigt auch keinen Klickfinger"
+   * war richtig und hatte eine Lücke: MANCHE ELEMENTE SIND ZU AUFFÄLLIG, UM
+   * TOT SEIN ZU DÜRFEN. Ein entschärfter CTA sieht nicht nach Absicht aus,
+   * sondern nach kaputt.
+   *
+   * Deshalb gibt es hier ab jetzt drei Sorten und eine Auflage:
+   *
+   *   1  FÜHRT                    ein Weg auf einen anderen Schirm  (§5b)
+   *   2  WIRKT AN ORT UND STELLE  verändert sichtbar etwas hier     (§12, §13)
+   *   3  ENTSCHÄRFT               kein Klickfinger, kein Hover      (§4)
+   *
+   *   Kein primärer CTA und kein Erzeugen-Knopf darf in Sorte 3 landen.
+   *
+   * ── WIE DIE ERZEUGEN-KNÖPFE GEFUNDEN WERDEN ───────────────────────────
+   * Nicht über eine Liste. Eine Liste von 34 Rahmen wäre am Tag nach dem
+   * nächsten Schirm falsch, und niemand merkte es. Gemessen wird am Element
+   * selbst: das Pluszeichen, der Wortlaut, die Nachbarschaft. Was dabei
+   * herauskommt, steht in der Konsole (PROTOTYP.erzeuger()).
+   *
+   * ── WAS DANACH ENTSTEHT ───────────────────────────────────────────────
+   * Ein NEUES, LEERES Objekt, und man sieht, dass es neu ist: Schreibmarke,
+   * heutiges Datum, Zähler auf null, und — die ehrlichste Stelle des ganzen
+   * Entwurfs — in der Marginalspalte der neuen Notiz NICHTS. Eine neue Notiz
+   * hat keine Fäden. Genau daran sieht man, dass Velums Wert mit dem Bestand
+   * wächst und nicht mit dem ersten Tag.
+   *
+   * Gespeichert wird nichts. Der Schirm wird beim Verlassen zurückgestellt
+   * (§5e, MOTION.zuruecksetzen schreibt sein innerHTML zurück) — dafür ruft
+   * jede Bauhandlung schmutzig(). Solange man dort steht, ist das neue Ding
+   * da und sieht aus wie ein echtes.
+   *
+   * ── WARUM HIER NIE frischAufbauen() STEHT ─────────────────────────────
+   * Die Wegekarte adressiert vieles über nth-child (wege.js: 18 Notizbücher,
+   * 5 Decks, 4 Journalkarten). Ein neues Buch vorn im Regal verschöbe jeden
+   * dieser Wähler um eins, und jedes Buch bekäme still das Ziel seines
+   * Nachbarn. Neu gebaute Elemente werden darum EINZELN belebt; was schon
+   * lebt, wird nicht angefasst. Der Rahmen wird erst wieder aufgebaut, wenn
+   * er zurückgestellt ist und wieder im Original dasteht.
+   * ==================================================================== */
+
+  /* Der Prototyp spielt an einem Tag: Donnerstag, 13. November. Die
+     Statusleiste jedes Schirms sagt das, die Lernkarten sagen es
+     ausgeschrieben. Ein neues Objekt, das ein anderes Datum trüge, wäre der
+     einzige Gegenstand im Haus, der aus der Reihe fiele. */
+  var HEUTE = { lang: 'Donnerstag, 13. November', kurz: 'Heute', tag: '13. November' };
+
+  /* Die sechs Dinge, die Velum kennt — in der Reihenfolge des Datenmodells:
+     erst das Blatt Papier, dann sein Behälter, dann die drei Module, die aus
+     ihm entstehen, dann die Fläche. Jede Zeile trägt ihren 6-pt-Modulpunkt
+     und ihr Wort; ein Punkt steht nie allein. */
+  var DINGE = [
+    { id: 'notiz',     wort: 'Notiz',            punkt: 'notes',   ziel: 'notiz' },
+    { id: 'notizbuch', wort: 'Notizbuch',        punkt: 'notes',   ziel: 'bibliothek' },
+    { id: 'journal',   wort: 'Journaleintrag',   punkt: 'journal', ziel: 'journal-eintrag' },
+    { id: 'aufgabe',   wort: 'Aufgabe',          punkt: 'tasks',   ziel: 'aufgaben' },
+    { id: 'deck',      wort: 'Lernkarten-Deck',  punkt: 'cards',   ziel: 'lernkarten' },
+    { id: 'blatt',     wort: 'Canvas-Blatt',     punkt: 'canvas',  ziel: 'canvas' },
+  ];
+  function ding(id) {
+    for (var i = 0; i < DINGE.length; i++) if (DINGE[i].id === id) return DINGE[i];
+    return null;
+  }
+
+  /* Welches Ding ein Schirm meint. Steht der Knopf in einem Modul, ist dessen
+     Zeile vorgewählt und steht oben — im Aufgaben-Schirm ist „Aufgabe" der
+     primäre Eintrag, nicht „Notiz". */
+  var MODUL_VON_SCHIRM = {
+    'notizen':         'notiz',
+    'notiz':           'notiz',
+    'bibliothek':      'notizbuch',
+    'journal':         'journal',
+    'journal-eintrag': 'journal',
+    'aufgaben':        'aufgabe',
+    'aufgabe':         'aufgabe',
+    'lernkarten':      'deck',
+    'lernsitzung':     'deck',
+    'canvas':          'blatt',
+  };
+
+  /* ── 12a · Kleine Handgriffe ─────────────────────────────────────────── */
+
+  function bau(html) {
+    var h = DOK.createElement('div');
+    h.innerHTML = html;
+    var n = h.firstElementChild;
+    return n;
+  }
+  /* Die Symbole der Schirme sind <span data-ico>; erst MOCK.hydrate legt das
+     SVG hinein. Was hier gebaut wird, muss durch dieselbe Hand — sonst stünde
+     an einer neuen Zeile ein leeres Kästchen, wo überall sonst ein Zeichen ist. */
+  function beleben_ikonen(wurzel) {
+    if (global.MOCK && global.MOCK.hydrate) global.MOCK.hydrate(wurzel);
+  }
+  function ikon(name, px) {
+    return '<span class="ico" data-ico="' + name + '" style="width:' + px + 'px;height:' + px + 'px"></span>';
+  }
+  function marke() { return '<span class="pv-marke"></span>'; }
+  function textVon(el) { return (el.textContent || '').replace(/\s+/g, ' ').trim(); }
+
+  /* Verstecken heißt hier: WIRKLICH weg. Das Merkmal hidden allein reicht
+     nicht — die Übergabe-Leiste, das Segment, der Inspektor tragen ihr
+     display in einer Klasse, und eine Klasse schlägt das Merkmal. Wer das
+     nicht weiß, sieht einen Knopf, der „nichts tut", obwohl er alles
+     Richtige getan hat. */
+  function verbergen(el, aus) {
+    if (!el) return;
+    if (aus === false) { el.hidden = false; el.style.display = ''; return; }
+    el.hidden = true;
+    el.style.display = 'none';
+  }
+
+  /* Der Rahmen rechnet in Schirmmaß (1194 pt), das Fenster in Bildpunkten.
+     Dazwischen steht der Maßstab von §7. Ohne diese Umrechnung säße das
+     Popover bei halbem Maßstab um die halbe Strecke daneben. */
+  function inSchirmmass(rahmen) {
+    var buehne = rahmen.querySelector('.screen') || rahmen;
+    var r = buehne.getBoundingClientRect();
+    return r.width ? buehne.offsetWidth / r.width : 1;
+  }
+
+  /* ── 12b · Die Erzeugen-Knöpfe finden ────────────────────────────────── */
+
+  /* Was ein Erzeugen-Knopf ist, entscheidet sich an drei Merkmalen:
+
+       das PLUSZEICHEN     in einer Leiste, in einer Karte, als Rundknopf
+       der WORTLAUT        „Neu", „Neue Notiz", „Eintrag", „Eintrag beginnen",
+                           „Erste Notiz", „Notizbuch anlegen"
+       die NACHBARSCHAFT   ein Plus neben einem Minus ist kein Erzeugen,
+                           sondern ein Zoom (graph.html)
+
+     Und drei Ausschlüsse, die aus derselben Messung kommen: „Tag hinzufügen",
+     „Verknüpfung hinzufügen" und „Schritt hinzufügen" legen keinen Gegenstand
+     an, sondern eine Eigenschaft an einem, der schon da ist. Sie bekommen
+     ihre eigene Wirkung (§13) und nicht das Menü der sechs Dinge — ein Menü,
+     das dort „Canvas-Blatt" anböte, wäre falsch. */
+  var ERZEUGEN_WORT = /^(neu|neue notiz|eintrag|eintrag beginnen|erste notiz|zweite notiz|notizbuch anlegen|aufgabe|karte hinzufügen|aufgabe hinzufügen)$/;
+  var EIGENSCHAFT_WORT = /tag|verknüpfung|schritt/i;
+
+  function istErzeugenKnopf(el) {
+    if (el.closest('[data-pv-aus]')) return false;
+    /* Zwei Nachbarschaften, in denen „Aufgabe" NICHT „neue Aufgabe" heißt:
+       die Übergabe-Leiste („mach aus DIESER Auswahl eine Aufgabe") und die
+       Chips „WOHIN DAMIT" unter einem Schnipsel im Eingang („leg DIESEN
+       Schnipsel als Aufgabe ab"). Beide handeln an einem Gegenstand, der
+       schon da ist; ein Menü der sechs Dinge wäre dort die falsche Frage.
+       Sie bekommen ihre eigene Wirkung in §13f und §13g. */
+    if (el.closest('.handoff, .ei-wohin')) return false;
+    var wort = textVon(el);
+    var plus = !!el.querySelector('.ico[data-ico="plus"]');
+    if (EIGENSCHAFT_WORT.test(wort)) return false;
+    if (plus) {
+      /* Ein Plus, das ein Minus neben sich hat, zählt eine Zahl hoch. */
+      var leiste = el.parentElement;
+      if (leiste && leiste.querySelector('.ico[data-ico="minus"]')) return false;
+      return true;
+    }
+    return ERZEUGEN_WORT.test(wort.toLowerCase());
+  }
+
+  /* Welches Ding der Knopf vorwählt. Das WORT schlägt den Schirm: „Notizbuch
+     anlegen" in den leeren Zuständen meint ein Notizbuch, auch wenn der Schirm
+     keinem Modul gehört. Nennt der Knopf nichts, gilt sein Modul; hat der
+     Schirm keins (Heute, Eingang, Semester, Leere Zustände), bleibt die
+     Reihenfolge des Datenmodells und „Notiz" steht vorn. */
+  function vorwahlVon(el, schirm) {
+    var wort = textVon(el).toLowerCase();
+    if (/notizbuch/.test(wort)) return 'notizbuch';
+    if (/eintrag/.test(wort))   return 'journal';
+    if (/notiz/.test(wort))     return 'notiz';
+    if (/aufgabe/.test(wort))   return 'aufgabe';
+    if (/karte|deck/.test(wort)) return 'deck';
+    return MODUL_VON_SCHIRM[schirm] || null;
+  }
+
+  /* Die Erfassungszeile ist kein Knopf, sondern das Ding selbst: ein Feld mit
+     Pluszeichen, in dem die Aufgabe entsteht. Sie bekommt kein Menü — sie ist
+     schon die Aufgabe. */
+  function erfassungszeile(rahmen) {
+    var feld = null;
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.field'), function (f) {
+      if (!feld && f.querySelector('.ico[data-ico="plus"]')) feld = f;
+    });
+    return feld;
+  }
+
+  var erzeugerListe = [];
+
+  function erzeugenKnoepfe(rahmen, geraet) {
+    var schirm = rahmen.getAttribute('data-pv-screen');
+    /* Ein einzelner Rahmen wird auch außer der Reihe neu aufgebaut (§5e, nach
+       dem Zurückstellen). Ohne diese Zeile stünde sein Knopf danach zweimal
+       in der Liste, und PROTOTYP.erzeuger() zählte falsch. */
+    for (var i = erzeugerListe.length - 1; i >= 0; i--) {
+      if (erzeugerListe[i].schirm === schirm && erzeugerListe[i].geraet === geraet) erzeugerListe.splice(i, 1);
+    }
+    Array.prototype.forEach.call(rahmen.querySelectorAll('button,[role="button"]'), function (k) {
+      if (!istErzeugenKnopf(k)) return;
+      var v = vorwahlVon(k, schirm);
+      /* „11. Nov. nachtragen" nennt den Tag, für den der Eintrag fehlt.
+         Ein Eintrag mit dem heutigen Datum wäre dort die falsche Antwort. */
+      var m = /(\d{1,2})\.\s*(\w+)\.?\s*nachtragen/i.exec(textVon(k));
+      var datum = m ? nachtragsDatum(m[1], m[2]) : null;
+      k.__pvVorwahl = v;
+      k.__pvDatum = datum;
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: 'öffnet das Erzeugen-Menü',
+        titel: 'Neu — Notiz, Notizbuch, Journaleintrag, Aufgabe, Deck oder Canvas-Blatt',
+        tun: function (el) { menueOeffnen(el, el.__pvVorwahl); },
+      });
+      erzeugerListe.push({ schirm: schirm, geraet: geraet, wort: textVon(k) || '(Pluszeichen)', vorwahl: v });
+    });
+
+    /* Die Erfassungszeile. Sie steht in tasks.html auf beiden Geräten und ist
+       dort der eigentliche Erzeugen-Knopf des iPhones — eine schwebende
+       Rundtaste gibt es auf dem Aufgaben-Schirm nicht. */
+    if (schirm === 'aufgaben') {
+      var feld = erfassungszeile(rahmen);
+      if (feld) {
+        beleben(feld, {
+          ziel: 'nichts',
+          wirkt: 'Erfassungszeile — hier entsteht die Aufgabe',
+          titel: 'Aufgabe erfassen',
+          tun: function () { erfassungOeffnen(rahmen, true); },
+        });
+        erzeugerListe.push({ schirm: schirm, geraet: geraet, wort: 'Erfassungszeile', vorwahl: 'aufgabe' });
+      }
+    }
+  }
+
+  var MONATE = { jan: 'Januar', feb: 'Februar', 'mär': 'März', apr: 'April', mai: 'Mai', jun: 'Juni',
+                 jul: 'Juli', aug: 'August', sep: 'September', okt: 'Oktober', nov: 'November', dez: 'Dezember' };
+  var WOCHENTAG_11_NOV = 'Dienstag';   /* der 13. ist ein Donnerstag, also ist der 11. ein Dienstag */
+  function nachtragsDatum(tag, monat) {
+    var m = MONATE[String(monat).slice(0, 3).toLowerCase()] || monat;
+    var wt = String(tag) === '11' ? WOCHENTAG_11_NOV + ', ' : '';
+    return wt + tag + '. ' + m;
+  }
+
+  /* ── 12c · Das Menü ──────────────────────────────────────────────────── */
+
+  var offenesMenue = null;
+
+  function menueSchliessen() {
+    if (!offenesMenue) return;
+    var m = offenesMenue;
+    offenesMenue = null;
+    if (m.knopf) m.knopf.setAttribute('aria-expanded', 'false');
+    if (m.kasten && m.kasten.parentNode) m.kasten.parentNode.removeChild(m.kasten);
+    if (m.vorhang && m.vorhang.parentNode) m.vorhang.parentNode.removeChild(m.vorhang);
+    markenAuffrischen();
+  }
+
+  /* Ein zweiter Tap auf denselben Knopf braucht hier keine eigene Zeile: der
+     Vorhang liegt über dem ganzen Gerät, also auch über dem Knopf, und ein
+     Tap darauf ist ein Tap DANEBEN. Genau so verhält sich ein Popover im
+     System — was offen ist, schließt sich beim nächsten Tap irgendwohin. */
+  function menueOeffnen(knopf, vorwahl) {
+    menueSchliessen();
+
+    var rahmen = knopf.closest('.pv-screen');
+    if (!rahmen) return;
+    var geraet = rahmen.getAttribute('data-pv-geraet');
+    var buehne = rahmen.querySelector('.screen') || rahmen;
+    var blatt = geraet === 'iphone';
+
+    /* Die Reihenfolge: das vorgewählte Ding zuerst, der Rest in der
+       Reihenfolge des Datenmodells. */
+    var reihe = DINGE.slice();
+    if (vorwahl) {
+      reihe.sort(function (a, b) { return (b.id === vorwahl ? 1 : 0) - (a.id === vorwahl ? 1 : 0); });
+    }
+
+    var vorhang = DOK.createElement('div');
+    vorhang.className = 'pv-menue__vorhang' + (blatt ? ' pv-menue__vorhang--dunkel' : '');
+    vorhang.addEventListener('click', menueSchliessen);
+
+    var huelle = DOK.createElement('div');
+    huelle.className = 'pv-menue ' + (blatt ? 'pv-menue--blatt' : 'pv-menue--popover');
+    huelle.setAttribute('role', 'menu');
+    huelle.setAttribute('aria-label', 'Neu erstellen');
+
+    var kasten = DOK.createElement('div');
+    kasten.className = 'pv-menue__kasten';
+    huelle.appendChild(kasten);
+
+    if (blatt) kasten.appendChild(bau('<div class="pv-menue__griff"></div>'));
+    kasten.appendChild(bau('<div class="pv-menue__kopf"><span class="t-label c-3">NEU</span></div>'));
+
+    reihe.forEach(function (d) {
+      var gewaehlt = d.id === vorwahl;
+      var zeile = bau(
+        '<button class="pv-menue__zeile' + (gewaehlt ? ' is-wahl' : '') + '" role="menuitem">' +
+        '<span class="dot dot--' + d.punkt + '"></span>' +
+        '<span class="t-body pv-menue__wort">' + d.wort + '</span>' +
+        (gewaehlt ? '<span class="ico pv-menue__haken" data-ico="check" style="width:17px;height:17px"></span>' : '') +
+        '</button>');
+      zeile.__pvDing = d.id;
+      zeile.__pvDatum = knopf.__pvDatum || null;
+      kasten.appendChild(zeile);
+      beleben(zeile, {
+        ziel: d.ziel,
+        titel: d.wort + ' erstellen',
+        tun: function (el) { erzeugen(el.__pvDing, el.__pvDatum); },
+      });
+    });
+
+    beleben_ikonen(kasten);
+    buehne.appendChild(vorhang);
+    buehne.appendChild(huelle);
+
+    if (!blatt) popoverStellen(huelle, kasten, knopf, buehne, rahmen);
+
+    knopf.setAttribute('aria-expanded', 'true');
+    offenesMenue = { knopf: knopf, kasten: huelle, vorhang: vorhang };
+    /* Die Tastatur kommt mit: wer den Knopf mit Enter gedrückt hat, steht
+       sonst im Nichts, während vor ihm ein Menü offen ist. */
+    var erste = kasten.querySelector('.pv-menue__zeile');
+    if (erste) { try { erste.focus({ preventScroll: true }); } catch (e) { erste.focus(); } }
+    markenAuffrischen();
+  }
+
+  /* Das Popover hängt an seinem Knopf: bündig unter ihm, an der Kante, die
+     näher am Rand liegt. Passt es nach unten nicht mehr, klappt es nach oben —
+     ein Menü, das aus dem Gerät läuft, ist kein Menü. */
+  function popoverStellen(huelle, kasten, knopf, buehne, rahmen) {
+    var f = inSchirmmass(rahmen);
+    var sr = buehne.getBoundingClientRect();
+    var kr = knopf.getBoundingClientRect();
+    var x = (kr.left - sr.left) * f;
+    var y = (kr.top  - sr.top)  * f;
+    var kb = kr.width * f, kh = kr.height * f;
+    var B = buehne.offsetWidth, H = buehne.offsetHeight;
+    var mb = kasten.offsetWidth, mh = kasten.offsetHeight;
+
+    /* Rechtsbündig zum Knopf, solange das ins Gerät passt — die meisten
+       Erzeugen-Knöpfe sitzen rechts in der Leiste. */
+    var links = x + kb - mb;
+    if (links + mb > B - 12) links = B - 12 - mb;
+    if (links < 12) links = 12;
+
+    var oben = y + kh + 8;
+    var nachOben = oben + mh > H - 12;
+    if (nachOben) oben = Math.max(12, y - mh - 8);
+
+    huelle.style.left = Math.round(links) + 'px';
+    huelle.style.top  = Math.round(oben) + 'px';
+    /* Es wächst aus der Ecke, die am Knopf liegt. */
+    var ox = Math.max(0, Math.min(mb, x + kb / 2 - links));
+    kasten.style.transformOrigin = Math.round(ox) + 'px ' + (nachOben ? '100%' : '0');
+  }
+
+  /* ── 12d · Was danach entsteht ───────────────────────────────────────── */
+
+  function erzeugen(id, datum) {
+    var d = ding(id);
+    if (!d) return;
+    menueSchliessen();
+
+    if (d.ziel !== jetzt.schirm) {
+      /* Ein Knopf ist kein Gegenstand — er öffnet als Blatt (§5c). */
+      gehen(d.ziel, 'vor', false, sichtbarerRahmen());
+    }
+    var rahmen = sichtbarerRahmen();
+    if (!rahmen) return;
+    var geraet = rahmen.getAttribute('data-pv-geraet');
+
+    /* Ab hier ist der Rahmen verändert. §5e stellt ihn zurück, sobald man
+       ihn verlässt — dafür muss er in der Liste stehen. */
+    schmutzig(rahmen);
+
+    var tun = BAU[id];
+    if (tun) tun(rahmen, geraet, datum);
+    sagen('Neu angelegt: ' + d.wort + ' · ' + (datum || HEUTE.lang));
+    global.setTimeout(markenAuffrischen, 40);
+  }
+
+  var BAU = {};
+
+  /* ── NOTIZ ──────────────────────────────────────────────────────────────
+     Titelzeile leer mit Schreibmarke, ein leerer Absatz, das Datum von heute —
+     und in der Marginalspalte NICHTS. Eine neue Notiz hat keine Backlinks,
+     keine verwandten Notizen, nichts, was aus ihr entstanden wäre, und keinen
+     einzigen Faden am Seitenrand. Das ist keine Auslassung, sondern die
+     Aussage: Velums Wert wächst mit dem Bestand. */
+  BAU.notiz = function (rahmen, geraet) {
+    var titel = rahmen.querySelector('.serif--screen-title');
+    if (!titel) return;
+    var blatt = titel.closest('.scroll');
+    if (!blatt) return;
+
+    /* Der Deckelstreifen bleibt — er ist das Papier, nicht der Inhalt. Nur
+       was von der alten Notiz erzählt („Vorlesung 6 · Prof. Wendt"), geht. */
+    var streifen = blatt.firstElementChild;
+    if (streifen && streifen !== titel.closest('div')) {
+      Array.prototype.forEach.call(streifen.querySelectorAll('.t-label'), function (s) { s.remove(); });
+    }
+
+    /* Der Kopf: das Kästchen, in dem der Titel steht. Und der Block, der
+       davon im Blatt liegt — auf dem iPad steckt der Kopf noch in einer
+       700-pt-Spalte, auf dem iPhone liegt er direkt darin. */
+    var kopf = titel.parentElement;
+    var block = titel;
+    while (block.parentElement && block.parentElement !== blatt) block = block.parentElement;
+
+    kopf.innerHTML =
+      '<div class="serif--screen-title">' + marke() + '</div>' +
+      '<div style="display:flex; align-items:center; gap:6px; margin-top:8px; flex-wrap:wrap">' +
+        '<button class="chip chip--ghost">' + ikon('plus', 13) + 'Tag</button>' +
+        '<div style="flex:1 1 auto"></div>' +
+        '<span class="t-sub c-2">Neu · ' + HEUTE.lang + '</span>' +
+      '</div>';
+
+    /* Alles, was die alte Notiz war, geht. Statt dessen EIN LEERER ABSATZ —
+       mit seiner Rinne, und die Rinne ist leer. Kein aufmunternder Satz,
+       keine graue Anleitung: eine leere Notiz ist leer, und genau das soll
+       man sehen. Wo hier geschrieben wird, sagt die Schreibmarke im Titel. */
+    while (block.nextElementSibling) block.nextElementSibling.remove();
+    var rinne = geraet === 'ipad' ? 40 : 20;
+    var koerper = bau(
+      '<div style="' + (geraet === 'ipad'
+          ? 'max-width:700px; margin:0 auto; padding:12px 10px 6px'
+          : 'padding:12px 20px 0 38px') + '">' +
+        '<div style="display:flex; align-items:flex-start">' +
+          '<div style="width:' + rinne + 'px; flex:none"></div>' +
+          '<p class="t-body" style="margin:0; flex:1 1 auto; min-height:1lh"></p>' +
+        '</div>' +
+      '</div>');
+    block.parentNode.insertBefore(koerper, block.nextSibling);
+
+    /* Die Übergabe-Leiste („aus Zellbiologie → Lückentext-Karte") schwebt
+       auf dem iPhone außerhalb der Rollfläche. Sie gehört zu einer Auswahl
+       in einem Text, den es hier nicht gibt. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.handoff'), function (h) { verbergen(h); });
+
+    /* Die Blockleiste unten sagt „Alles gesichert · 9:39". An einer Notiz,
+       die es vor zwei Sekunden noch nicht gab, ist das der einzige Satz auf
+       dem Schirm, der nicht stimmt. */
+    Array.prototype.forEach.call(blatt.parentElement.querySelectorAll('.t-sub'), function (s) {
+      if (/gesichert/.test(textVon(s))) s.textContent = 'Neue Notiz · leer';
+    });
+
+    /* Die Marginalspalte des iPads. Sie bleibt stehen — sie gehört zum Schirm,
+       nicht zur Notiz —, aber sie sagt die Wahrheit über eine Notiz, die noch
+       nichts ist. */
+    var panel = null;
+    Array.prototype.forEach.call(rahmen.querySelectorAll('aside'), function (a) {
+      if (!panel && !a.classList.contains('sidebar') && /Übersicht/.test(a.textContent)) panel = a;
+    });
+    if (panel) {
+      var rolle = panel.querySelector('.scroll') || panel;
+      rolle.innerHTML =
+        '<div class="segmented" style="width:100%">' +
+          '<button class="is-on" style="flex:1 1 0">Übersicht</button>' +
+          '<button style="flex:1 1 0">Verlauf</button>' +
+        '</div>' +
+        '<div style="padding:26px 2px 0; display:flex; flex-direction:column; gap:7px">' +
+          '<span class="t-label c-3">NOCH KEINE FÄDEN</span>' +
+          '<p class="t-sub c-3" style="margin:0">Backlinks, verwandte Notizen und was aus dieser ' +
+          'Notiz entsteht stehen hier, sobald sie geschrieben ist.</p>' +
+        '</div>';
+      beleben_ikonen(rolle);
+    }
+
+    beleben_ikonen(blatt);
+    /* Der „+ Tag"-Knopf der neuen Notiz ist gerade erst entstanden — §13i
+       hat ihn beim Aufbau des Rahmens noch nicht gesehen. Ein neu gebauter
+       Knopf, der tot bleibt, wäre genau der Fehler, den diese Runde abräumt. */
+    eigenschaftsKnoepfeBeleben(rahmen);
+  };
+
+  /* ── NOTIZBUCH ──────────────────────────────────────────────────────────
+     Vorn im Regal, Papier gewählt, Titel leer, Rücken ohne Punkte — ein Buch
+     ohne Inhalt hat keine Objekte, also auch keine Punkte auf dem Rücken.
+     Es wächst an seinen Platz: Rolle BESTÄTIGEN, 180 ms, springQuick. */
+  BAU.notizbuch = function (rahmen, geraet) {
+    var regal = rahmen.querySelector('.shelf');
+    if (!regal) return;
+    var klein = regal.classList.contains('shelf--6');
+    var buch = bau(
+      '<article class="book' + (klein ? ' book--sm' : '') + ' pv-waechst">' +
+        '<a class="book__cover paper--buetten-elfenbein">' +
+          '<span class="book__spine"></span>' +
+          '<span class="book__title serif--cover-title book__title--l">' + marke() + '</span>' +
+        '</a>' +
+        '<div class="book__cap">' +
+          '<div class="book__meta t-label"><span class="dot dot--notes"></span><span>Notizen</span></div>' +
+          '<div class="book__meta book__meta--split t-label"><span>0 Seiten</span><span>neu</span></div>' +
+        '</div>' +
+      '</article>');
+    regal.insertBefore(buch, regal.firstElementChild);
+
+    /* „ALLE NOTIZBÜCHER 18" muss mitzählen — eine Überschrift, die 18 sagt,
+       während 19 dastehen, ist der Fehler, den dieser Prototyp abräumt. */
+    zahlHochzaehlen(regal.previousElementSibling, 1);
+    beleben_ikonen(buch);
+  };
+
+  /* Die erste Zahl in einer Kopfzeile um n erhöhen. */
+  function zahlHochzaehlen(kopf, n) {
+    if (!kopf) return;
+    var z = kopf.querySelector('.num');
+    if (!z) return;
+    var alt = parseInt(textVon(z), 10);
+    if (isNaN(alt)) return;
+    z.textContent = String(alt + n);
+  }
+
+  /* ── JOURNALEINTRAG ─────────────────────────────────────────────────────
+     Das heutige Datum in der Serif, die Impulsfrage darüber. Der Impuls ist
+     derselbe wie im Journal-Start — er kommt aus dem Bestand (dem Canvas vom
+     6. November) und nicht aus dem Nichts; genau daran hängt seine Kante. */
+  BAU.journal = function (rahmen, geraet, datum) {
+    var h1 = rahmen.querySelector('h1.serif--screen-title, .serif--screen-title');
+    if (!h1) return;
+    var artikel = h1.closest('article') || h1.parentElement;
+    if (!artikel) return;
+
+    artikel.innerHTML =
+      '<div style="display:flex; align-items:center; gap:8px">' +
+        '<span class="dot dot--journal"></span>' +
+        '<span class="t-label c-3">JOURNAL</span>' +
+        '<span class="t-label c-3">·</span>' +
+        '<span class="t-label c-3">NEUER EINTRAG</span>' +
+      '</div>' +
+      '<section class="card card--flat" style="margin-top:11px; padding:11px 13px">' +
+        '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px">' +
+          '<span class="dot dot--journal"></span>' +
+          '<span class="t-label c-3">IMPULS FÜR HEUTE</span>' +
+        '</div>' +
+        '<p class="t-body" style="margin:0 0 8px">Über den Versuch vom ' +
+          '<span class="num">6. November</span> steht noch nichts.</p>' +
+        '<span class="origin"><span class="dot dot--canvas"></span>Messreihe Probe 1–5</span>' +
+      '</section>' +
+      '<h1 class="serif--screen-title" style="margin:15px 0 0">' + (datum || HEUTE.lang) + '</h1>' +
+      '<div style="margin-top:11px">' +
+        '<p class="serif--voice" style="margin:0">' + marke() + '</p>' +
+      '</div>';
+
+    /* Die Nebenspalte des Eintrags trägt sonst Fäden, Fotos, Stimmung. Ein
+       Eintrag, der noch keinen Satz hat, hat davon nichts. */
+    var spalte = artikel.nextElementSibling;
+    if (spalte) {
+      spalte.innerHTML =
+        '<div style="display:flex; flex-direction:column; gap:7px; padding:2px">' +
+          '<span class="t-label c-3">NOCH NICHTS VERBUNDEN</span>' +
+          '<p class="t-sub c-3" style="margin:0">Fotos, Orte und die Fäden zu Notizen ' +
+          'und Aufgaben hängen sich an, sobald der Eintrag steht.</p>' +
+        '</div>';
+    }
+    beleben_ikonen(artikel);
+  };
+
+  /* ── AUFGABE ────────────────────────────────────────────────────────────
+     Kein fertiges Objekt, sondern die offene Erfassungszeile mit dem Fokus.
+     Das ist bei Aufgaben der ehrlichere Weg: eine Aufgabe ohne Satz ist keine.
+     Was danach kommt, steht in §12e. */
+  BAU.aufgabe = function (rahmen) { erfassungOeffnen(rahmen, true); };
+
+  /* ── LERNKARTEN-DECK ────────────────────────────────────────────────────
+     Ein neues Deck vorn, Titel leer, drei Zähler auf null, kein
+     Herkunfts-Chip: es ist aus keiner Notiz entstanden, also gibt es nichts
+     zu zeichnen. Kein Faden ohne echte Beziehung. */
+  BAU.deck = function (rahmen, geraet) {
+    var kopf = null;
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.divider'), function (d) {
+      if (!kopf && /DECKS/.test(textVon(d))) kopf = d;
+    });
+    var spalte = null, davor = null;
+    if (kopf) {
+      davor = kopf;
+      while (davor.parentElement && !davor.parentElement.querySelector(':scope > section.card')) davor = davor.parentElement;
+      spalte = davor.parentElement;
+    }
+    if (!spalte) {
+      var erste = rahmen.querySelector('section.card');
+      if (!erste) return;
+      spalte = erste.parentElement;
+      davor = null;
+    }
+
+    var karte = bau(
+      '<section class="card pv-waechst" style="padding:9px 14px 10px">' +
+        /* Kein Modul-Punkt im Kopf: die vier gezeichneten Decks tragen dort
+           auch keinen, und ein Punkt neben einem leeren Titel stünde allein. */
+        '<div class="card__head" style="margin-bottom:7px; gap:10px; min-width:0">' +
+          '<span class="t-section" style="white-space:nowrap">' + marke() + '</span>' +
+          '<div style="flex:1 1 auto"></div>' +
+          '<span class="t-label c-3">NEU · ' + HEUTE.tag + '</span>' +
+        '</div>' +
+        '<div style="display:flex; align-items:center; gap:0">' +
+          '<span class="count"><span class="count__n num">0</span><span class="count__w t-sub">Neu</span></span>' +
+          '<span class="t-sub c-3" style="margin:0 8px">·</span>' +
+          '<span class="count"><span class="count__n num">0</span><span class="count__w t-sub">Wiederholen</span></span>' +
+          '<span class="t-sub c-3" style="margin:0 8px">·</span>' +
+          '<span class="count"><span class="count__n num">0</span><span class="count__w t-sub">Gelernt</span></span>' +
+          '<div style="flex:1 1 auto"></div>' +
+          '<span class="t-sub c-3">Noch keine Karten</span>' +
+        '</div>' +
+      '</section>');
+
+    if (davor && davor.parentElement === spalte) spalte.insertBefore(karte, davor.nextSibling);
+    else spalte.insertBefore(karte, spalte.firstElementChild);
+
+    if (kopf) zahlHochzaehlen(kopf, 1);
+    beleben_ikonen(karte);
+  };
+
+  /* ── CANVAS-BLATT ───────────────────────────────────────────────────────
+     Das Canvas ist ein eigenständiges Mockup im Rahmen (§11a) und bringt
+     seine leere Fläche selbst mit. Hier ist nichts zu bauen — der Weg dorthin
+     IST das neue Blatt. */
+  BAU.blatt = function () {};
+
+  /* ── 12e · Die Erfassungszeile ───────────────────────────────────────────
+     Der einzige Ort im Prototyp, an dem wirklich getippt wird. Das Schaubild
+     zeigt sie im Zustand „getippt", mit einem fertigen Satz und der Auswertung
+     darunter — das ist der Beweis für natürliche Sprache und gehört ins Bild.
+     Begehbar muss sie leer anfangen und den Fokus haben.
+
+     „Sichern" trägt die Aufgabe in ihre Gruppe ein. In die GRUPPE, nicht in
+     die Herkunfts-Klammer: die Klammer sagt, aus welcher Notiz die Aufgaben
+     stammen, und eine gerade getippte stammt aus keiner. Ein Faden dorthin
+     wäre erfunden. */
+
+  function erfassungOeffnen(rahmen, fokus) {
+    var feld = erfassungszeile(rahmen);
+    if (!feld) return;
+    schmutzig(rahmen);
+
+    var eingabe = feld.querySelector('.pv-eingabe');
+    if (!eingabe) {
+      /* Was im Schaubild als Text dasteht, wird hier zum Feld. Alles zwischen
+         dem Pluszeichen und dem Mikrofon geht — es war der getippte Satz. */
+      var kinder = Array.prototype.slice.call(feld.childNodes);
+      var plus = feld.querySelector('.ico[data-ico="plus"]');
+      var mic  = feld.querySelector('.ico[data-ico="mic"]');
+      kinder.forEach(function (n) { if (n !== plus && n !== mic) feld.removeChild(n); });
+      /* Das Feld war für §4 ein Knopf (beleben() hängt einem <div> role und
+         Tabstopp an). Jetzt steht ein echtes Eingabefeld darin — ein Knopf,
+         in dem ein Feld liegt, ist für einen Bildschirmleser Unsinn. */
+      feld.removeAttribute('role');
+      feld.removeAttribute('tabindex');
+      eingabe = DOK.createElement('input');
+      eingabe.type = 'text';
+      eingabe.className = 'pv-eingabe';
+      eingabe.setAttribute('placeholder', 'Aufgabe in einem Satz erfassen');
+      eingabe.setAttribute('aria-label', 'Aufgabe in einem Satz erfassen');
+      if (plus) feld.insertBefore(eingabe, plus.nextSibling);
+      else feld.insertBefore(eingabe, feld.firstChild);
+      feld.classList.add('pv-erfassung-offen');
+      feld.style.boxShadow = 'inset 0 0 0 2px var(--accent-ring)';
+
+      /* Die Auswertung („ERKANNT · Morgen 14:00 · #labor …") gehört zu einem
+         Satz, der dasteht. Bei leerer Zeile behauptete sie etwas. */
+      var karte = feld.closest('section.card') || feld.parentElement;
+      var erkannt = null;
+      Array.prototype.forEach.call(karte.children, function (c) {
+        if (!erkannt && c !== feld.parentElement && /ERKANNT/.test(textVon(c))) erkannt = c;
+      });
+      if (erkannt) { verbergen(erkannt); feld.__pvErkannt = erkannt; }
+
+      eingabe.addEventListener('input', function () { erfassungPruefen(rahmen); });
+      eingabe.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); aufgabeSichern(rahmen); }
+        if (e.key === 'Escape') { e.preventDefault(); eingabe.blur(); }
+      });
+    }
+
+    /* „Sichern" gibt es am iPad im Schaubild; das iPhone trägt die Zeile in
+       der Daumenzone und bekommt den Knopf erst, wenn sie offen ist — so wie
+       das System es dort tut, wenn die Tastatur kommt. */
+    var sichern = erfassungKnopf(rahmen, feld);
+    if (sichern) {
+      beleben(sichern, {
+        ziel: 'nichts',
+        wirkt: 'trägt die Aufgabe in ihre Gruppe ein',
+        titel: 'Aufgabe sichern',
+        tun: function () { aufgabeSichern(rahmen); },
+      });
+    }
+    erfassungPruefen(rahmen);
+    if (fokus) { try { eingabe.focus({ preventScroll: true }); } catch (e) { eingabe.focus(); } }
+  }
+
+  function erfassungKnopf(rahmen, feld) {
+    var karte = feld.closest('section.card') || feld.parentElement;
+    var vorhanden = null;
+    Array.prototype.forEach.call(karte.querySelectorAll('button'), function (b) {
+      if (!vorhanden && /^Sichern$/.test(textVon(b))) vorhanden = b;
+    });
+    if (vorhanden) return vorhanden;
+    /* Das iPhone trägt die Zeile allein in der Daumenzone. Der Knopf kommt
+       NEBEN sie, nicht darunter — untereinander wären es zwei Zeilen, wo das
+       System eine hat. */
+    var reihe = feld.parentElement || karte;
+    var neu = bau('<button class="btn btn--primary btn--sm" style="flex:none">Sichern</button>');
+    reihe.style.display = 'flex';
+    reihe.style.alignItems = 'center';
+    reihe.style.gap = '8px';
+    feld.style.flex = '1 1 auto';
+    feld.style.minWidth = '0';
+    reihe.appendChild(neu);
+    return neu;
+  }
+
+  function erfassungPruefen(rahmen) {
+    var feld = erfassungszeile(rahmen);
+    if (!feld) return;
+    var eingabe = feld.querySelector('.pv-eingabe');
+    var karte = feld.closest('section.card') || feld.parentElement;
+    var knopf = null;
+    Array.prototype.forEach.call(karte.querySelectorAll('button'), function (b) {
+      if (!knopf && /^Sichern$/.test(textVon(b))) knopf = b;
+    });
+    var etwas = !!(eingabe && eingabe.value.trim());
+    /* Ein leerer Satz ist keine Aufgabe. „Sichern" ist dann nicht nur blass,
+       sondern wirklich kein Ziel: kein Klickfinger, kein Tabstopp — sonst
+       stünde hier wieder ein Knopf, der aussieht, als täte er etwas. */
+    if (knopf) {
+      knopf.classList.toggle('is-disabled', !etwas);
+      knopf.setAttribute('aria-disabled', String(!etwas));
+      if (etwas) {
+        knopf.classList.add('pv-lebt');
+        knopf.removeAttribute('tabindex');
+      } else {
+        knopf.classList.remove('pv-lebt');
+        knopf.setAttribute('tabindex', '-1');
+      }
+      markenAuffrischen();
+    }
+    if (feld.__pvErkannt) {
+      verbergen(feld.__pvErkannt, etwas ? false : true);
+      if (etwas) {
+        feld.__pvErkannt.innerHTML =
+          '<span class="t-label c-3" style="letter-spacing:.05em">ERKANNT</span>' +
+          '<span class="chip"><span class="dot" style="background:var(--ink-2)"></span>Bereich Biologie</span>' +
+          '<span style="flex:1"></span>' +
+          '<span class="t-label c-3" style="white-space:nowrap">Landet in der Gruppe Biologie</span>';
+        beleben_ikonen(feld.__pvErkannt);
+      }
+    }
+  }
+
+  /* Die Gruppe, in die eine frisch getippte Aufgabe gehört: die erste
+     Bereichskarte des Schirms. Gefunden über ihr Wort, nicht über ihre Stelle. */
+  function gruppeBiologie(rahmen) {
+    var karte = null;
+    Array.prototype.forEach.call(rahmen.querySelectorAll('section.card'), function (k) {
+      if (karte) return;
+      var kopf = k.firstElementChild;
+      if (kopf && /^Biologie/.test(textVon(kopf))) karte = k;
+    });
+    return karte;
+  }
+
+  function aufgabeSichern(rahmen) {
+    var feld = erfassungszeile(rahmen);
+    if (!feld) return;
+    var eingabe = feld.querySelector('.pv-eingabe');
+    var satz = eingabe ? eingabe.value.trim() : '';
+    if (!satz) { if (eingabe) eingabe.focus(); return; }
+
+    var gruppe = gruppeBiologie(rahmen);
+    if (!gruppe) return;
+    schmutzig(rahmen);
+
+    var zeile = bau(
+      '<div class="row" style="padding:6px 12px">' +
+        '<span class="check"></span>' +
+        '<div class="row__main">' +
+          '<span class="t-body row__title"></span>' +
+          '<span class="t-sub c-3">gerade erfasst · ' + HEUTE.kurz + '</span>' +
+        '</div>' +
+      '</div>');
+    zeile.querySelector('.row__title').textContent = satz;
+
+    /* Die Zeile schiebt die Lücke auf, statt plötzlich dazustehen — das
+       Gegenstück zur Lücke, die sich hinter einer erledigten Aufgabe
+       schließt (bewegung.css §2.4). */
+    var huelle = DOK.createElement('div');
+    huelle.className = 'pv-luecke-auf';
+    huelle.appendChild(zeile);
+    gruppe.appendChild(huelle);
+    var hoehe = zeile.offsetHeight;
+    global.requestAnimationFrame(function () {
+      huelle.classList.add('is-offen');
+      huelle.style.height = hoehe + 'px';
+    });
+    /* Danach die Klasse abnehmen, nicht nur die Höhe: .pv-luecke-auf trägt
+       height:0 in der Regel selbst — eine geleerte Inline-Höhe fiele darauf
+       zurück, und die Zeile stünde in einer Hülle von null Höhe. */
+    global.setTimeout(function () {
+      huelle.classList.remove('pv-luecke-auf', 'is-offen');
+      huelle.style.height = '';
+      huelle.style.overflow = '';
+    }, tempo(260) + 60);
+
+    zahlHochzaehlen(gruppe.firstElementChild, 1);
+    /* Die Zeile ist ein echter Gegenstand: sie führt ins Aufgaben-Detail,
+       wie jede andere Zeile dieser Liste auch. */
+    beleben(zeile, { ziel: 'aufgabe', richtung: 'vor', titel: 'Aufgabe „' + satz + '" öffnet das Detail' });
+    beleben_ikonen(zeile);
+
+    eingabe.value = '';
+    erfassungPruefen(rahmen);
+    eingabe.focus();
+    sagen('Aufgabe gesichert: ' + satz);
+    global.setTimeout(markenAuffrischen, tempo(300));
+  }
+
+  /* Escape schließt erst das Menü, dann den Schirm. Ohne diese Zeile führte
+     die Taste aus dem Schirm heraus, während ein Menü offen davorsteht. */
+  DOK.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape' || !offenesMenue) return;
+    var k = offenesMenue.knopf;
+    e.preventDefault();
+    e.stopPropagation();
+    menueSchliessen();
+    if (k) { try { k.focus({ preventScroll: true }); } catch (x) { k.focus(); } }
+  }, true);
+
+  /* ══════════════════════════════════════════════════════════════════════
+   * 13 · DER REST DER TOTEN KNÖPFE
+   *
+   * Die Frage an jedes Element lautet: WÄRE EIN FREMDER ÜBERRASCHT, DASS ES
+   * NICHTS TUT? Wo die Antwort ja ist, muss es entweder führen oder an Ort
+   * und Stelle wirken. Wo sie nein ist — ein Filter-Chip, ein Sortiermenü,
+   * ein Zahnrad in einer Nebenspalte —, bleibt es entschärft, und das ist
+   * dann Absicht und nicht Vergessen.
+   *
+   * „Wirkt an Ort und Stelle" heißt SICHTBAR. Ein Umschalter, der seine
+   * Auswahl verschiebt, ohne dass sich der Inhalt ändert, ist dieselbe Lüge
+   * wie ein toter Knopf mit Klickfinger — nur teurer, weil man ihr glaubt.
+   * Deshalb baut Raster→Liste wirklich eine Liste, streicht der Papierkorb
+   * wirklich durch, und der Zoom im Graphen ändert wirklich den Maßstab.
+   * ==================================================================== */
+
+  function wirkKnoepfe(rahmen, geraet) {
+    var schirm = rahmen.getAttribute('data-pv-screen');
+
+    if (schirm === 'bibliothek')    regalUmschalterBeleben(rahmen);
+    if (schirm === 'aufgabe')       loeschenBeleben(rahmen);
+    if (schirm === 'einstellungen') synchronisierungBeleben(rahmen);
+    if (schirm === 'graph')         graphBeleben(rahmen);
+    if (schirm === 'semester')      lernplanBeleben(rahmen);
+    if (schirm === 'eingang')       wohinBeleben(rahmen);
+    if (schirm === 'leere-zustaende') leereZustaendeBeleben(rahmen);
+
+    uebergabeleisteBeleben(rahmen);
+    eigenschaftsKnoepfeBeleben(rahmen);
+  }
+
+  /* ── 13a · Raster ↔ Liste ────────────────────────────────────────────────
+     Der Umschalter im Kopf der Bibliothek. Er ist der Fall, den das
+     Gestaltungssystem meint, wenn es „wirkt an Ort und Stelle" sagt: dieselben
+     achtzehn Notizbücher, eine andere Ordnung im Bild.
+
+     Die Liste wird aus den Büchern gebaut, die dastehen — Deckelpapier,
+     Titel, Modul, Seitenzahl, Datum stehen alle im Regal. Und jede Zeile
+     bekommt den Weg IHRES Buches: wer in der Liste auf „Laborjournal" tippt,
+     landet im Journal, genau wie im Raster. Ein Umschalter, hinter dem die
+     Wege verschwinden, hätte den Schirm ärmer gemacht statt reicher. */
+  function regalUmschalterBeleben(rahmen) {
+    var segment = null;
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.segmented'), function (s) {
+      if (!segment && /Raster/.test(textVon(s))) segment = s;
+    });
+    if (!segment) return;
+    var knoepfe = Array.prototype.slice.call(segment.querySelectorAll('button'));
+    knoepfe.forEach(function (k) {
+      var alsListe = /Liste/.test(textVon(k));
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: alsListe ? 'zeigt die Liste' : 'zeigt das Regal',
+        titel: alsListe ? 'Notizbücher als Liste' : 'Notizbücher als Raster',
+        tun: function () {
+          schmutzig(rahmen);
+          knoepfe.forEach(function (b) { b.classList.toggle('is-on', b === k); });
+          regalZeigen(rahmen, alsListe);
+        },
+      });
+    });
+  }
+
+  function regalZeigen(rahmen, alsListe) {
+    var regal = rahmen.querySelector('.shelf');
+    if (!regal) return;
+    var alt = rahmen.querySelector('.pv-regalliste');
+    if (!alsListe) {
+      if (alt) alt.remove();
+      verbergen(regal, false);
+      markenAuffrischen();
+      return;
+    }
+    if (alt) return;
+
+    var liste = DOK.createElement('div');
+    liste.className = 'pv-regalliste';
+    Array.prototype.forEach.call(regal.querySelectorAll('.book'), function (buch) {
+      var deckel = buch.querySelector('.book__cover');
+      var titel  = buch.querySelector('.book__title');
+      var metas  = buch.querySelectorAll('.book__meta');
+      var modul  = metas[0] ? textVon(metas[0]) : '';
+      var punkt  = metas[0] && metas[0].querySelector('.dot');
+      var teile  = metas[1] ? Array.prototype.map.call(metas[1].children, textVon) : [];
+
+      var zeile = bau(
+        '<div class="pv-regalzeile">' +
+          '<span class="pv-regaldeckel"></span>' +
+          '<span style="flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px">' +
+            '<span class="t-body is-strong clamp-1 pv-regaltitel"></span>' +
+            '<span class="t-label c-3" style="display:flex; align-items:center; gap:6px">' +
+              (punkt ? '<span class="' + punkt.className + '"></span>' : '') +
+              '<span class="pv-regalmodul"></span>' +
+            '</span>' +
+          '</span>' +
+          '<span class="t-label c-3 num" style="flex:none">' + (teile[0] || '') + '</span>' +
+          '<span class="t-label c-3 num" style="flex:none; min-width:52px; text-align:right">' + (teile[1] || '') + '</span>' +
+        '</div>');
+      /* Der Titel trägt weiche Trennstriche (Zell&shy;biologie); als Text
+         gelesen bleiben sie unsichtbar und trennen in der Zeile nicht mehr. */
+      zeile.querySelector('.pv-regaltitel').textContent = titel ? titel.textContent.replace(/­/g, '') : '';
+      zeile.querySelector('.pv-regalmodul').textContent = modul;
+      var d = zeile.querySelector('.pv-regaldeckel');
+      if (deckel) {
+        /* Dasselbe Papier wie am Deckel — die Klasse trägt --book-paper.
+           Zwei Notizbücher tragen statt Papier ein Foto; ohne diese Zeile
+           stünden sie als weiße Rechtecke in der Liste. */
+        deckel.className.split(/\s+/).forEach(function (c) { if (/^paper--/.test(c)) d.classList.add(c); });
+        var foto = deckel.querySelector('img.book__photo');
+        if (foto) d.style.backgroundImage = 'url("' + foto.getAttribute('src') + '")';
+      }
+      if (buch.__pvWeg) beleben(zeile, buch.__pvWeg);
+      liste.appendChild(zeile);
+    });
+
+    verbergen(regal);
+    regal.parentNode.insertBefore(liste, regal.nextSibling);
+    beleben_ikonen(liste);
+    markenAuffrischen();
+  }
+
+  /* ── 13b · Der Papierkorb ────────────────────────────────────────────────
+     Er streicht die Zeile durch und bietet Widerrufen an. Nicht mehr: eine
+     Aufgabe, die beim Tap verschwände, nähme dem Widerruf sein Gegenüber. */
+  function loeschenBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.btn--danger'), function (k) {
+      if (!/Löschen/.test(textVon(k))) return;
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: 'streicht die Aufgabe durch · Widerrufen',
+        titel: 'Aufgabe löschen',
+        tun: function (el) { aufgabeLoeschen(rahmen, el); },
+      });
+    });
+  }
+
+  /* Welcher Titel gemeint ist: der der aufgeklappten Karte, in der der Knopf
+     steht. Steht er in der Leiste am unteren Rand (iPhone), ist es der Titel
+     im Feld — der einzige, der eine Schreibmarke hinter sich hat. */
+  function aufgabenTitel(rahmen, knopf) {
+    var box = knopf.closest('article') || rahmen;
+    /* Der iPhone-Schirm trägt ZWEI aufgeklappte Karten übereinander — eine
+       davon steht auf hidden, weil sie nur das Ziel einer Bewegung ist. Ohne
+       die Sichtprüfung striche der Papierkorb den Titel durch, den niemand
+       sieht, und der Schirm bliebe unverändert: der Knopf sähe aus, als täte
+       er nichts, obwohl er alles getan hat. */
+    var wege = ['.field .t-body.is-strong', '.t-body.is-strong', '.row__title'];
+    for (var i = 0; i < wege.length; i++) {
+      var treffer = box.querySelectorAll(wege[i]);
+      for (var j = 0; j < treffer.length; j++) {
+        if (treffer[j].getClientRects().length) return treffer[j];
+      }
+    }
+    return null;
+  }
+
+  function aufgabeLoeschen(rahmen, knopf) {
+    var titel = aufgabenTitel(rahmen, knopf);
+    if (!titel) return;
+    schmutzig(rahmen);
+    var traeger = knopf.closest('article') || titel.closest('.card, .row') || titel;
+    titel.classList.add('pv-gestrichen');
+    traeger.classList.add('pv-verblasst');
+    widerrufZeigen(rahmen, 'Aufgabe gelöscht', function () {
+      titel.classList.remove('pv-gestrichen');
+      traeger.classList.remove('pv-verblasst');
+    });
+    sagen('Gelöscht: ' + textVon(titel) + ' — Widerrufen steht bereit.');
+  }
+
+  /* Die Widerruf-Leiste. Eine je Gerät, sie ersetzt sich selbst. Sie geht,
+     wenn man widerruft — und mit dem Schirm, wenn man ihn verlässt (§5e). */
+  function widerrufZeigen(rahmen, satz, zurueckNehmen) {
+    var buehne = rahmen.querySelector('.screen') || rahmen;
+    var alt = buehne.querySelector('.pv-widerruf');
+    if (alt) alt.remove();
+
+    var leiste = bau(
+      '<div class="pv-widerruf" role="status">' +
+        '<span class="t-sub c-1 pv-widerruf__satz"></span>' +
+        '<button class="btn btn--sm">Widerrufen</button>' +
+      '</div>');
+    leiste.querySelector('.pv-widerruf__satz').textContent = satz;
+    /* Am unteren Rand des Geräts — auf dem iPhone über Aktionsleiste,
+       Tab-Leiste und Home-Indicator, auf dem iPad, wo nichts steht. */
+    leiste.style.bottom = rahmen.getAttribute('data-pv-geraet') === 'iphone' ? '134px' : '22px';
+    buehne.appendChild(leiste);
+
+    var knopf = leiste.querySelector('button');
+    beleben(knopf, {
+      ziel: 'nichts',
+      wirkt: 'nimmt das Löschen zurück',
+      titel: 'Widerrufen',
+      tun: function () {
+        zurueckNehmen();
+        leiste.remove();
+        sagen('Widerrufen.');
+        markenAuffrischen();
+      },
+    });
+    markenAuffrischen();
+  }
+
+  /* ── 13c · „Erneut versuchen" ────────────────────────────────────────────
+     Der einzige Knopf im ganzen Entwurf, der einen Fehler wegräumt. Er tut es
+     jetzt: der rote Kasten wird ein grauer Satz mit Häkchen, und die drei
+     wartenden Änderungen sind durch. */
+  function synchronisierungBeleben(rahmen) {
+    var kasten = rahmen.querySelector('.notice--error');
+    if (!kasten) return;
+    var knopf = kasten.querySelector('button');
+    if (!knopf) return;
+    beleben(knopf, {
+      ziel: 'nichts',
+      wirkt: 'synchronisiert erneut — der Fehler geht',
+      titel: 'Erneut synchronisieren',
+      tun: function () {
+        schmutzig(rahmen);
+        kasten.classList.remove('notice--error');
+        kasten.style.boxShadow = 'inset 0 0 0 1px var(--line)';
+        kasten.innerHTML =
+          ikon('check', 20) +
+          '<div class="notice__text" style="flex:1; min-width:0">' +
+            '<div class="t-sub is-strong">Synchronisiert</div>' +
+            '<div class="t-sub c-2 clamp-1">3 Änderungen übertragen · gerade eben</div>' +
+          '</div>';
+        beleben_ikonen(kasten);
+        sagen('Synchronisiert — 3 Änderungen übertragen.');
+        markenAuffrischen();
+      },
+    });
+  }
+
+  /* ── 13d · Der Zoom im Graphen ───────────────────────────────────────────
+     Ein Plus neben einem Minus und einer Prozentzahl ist kein Erzeugen-Knopf,
+     sondern ein Maßstab. Er wirkt an Ort und Stelle: das Feld wächst, die
+     Zahl geht mit. Fünf Stufen, wie sie jede Karte hat. */
+  var ZOOMSTUFEN = [60, 80, 100, 125, 160];
+
+  function graphBeleben(rahmen) {
+    var feld = rahmen.querySelector('.gscroll');
+    var minus = null, plus = null, zahl = null;
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.iconbtn'), function (k) {
+      if (k.querySelector('.ico[data-ico="minus"]')) minus = k;
+      if (k.querySelector('.ico[data-ico="plus"]'))  plus = k;
+    });
+    if (feld && minus && plus) {
+      var leiste = plus.parentElement;
+      Array.prototype.forEach.call(leiste.querySelectorAll('.num'), function (n) {
+        if (!zahl && /%/.test(textVon(n))) zahl = n;
+      });
+      var stellen = function (richtung) {
+        schmutzig(rahmen);
+        var i = ZOOMSTUFEN.indexOf(rahmen.__pvZoom || 100);
+        if (i < 0) i = 2;
+        i = Math.max(0, Math.min(ZOOMSTUFEN.length - 1, i + richtung));
+        rahmen.__pvZoom = ZOOMSTUFEN[i];
+        feld.style.transformOrigin = '0 0';
+        feld.style.transition = 'transform var(--bw-d-oeffnen) var(--bw-e-standard)';
+        feld.style.transform = 'scale(' + (ZOOMSTUFEN[i] / 100) + ')';
+        if (zahl) zahl.textContent = ZOOMSTUFEN[i] + ' %';
+        minus.classList.toggle('is-off', i === 0);
+        plus.classList.toggle('is-off', i === ZOOMSTUFEN.length - 1);
+        markenAuffrischen();
+      };
+      beleben(minus, { ziel: 'nichts', wirkt: 'zoomt heraus', titel: 'Kleiner', tun: function () { stellen(-1); } });
+      beleben(plus,  { ziel: 'nichts', wirkt: 'zoomt heran',  titel: 'Größer',  tun: function () { stellen(1); } });
+    }
+
+    /* Das Schließkreuz am Inspektor. Ein Kreuz, das nicht schließt, ist der
+       eindeutigste Fall dieser Runde. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.iconbtn'), function (k) {
+      if (!k.querySelector('.ico[data-ico="close"]')) return;
+      var tafel = k.closest('aside, section, .ginspect');
+      if (!tafel || tafel === rahmen) return;
+      beleben(k, {
+        ziel: 'nichts',
+        wirkt: 'schließt den Inspektor',
+        titel: 'Inspektor schließen',
+        tun: function () {
+          schmutzig(rahmen);
+          verbergen(tafel);
+          markenAuffrischen();
+        },
+      });
+    });
+  }
+
+  /* ── 13e · Der Lernplan ──────────────────────────────────────────────────
+     Ein gefüllter Ink-Knopf im Semester-Ordner. Er ist kein örtlicher
+     Schalter: der Plan, den er nennt, steht im Lernkarten-Schirm — zwölf
+     Karten am Tag, drei Zähler, vier Decks. Also führt er dorthin. */
+  function lernplanBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.btn--primary'), function (k) {
+      if (!/Lernplan/.test(textVon(k))) return;
+      if (!leitetAuf('lernkarten')) return;
+      beleben(k, {
+        ziel: 'lernkarten',
+        richtung: 'vor',
+        titel: 'Der Lernplan steht bei den Lernkarten',
+      });
+    });
+  }
+
+  /* ── 13f · Die Übergabe-Leiste ───────────────────────────────────────────
+     Sie schwebt über der Auswahl und trägt rechts ein Kreuz. Das Kreuz lässt
+     die Auswahl los — das ist die eine Handlung, die eine Auswahlleiste immer
+     kann, und sie kostet keinen zweiten gezeichneten Zustand.
+     „Planen" ist gefüllte Ink: der primäre CTA der Leiste, und damit einer,
+     der nach der Auflage dieser Runde nicht tot sein darf. Er plant — die
+     ausgewählten Zeilen bekommen ihren Termin und die Leiste geht. */
+  function uebergabeleisteBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.handoff'), function (leiste) {
+      Array.prototype.forEach.call(leiste.querySelectorAll('.handoff__btn'), function (k) {
+        if (k.hasAttribute('data-bw')) return;              /* die Signature-Momente bleiben ihre */
+        if (k.classList.contains('pv-lebt')) return;
+
+        if (k.querySelector('.ico[data-ico="close"]')) {
+          beleben(k, {
+            ziel: 'nichts',
+            wirkt: 'lässt die Auswahl los',
+            titel: 'Auswahl aufheben',
+            tun: function () { auswahlAufheben(rahmen, leiste); },
+          });
+          return;
+        }
+        if (!k.classList.contains('is-primary')) return;
+        beleben(k, {
+          ziel: 'nichts',
+          wirkt: 'plant die gewählten Aufgaben',
+          titel: 'Gewählte Aufgaben planen',
+          tun: function () { auswahlPlanen(rahmen, leiste); },
+        });
+      });
+    });
+  }
+
+  function gewaehlteZeilen(rahmen) {
+    return Array.prototype.slice.call(rahmen.querySelectorAll('.row.is-selected'));
+  }
+
+  function auswahlAufheben(rahmen, leiste) {
+    schmutzig(rahmen);
+    gewaehlteZeilen(rahmen).forEach(function (z) { z.classList.remove('is-selected'); });
+    verbergen(leiste);
+    sagen('Auswahl aufgehoben.');
+    markenAuffrischen();
+  }
+
+  function auswahlPlanen(rahmen, leiste) {
+    schmutzig(rahmen);
+    var zeilen = gewaehlteZeilen(rahmen);
+    zeilen.forEach(function (z) {
+      var meta = z.querySelector('.row__meta') || z;
+      var chip = bau('<span class="chip pv-waechst">' + ikon('calendar', 13) + 'Geplant morgen</span>');
+      meta.insertBefore(chip, meta.firstChild);
+      beleben_ikonen(chip);
+      z.classList.remove('is-selected');
+    });
+    verbergen(leiste);
+    sagen(zeilen.length + (zeilen.length === 1 ? ' Aufgabe geplant' : ' Aufgaben geplant') + ' — morgen.');
+    markenAuffrischen();
+  }
+
+  /* ── 13g · Wohin damit ───────────────────────────────────────────────────
+     Die drei Chips unter jedem Schnipsel im Eingang. Sie legen die Beziehung
+     an, die dem Schnipsel fehlt — und genau das ist im Bild zu sehen: der
+     Punkt links am Schnipsel ist HOHL, solange kein Faden an ihm hängt, und
+     bekommt die Farbe des Moduls, sobald einer da ist. Schnipsel 3 zeigt den
+     Zustand danach; hier wird er erreichbar. Kein Faden ohne echte Beziehung —
+     und dies ist eine, weil sie gerade hergestellt wurde. */
+  function wohinBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.ei-wohin'), function (reihe) {
+      var schnipsel = reihe.closest('.ei-schnipsel');
+      var punkt = schnipsel && schnipsel.querySelector('.ei-punkt');
+      var chips = Array.prototype.slice.call(reihe.querySelectorAll('.chip'));
+      chips.forEach(function (chip) {
+        var wort = textVon(chip);
+        var eigen = chip.querySelector('.dot');
+        var klasse = eigen ? (eigen.className.match(/dot--\w+/) || [''])[0] : 'dot--notes';
+        beleben(chip, {
+          ziel: 'nichts',
+          wirkt: 'legt den Schnipsel als ' + wort + ' ab',
+          titel: 'Als ' + wort + ' ablegen',
+          tun: function () {
+            schmutzig(rahmen);
+            chips.forEach(function (c) {
+              var an = c === chip;
+              c.classList.toggle('chip--solid', an);
+              var d = c.querySelector('.dot');
+              if (d) d.style.boxShadow = an ? '0 0 0 1px rgba(255,255,255,.5)' : '';
+            });
+            if (punkt) {
+              punkt.classList.remove('dot--hollow');
+              punkt.className = punkt.className.replace(/dot--\w+/, klasse || 'dot--notes');
+              if (!/dot--/.test(punkt.className)) punkt.classList.add(klasse || 'dot--notes');
+              punkt.classList.add('pv-waechst');
+              punkt.setAttribute('title', 'hat jetzt einen Faden');
+            }
+            sagen('Abgelegt als ' + wort + ' — der Punkt ist nicht mehr hohl.');
+            markenAuffrischen();
+          },
+        });
+      });
+    });
+  }
+
+  /* ── 13h · Die leeren Zustände ───────────────────────────────────────────
+     Der Schirm zeigt vier leere Zustände nebeneinander; seine Knöpfe sind
+     die Wege heraus. „Notiz öffnen" führt in den Editor, „Morgen ansehen" auf
+     Heute. Die Erzeugen-Knöpfe darauf hat §12b schon. */
+  function leereZustaendeBeleben(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.btn'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      var wort = textVon(k);
+      if (/^Notiz öffnen$/.test(wort) && leitetAuf('notiz')) {
+        beleben(k, { ziel: 'notiz', richtung: 'vor', titel: 'Notiz öffnen' });
+      } else if (/^Morgen ansehen$/.test(wort) && leitetAuf('heute')) {
+        beleben(k, { ziel: 'heute', richtung: 'vor', titel: 'Morgen ansehen' });
+      }
+    });
+  }
+
+  /* ── 13i · Eigenschaften an einem Gegenstand ─────────────────────────────
+     „+ Tag", „Schritt hinzufügen", „Verknüpfung hinzufügen" legen keinen
+     Gegenstand an, sondern hängen einen an einen, der schon da ist. Sie
+     bekommen darum nicht das Menü der sechs Dinge (§12), sondern ihre eigene
+     kleine Wirkung — sichtbar, an Ort und Stelle, im Bestand der Geschichte.
+
+     „#osmose" ist kein erfundener Tag: die Notiz handelt auf drei Absätzen
+     davon, der Graph kennt den Knoten, die Suche findet ihn. Und die Notiz
+     „Osmose" gibt es — das Aufgaben-Detail schlägt sie selbst als Verweis
+     vor, der noch nicht gesetzt ist. Beides ist eine echte Kante, sonst
+     stünde hier nichts. */
+  function eigenschaftsKnoepfeBeleben(rahmen) {
+    /* .chip steht mit in der Liste: der „+ Tag"-Chip des Notiz-Editors ist im
+       Bestand ein <span>, der des Journal-Eintrags ein <button>. Dasselbe Ding
+       in zwei Gestalten — gesucht wird nach dem Zeichen und dem Wort, nicht
+       nach dem Element. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('button,[role="button"],.chip'), function (k) {
+      if (k.classList.contains('pv-lebt')) return;
+      if (!k.querySelector('.ico[data-ico="plus"]')) return;
+      var wort = textVon(k);
+
+      if (/^Tag$/.test(wort)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'hängt den Tag #osmose an', titel: 'Tag hinzufügen',
+          tun: function () {
+            schmutzig(rahmen);
+            var chip = bau('<span class="chip pv-waechst">' + ikon('tag', 13) + '#osmose</span>');
+            k.parentNode.insertBefore(chip, k);
+            beleben_ikonen(chip);
+            sagen('Tag #osmose gesetzt.');
+            markenAuffrischen();
+          },
+        });
+        return;
+      }
+
+      if (/Schritt hinzufügen/.test(wort)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'legt einen leeren Schritt an', titel: 'Schritt hinzufügen',
+          tun: function () {
+            schmutzig(rahmen);
+            var zeile = bau(
+              '<div class="pv-waechst" style="display:flex; align-items:center; gap:10px; min-height:44px; padding:2px 0">' +
+                '<span class="check"></span>' +
+                '<span class="t-body">' + marke() + '</span>' +
+              '</div>');
+            k.parentNode.insertBefore(zeile, k);
+            beleben_ikonen(zeile);
+            sagen('Neuer Schritt — schreib ihn auf.');
+            markenAuffrischen();
+          },
+        });
+        return;
+      }
+
+      if (/Verknüpfung hinzufügen/.test(wort)) {
+        beleben(k, {
+          ziel: 'nichts', wirkt: 'verknüpft die Notiz „Osmose"', titel: 'Verknüpfung hinzufügen',
+          tun: function () {
+            schmutzig(rahmen);
+            var zeile = bau(
+              '<button class="row pv-waechst" style="min-height:42px; padding:4px 8px 4px 30px; width:100%">' +
+                '<span class="dot dot--notes" style="margin:0 4px"></span>' +
+                '<div class="row__main" style="text-align:left">' +
+                  '<span class="t-sub c-1">Osmose</span>' +
+                  '<span class="t-label c-3">Notiz · gerade verknüpft</span>' +
+                '</div>' +
+                ikon('chevR', 15) +
+              '</button>');
+            k.parentNode.insertBefore(zeile, k);
+            beleben_ikonen(zeile);
+            if (leitetAuf('notiz')) {
+              beleben(zeile, { ziel: 'notiz', richtung: 'vor', titel: 'Notiz „Osmose" öffnen' });
+            }
+            sagen('Verknüpft mit der Notiz „Osmose".');
+            markenAuffrischen();
+          },
+        });
+      }
+    });
+  }
+
   /* ══════════════════════════════════════════════════════════════════════
    * 9 · START
    * ==================================================================== */
@@ -1835,5 +3232,10 @@
     zustand:   function () { return { schirm: jetzt.schirm, geraet: jetzt.geraet, tiefe: jetzt.tiefe }; },
     neuAufbauen: aufbauen,
     wegeModus: wegeSchalten,      /* PROTOTYP.wegeModus(true)                */
+    /* Was §12b beim letzten Aufbau als Erzeugen-Knopf gemessen hat — die
+       Liste ist gemessen, nicht gepflegt, und darum die einzige Wahrheit
+       darüber, wo man in diesem Prototyp etwas anlegen kann. */
+    erzeuger:  function () { return erzeugerListe.slice(); },
+    erzeugen:  erzeugen,          /* PROTOTYP.erzeugen('notiz')              */
   };
 })(window);

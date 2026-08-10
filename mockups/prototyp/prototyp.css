@@ -15,6 +15,7 @@
  *   5  Kleinigkeiten
  *   6  Der Canvas-Schirm          (das fremde Mockup im eigenen Rahmen)
  *   7  Der Wege-Modus             (Prüfwerkzeug, nicht Entwurf)
+ *   8  Was erzeugt wird           (das Erzeugen-Menü und was daraus entsteht)
  * ========================================================================== */
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -608,3 +609,289 @@ body.pv {
   font-weight: 400;
   box-shadow: inset 0 0 0 1px var(--pv-wege-linie), 0 1px 3px rgba(0, 0, 0, .2);
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 8 · WAS ERZEUGT WIRD
+ *
+ * Bis zu dieser Runde kannte der Prototyp zwei Sorten Element: solche mit
+ * einem Weg und solche ohne. Die Regel „was keinen Weg hat, zeigt auch keinen
+ * Klickfinger" (§4) war richtig und hatte eine Lücke: manche Elemente sind zu
+ * auffällig, um tot sein zu dürfen. Der gefüllte Ink-Knopf „+ Neu" ist der
+ * lauteste Knopf seines Schirms — entschärft sieht er nicht nach Absicht aus,
+ * sondern nach kaputt.
+ *
+ * Es gibt darum jetzt drei Sorten:
+ *
+ *   1  FÜHRT              hat einen Weg auf einen anderen Schirm
+ *   2  WIRKT AN ORT UND STELLE   verändert sichtbar etwas auf diesem Schirm
+ *   3  ENTSCHÄRFT         kein Klickfinger, kein Hover, kein Druck
+ *
+ * und die Auflage: kein primärer CTA und kein Erzeugen-Knopf darf in 3 landen.
+ *
+ * Dieser Abschnitt bringt die Hülle für Sorte 1 und 2 mit. Er führt KEINE
+ * neue Gestaltung ein: Papier, Ink, Linie, die vier Kurven und die vier
+ * Rollendauern kommen aus system.css und bewegung.css. Die Maße des Menüs
+ * sind vom gezeichneten Kontextmenü in library.html abgeschrieben (14 px
+ * Radius, 6 px Innenrand, 44 pt Zeile, --sh-float + 1 px Linie) — es gibt
+ * schon ein Menü im Bestand, und ein zweites mit anderen Maßen wäre eine
+ * zweite Sprache.
+ *
+ *   8a  Das Erzeugen-Menü      Popover (iPad) · Blatt von unten (iPhone)
+ *   8b  Was neu ist            Schreibmarke · das wachsende Ding
+ *   8c  Was an Ort und Stelle wirkt   Eingabe · Regal als Liste · Widerruf
+ * ════════════════════════════════════════════════════════════════════════ */
+
+/* ── 8a · DAS ERZEUGEN-MENÜ ────────────────────────────────────────────────
+   Es liegt IM Gerät, nicht über der Seite: es gehört zur App, wird mit ihr
+   verkleinert und vom Rahmen beschnitten. Deshalb sitzt es als Kind von
+   .screen (position:relative, overflow:hidden aus system.css §4) und nicht
+   am Körper der Seite.
+
+   pointer-events muss ausdrücklich zurückgeholt werden — §4 hat den ganzen
+   Schirm abgeschaltet, und das Menü liegt darin. */
+
+.pv-menue,
+.pv-menue__vorhang {
+  position: absolute;
+  pointer-events: auto;
+}
+
+/* Der Vorhang fängt den Tap daneben. Auf dem iPad ist er unsichtbar: ein
+   Popover verdunkelt nichts, es steht nur davor. Auf dem iPhone verdunkelt
+   das Blatt, wie es das System dort tut. */
+.pv-menue__vorhang {
+  inset: 0;
+  z-index: 78;
+  background: none;
+  cursor: default;
+}
+.pv-menue__vorhang--dunkel {
+  background: rgba(22, 24, 28, .34);
+  animation: pv-vorhang-auf var(--bw-d-oeffnen) var(--bw-e-io) both;
+}
+@keyframes pv-vorhang-auf { from { opacity: 0; } to { opacity: 1; } }
+
+.pv-menue { z-index: 79; }
+
+.pv-menue__kasten {
+  width: 268px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: var(--sh-float), inset 0 0 0 1px var(--line);
+}
+
+/* Rolle ÖFFNEN, 320 ms, springStandard. Das Popover wächst aus der Ecke, die
+   an seinem Knopf liegt — die Ecke setzt prototyp.js §12 als transform-origin. */
+.pv-menue--popover .pv-menue__kasten {
+  animation: pv-popover-auf var(--bw-d-oeffnen) var(--bw-e-standard) both;
+}
+@keyframes pv-popover-auf {
+  from { opacity: 0; transform: scale(.94); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Das Blatt von unten. Es hört an der Kante des Geräts auf, nicht am Rand
+   des Fensters — darum left/right/bottom auf 0 und der Radius nur oben. */
+.pv-menue--blatt {
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.pv-menue--blatt .pv-menue__kasten {
+  width: auto;
+  padding: 6px 10px 30px;
+  border-radius: 20px 20px 0 0;
+  box-shadow: var(--sh-float), inset 0 1px 0 var(--line);
+  animation: pv-blatt-auf var(--bw-d-oeffnen) var(--bw-e-standard) both;
+}
+@keyframes pv-blatt-auf {
+  from { transform: translateY(100%); }
+  to   { transform: none; }
+}
+
+/* Der Griff des Blattes — dieselbe Form wie der Home-Indicator, nur in der
+   Füllfarbe: er sagt „hier lässt sich ziehen", ohne ein neues Zeichen zu sein. */
+.pv-menue__griff {
+  width: 36px;
+  height: 5px;
+  margin: 3px auto 7px;
+  border-radius: 3px;
+  background: var(--fill-3);
+}
+
+.pv-menue__kopf {
+  padding: 4px 10px 7px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pv-menue__zeile {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--ink-1);
+  text-align: left;
+  font: inherit;
+}
+.pv-menue__zeile + .pv-menue__zeile { margin-top: 1px; }
+.pv-menue__zeile:hover { background: var(--fill); }
+
+/* Die AUSWAHL — eine der drei Rollen des Ink-Akzents. Drei Merkmale, keines
+   davon Farbe allein: getönte Fläche, 2-pt-Ring, Häkchen. Dieselben drei, mit
+   denen die Erscheinungsbild-Kachel in den Einstellungen ihre Wahl zeigt. */
+.pv-menue__zeile.is-wahl {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 2px var(--accent-ring);
+}
+.pv-menue__zeile.is-wahl .pv-menue__wort { font-weight: 600; }
+.pv-menue__haken { margin-left: auto; color: var(--ink-1); }
+
+/* Reduce: kein Weg, nur eine Blende — der gebaute Pfad aller Rollen. */
+:root[data-bw-reduce="1"] .pv-menue--popover .pv-menue__kasten,
+:root[data-bw-reduce="1"] .pv-menue--blatt .pv-menue__kasten {
+  animation-name: pv-vorhang-auf;
+  animation-duration: var(--bw-d-blende);
+  animation-timing-function: var(--bw-e-io);
+}
+
+/* ── 8b · WAS NEU IST ──────────────────────────────────────────────────────
+   Eine leere Notiz sieht aus wie ein Fehler, wenn nichts sagt, dass sie
+   gerade entstanden ist. Zwei Zeichen tun das: die Schreibmarke und das
+   Wachsen an den Platz. */
+
+/* Die Schreibmarke. 2 pt Ink, so hoch wie die Zeile, in der sie steht.
+   Der Takt ist der des Systems (530 ms an, 530 ms aus, harte Kante). */
+.pv-marke {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  vertical-align: -.12em;
+  background: var(--accent);
+  animation: pv-marke-blinkt 1.06s step-end infinite;
+}
+@keyframes pv-marke-blinkt { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+/* Unter Reduce steht sie still. Sie bleibt sichtbar — sie ist Ortsangabe,
+   keine Verzierung, und ohne sie wüsste niemand, wo geschrieben wird. */
+:root[data-bw-reduce="1"] .pv-marke { animation: none; }
+
+/* Das neue Ding wächst an seinen Platz: Rolle BESTÄTIGEN, 180 ms, springQuick.
+   Dieselben Zahlen und dieselbe Kurve wie die Scheibe des Hakens
+   (bewegung.css §2.4) — es wird hier nichts zweitgeschrieben. */
+.pv-waechst {
+  animation: pv-waechst var(--bw-d-bestaetigen) var(--bw-e-quick) both;
+}
+@keyframes pv-waechst {
+  from { opacity: 0; transform: scale(.72); }
+  to   { opacity: 1; transform: none; }
+}
+:root[data-bw-reduce="1"] .pv-waechst {
+  animation-duration: var(--bw-d-blende-kurz);
+  animation-timing-function: var(--bw-e-io);
+  animation-name: pv-vorhang-auf;
+}
+
+/* Eine Zeile, die in eine Liste kommt: sie schiebt die Lücke auf, statt
+   plötzlich dazustehen. Gegenstück zu .bw-luecke (bewegung.css §2.4). */
+.pv-luecke-auf {
+  overflow: hidden;
+  height: 0;
+  opacity: 0;
+  transition: height var(--bw-d-luecke) var(--bw-e-quick),
+              opacity var(--bw-d-luecke) var(--bw-e-io);
+}
+.pv-luecke-auf.is-offen { opacity: 1; }
+:root[data-bw-reduce="1"] .pv-luecke-auf { transition-duration: var(--bw-d-blende-kurz); }
+
+/* ── 8c · WAS AN ORT UND STELLE WIRKT ──────────────────────────────────────
+   Die Erfassungszeile ist der einzige Ort im Prototyp, an dem wirklich
+   getippt wird. Das Feld erbt darum die Schrift des Bestands (.t-body) und
+   bringt nur mit, was ein <input> von sich aus nicht hat: keinen Rahmen,
+   keinen eigenen Grund, keine eigene Farbe. */
+.pv-eingabe {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  padding: 0;
+  color: var(--ink-1);
+  font: 400 17px/23px var(--sans);
+  letter-spacing: -.01em;
+  caret-color: var(--accent);
+}
+:root[data-type="gross"] .pv-eingabe { font-size: 21px; line-height: 28px; }
+.pv-eingabe::placeholder { color: var(--ink-3); opacity: 1; }
+/* Ein Feld, in dem geschrieben wird, ist ein Ziel — auch wenn es in einer
+   Rollfläche liegt (§4 Regel 2 schaltet dort alles ab). */
+.pv-glas .pv-eingabe { pointer-events: auto; cursor: text; }
+
+/* Das Regal als Liste. Kein zweites Regal, sondern dieselben Notizbücher in
+   Zeilenform — Deckel auf Daumennagelgröße, Titel und Modul daneben. Gebaut
+   wird sie aus den Büchern, die dastehen (prototyp.js §13). */
+.pv-regalliste { display: flex; flex-direction: column; }
+.pv-regalliste .pv-regalzeile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 7px 8px;
+  border-radius: 10px;
+}
+.pv-regalliste .pv-regalzeile + .pv-regalzeile { box-shadow: inset 0 1px 0 var(--line); }
+.pv-regalliste .pv-regaldeckel {
+  width: 34px;
+  height: 46px;
+  flex: none;
+  border-radius: 3px;
+  background-color: var(--paper);
+  background-image: var(--book-paper);
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--sh-card), inset 0 0 0 .5px var(--line);
+}
+
+/* Der Widerruf. Er sitzt über dem unteren Rand des Geräts, in derselben
+   Kapselform wie die Übergabe-Leiste (system.css .handoff) — es gibt schon
+   eine schwebende Leiste im Bestand, und eine zweite Form wäre eine zweite
+   Sprache. */
+.pv-widerruf {
+  position: absolute;
+  white-space: nowrap;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100% - 32px);
+  padding: 8px 8px 8px 16px;
+  border-radius: var(--r-pill);
+  background: var(--paper);
+  box-shadow: var(--sh-float), inset 0 0 0 1px var(--line);
+  pointer-events: auto;
+  animation: pv-widerruf-auf var(--bw-d-wechseln) var(--bw-e-quick) both;
+}
+@keyframes pv-widerruf-auf {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+:root[data-bw-reduce="1"] .pv-widerruf {
+  animation-name: pv-vorhang-auf;
+  animation-duration: var(--bw-d-blende-kurz);
+  animation-timing-function: var(--bw-e-io);
+}
+
+/* Gestrichen — nicht gelöscht. Der Text bleibt lesbar, damit der Widerruf
+   weiß, worauf er sich bezieht. */
+.pv-gestrichen { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.pv-verblasst { opacity: .5; }
+.pv-glas .pv-verblasst .pv-lebt { pointer-events: none; cursor: default; }
