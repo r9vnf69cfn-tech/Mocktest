@@ -12,6 +12,9 @@
  *   3  Der Schirmwechsel          (Rolle WECHSELN und ÖFFNEN aus bewegung.css)
  *   3b Was ein Schirm können muss, was ein Schaubild nicht muss (Rollen)
  *   4  Die Regel für tote Ziele   (das Wichtigste in dieser Datei)
+ *   5  Kleinigkeiten
+ *   6  Der Canvas-Schirm          (das fremde Mockup im eigenen Rahmen)
+ *   7  Der Wege-Modus             (Prüfwerkzeug, nicht Entwurf)
  * ========================================================================== */
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -369,4 +372,239 @@ body.pv {
 @media (max-width: 900px) {
   .pv-kopf__zeile { padding-right: 0; flex-wrap: wrap; }
   .pv-kopf { padding-top: 64px; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 6 · DER CANVAS-SCHIRM
+ *
+ * Der vierzehnte Schirm ist kein Standbild, sondern das laufende
+ * Canvas-Mockup in einem <iframe> (tools/prototyp-bauen.js §1b). Es bringt
+ * sein eigenes Dokument mit — deshalb kollidiert sein CSS nicht mit
+ * system.css, und deshalb steht hier auch nichts über sein Inneres.
+ *
+ * Drei Zeilen sind nötig, mehr nicht: die Fläche füllt den Rahmen, sie nimmt
+ * wieder Eingaben an (§4 hat den ganzen Schirm totgestellt), und der Weg
+ * hinaus liegt sichtbar darauf.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+.pv-canvas { position: relative; }
+
+/* ── Der Rahmen, der Maß hat, bevor man ihn sieht ────────────────────────
+   Das Canvas misst sich beim Start EINMAL selbst und passt die Ansicht ein.
+   Läge sein iframe dabei in einem display:none-Zweig — und genau dort liegt
+   jeder Schirm, der gerade nicht dran ist —, dann misst es null, passt auf
+   10 % ein und bleibt dort: ein zweites Mal misst es nie, und hineinreichen
+   kann man nicht, denn über file:// ist jedes Dokument ein eigener Ursprung.
+   Gemessen: innen 1194 × 834, während der Rahmen auf dem Schirm 645 × 450
+   groß war.
+
+   Deshalb bleibt allein dieser Schirm im Layout stehen und wird nur
+   unsichtbar. Er nimmt keine Eingaben an (§4 stellt jeden Schirm tot,
+   visibility: hidden nimmt ihm auch den Rest) und er malt nichts. Die
+   Maße stehen an .screen--ipad / .screen--iphone und hängen nicht am Glas —
+   der iPhone-Rahmen misst 393 × 852, auch während das Glas ein iPad ist. */
+.pv-screen[data-pv-screen="canvas"][hidden] {
+  display: flex;
+  visibility: hidden;
+}
+
+.pv-canvas__flaeche {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  /* Bis das Dokument steht, ist das iframe leer. Papierfarbe statt Weiß:
+     sonst blitzt im Dunkeln eine helle Fläche auf. */
+  background: var(--paper);
+  /* §4 stellt den ganzen Schirm tot. Hier wird er wieder wach — und zwar
+     ganz: im Canvas ist jeder Punkt der Fläche ein Ziel. */
+  pointer-events: auto;
+}
+
+/* ── Der Weg hinaus ───────────────────────────────────────────────────────
+   Ein iframe schluckt Zeiger und Tastatur. Wer einmal hineingezeichnet hat,
+   kommt weder über <esc> noch über die Randgeste zurück — beide hören am
+   äußeren Dokument, und das sieht davon nichts mehr. Der Weg hinaus muss
+   deshalb außerhalb des iframes liegen und sichtbar sein.
+
+   Er trägt R1: gefüllte Ink-Fläche, heller Text, 44 pt hoch. Das ist auf
+   diesem Schirm die primäre Aktion — es gibt keine zweite. */
+.pv-canvas__zurueck {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  height: 44px;
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--ink-1);
+  color: var(--paper);
+  font: 600 15px/20px var(--sans);
+  box-shadow: var(--sh-float);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.pv-canvas__pfeil {
+  width: 9px; height: 9px;
+  border-left: 1.8px solid currentColor;
+  border-bottom: 1.8px solid currentColor;
+  transform: rotate(45deg);
+  margin-left: 2px;
+}
+.pv-canvas__zurueck:focus-visible { outline: 2px solid var(--paper); outline-offset: -6px; }
+
+/* Auf dem iPhone ist die Mitte unten belegt: dort sitzt die Zoom-Kapsel des
+   Canvas. Links daneben ist frei, weil die Übersichtskarte auf schmalen
+   Fenstern ohnehin entfällt. */
+.pv-glas[data-pv-geraet="iphone"] .pv-canvas__zurueck {
+  left: 14px;
+  bottom: 76px;
+  transform: none;
+  font: 600 13px/16px var(--sans);
+  height: 44px;
+  padding: 0 16px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 7 · DER WEGE-MODUS — was lebt, und wohin es führt
+ *
+ * Ein Prüfwerkzeug, kein Entwurf. Es beantwortet eine Frage, die man am
+ * fertigen Bild nicht stellen kann: WAS IST HIER ANKLICKBAR, UND WOHIN FÜHRT
+ * ES? Deshalb spricht es die Sprache der Bedienleiste oben — Ink, Papier,
+ * Sans, Kapsel — und nicht die der App. Wer es einschaltet, sieht ein
+ * Werkzeug über dem Entwurf liegen, nicht eine weitere Schicht davon.
+ *
+ * Zwei Regeln bestimmen den Bau:
+ *
+ *   Es darf nichts verschieben. Deshalb outline und niemals border:
+ *   ein Rand nähme jedem markierten Element 3 pt Innenmaß, und der ganze
+ *   Schirm liefe auseinander, sobald man das Werkzeug einschaltet.
+ *
+ *   Die Beschriftung ist der eigentliche Wert. Der Rahmen sagt „lebt", die
+ *   Beschriftung sagt „→ Notiz-Editor". Wo für die Beschriftung kein Platz
+ *   ist, bleibt der Rahmen allein stehen (prototyp.js §11c) — lieber eine
+ *   Auskunft weniger als zwei übereinander, die beide unlesbar sind.
+ *
+ * Der Ink-Akzent trägt hier ausdrücklich KEINE der drei Rollen der DNA. Er
+ * gehört nicht zum Entwurf; er liegt darüber und verschwindet mit einem
+ * Klick. Genau deshalb steht er auch nicht im Schaubild, sondern nur hier.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+body.pv {
+  --pv-wege-linie: rgba(22, 24, 28, .58);
+  --pv-wege-voll:  #16181C;
+  --pv-wege-text:  #FFFFFF;
+}
+:root[data-theme="dark"] body.pv {
+  --pv-wege-linie: rgba(242, 243, 245, .58);
+  --pv-wege-voll:  #F2F3F5;
+  --pv-wege-text:  #17191C;
+}
+
+/* ── Der Umschalter im Kopf ──────────────────────────────────────────────
+   Dieselbe Kapsel wie die Gerätewahl, weil es dieselbe Sorte Bedienung ist.
+   Der eingeschaltete Zustand trägt drei Merkmale — Fläche, Textfarbe,
+   Gewicht —, keines davon Farbe allein. */
+.pv-pruefung { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
+.pv-pruefung__knopf {
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--fill);
+  font: 400 13px/16px var(--sans);
+  color: var(--ink-2);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.pv-pruefung__knopf:hover { color: var(--ink-1); }
+.pv-pruefung__knopf[aria-pressed="true"] {
+  background: var(--ink-1);
+  color: var(--paper);
+  font-weight: 600;
+}
+.pv-pruefung__knopf:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.pv-pruefung__zahl {
+  font: 400 13px/16px var(--sans);
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.pv-pruefung__zahl b { font-weight: 600; color: var(--ink-2); }
+
+/* ── Die Markierung am Element ────────────────────────────────────────────
+   outline liegt außerhalb des Kastens und außerhalb des Layouts: sie kostet
+   kein Innenmaß und verschiebt nichts. outline-offset hält sie einen Punkt
+   ab, damit sie nicht auf der eigenen Kante des Elements liegt.
+
+   Zwei Striche, zwei Aussagen:
+     durchgezogen  führt auf einen anderen Schirm
+     gestrichelt   lebt, bleibt aber hier (Bewegung · Schalter · „du bist hier")
+   Das ist dasselbe, was die Beschriftung sagt — und es überlebt den Fall,
+   dass die Beschriftung wegen Gedränge weggelassen werden musste. */
+.pv-glas[data-pv-wege] .pv-lebt {
+  outline: 1.5px solid var(--pv-wege-linie);
+  outline-offset: 1px;
+}
+.pv-glas[data-pv-wege] .pv-lebt.pv-wege-ort {
+  outline-style: dashed;
+}
+/* Die Canvas-Fläche gehört keiner Wegekarte und ist trotzdem lebendig —
+   gestrichelt wie alles, was hier bleibt. Die Markierung sitzt innen
+   (offset −2), weil das Glas außen abschneidet. */
+.pv-glas[data-pv-wege] .pv-canvas__flaeche {
+  outline: 1.5px dashed var(--pv-wege-linie);
+  outline-offset: -2px;
+}
+/* Der Fokusring bleibt der Fokusring: er gewinnt gegen die Markierung, sonst
+   wüsste man mit der Tastatur nicht mehr, wo man steht. */
+.pv-glas[data-pv-wege] .pv-lebt:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Die Beschriftungen ───────────────────────────────────────────────────
+   Sie liegen NICHT im Rahmen, sondern in einer eigenen Schicht über der
+   Bühne. Zwei Gründe: im Rahmen würden sie mitverkleinert und wären auf
+   schmalen Fenstern unlesbar, und sie würden das Markup der Schirme
+   anfassen. Hier fasst das Werkzeug nichts an, was ihm nicht gehört.
+
+   11 px ist die Ausnahme, die das Gestaltungssystem für die Tab-Leiste
+   schon kennt. Sie gilt hier zum zweiten Mal — und wieder nur außerhalb des
+   Entwurfs. */
+.pv-wegeschicht {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  overflow: hidden;
+}
+.pv-wegemarke {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  height: 17px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: var(--pv-wege-voll);
+  color: var(--pv-wege-text);
+  font: 600 11px/17px var(--sans);
+  letter-spacing: -.005em;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+}
+/* Was hier bleibt, trägt die umgekehrte Fassung — dieselbe Kapsel, gefüllt
+   mit Papier statt Ink. Zwei Merkmale: Fläche und Wortlaut. */
+.pv-wegemarke--ort {
+  background: var(--paper);
+  color: var(--ink-1);
+  font-weight: 400;
+  box-shadow: inset 0 0 0 1px var(--pv-wege-linie), 0 1px 3px rgba(0, 0, 0, .2);
 }

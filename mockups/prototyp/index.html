@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="prototyp.css">
 <style>
 /* ══════════════════════════════════════════════════════════════════════════
- * SEITENEIGENES CSS DER 13 SCHIRME — erzeugt von tools/prototyp-bauen.js
+ * SEITENEIGENES CSS DER SCHIRME — erzeugt von tools/prototyp-bauen.js
  *
  * Nicht von Hand ändern. Jeder Block steht wortgleich in seiner Quelldatei
  * unter mockups/app-next/; hier ist ihm nur der Namensraum seines Schirms
@@ -21,6 +21,26 @@
 [data-pv-screen="bibliothek"] .tap44::after { content: ""; position: absolute; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
   width: 100%; min-width: var(--tap); height: 100%; min-height: var(--tap); }
+
+/* ── eingang.html · Namensraum [data-pv-screen="eingang"] ── */
+[data-pv-screen="eingang"] .ei-flaeche { position: relative; background: var(--paper-2);
+                   border-radius: 0 0 var(--r-card) var(--r-card);
+                   box-shadow: inset 0 1px 0 var(--line); overflow: hidden; }
+[data-pv-screen="eingang"] .ei-schnipsel { position: absolute; padding-left: 20px; }
+[data-pv-screen="eingang"] .ei-schnipsel__k { background: var(--paper); border-radius: 12px;
+                   box-shadow: var(--sh-card); padding: 12px; text-align: left;
+                   width: 100%; display: block; }
+[data-pv-screen="eingang"] .ei-punkt { position: absolute; left: 9px; top: 20px;
+                   transform: translate(-50%, -50%); z-index: 2; }
+[data-pv-screen="eingang"] .ei-zug { position: absolute; width: 10px; z-index: 1; }
+[data-pv-screen="eingang"] .ei-schnipsel--gewaehlt .ei-schnipsel__k {
+                   background: var(--accent-soft);
+                   box-shadow: var(--sh-card), 0 0 0 2.5px var(--accent-ring); }
+[data-pv-screen="eingang"] .ei-foto { display: block; width: 100%; border-radius: 8px;
+                   object-fit: cover; background: var(--fill-2); }
+[data-pv-screen="eingang"] .ei-wohin { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+[data-pv-screen="eingang"] .ei-amfaden { position: absolute; z-index: 2; background: var(--paper-2);
+                   padding: 0 5px; white-space: nowrap; }
 
 /* ── journal-home.html · Namensraum [data-pv-screen="journal"] ── */
 [data-pv-screen="journal"] .wfan__f { position: absolute; top: 8px; }
@@ -118,6 +138,24 @@
 [data-pv-screen="lernsitzung"] .hk__f > * { stroke-linecap: butt; }
 [data-pv-screen="lernsitzung"] .bw-intervall > .thread.is-active { stroke: var(--thread); }
 
+/* ── semester.html · Namensraum [data-pv-screen="semester"] ── */
+[data-pv-screen="semester"] .sem { display: grid; grid-template-columns: 20px minmax(0,1fr); align-items: stretch; }
+[data-pv-screen="semester"] .sem__rinne { position: relative; }
+[data-pv-screen="semester"] .sem__marke { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 1; }
+[data-pv-screen="semester"] .sem .thread > * { stroke-linecap: butt; }
+[data-pv-screen="semester"] .sem__zug { position: absolute; left: 50%; margin-left: -5px; width: 10px; }
+[data-pv-screen="semester"] .sem__zug--ab { top: 50%; height: 50%; }
+[data-pv-screen="semester"] .sem__zug--durch { top: 0;   height: 100%; }
+[data-pv-screen="semester"] .sem__zug--an { top: 0;   height: 50%; }
+[data-pv-screen="semester"] .sem__woche { display: flex; align-items: center; gap: 10px;
+                      padding: 10px 12px 4px; }
+[data-pv-screen="semester"] .sem__woche:first-child { padding-top: 4px; }
+[data-pv-screen="semester"] .sem__woche::after { content: ""; flex: 1 1 auto; height: 1px; background: var(--line); }
+[data-pv-screen="semester"] .sem__woche--jetzt { background: var(--accent-soft); border-radius: 9px;
+                      margin: 6px 0 2px; padding: 5px 12px; }
+[data-pv-screen="semester"] .sem__woche--jetzt::after { background: var(--line-2); }
+[data-pv-screen="semester"] .sem__zeile { width: 100%; text-align: left; padding-top: 5px; padding-bottom: 5px; }
+
 /* ── graph.html · Namensraum [data-pv-screen="graph"] ── */
 :root [data-pv-screen="graph"] { --gs: 1; }
 :root[data-type="gross"] [data-pv-screen="graph"] { --gs: 1.34; }
@@ -175,6 +213,23 @@
            display: flex; flex-direction: column; }
 [data-pv-screen="graph"] .girow { min-height: 44px; padding: 4px 8px; width: 100%; }
 
+/* ── suche.html · Namensraum [data-pv-screen="suche"] ── */
+[data-pv-screen="suche"] .klammer { display: grid; grid-template-columns: 20px minmax(0,1fr); align-items: stretch; }
+[data-pv-screen="suche"] .klammer__rinne { position: relative; }
+[data-pv-screen="suche"] .klammer__marke { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 1; }
+[data-pv-screen="suche"] .klammer .thread > * { stroke-linecap: butt; }
+[data-pv-screen="suche"] .klammer__zug { position: absolute; left: 50%; margin-left: -5px; width: 10px; }
+[data-pv-screen="suche"] .klammer__zug--ab { top: 50%; height: 50%; }
+[data-pv-screen="suche"] .klammer__zug--durch { top: 0;   height: 100%; }
+[data-pv-screen="suche"] .klammer__zug--an { top: 0;   height: 50%; }
+[data-pv-screen="suche"] .klammer__stummel { width: 10px; height: 10px; flex: none; margin-left: -10px; margin-right: -8px; }
+[data-pv-screen="suche"] .su-ink { display: block; }
+[data-pv-screen="suche"] .su-ink path { fill: none; stroke: var(--ink-1); stroke-linecap: round; stroke-linejoin: round; }
+[data-pv-screen="suche"] .su-ink rect.tref { fill: var(--accent-soft); stroke: var(--line-tap); stroke-width: 1.5; }
+[data-pv-screen="suche"] .su-tref { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--line-2);
+                     border-radius: 5px; padding: 0 4px; font-weight: 600; }
+[data-pv-screen="suche"] .su-schicht { color: var(--ink-2); }
+
 /* ── settings.html · Namensraum [data-pv-screen="einstellungen"] ── */
 [data-pv-screen="einstellungen"] .set2 > * { min-width: 0; }
 :root[data-type="gross"] [data-pv-screen="einstellungen"] .set2 { grid-template-columns: 1fr !important; }
@@ -199,8 +254,9 @@
 <!-- ============================================================================
 DER BEGEHBARE PROTOTYP
 
-Erzeugt von tools/prototyp-bauen.js aus den 13 Schaubildern in
-mockups/app-next/. Nicht von Hand ändern — der nächste Lauf überschreibt alles.
+Erzeugt von tools/prototyp-bauen.js aus den Schaubildern in mockups/app-next/
+und dem Canvas-Mockup im Wurzelordner. Nicht von Hand ändern — der nächste
+Lauf überschreibt alles.
 
 Die Schaubilder bleiben, wie sie sind: dort stehen iPad und iPhone
 nebeneinander auf einer Bühne, darunter der Steckbrief. Diese Seite ist die
@@ -217,12 +273,18 @@ Was keinen Weg hat, hat auch keinen Klickfinger (siehe prototyp.js §4).
       <button type="button" class="pv-geraetwahl__knopf" role="radio" data-pv-geraet-wahl="ipad" aria-checked="true">iPad</button>
       <button type="button" class="pv-geraetwahl__knopf" role="radio" data-pv-geraet-wahl="iphone" aria-checked="false">iPhone</button>
     </div>
+    <div class="pv-pruefung">
+      <button type="button" class="pv-pruefung__knopf" id="pv-wege-schalter" aria-pressed="false">Wege zeigen</button>
+      <span class="pv-pruefung__zahl" id="pv-wege-zahl" role="status" aria-live="polite"></span>
+    </div>
   </div>
   <p class="pv-kopf__hinweis" id="pv-hinweis">
     Begehbarer Entwurf, ohne Funktion. Notizbücher, Zeilen, Karten und Chips führen
     wirklich — was keinen Weg hat, zeigt auch keinen Klickfinger.
-    <kbd>←</kbd> <kbd>→</kbd> blättern durch alle 13 Schirme, <kbd>esc</kbd> geht zurück.
-    <a href="../../index.html" target="_blank" rel="noopener">Das Canvas ist ein eigenes Mockup</a> und öffnet in einem neuen Tab.
+    <kbd>←</kbd> <kbd>→</kbd> blättern durch alle 17 Schirme, <kbd>esc</kbd> geht zurück,
+    <kbd>w</kbd> zeigt die Wege.
+    Das Canvas läuft als eigener Schirm im Rahmen — man kann darin wirklich zeichnen
+    (<a href="../../index.html" target="_blank" rel="noopener">auch als eigene Seite</a>).
   </p>
 </header>
 
@@ -1001,6 +1063,254 @@ Was keinen Weg hat, hat auch keinen Klickfinger (siehe prototyp.js §4).
           </main>
         </div>
       </div>
+  </div>
+  <div class="pv-screen" data-pv-screen="eingang" data-pv-geraet="ipad" data-pv-datei="eingang.html" data-pv-name="Eingang" hidden>
+  <div class="screen screen--ipad" id="ei-ipad">
+        <div class="statusbar">
+          <span class="num">9:41</span>
+          <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+        </div>
+  
+        <div class="body">
+          <!-- Sidebar — auf allen Schirmen gleich, hier ist „Eingang" aktiv -->
+          <aside class="sidebar">
+            <div class="sidebar__head">
+              <span class="t-section">Emil</span>
+              <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+            </div>
+  
+            <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+            <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+            <button class="navitem is-active"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+  
+            <div class="sidebar__group">
+              <div class="sidebar__grouptitle t-label">Module</div>
+              <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+              <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+              <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+              <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+              <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+            </div>
+  
+            <div class="sidebar__group">
+              <div class="sidebar__grouptitle t-label">Semester</div>
+              <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+              <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+              <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+            </div>
+  
+            <div style="margin-top:auto; padding-top:12px">
+              <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+            </div>
+          </aside>
+  
+          <!-- Inhalt -->
+          <main class="content">
+            <div class="navbar">
+              <div style="flex:none">
+                <div class="serif--screen-title">Eingang</div>
+              </div>
+              <div class="navbar__spacer"></div>
+              <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+              <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neu</button>
+            </div>
+  
+            <div class="scroll" style="padding-top:8px; display:flex; flex-direction:column; gap:10px">
+  
+              <p class="t-body c-2" style="margin:0; max-width:92ch">
+                Drei Sachen liegen hier, und keine hat einen Faden. Der Ausgang ist kein Haken, sondern <strong class="c-1 is-strong">eine Beziehung, die entsteht</strong>.
+              </p>
+  
+              <!-- ══ DIE FREIE FLÄCHE ══ -->
+              <section class="card" style="padding:0; overflow:hidden; flex:none">
+                <div style="display:flex; align-items:center; gap:10px; padding:6px 14px 5px">
+                  <span class="t-label c-3">FREIE POSITION</span>
+                  <span class="t-sub c-3">der einzige Ort in Velum, an dem du selbst legst — und der einzige mit Ablaufdatum</span>
+                  <span style="flex:1"></span>
+                  <span class="t-label c-3 num">3</span>
+                </div>
+  
+                <div class="ei-flaeche" style="height:440px">
+  
+                  <!-- Schnipsel 1 — aus Safari geteilt -->
+                  <div class="ei-schnipsel" id="ei-s1" style="left:10px; top:8px; width:320px">
+                    <span class="dot dot--hollow ei-punkt" title="ohne Faden"></span>
+                    <div class="ei-schnipsel__k">
+                      <div class="t-label c-3" style="display:flex; align-items:center; gap:6px">
+                        <span class="ico" data-ico="share" style="width:13px;height:13px"></span>geteilt aus Safari · vor 2 Stunden
+                      </div>
+                      <div class="t-body is-strong" style="margin-top:3px">Osmose – Wikipedia</div>
+                      <div class="t-sub c-3 clamp-1" style="margin-top:1px">de.wikipedia.org</div>
+                      <div style="height:1px; background:var(--line); margin:9px 0 7px"></div>
+                      <div class="t-label c-3">WOHIN DAMIT</div>
+                      <div class="ei-wohin">
+                        <button class="chip"><span class="dot dot--notes"></span>Notiz</button>
+                        <button class="chip"><span class="dot dot--tasks"></span>Aufgabe</button>
+                        <button class="chip"><span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Notizbuch</button>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <!-- Schnipsel 2 — abfotografiert -->
+                  <div class="ei-schnipsel" id="ei-s2" style="left:336px; top:56px; width:400px">
+                    <span class="dot dot--hollow ei-punkt" title="ohne Faden"></span>
+                    <div class="ei-schnipsel__k" style="padding:8px">
+                      <img class="ei-foto" src="../assets/bilder/medien/notizseite-600.jpg"
+                           alt="Abfotografierte Seite aus dem Vorlesungsskript mit handschriftlichen Randnotizen"
+                           style="height:76px">
+                      <div class="t-label c-3" style="display:flex; align-items:center; gap:6px; margin-top:8px">
+                        <span class="ico" data-ico="photo" style="width:13px;height:13px"></span>abfotografiert · vor 3 Tagen
+                      </div>
+                      <div class="t-body is-strong" style="margin-top:2px">Skript Wendt, S. 214</div>
+                      <div style="height:1px; background:var(--line); margin:9px 0 7px"></div>
+                      <div class="t-label c-3">WOHIN DAMIT</div>
+                      <div class="ei-wohin">
+                        <button class="chip"><span class="dot dot--notes"></span>Notiz</button>
+                        <button class="chip"><span class="dot dot--tasks"></span>Aufgabe</button>
+                        <button class="chip"><span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Notizbuch</button>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <!-- ══ Schnipsel 3 — die Übergabe, eingefroren ══
+                       Er liegt seit elf Tagen. Gerade eben ist „Notiz" gedrückt
+                       worden: Der Punkt ist nicht mehr hohl, sondern trägt die
+                       Farbe des Moduls, in das er geht, und der 2,5-pt-Faden
+                       (Herkunft: A wurde zu B) wächst aus genau diesem Punkt
+                       nach unten zum Ziel. Im nächsten Bild ist der Schnipsel
+                       weg — der Eingang zählt dann 2.
+                       Punktmitte: 10 + 9 = 19 waagerecht, 172 + 20 = 192 senkrecht. -->
+                  <div class="ei-schnipsel ei-schnipsel--gewaehlt" id="ei-s3" style="left:10px; top:172px; width:346px">
+                    <span class="dot dot--notes ei-punkt" title="bekommt gerade einen Faden"></span>
+                    <div class="ei-schnipsel__k">
+                      <div style="display:flex; align-items:center; gap:10px">
+                        <span class="t-label c-3" style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; white-space:nowrap">
+                          <span class="ico" data-ico="share" style="width:13px;height:13px"></span>aus dem Teilen-Blatt
+                        </span>
+                        <span class="chip chip--danger" style="height:22px; padding:0 8px"><span class="ico" data-ico="flag" style="width:12px;height:12px"></span>noch 3 Tage</span>
+                      </div>
+                      <p class="serif--quote clamp-2" style="margin:5px 0 0">„Der Konzentrationsgradient bestimmt die Richtung."</p>
+                      <div class="t-label c-3" style="margin-top:4px">PDF „Membranphysiologie", S. 3 · <strong class="c-2">liegt seit 11 Tagen</strong></div>
+                      <div class="t-label c-3" style="margin-top:9px">WOHIN DAMIT</div>
+                      <div class="ei-wohin">
+                        <button class="chip chip--solid"><span class="dot dot--notes" style="box-shadow:0 0 0 1px rgba(255,255,255,.5)"></span>Notiz</button>
+                        <button class="chip"><span class="dot dot--tasks"></span>Aufgabe</button>
+                        <button class="chip"><span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Notizbuch</button>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <!-- Der Faden: von der Punktmitte des Schnipsels (53 / 168) auf
+                       die Punktmitte des Ziels (19 / 404). Beide Enden auf 0,0 pt
+                       Abstand — die Endpunkt-Konvention erlaubt bis 5,2 pt. -->
+                  <svg class="thread thread--v thread--origin ei-zug" style="left:14px; top:192px; height:212px" aria-hidden="true"></svg>
+                  <span class="ei-amfaden t-label c-2" style="left:26px; top:366px">wird zu</span>
+  
+                  <!-- Das Ziel — dieselbe Rinne, damit der Faden gerade läuft -->
+                  <div class="ei-schnipsel" style="left:10px; top:384px; width:346px">
+                    <span class="dot dot--notes ei-punkt" title="Zielobjekt"></span>
+                    <button class="ei-schnipsel__k" id="ei-ziel" style="display:flex; align-items:center; gap:10px; padding:6px 12px; min-height:44px">
+                      <span class="t-body is-strong" style="flex:1; text-align:left">Zellbiologie</span>
+                      <span class="t-sub c-3" style="white-space:nowrap">Notiz · wird Absatz 15</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+                    </button>
+                  </div>
+  
+                </div>
+              </section>
+  
+              <!-- ── Zwei Karten unter der Fläche ── -->
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start">
+  
+                <!-- ══ DAS ABLAUFDATUM ══
+                     Das ist die Hälfte, die Milanote fehlt: Die freie Position
+                     altert. Nach 14 Tagen fragt Velum nach — vorher passiert
+                     nichts, nachher wird nichts gelöscht, es wird gefragt. -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:6px">
+                    <span class="ico" data-ico="clock" style="width:16px;height:16px; color:var(--ink-3)"></span>
+                    <span class="t-label c-3" style="flex:1">WIE LANGE SCHON</span>
+                    <span class="t-label c-3">nach 14 Tagen fragt Velum nach</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:9px; min-height:30px">
+                    <span class="dot dot--hollow"></span>
+                    <span class="t-sub clamp-1" style="flex:1">Osmose – Wikipedia</span>
+                    <span class="t-label c-3">2 Stunden</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:9px; min-height:30px">
+                    <span class="dot dot--hollow"></span>
+                    <span class="t-sub clamp-1" style="flex:1">Skript Wendt, S. 214</span>
+                    <span class="t-label c-3">3 Tage</span>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:9px; min-height:30px">
+                    <span class="dot dot--notes"></span>
+                    <span class="t-sub clamp-1" style="flex:1">Membranphysiologie, S. 3</span>
+                    <span class="chip chip--danger" style="height:20px; padding:0 7px"><span class="ico" data-ico="flag" style="width:11px;height:11px"></span>noch 3</span>
+                    <span class="t-label c-3">11 Tage</span>
+                  </div>
+                </section>
+  
+                <!-- ══ DER FÄCHER — wohin diese Woche ══
+                     Dasselbe Bauteil wie „Woher heute kommt" auf tasks.html,
+                     nur in der Gegenrichtung gelesen: dort laufen mehrere
+                     Quellen auf einen Tag zu, hier läuft ein Ort in drei Module
+                     auseinander. Der Knoten trägt drei Fäden (N7), die Richtung
+                     geht von oben nach unten (N6), und jede Kurve ist die Menge
+                     echter Kanten — neun Schnipsel, neun Fäden.
+                     Maße: Knoten 14/14, Ziele auf x = 44, y = 40 / 64 / 88. -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:4px">
+                    <span class="t-label c-3" style="flex:1">DIESE WOCHE HINAUSGEGANGEN</span>
+                    <span class="t-label c-3 num">9</span>
+                  </div>
+  
+                  <div style="position:relative; height:96px">
+                    <svg class="thread thread--origin" viewBox="0 0 360 96" width="360" height="96" aria-hidden="true" focusable="false" style="position:absolute; left:0; top:0">
+                      <path d="M14 14 Q14 40 44 40"></path>
+                      <path d="M14 14 Q14 64 44 64"></path>
+                      <path d="M14 14 Q14 88 44 88"></path>
+                    </svg>
+  
+                    <div style="position:absolute; left:9.5px; top:4px; height:20px; display:flex; align-items:center; gap:9px">
+                      <span class="dot dot--node"></span>
+                      <span class="t-sub is-strong" style="white-space:nowrap">Eingang</span>
+                    </div>
+  
+                    <div style="position:absolute; left:41px; top:30px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                      <span class="dot dot--notes"></span>
+                      <span class="t-sub c-1" style="flex:1">Notiz</span>
+                      <span class="t-label c-3 num">4</span>
+                      </div>
+                    <div style="position:absolute; left:41px; top:54px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                      <span class="dot dot--tasks"></span>
+                      <span class="t-sub c-1" style="flex:1">Aufgabe</span>
+                      <span class="t-label c-3 num">3</span>
+                      </div>
+                    <div style="position:absolute; left:41px; top:78px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                      <span class="dot dot--notes"></span>
+                      <span class="ico c-3" data-ico="folder" style="width:14px;height:14px"></span>
+                      <span class="t-sub c-1" style="flex:1">Notizbuch</span>
+                      <span class="t-label c-3 num">2</span>
+                      </div>
+                  </div>
+  
+                  <div class="t-sub c-3">Neun Schnipsel haben diese Woche einen Faden bekommen. Gelöscht wurde keiner.</div>
+                </section>
+  
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+  </div>
+  <div class="pv-screen" data-pv-screen="canvas" data-pv-geraet="ipad" data-pv-datei="index.html" data-pv-name="Canvas" hidden>
+  <div class="screen screen--ipad pv-canvas">
+    <iframe class="pv-canvas__flaeche" data-pv-canvas="../../index.html"
+            title="Canvas — das eigenständige Mockup, lauffähig im Rahmen"></iframe>
+    <button type="button" class="pv-canvas__zurueck" data-pv-canvas-zurueck>
+      <span class="pv-canvas__pfeil" aria-hidden="true"></span>Zurück zu Velum
+    </button>
+  </div>
   </div>
   <div class="pv-screen" data-pv-screen="notizen" data-pv-geraet="ipad" data-pv-datei="notes-list.html" data-pv-name="Notizen-Liste" hidden>
   <div class="screen screen--ipad" id="nl-ipad">
@@ -4592,6 +4902,286 @@ Was keinen Weg hat, hat auch keinen Klickfinger (siehe prototyp.js §4).
         </div>
       </div>
   </div>
+  <div class="pv-screen" data-pv-screen="semester" data-pv-geraet="ipad" data-pv-datei="semester.html" data-pv-name="Semester-Ordner" hidden>
+  <div class="screen screen--ipad" id="se-ipad">
+        <div class="statusbar">
+          <span class="num">9:41</span>
+          <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+        </div>
+  
+        <div class="body">
+          <!-- Sidebar — auf allen Schirmen gleich, hier ist „Biologie" aktiv -->
+          <aside class="sidebar">
+            <div class="sidebar__head">
+              <span class="t-section">Emil</span>
+              <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+            </div>
+  
+            <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+            <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+            <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+  
+            <div class="sidebar__group">
+              <div class="sidebar__grouptitle t-label">Module</div>
+              <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+              <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+              <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+              <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+              <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+            </div>
+  
+            <div class="sidebar__group">
+              <div class="sidebar__grouptitle t-label">Semester</div>
+              <button class="navitem is-active"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+              <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+              <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+            </div>
+  
+            <div style="margin-top:auto; padding-top:12px">
+              <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+            </div>
+          </aside>
+  
+          <!-- Inhalt -->
+          <main class="content">
+            <div class="navbar" style="padding-top:6px; padding-bottom:6px">
+              <div style="flex:none">
+                <div class="serif--screen-title">Biologie</div>
+                <div class="t-sub c-3" style="white-space:nowrap">Wintersemester · Woche 8 von 14</div>
+              </div>
+  
+              <!-- Die Ansichtszeile. Drei fertige Achsen statt einer Baukasten-
+                   galerie — „Zeit" ist voreingestellt, weil ein Semester genau
+                   diese Achse wirklich hat. „Fäden" ist derselbe Schalter wie auf
+                   notes-list und tasks: er zeigt die echten Kanten zwischen dem,
+                   was gerade sichtbar ist. Er trägt ein WORT und kein Fadenbild —
+                   ein Faden als Piktogramm auf einem Knopf verbände nichts. -->
+              <div class="segmented" style="margin-left:16px">
+                <button class="is-on" style="padding:0 12px">Zeit</button>
+                <button style="padding:0 12px">Modul</button>
+                <button style="padding:0 12px">Herkunft</button>
+              </div>
+              <button class="chip chip--solid" style="height:32px; margin-left:8px">Fäden</button>
+  
+              <div class="navbar__spacer"></div>
+              <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+              <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
+              <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neu</button>
+            </div>
+  
+            <div class="scroll" style="padding-top:10px; display:flex; flex-direction:column; gap:10px">
+  
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) 244px; gap:16px; align-items:start">
+  
+                <!-- ── Die Semesterspur ── -->
+                <section class="card" style="padding:6px 6px 8px">
+                  <div class="sem">
+  
+                    <!-- ══ WOCHE 5 ══ -->
+                    <div class="sem__rinne"></div>
+                    <div class="sem__woche"><span class="t-label c-3">WOCHE 5</span><span class="t-label c-3" style="font-weight:400">20.–26. Oktober</span></div>
+  
+                    <!-- Quelle einer kurzen Klammer: der Journaleintrag hat am
+                         nächsten Tag eine Aufgabe erzeugt. Ein abgehender Faden,
+                         also gefüllter Modulpunkt und kein Knoten (N7). -->
+                    <div class="sem__rinne">
+                      <svg class="thread thread--v thread--origin sem__zug sem__zug--ab"></svg>
+                      <span class="dot dot--journal sem__marke"></span>
+                    </div>
+                    <button class="row sem__zeile" id="se-w5-journal">
+                      <div class="row__main">
+                        <span class="t-body row__title">Erste Woche im Labor</span>
+                        <span class="t-label c-3" style="font-weight:400">Journaleintrag · 24. Okt · daraus: 1 Aufgabe</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </button>
+  
+                    <div class="sem__rinne">
+                      <svg class="thread thread--v thread--origin sem__zug sem__zug--an"></svg>
+                      <span class="dot dot--tasks sem__marke"></span>
+                    </div>
+                    <button class="row sem__zeile" id="se-w5-aufgabe">
+                      <div class="row__main">
+                        <span class="t-body row__title">Schutzbrille und Kittel besorgen</span>
+                        <span class="t-label c-3" style="font-weight:400">Aufgabe · 25. Okt · erledigt</span>
+                      </div>
+                      <div class="row__meta"><span class="check is-done"></span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </button>
+  
+                    <!-- ══ WOCHE 6 ══ -->
+                    <div class="sem__rinne"></div>
+                    <div class="sem__woche"><span class="t-label c-3">WOCHE 6</span><span class="t-label c-3" style="font-weight:400">27. Oktober – 2. November</span></div>
+  
+                    <div class="sem__rinne"><span class="dot dot--canvas sem__marke"></span></div>
+                    <button class="row sem__zeile" id="se-w6-canvas">
+                      <div class="row__main">
+                        <span class="t-body row__title">Zellkultur-Skizze</span>
+                        <span class="t-label c-3" style="font-weight:400">Canvas-Blatt · 28. Okt · 1 Beschriftung gefunden</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </button>
+  
+                    <div class="sem__rinne"><span class="dot dot--notes sem__marke"></span></div>
+                    <button class="row sem__zeile" id="se-w6-notiz">
+                      <div class="row__main">
+                        <span class="t-body row__title">Vorlesung 3 — Diffusion</span>
+                        <span class="t-label c-3" style="font-weight:400">Notiz · 30. Okt · 11 Absätze · nichts daraus entstanden</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </button>
+  
+                    <!-- ══ WOCHE 7 ══ -->
+                    <div class="sem__rinne"></div>
+                    <div class="sem__woche"><span class="t-label c-3">WOCHE 7</span><span class="t-label c-3" style="font-weight:400">3.–9. November</span></div>
+  
+                    <!-- ══ DIE QUELLE DER LANGEN KLAMMER ══
+                         Von hier läuft der 2,5-pt-Faden über die Wochengrenze
+                         hinweg bis zu den drei Objekten in Woche 8. Er ist lang,
+                         und die Länge ist die Aussage: eine Woche zwischen
+                         Schreiben und Verarbeiten. -->
+                    <div class="sem__rinne">
+                      <svg class="thread thread--v thread--origin sem__zug sem__zug--ab"></svg>
+                      <span class="dot dot--notes sem__marke"></span>
+                    </div>
+                    <button class="row sem__zeile is-selected" id="se-w7-quelle">
+                      <div class="row__main">
+                        <span class="t-body row__title">Zellbiologie — Vorlesung 6. November</span>
+                        <span class="t-label c-2" style="font-weight:400">Notiz · 14 Absätze · daraus: 12 Karten, 1 Aufgabe, 1 Notiz</span>
+                      </div>
+                      <div class="row__meta"><span class="chip"><span class="ico" data-ico="mic" style="width:13px;height:13px"></span>72 Min.</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </button>
+  
+                    <!-- Der Faden läuft hier nur durch: der Journaleintrag gehört
+                         nicht zu dieser Klammer und trägt deshalb keinen Punkt
+                         AUF dem Faden, sondern seinen eigenen daneben. -->
+                    <div class="sem__rinne">
+                      <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                      <span class="dot dot--journal sem__marke" style="left:calc(50% + 11px)"></span>
+                    </div>
+                    <button class="row sem__zeile" id="se-w7-journal" style="padding-left:20px">
+                      <div class="row__main">
+                        <span class="t-body row__title">Nach dem Praktikum</span>
+                        <span class="t-label c-3" style="font-weight:400">Journaleintrag · 7. Nov · Stimmung 4</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </button>
+  
+                    <!-- ══ WOCHE 8 — diese Woche ══
+                         Die Wochenmarke liegt in Spalte 2 und lässt die Rinne
+                         frei. Der Faden überquert die Grenze sichtbar. -->
+                    <div class="sem__rinne">
+                      <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                    </div>
+                    <div class="sem__woche sem__woche--jetzt"><span class="t-label">WOCHE 8</span><span class="t-label" style="font-weight:400">10.–13. November · diese Woche</span></div>
+  
+                    <div class="sem__rinne">
+                      <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                      <span class="dot dot--cards sem__marke"></span>
+                    </div>
+                    <button class="row sem__zeile" id="se-w8-deck">
+                      <div class="row__main">
+                        <span class="t-body row__title">Deck „Zellbiologie"</span>
+                        <span class="t-label c-3" style="font-weight:400">12 Lernkarten · 11. Nov · 8 heute fällig</span>
+                      </div>
+                      <div class="row__meta"><span class="chip"><span class="dot dot--cards"></span>8 fällig</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </button>
+  
+                    <div class="sem__rinne">
+                      <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                      <span class="dot dot--tasks sem__marke"></span>
+                    </div>
+                    <button class="row sem__zeile" id="se-w8-aufgabe">
+                      <div class="row__main">
+                        <span class="t-body row__title">Laborprotokoll Zellkultur schreiben</span>
+                        <span class="t-label c-3" style="font-weight:400">Aufgabe · 12. Nov · heute geplant 14:00</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </button>
+  
+                    <div class="sem__rinne">
+                      <svg class="thread thread--v thread--origin sem__zug sem__zug--an"></svg>
+                      <span class="dot dot--notes sem__marke"></span>
+                    </div>
+                    <button class="row sem__zeile" id="se-w8-osmose">
+                      <div class="row__main">
+                        <span class="t-body row__title">Osmose</span>
+                        <span class="t-label c-3" style="font-weight:400">Notiz · 12. Nov · aus dem Wiki-Link · 3 Absätze</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </button>
+  
+                    <!-- Geplant, noch nicht da: hohler Punkt, kein Faden. -->
+                    <div class="sem__rinne"><span class="dot dot--hollow sem__marke"></span></div>
+                    <div class="row sem__zeile">
+                      <div class="row__main">
+                        <span class="t-body row__title c-2">Vorlesung 7 — Membranpotenzial</span>
+                        <span class="t-label c-3" style="font-weight:400">Notiz · heute 16:20 · noch nichts geschrieben</span>
+                      </div>
+                      <div class="row__meta"><span class="t-label c-3">geplant</span></div>
+                    </div>
+                  </div>
+  
+                  <p class="t-sub c-2" style="margin:8px 12px 0">Aus Woche 7 sind zwölf Karten, eine Aufgabe und eine Notiz geworden — alle in Woche 8. Aus Woche 6 bisher nichts.</p>
+                </section>
+  
+                <!-- ── Kontextspalte ── -->
+                <div style="display:flex; flex-direction:column; gap:12px">
+  
+                  <!-- Fünf Werkzeuge, ein Datenmodell — als Zahlen ausgeschrieben -->
+                  <section class="card" style="padding:11px 14px">
+                    <div class="card__head" style="margin-bottom:8px">
+                      <span class="t-label c-3" style="flex:1">DAS FACH ENTHÄLT</span>
+                      <span class="t-label c-3 num">118</span>
+                    </div>
+                    <button class="row" style="min-height:44px; padding:0; width:100%">
+                      <span class="dot dot--notes"></span><span class="t-sub" style="flex:1; text-align:left">Notizen</span><span class="t-label c-3 num">14</span>
+                    </button>
+                    <button class="row" style="min-height:44px; padding:0; width:100%">
+                      <span class="dot dot--canvas"></span><span class="t-sub" style="flex:1; text-align:left">Canvas-Blätter</span><span class="t-label c-3 num">6</span>
+                    </button>
+                    <button class="row" style="min-height:44px; padding:0; width:100%">
+                      <span class="dot dot--journal"></span><span class="t-sub" style="flex:1; text-align:left">Journaleinträge</span><span class="t-label c-3 num">5</span>
+                    </button>
+                    <button class="row" style="min-height:44px; padding:0; width:100%">
+                      <span class="dot dot--tasks"></span><span class="t-sub" style="flex:1; text-align:left">Aufgaben</span><span class="t-label c-3 num">9</span>
+                    </button>
+                    <button class="row" style="min-height:44px; padding:0; width:100%">
+                      <span class="dot dot--cards"></span><span class="t-sub" style="flex:1; text-align:left">Lernkarten</span><span class="t-label c-3 num">84</span>
+                    </button>
+                    <p class="t-label c-3" style="margin:8px 0 0">In drei Notizbüchern: Zellbiologie · Laborjournal · Genetik.</p>
+                  </section>
+  
+                  <!-- Der Satz, den kein Konkurrent schreiben kann -->
+                  <section class="card" style="padding:11px 14px">
+                    <div class="card__head" style="margin-bottom:8px">
+                      <span class="dot dot--hollow"></span>
+                      <span class="t-label c-3" style="flex:1">WOCHE 6 HAT NICHTS ERZEUGT</span>
+                    </div>
+                    <p class="t-sub c-2" style="margin:0 0 10px">Elf Absätze geschrieben, keine Karte, keine Aufgabe. Aus Woche 7 wurden vierzehn Objekte.</p>
+                    <button class="btn btn--sm" style="width:100%">Woche 6 nacharbeiten<span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></button>
+                  </section>
+  
+                  <!-- Der Knopf, der die Zukunft ändert, nennt die Änderung —
+                       dieselbe app-weite Regel wie „Gut — in 5 Tagen" auf
+                       review-session.html. -->
+                  <section class="card" style="padding:11px 14px">
+                    <div class="card__head" style="margin-bottom:8px">
+                      <span class="ico" data-ico="flag" style="width:16px;height:16px; color:var(--ink-3)"></span>
+                      <span class="t-label c-3" style="flex:1">KLAUSUR</span>
+                      <span class="t-label c-3">4. Februar</span>
+                    </div>
+                    <div class="count" style="margin-bottom:8px"><span class="count__n num">83</span><span class="count__w t-sub">Tage · 84 Karten im Fach</span></div>
+                    <p class="t-label c-3" style="margin:0 0 10px; font-weight:400">Bei zwölf Karten am Tag bist du am 2. Februar durch.</p>
+                    <button class="btn btn--primary btn--sm" style="width:100%"><span class="ico" data-ico="calendar" style="width:16px;height:16px"></span>Lernplan · 12/Tag</button>
+                  </section>
+  
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+  </div>
   <div class="pv-screen" data-pv-screen="graph" data-pv-geraet="ipad" data-pv-datei="graph.html" data-pv-name="Graph" hidden>
   <div class="screen screen--ipad">
         <div class="statusbar">
@@ -4787,6 +5377,298 @@ Was keinen Weg hat, hat auch keinen Klickfinger (siehe prototyp.js §4).
                   <span class="t-label c-3 num">1 pt</span>
                 </div>
               </aside>
+            </div>
+          </main>
+        </div>
+      </div>
+  </div>
+  <div class="pv-screen" data-pv-screen="suche" data-pv-geraet="ipad" data-pv-datei="suche.html" data-pv-name="Suche" hidden>
+  <div class="screen screen--ipad" id="su-ipad">
+        <div class="statusbar">
+          <span class="num">9:41</span>
+          <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+        </div>
+  
+        <div class="body">
+          <!-- Sidebar — auf allen Schirmen gleich; hier ist die Lupe aktiv -->
+          <aside class="sidebar">
+            <div class="sidebar__head">
+              <span class="t-section">Emil</span>
+              <span class="iconbtn is-active"><span class="ico" data-ico="search"></span></span>
+            </div>
+  
+            <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+            <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+            <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+  
+            <div class="sidebar__group">
+              <div class="sidebar__grouptitle t-label">Module</div>
+              <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+              <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+              <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+              <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+              <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+            </div>
+  
+            <div class="sidebar__group">
+              <div class="sidebar__grouptitle t-label">Semester</div>
+              <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+              <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+              <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+            </div>
+  
+            <div style="margin-top:auto; padding-top:12px">
+              <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+            </div>
+          </aside>
+  
+          <!-- Inhalt -->
+          <main class="content">
+            <div class="navbar" style="gap:10px">
+              <div class="field" style="flex:1 1 auto; height:40px">
+                <span class="ico" data-ico="search"></span>
+                <span class="t-body">Osmose</span>
+                <span style="display:inline-block; width:2px; height:20px; background:var(--accent); margin-left:2px"></span>
+                <span style="flex:1"></span>
+                <button class="iconbtn" style="width:28px;height:28px" aria-label="Eingabe löschen"><span class="ico" data-ico="close" style="width:16px;height:16px"></span></button>
+              </div>
+              <button class="btn btn--sm btn--quiet" id="su-abbrechen">Abbrechen</button>
+            </div>
+  
+            <!-- Filter nach Modul als Punkt-Reihe. Steht in beiden Zuständen,
+                 vor und nach der Eingabe — es ist Suchoberfläche, kein Ergebnis. -->
+            <div style="flex:none; display:flex; align-items:center; gap:8px; padding:8px var(--pad-ipad) 6px">
+              <button class="chip chip--solid">Alle <span class="num">12</span></button>
+              <button class="chip"><span class="dot dot--notes"></span>Notizen</button>
+              <button class="chip"><span class="dot dot--canvas"></span>Canvas</button>
+              <button class="chip"><span class="dot dot--journal"></span>Journal</button>
+              <button class="chip"><span class="dot dot--cards"></span>Lernkarten</button>
+              <button class="chip chip--ghost is-off"><span class="dot dot--tasks"></span>Aufgaben <span class="num c-3">0</span></button>
+              <span style="flex:1"></span>
+              <button class="btn btn--sm" style="padding:0 10px; gap:6px; white-space:nowrap"><span class="ico" data-ico="sort" style="width:16px;height:16px"></span>Zuletzt geändert<span class="ico" data-ico="chevD" style="width:15px;height:15px;margin-left:-3px"></span></button>
+            </div>
+  
+            <div class="scroll" style="padding-top:6px; display:flex; flex-direction:column; gap:8px">
+  
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) 244px; gap:16px; align-items:start">
+  
+                <!-- ── Die Treffer ── -->
+                <div style="display:flex; flex-direction:column; gap:8px">
+  
+                  <p class="t-sub c-3" style="margin:0"><span class="num">12</span> Fundstellen in vier Schichten. <span class="c-2">Drei davon haben etwas erzeugt.</span></p>
+  
+                  <!-- ══ TREFFER 1 — Tinte, mit Klammer ══
+                       Die Fundstelle liegt im Strich, nicht im Textlauf: Absatz 9
+                       der Vorlesungsnotiz ist handschriftlich. Aus ihr sind zwei
+                       Objekte entstanden — die Kante steht im Datenmodell und ist
+                       dieselbe, die today.html als Kette und graph.html als
+                       Herkunfts-Faden zeichnet. -->
+                  <section class="card" style="padding:8px">
+                    <div class="klammer">
+  
+                      <div class="klammer__rinne">
+                        <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab" style="top:17px; height:calc(100% - 17px)"></svg>
+                        <span class="dot dot--node klammer__marke" style="top:17px; transform:translate(-50%,-50%)"></span>
+                      </div>
+                      <button id="su-tinte" style="display:flex; align-items:flex-start; gap:8px; width:100%; min-height:44px; padding:6px 10px 6px 0; text-align:left; border-radius:9px">
+                        <svg class="thread thread--h thread--origin klammer__stummel" style="margin-top:6px"></svg>
+                        <span class="dot dot--notes" style="margin-top:8px"></span>
+                        <span style="flex:1; min-width:0">
+                          <span style="display:flex; align-items:center; gap:8px">
+                            <span class="t-sub is-strong" style="white-space:nowrap">Zellbiologie</span>
+                            <span class="t-label c-3" style="white-space:nowrap">Notiz · Absatz 9 · 6. Nov, 16:42</span>
+                            <span style="flex:1"></span>
+                            <span class="chip su-schicht"><span class="ico" data-ico="edit" style="width:13px;height:13px"></span>Tinte</span>
+                          </span>
+                          <!-- Echte Striche, kein Bild: die Fundstelle wird IM
+                               Strich markiert. Grundlinie y = 30, Höhe 48. -->
+                          <svg class="su-ink" viewBox="0 0 330 48" width="296" height="43" style="margin-top:3px" role="img"
+                               aria-label="Handschriftliche Zeile aus der Notiz; das Wort Osmose ist als Fundstelle markiert">
+                            <rect class="tref" x="54" y="4" width="120" height="38" rx="6"></rect>
+                            <path d="M10 30c5-11 9 7 14-3 5-10 9 8 14-2" stroke-width="2"></path>
+                            <path d="M78 14C77 7 66 5 60 12 53 20 54 33 62 36c9 3 17-5 17-14" stroke-width="2.2"></path>
+                            <path d="M90 18c-4-3-9-1-8 3 1 4 9 5 9 9 0 4-6 6-9 3" stroke-width="2.2"></path>
+                            <path d="M97 36 100 20c1-3 5-3 5 2v12c0-7 2-15 6-15s4 8 4 15" stroke-width="2.2"></path>
+                            <path d="M124 22c-4-6 4-9 7-4 3 6-3 16-8 13-3-2-3-6 1-9" stroke-width="2.2"></path>
+                            <path d="M143 18c-4-3-9-1-8 3 1 4 9 5 9 9 0 4-6 6-9 3" stroke-width="2.2"></path>
+                            <path d="M150 27c6-1 12-3 12-7 0-4-7-5-10 0-3 5-1 14 5 15 4 0 7-2 9-5" stroke-width="2.2"></path>
+                            <path d="M186 30c5-11 9 7 14-3 5-10 9 8 14-2 5-10 9 8 14-2" stroke-width="2"></path>
+                            <path d="M236 30c5-11 9 7 14-3 5-10 9 8 14-2" stroke-width="2"></path>
+                            <path d="M284 30c4-9 8 6 12-2 4-8 8 6 12-2" stroke-width="2"></path>
+                          </svg>
+                        </span>
+                        <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px; margin-top:8px"></span>
+                      </button>
+  
+                      <div class="klammer__rinne">
+                        <svg class="thread thread--v thread--origin klammer__zug klammer__zug--durch"></svg>
+                        <span class="dot dot--cards klammer__marke"></span>
+                      </div>
+                      <div class="row" id="su-tinte-karte">
+                        <div class="row__main">
+                          <span class="t-body row__title">Was beschreibt <span class="su-tref">Osmose</span>?</span>
+                          <span class="t-sub c-3">Lernkarte · Deck „Zellbiologie" · heute fällig</span>
+                        </div>
+                        <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                      </div>
+  
+                      <div class="klammer__rinne">
+                        <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                        <span class="dot dot--notes klammer__marke"></span>
+                      </div>
+                      <div class="row" id="su-tinte-notiz">
+                        <div class="row__main">
+                          <span class="t-body row__title"><span class="su-tref">Osmose</span></span>
+                          <span class="t-sub c-3">Notiz · aus dem Wiki-Link entstanden · 3 Absätze</span>
+                        </div>
+                        <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                      </div>
+                    </div>
+                  </section>
+  
+                  <!-- ══ TREFFER 2 — gesprochen, ohne Klammer ══
+                       Aus der Aufnahme ist (noch) nichts entstanden, also steht
+                       hier kein Faden. Der Knopf spielt die Sekunde, in der das
+                       Wort fiel — ohne den Schirm zu verlassen. -->
+                  <section class="card" style="padding:8px">
+                    <div class="row" style="align-items:flex-start">
+                      <span class="dot dot--notes" style="margin-top:9px"></span>
+                      <div class="row__main">
+                        <span style="display:flex; align-items:center; gap:8px; min-width:0">
+                          <span class="t-sub is-strong" style="white-space:nowrap">Vorlesung 6. Nov</span>
+                          <span class="t-label c-3" style="white-space:nowrap">Aufnahme</span>
+                        </span>
+                        <span class="t-body" style="margin-top:2px">„… die <span class="su-tref">Osmose</span> ist der Sonderfall der Diffusion …"</span>
+                      </div>
+                      <div class="row__meta">
+                        <span class="chip su-schicht"><span class="ico" data-ico="mic" style="width:13px;height:13px"></span>gesprochen</span>
+                        <button class="btn btn--sm" id="su-play" style="gap:6px"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>16:42</button>
+                      </div>
+                    </div>
+                  </section>
+  
+                  <!-- ══ TREFFER 3 — Bild, mit Klammer ══ -->
+                  <section class="card" style="padding:8px">
+                    <div class="klammer">
+                      <div class="klammer__rinne">
+                        <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab"></svg>
+                        <span class="dot dot--node klammer__marke"></span>
+                      </div>
+                      <button id="su-bild" style="display:flex; align-items:center; gap:8px; width:100%; min-height:44px; padding:6px 10px 6px 0; text-align:left; border-radius:9px">
+                        <svg class="thread thread--h thread--origin klammer__stummel"></svg>
+                        <span class="dot dot--canvas"></span>
+                        <span style="flex:1; min-width:0">
+                          <span class="t-body row__title" style="display:block">Beschriftung „<span class="su-tref">Osmose</span>" in der Zellkultur-Skizze</span>
+                          <span class="t-sub c-3">Canvas-Blatt · Biologie · 28. Oktober</span>
+                        </span>
+                        <span class="chip su-schicht"><span class="ico" data-ico="photo" style="width:13px;height:13px"></span>Bild</span>
+                        <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                      </button>
+  
+                      <div class="klammer__rinne">
+                        <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                        <span class="dot dot--tasks klammer__marke"></span>
+                      </div>
+                      <div class="row" id="su-bild-aufgabe">
+                        <div class="row__main">
+                          <span class="t-body row__title"><span class="su-tref">Osmose</span>-Versuch mit der zweiten Probe wiederholen</span>
+                          <span class="t-sub c-3">Aufgabe · Biologie · Freitag</span>
+                        </div>
+                        <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                      </div>
+                    </div>
+                  </section>
+  
+                  <!-- ══ TREFFER 4 — Text, ohne Klammer ══ -->
+                  <section class="card" style="padding:8px">
+                    <div class="row" style="align-items:flex-start">
+                      <span class="dot dot--journal" style="margin-top:9px"></span>
+                      <div class="row__main">
+                        <span style="display:flex; align-items:center; gap:8px">
+                          <span class="t-sub is-strong" style="white-space:nowrap">Nach dem Praktikum</span>
+                          <span class="t-label c-3" style="white-space:nowrap">Journaleintrag · 7. November</span>
+                          <span style="flex:1"></span>
+                          <span class="chip su-schicht"><span class="ico" data-ico="doc" style="width:13px;height:13px"></span>Text</span>
+                        </span>
+                        <span class="t-body" style="margin-top:2px">„… die <span class="su-tref">Osmose</span>-Versuche liefen anders als erwartet, Wendt war trotzdem zufrieden …"</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </div>
+                  </section>
+  
+                  <!-- Text, ohne Klammer: aus dieser Notiz ist nichts entstanden.
+                       Genau derselbe Befund, den semester.html für Woche 6
+                       ausspricht — hier begegnet er einem beim Suchen. -->
+                  <section class="card" style="padding:8px">
+                    <div class="row" style="align-items:flex-start">
+                      <span class="dot dot--notes" style="margin-top:9px"></span>
+                      <div class="row__main">
+                        <span style="display:flex; align-items:center; gap:8px">
+                          <span class="t-sub is-strong" style="white-space:nowrap">Vorlesung 3 — Diffusion</span>
+                          <span class="t-label c-3" style="white-space:nowrap">Notiz · 30. Oktober</span>
+                          <span style="flex:1"></span>
+                          <span class="chip su-schicht"><span class="ico" data-ico="doc" style="width:13px;height:13px"></span>Text</span>
+                        </span>
+                        <span class="t-body" style="margin-top:2px">„… Diffusion und <span class="su-tref">Osmose</span> gehören zusammen, nur die Membran unterscheidet sie …"</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </div>
+                  </section>
+  
+                </div>
+  
+                <!-- ── Kontextspalte ── -->
+                <div style="display:flex; flex-direction:column; gap:12px">
+  
+                  <!-- Die vier Schichten. Symbol + Wort + Zahl — keine Farbe,
+                       weil eine Schicht kein Modul ist. -->
+                  <section class="card" style="padding:12px 14px">
+                    <div class="card__head" style="margin-bottom:8px">
+                      <span class="t-label c-3" style="flex:1">GEFUNDEN IN</span>
+                      <span class="t-label c-3 num">12</span>
+                    </div>
+                    <button class="row" style="width:100%; min-height:44px; padding:0">
+                      <span class="ico c-2" data-ico="edit" style="width:16px;height:16px"></span>
+                      <span class="t-sub" style="flex:1; text-align:left">Tinte</span>
+                      <span class="t-label c-3 num">3</span>
+                    </button>
+                    <button class="row" style="width:100%; min-height:44px; padding:0">
+                      <span class="ico c-2" data-ico="doc" style="width:16px;height:16px"></span>
+                      <span class="t-sub" style="flex:1; text-align:left">Text</span>
+                      <span class="t-label c-3 num">6</span>
+                    </button>
+                    <button class="row" style="width:100%; min-height:44px; padding:0">
+                      <span class="ico c-2" data-ico="photo" style="width:16px;height:16px"></span>
+                      <span class="t-sub" style="flex:1; text-align:left">Bild</span>
+                      <span class="t-label c-3 num">1</span>
+                    </button>
+                    <button class="row" style="width:100%; min-height:44px; padding:0">
+                      <span class="ico c-2" data-ico="mic" style="width:16px;height:16px"></span>
+                      <span class="t-sub" style="flex:1; text-align:left">gesprochen</span>
+                      <span class="t-label c-3 num">2</span>
+                    </button>
+                    <p class="t-label c-3" style="margin:8px 0 0">Vier Schichten, ein Index. Handschrift wird gesucht wie getippter Text.</p>
+                  </section>
+  
+                  <!-- Der Zustand vor der Eingabe steht als Karte auch neben den
+                       Treffern: zuletzt Gesuchtes verschwindet nicht, sobald man
+                       tippt — man springt oft zwischen zwei Begriffen hin und her. -->
+                  <section class="card" style="padding:12px 14px">
+                    <div class="card__head" style="margin-bottom:6px">
+                      <span class="ico" data-ico="clock" style="width:16px;height:16px; color:var(--ink-3)"></span>
+                      <span class="t-label c-3" style="flex:1">ZULETZT GESUCHT</span>
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px">
+                      <button class="chip chip--solid">Osmose</button>
+                      <button class="chip">Mitose</button>
+                      <button class="chip">Prof. Wendt</button>
+                      <button class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>labor</button>
+                      <button class="chip">Gradient</button>
+                    </div>
+                  </section>
+  
+                </div>
+              </div>
             </div>
           </main>
         </div>
@@ -5897,6 +6779,146 @@ Was keinen Weg hat, hat auch keinen Klickfinger (siehe prototyp.js §4).
           <span class="ico" data-ico="plus" style="width:26px;height:26px"></span>
         </button>
       </div>
+  </div>
+  <div class="pv-screen" data-pv-screen="eingang" data-pv-geraet="iphone" data-pv-datei="eingang.html" data-pv-name="Eingang" hidden>
+  <div class="screen screen--iphone" id="ei-iphone">
+        <div class="statusbar">
+          <span class="num">9:41</span>
+          <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+        </div>
+  
+        <div class="content">
+          <div class="navbar" style="border:0; padding-bottom:2px">
+            <button class="iconbtn" aria-label="Zurück zu Mehr"><span class="ico" data-ico="chevL"></span></button>
+            <div class="serif--screen-title">Eingang</div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+          </div>
+  
+          <div class="scroll" style="display:flex; flex-direction:column; gap:12px">
+  
+            <p class="t-sub c-2" style="margin:0">
+              Drei Sachen. Keine hat einen Faden.
+            </p>
+  
+            <!-- Dieselbe Fläche, dieselbe Grammatik: Rinne links, hohler Punkt,
+                 Faden nur dort, wo gerade eine Beziehung entsteht. -->
+            <section class="card" style="padding:0; overflow:hidden; flex:none">
+              <div style="display:flex; align-items:center; gap:8px; padding:9px 12px 7px">
+                <span class="t-label c-3" style="flex:1">FREIE POSITION</span>
+                <span class="t-label c-3 num">3</span>
+              </div>
+  
+              <div class="ei-flaeche" style="height:418px">
+  
+                <div class="ei-schnipsel" id="ei-s1-p" style="left:4px; top:6px; width:236px">
+                  <span class="dot dot--hollow ei-punkt" title="ohne Faden"></span>
+                  <div class="ei-schnipsel__k" style="padding:8px">
+                    <div class="t-label c-3" style="display:flex; align-items:center; gap:5px">
+                      <span class="ico" data-ico="share" style="width:12px;height:12px"></span>Safari · vor 2 Std.
+                    </div>
+                    <div class="t-sub is-strong clamp-1" style="margin-top:2px">Osmose – Wikipedia</div>
+                    <div class="ei-wohin" style="margin-top:8px">
+                      <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--notes"></span>Notiz</button>
+                      <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--tasks"></span>Aufgabe</button>
+                    </div>
+                  </div>
+                </div>
+  
+                <div class="ei-schnipsel" id="ei-s2-p" style="left:128px; top:88px; width:216px">
+                  <span class="dot dot--hollow ei-punkt" title="ohne Faden"></span>
+                  <div class="ei-schnipsel__k" style="padding:8px">
+                    <img class="ei-foto" src="../assets/bilder/medien/notizseite-600.jpg"
+                         alt="Abfotografierte Seite aus dem Vorlesungsskript mit handschriftlichen Randnotizen"
+                         style="height:48px">
+                    <div class="t-label c-3" style="display:flex; align-items:center; gap:5px; margin-top:7px">
+                      <span class="ico" data-ico="photo" style="width:12px;height:12px"></span>Foto · 3 Tage
+                    </div>
+                    <div class="t-sub is-strong clamp-1" style="margin-top:2px">Skript Wendt, S. 214</div>
+                    <div class="ei-wohin" style="margin-top:8px">
+                      <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--notes"></span>Notiz</button>
+                      <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--tasks"></span>Aufgabe</button>
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Punktmitte: 6 + 9 = 15 waagerecht, 220 + 20 = 240 senkrecht -->
+                <div class="ei-schnipsel ei-schnipsel--gewaehlt" id="ei-s3-p" style="left:6px; top:220px; width:284px">
+                  <span class="dot dot--notes ei-punkt" title="bekommt gerade einen Faden"></span>
+                  <div class="ei-schnipsel__k" style="padding:8px">
+                    <div style="display:flex; align-items:center; gap:6px">
+                      <span class="t-label c-3" style="flex:1; white-space:nowrap">Teilen-Blatt · 11 Tage</span>
+                      <span class="chip chip--danger" style="height:20px; padding:0 7px"><span class="ico" data-ico="flag" style="width:11px;height:11px"></span>noch 3</span>
+                    </div>
+                    <p class="serif--quote clamp-2" style="margin:4px 0 0">„Der Konzentrationsgradient bestimmt die Richtung."</p>
+                    <div class="ei-wohin" style="margin-top:8px">
+                      <button class="chip chip--solid" style="height:22px; padding:0 8px"><span class="dot dot--notes" style="box-shadow:0 0 0 1px rgba(255,255,255,.5)"></span>Notiz</button>
+                      <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--tasks"></span>Aufgabe</button>
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Von der Punktmitte (15 / 240) auf die Punktmitte (15 / 390) -->
+                <svg class="thread thread--v thread--origin ei-zug" style="left:10px; top:240px; height:150px" aria-hidden="true"></svg>
+                <span class="ei-amfaden t-label c-2" style="left:24px; top:353px">wird zu</span>
+  
+                <div class="ei-schnipsel" style="left:6px; top:370px; width:300px">
+                  <span class="dot dot--notes ei-punkt" title="Zielobjekt"></span>
+                  <button class="ei-schnipsel__k" id="ei-ziel-p" style="display:flex; align-items:center; gap:8px; padding:4px 10px; min-height:44px">
+                    <span class="t-sub is-strong" style="flex:1; text-align:left">Zellbiologie</span>
+                    <span class="t-label c-3" style="white-space:nowrap">wird Absatz 15</span>
+                    <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                  </button>
+                </div>
+  
+              </div>
+            </section>
+  
+            <!-- Der Fächer, auch auf dem iPhone: dieselbe Zeichnung, engeres Maß -->
+            <section class="card" style="padding:10px 12px; flex:none">
+              <div class="card__head" style="margin-bottom:2px">
+                <span class="t-label c-3" style="flex:1">DIESE WOCHE HINAUSGEGANGEN</span>
+                <span class="t-label c-3 num">9</span>
+              </div>
+              <div style="position:relative; height:96px">
+                <svg class="thread thread--origin" viewBox="0 0 329 96" width="329" height="96" aria-hidden="true" focusable="false" style="position:absolute; left:0; top:0">
+                  <path d="M14 14 Q14 40 44 40"></path>
+                  <path d="M14 14 Q14 64 44 64"></path>
+                  <path d="M14 14 Q14 88 44 88"></path>
+                </svg>
+                <div style="position:absolute; left:9.5px; top:4px; height:20px; display:flex; align-items:center; gap:9px">
+                  <span class="dot dot--node"></span>
+                  <span class="t-sub is-strong">Eingang</span>
+                </div>
+                <div style="position:absolute; left:41px; top:30px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                  <span class="dot dot--notes"></span><span class="t-sub c-1" style="flex:1">Notiz</span><span class="t-label c-3 num">4</span></div>
+                <div style="position:absolute; left:41px; top:54px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                  <span class="dot dot--tasks"></span><span class="t-sub c-1" style="flex:1">Aufgabe</span><span class="t-label c-3 num">3</span></div>
+                <div style="position:absolute; left:41px; top:78px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                  <span class="dot dot--notes"></span><span class="ico c-3" data-ico="folder" style="width:14px;height:14px"></span><span class="t-sub c-1" style="flex:1">Notizbuch</span><span class="t-label c-3 num">2</span></div>
+              </div>
+            </section>
+          </div>
+  
+          <nav class="tabbar">
+            <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+            <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+            <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+            <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+            <button class="tab is-active"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+          </nav>
+          <div class="home-indicator"></div>
+        </div>
+      </div>
+  </div>
+  <div class="pv-screen" data-pv-screen="canvas" data-pv-geraet="iphone" data-pv-datei="index.html" data-pv-name="Canvas" hidden>
+  <div class="screen screen--iphone pv-canvas">
+    <iframe class="pv-canvas__flaeche" data-pv-canvas="../../index.html"
+            title="Canvas — das eigenständige Mockup, lauffähig im Rahmen"></iframe>
+    <button type="button" class="pv-canvas__zurueck" data-pv-canvas-zurueck>
+      <span class="pv-canvas__pfeil" aria-hidden="true"></span>Zurück zu Velum
+    </button>
+  </div>
   </div>
   <div class="pv-screen" data-pv-screen="notizen" data-pv-geraet="iphone" data-pv-datei="notes-list.html" data-pv-name="Notizen-Liste" hidden>
   <div class="screen screen--iphone" id="nl-iphone">
@@ -7445,6 +8467,152 @@ Was keinen Weg hat, hat auch keinen Klickfinger (siehe prototyp.js §4).
         </div>
       </div>
   </div>
+  <div class="pv-screen" data-pv-screen="semester" data-pv-geraet="iphone" data-pv-datei="semester.html" data-pv-name="Semester-Ordner" hidden>
+  <div class="screen screen--iphone" id="se-iphone">
+        <div class="statusbar">
+          <span class="num">9:41</span>
+          <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+        </div>
+  
+        <div class="content">
+          <div class="navbar" style="border:0; padding-bottom:2px">
+            <button class="iconbtn" aria-label="Zurück zur Bibliothek"><span class="ico" data-ico="chevL"></span></button>
+            <div>
+              <div class="serif--screen-title">Biologie</div>
+            </div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
+          </div>
+  
+          <div style="flex:none; display:flex; align-items:center; gap:8px; padding:0 var(--pad-iphone) 6px">
+            <div class="segmented" style="flex:1">
+              <button class="is-on" style="flex:1">Zeit</button>
+              <button style="flex:1">Modul</button>
+              <button style="flex:1">Herkunft</button>
+            </div>
+            <button class="chip chip--solid" style="height:32px">Fäden</button>
+          </div>
+  
+          <div class="scroll" style="padding-top:4px; display:flex; flex-direction:column; gap:8px">
+  
+            <section class="card" style="padding:4px 4px 8px">
+              <div class="sem">
+  
+                <!-- Frühere Wochen eingeklappt: auf dem iPhone zählt, was jetzt
+                     gilt — die Wochen davor bleiben erreichbar, aber der Faden,
+                     der die Wochengrenze überquert, muss sichtbar sein. -->
+                <div class="sem__rinne"></div>
+                <button class="row sem__zeile" id="se-frueher-p" style="min-height:44px">
+                  <span class="ico c-3" data-ico="chevD" style="width:16px;height:16px"></span>
+                  <span class="row__main"><span class="t-sub c-2">Woche 1–6 · <span class="num">41</span> Objekte</span></span>
+                </button>
+  
+                <!-- ══ WOCHE 7 ══ -->
+                <div class="sem__rinne"></div>
+                <div class="sem__woche"><span class="t-label c-3">WOCHE 7</span><span class="t-label c-3" style="font-weight:400">3.–9. Nov</span></div>
+  
+                <div class="sem__rinne">
+                  <svg class="thread thread--v thread--origin sem__zug sem__zug--ab"></svg>
+                  <span class="dot dot--notes sem__marke"></span>
+                </div>
+                <button class="row sem__zeile is-selected" id="se-w7-quelle-p">
+                  <div class="row__main">
+                    <span class="t-body row__title">Zellbiologie</span>
+                    <span class="t-label c-2" style="font-weight:400">Notiz · 6. Nov · daraus 14 Objekte</span>
+                  </div>
+                  <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                </button>
+  
+                <div class="sem__rinne">
+                  <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                  <span class="dot dot--journal sem__marke" style="left:calc(50% + 11px)"></span>
+                </div>
+                <button class="row sem__zeile" id="se-w7-journal-p" style="padding-left:20px">
+                  <div class="row__main">
+                    <span class="t-body row__title">Nach dem Praktikum</span>
+                    <span class="t-label c-3">Journaleintrag · 7. Nov</span>
+                  </div>
+                  <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                </button>
+  
+                <!-- ══ WOCHE 8 ══ -->
+                <div class="sem__rinne">
+                  <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                </div>
+                <div class="sem__woche sem__woche--jetzt"><span class="t-label">WOCHE 8</span><span class="t-label" style="font-weight:400">diese Woche</span></div>
+  
+                <div class="sem__rinne">
+                  <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                  <span class="dot dot--cards sem__marke"></span>
+                </div>
+                <button class="row sem__zeile" id="se-w8-deck-p">
+                  <div class="row__main">
+                    <span class="t-body row__title">Deck „Zellbiologie"</span>
+                    <span class="t-label c-3">12 Karten · 8 heute fällig</span>
+                  </div>
+                  <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                </button>
+  
+                <div class="sem__rinne">
+                  <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                  <span class="dot dot--tasks sem__marke"></span>
+                </div>
+                <button class="row sem__zeile" id="se-w8-aufgabe-p">
+                  <div class="row__main">
+                    <span class="t-body row__title">Laborprotokoll schreiben</span>
+                    <span class="t-label c-3">Aufgabe · heute 14:00</span>
+                  </div>
+                  <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                </button>
+  
+                <div class="sem__rinne">
+                  <svg class="thread thread--v thread--origin sem__zug sem__zug--an"></svg>
+                  <span class="dot dot--notes sem__marke"></span>
+                </div>
+                <button class="row sem__zeile" id="se-w8-osmose-p">
+                  <div class="row__main">
+                    <span class="t-body row__title">Osmose</span>
+                    <span class="t-label c-3">Notiz · aus dem Wiki-Link</span>
+                  </div>
+                  <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                </button>
+  
+                <div class="sem__rinne"><span class="dot dot--hollow sem__marke"></span></div>
+                <div class="row sem__zeile">
+                  <div class="row__main">
+                    <span class="t-body row__title c-2">Vorlesung 7</span>
+                    <span class="t-label c-3">Membranpotenzial · 16:20</span>
+                  </div>
+                  <div class="row__meta"><span class="t-label c-3">geplant</span></div>
+                </div>
+              </div>
+            </section>
+  
+            <p class="t-label c-2" style="margin:0; font-weight:400">Aus Woche 7 sind vierzehn Objekte geworden — alle in Woche 8. Aus Woche 6 bisher nichts.</p>
+  
+            <section class="card" style="padding:11px 14px">
+              <div class="card__head" style="margin-bottom:8px">
+                <span class="ico" data-ico="flag" style="width:16px;height:16px; color:var(--ink-3)"></span>
+                <span class="t-label c-3" style="flex:1">KLAUSUR ZELLBIOLOGIE</span>
+                <span class="t-label c-3">4. Februar</span>
+              </div>
+              <div class="count" style="margin-bottom:6px"><span class="count__n num">83</span><span class="count__w t-sub">Tage · 84 Karten</span></div>
+              <button class="btn btn--primary btn--sm" style="width:100%"><span class="ico" data-ico="calendar" style="width:16px;height:16px"></span>Lernplan · 12 Karten/Tag</button>
+            </section>
+          </div>
+  
+          <nav class="tabbar">
+            <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+            <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+            <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+            <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+            <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+          </nav>
+          <div class="home-indicator"></div>
+        </div>
+      </div>
+  </div>
   <div class="pv-screen" data-pv-screen="graph" data-pv-geraet="iphone" data-pv-datei="graph.html" data-pv-name="Graph" hidden>
   <div class="screen screen--iphone">
         <div class="statusbar">
@@ -7555,6 +8723,170 @@ Was keinen Weg hat, hat auch keinen Klickfinger (siehe prototyp.js §4).
             <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
             <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
             <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+          </nav>
+          <div class="home-indicator"></div>
+        </div>
+      </div>
+  </div>
+  <div class="pv-screen" data-pv-screen="suche" data-pv-geraet="iphone" data-pv-datei="suche.html" data-pv-name="Suche" hidden>
+  <div class="screen screen--iphone" id="su-iphone">
+        <div class="statusbar">
+          <span class="num">9:41</span>
+          <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+        </div>
+  
+        <div class="content">
+          <div class="navbar" style="border:0; padding-bottom:4px; gap:8px">
+            <div class="field" style="flex:1 1 auto; height:38px">
+              <span class="ico" data-ico="search"></span>
+              <span class="t-body">Osmose</span>
+              <span style="display:inline-block; width:2px; height:19px; background:var(--accent); margin-left:2px"></span>
+              <span style="flex:1"></span>
+              <button class="iconbtn" style="width:26px;height:26px" aria-label="Eingabe löschen"><span class="ico" data-ico="close" style="width:15px;height:15px"></span></button>
+            </div>
+            <button class="btn btn--sm btn--quiet" id="su-abbrechen-p" style="padding:0 8px">Abbrechen</button>
+          </div>
+  
+          <div style="flex:none; display:flex; align-items:center; gap:6px; padding:0 var(--pad-iphone) 6px; overflow:hidden">
+            <button class="chip chip--solid">Alle <span class="num">12</span></button>
+            <button class="chip"><span class="dot dot--notes"></span>Notizen <span class="num c-3">6</span></button>
+            <button class="chip"><span class="dot dot--canvas"></span>Canvas <span class="num c-3">2</span></button>
+            <button class="chip"><span class="dot dot--journal"></span>Journal <span class="num c-3">1</span></button>
+          </div>
+  
+          <div class="scroll" style="padding-top:4px; display:flex; flex-direction:column; gap:8px">
+  
+            <p class="t-label c-3" style="margin:0"><span class="num">12</span> Fundstellen · drei haben etwas erzeugt</p>
+  
+            <!-- Treffer 1 mit Klammer, dieselbe Grammatik wie am iPad -->
+            <section class="card" style="padding:8px">
+              <div class="klammer">
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab" style="top:15px; height:calc(100% - 15px)"></svg>
+                  <span class="dot dot--node klammer__marke" style="top:15px; transform:translate(-50%,-50%)"></span>
+                </div>
+                <button id="su-tinte-p" style="display:flex; align-items:flex-start; gap:8px; width:100%; min-height:44px; padding:4px 4px 4px 0; text-align:left; border-radius:9px">
+                  <svg class="thread thread--h thread--origin klammer__stummel" style="margin-top:5px"></svg>
+                  <span class="dot dot--notes" style="margin-top:7px"></span>
+                  <span style="flex:1; min-width:0">
+                    <span style="display:flex; align-items:center; gap:6px">
+                      <span class="t-sub is-strong">Zellbiologie</span>
+                      <span style="flex:1"></span>
+                      <span class="chip su-schicht" style="height:22px; padding:0 8px"><span class="ico" data-ico="edit" style="width:12px;height:12px"></span>Tinte</span>
+                    </span>
+                    <span class="t-label c-3" style="display:block">Notiz · Absatz 9 · 6. Nov, 16:42</span>
+                    <svg class="su-ink" viewBox="0 0 330 48" width="248" height="36" style="margin-top:3px" role="img"
+                         aria-label="Handschriftliche Zeile aus der Notiz; das Wort Osmose ist als Fundstelle markiert">
+                      <rect class="tref" x="54" y="4" width="120" height="38" rx="6"></rect>
+                      <path d="M10 30c5-11 9 7 14-3 5-10 9 8 14-2" stroke-width="2"></path>
+                      <path d="M78 14C77 7 66 5 60 12 53 20 54 33 62 36c9 3 17-5 17-14" stroke-width="2.2"></path>
+                      <path d="M90 18c-4-3-9-1-8 3 1 4 9 5 9 9 0 4-6 6-9 3" stroke-width="2.2"></path>
+                      <path d="M97 36 100 20c1-3 5-3 5 2v12c0-7 2-15 6-15s4 8 4 15" stroke-width="2.2"></path>
+                      <path d="M124 22c-4-6 4-9 7-4 3 6-3 16-8 13-3-2-3-6 1-9" stroke-width="2.2"></path>
+                      <path d="M143 18c-4-3-9-1-8 3 1 4 9 5 9 9 0 4-6 6-9 3" stroke-width="2.2"></path>
+                      <path d="M150 27c6-1 12-3 12-7 0-4-7-5-10 0-3 5-1 14 5 15 4 0 7-2 9-5" stroke-width="2.2"></path>
+                      <path d="M186 30c5-11 9 7 14-3 5-10 9 8 14-2 5-10 9 8 14-2" stroke-width="2"></path>
+                      <path d="M236 30c5-11 9 7 14-3 5-10 9 8 14-2" stroke-width="2"></path>
+                      <path d="M284 30c4-9 8 6 12-2 4-8 8 6 12-2" stroke-width="2"></path>
+                    </svg>
+                  </span>
+                </button>
+  
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v thread--origin klammer__zug klammer__zug--durch"></svg>
+                  <span class="dot dot--cards klammer__marke"></span>
+                </div>
+                <div class="row" id="su-tinte-karte-p" style="min-height:50px">
+                  <div class="row__main">
+                    <span class="t-body row__title">Was beschreibt <span class="su-tref">Osmose</span>?</span>
+                    <span class="t-label c-3">Lernkarte · heute fällig</span>
+                  </div>
+                  <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                </div>
+  
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                  <span class="dot dot--notes klammer__marke"></span>
+                </div>
+                <div class="row" id="su-tinte-notiz-p" style="min-height:50px">
+                  <div class="row__main">
+                    <span class="t-body row__title"><span class="su-tref">Osmose</span></span>
+                    <span class="t-label c-3">Notiz · aus dem Wiki-Link · 3 Absätze</span>
+                  </div>
+                  <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                </div>
+              </div>
+            </section>
+  
+            <!-- gesprochen -->
+            <section class="card" style="padding:8px">
+              <div class="row" style="align-items:flex-start">
+                <span class="dot dot--notes" style="margin-top:8px"></span>
+                <div class="row__main">
+                  <span style="display:flex; align-items:center; gap:6px">
+                    <span class="t-sub is-strong">Vorlesung 6. Nov</span>
+                    <span style="flex:1"></span>
+                    <span class="chip su-schicht" style="height:22px; padding:0 8px"><span class="ico" data-ico="mic" style="width:12px;height:12px"></span>gesprochen</span>
+                  </span>
+                  <span class="t-sub c-2" style="margin-top:2px">„… die <span class="su-tref">Osmose</span> ist der Sonderfall der Diffusion …"</span>
+                  <span style="margin-top:6px"><button class="btn btn--sm" id="su-play-p" style="gap:6px"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>16:42 abspielen</button></span>
+                </div>
+              </div>
+            </section>
+  
+            <!-- Bild mit Klammer -->
+            <section class="card" style="padding:8px">
+              <div class="klammer">
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab" style="top:15px; height:calc(100% - 15px)"></svg>
+                  <span class="dot dot--node klammer__marke" style="top:15px; transform:translate(-50%,-50%)"></span>
+                </div>
+                <button id="su-bild-p" style="display:flex; align-items:flex-start; gap:8px; width:100%; min-height:44px; padding:4px 4px 4px 0; text-align:left; border-radius:9px">
+                  <svg class="thread thread--h thread--origin klammer__stummel" style="margin-top:5px"></svg>
+                  <span class="dot dot--canvas" style="margin-top:7px"></span>
+                  <span style="flex:1; min-width:0">
+                    <span class="t-sub is-strong" style="display:block">Beschriftung „<span class="su-tref">Osmose</span>"</span>
+                    <span class="t-label c-3">Canvas · Zellkultur-Skizze · 28. Okt</span>
+                  </span>
+                  <span class="chip su-schicht" style="height:22px; padding:0 8px"><span class="ico" data-ico="photo" style="width:12px;height:12px"></span>Bild</span>
+                </button>
+                <div class="klammer__rinne">
+                  <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                  <span class="dot dot--tasks klammer__marke"></span>
+                </div>
+                <div class="row" id="su-bild-aufgabe-p" style="min-height:50px">
+                  <div class="row__main">
+                    <span class="t-body row__title"><span class="su-tref">Osmose</span>-Versuch wiederholen</span>
+                    <span class="t-label c-3">Aufgabe · Freitag</span>
+                  </div>
+                  <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                </div>
+              </div>
+            </section>
+  
+            <!-- Text, ohne Klammer: aus diesem Eintrag ist nichts entstanden -->
+            <section class="card" style="padding:8px">
+              <div class="row" style="align-items:flex-start">
+                <span class="dot dot--journal" style="margin-top:8px"></span>
+                <div class="row__main">
+                  <span style="display:flex; align-items:center; gap:6px">
+                    <span class="t-sub is-strong">Nach dem Praktikum</span>
+                    <span style="flex:1"></span>
+                    <span class="chip su-schicht" style="height:22px; padding:0 8px"><span class="ico" data-ico="doc" style="width:12px;height:12px"></span>Text</span>
+                  </span>
+                  <span class="t-sub c-2" style="margin-top:2px">„… die <span class="su-tref">Osmose</span>-Versuche liefen anders als erwartet …"</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+            </section>
+          </div>
+  
+          <nav class="tabbar">
+            <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+            <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+            <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+            <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+            <button class="tab is-active"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
           </nav>
           <div class="home-indicator"></div>
         </div>
@@ -8014,10 +9346,11 @@ Was keinen Weg hat, hat auch keinen Klickfinger (siehe prototyp.js §4).
 
 <script src="../shared/mock.js"></script>
 <script src="../shared/bewegung.js"></script>
-<!-- Die Wegekarte — welches Element wohin führt — steht als Datenblock in
-     prototyp.js §10. Wer sie von außen ersetzen will, legt vor dieser Zeile
-     ein eigenes <script> mit window.VELUM_WEGE ab; prototyp.js nimmt es dann
-     statt der eingebauten Karte. -->
+<!-- Die Wegekarte — welches Element wohin führt. Sie ist reine Daten und
+     steht VOR prototyp.js: sie legt window.VELUM_WEGE ab, prototyp.js §10
+     holt sie beim Start. Fehlt diese Zeile, lebt nur die Grundnavigation,
+     und die Konsole sagt warum. -->
+<script src="wege.js"></script>
 <script src="prototyp.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════════

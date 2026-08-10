@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Semester — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+ * Nur für diesen Schirm: DIE SEMESTERSPUR.
+ *
+ * Ein Fach ist in Velum kein Ordner, sondern eine gefilterte Sicht auf alles,
+ * was zu ihm gehört — Notizen, Canvas-Blätter, Journaleinträge, Aufgaben,
+ * Decks. Die Gliederung folgt der ZEIT (Semesterwochen), nicht dem Modul:
+ * sonst wären es wieder fünf Listen nebeneinander, und genau die soll dieser
+ * Schirm ersetzen.
+ *
+ * Gebaut ist er als EIN Raster über alle Wochen — dieselbe Herkunfts-Klammer
+ * wie in tasks.html und suche.html, nur über die ganze Liste gespannt:
+ *
+ *   Spalte 1  die 20-pt-Rinne. Jedes Objekt hat darin seinen 6-pt-Modulpunkt;
+ *             wo eine Herkunft besteht, läuft zwischen zwei Punkten ein
+ *             2,5-pt-Faden. Die Rinne gehört den Fäden allein — die
+ *             Wochen-Überschriften liegen in Spalte 2 und schneiden sie
+ *             deshalb nicht.
+ *   Spalte 2  die Zeile: Titel, Modulwort, Datum, Chevron.
+ *
+ * Weil das Raster durchläuft, kann ein Faden die Wochengrenze überqueren —
+ * und genau das ist die Aussage: Was in Woche 7 geschrieben wurde, ist in
+ * Woche 8 zu etwas geworden. SEINE LÄNGE IST DIE VERZÖGERUNG. Der kurze
+ * Faden in Woche 5 sagt „am nächsten Tag verarbeitet", der lange sagt „eine
+ * Woche später".
+ *
+ * Kein Knoten auf diesem Schirm: Ein Knoten verlangt nach N7 zwei
+ * zusammenlaufende Fäden. Hier hat jede Quelle genau einen abgehenden Faden,
+ * also steht dort ihr gefüllter Modulpunkt — so wie es N7 für Kettenenden
+ * ausdrücklich vorschreibt.
+ * ══════════════════════════════════════════════════════════════════════ */
+
+.sem                { display: grid; grid-template-columns: 20px minmax(0,1fr); align-items: stretch; }
+.sem__rinne         { position: relative; }
+.sem__marke         { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 1; }
+/* Stumpfe Enden: an den Nähten zwischen zwei Stücken desselben Zuges lägen
+   sonst zwei runde Köpfe übereinander und sähen aus wie ein Punkt. */
+.sem .thread > *    { stroke-linecap: butt; }
+.sem__zug           { position: absolute; left: 50%; margin-left: -5px; width: 10px; }
+.sem__zug--ab       { top: 50%; height: 50%; }
+.sem__zug--durch    { top: 0;   height: 100%; }
+.sem__zug--an       { top: 0;   height: 50%; }
+
+/* Die Wochenmarke. Sie steht in Spalte 2 und lässt die Rinne frei — ein
+   Trennstrich quer durch die Rinne sähe aus, als schnitte er den Faden. */
+.sem__woche         { display: flex; align-items: center; gap: 10px;
+                      padding: 10px 12px 4px; }
+.sem__woche:first-child { padding-top: 4px; }
+.sem__woche::after  { content: ""; flex: 1 1 auto; height: 1px; background: var(--line); }
+/* diese Woche = getönte Fläche + Wort, nicht Farbe */
+.sem__woche--jetzt  { background: var(--accent-soft); border-radius: 9px;
+                      margin: 6px 0 2px; padding: 5px 12px; }
+.sem__woche--jetzt::after { background: var(--line-2); }
+
+/* Die Zeile ist enger als die Vorgabe (5 statt 8 pt oben/unten): Auf
+   diesem Schirm stehen vier Wochen übereinander, und die Spur ist nur dann
+   eine Spur, wenn man sie als Ganzes sieht. Das 44-pt-Ziel bleibt: Titel und
+   Metazeile ergeben zusammen 49 pt. */
+.sem__zeile         { width: 100%; text-align: left; padding-top: 5px; padding-bottom: 5px; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Semester („Biologie")
+
+DIE SEITENLEISTE BOT ZWEI ORDNER AN, DIE ES NICHT GAB
+„Biologie" und „Analysis II" stehen seit Runde 1 unter der Überschrift
+„Semester" in der Seitenleiste jedes Schirms. Beide führten nirgendwohin.
+
+ÜBERNOMMEN
+· Notion — mehrere Ansichten auf denselben Daten, und die Ansicht ist keine
+  eigene Datenbank. Übernommen als Ansichtszeile (Zeit · Modul · Herkunft).
+  BEWERTUNG UND UNTERSCHIED: Notion trennt Daten von Darstellung richtig, aber
+  die Regeln liefert niemand mit — man baut sich die Ansicht selbst. Velum
+  liefert sie fertig: „Zeit" ist voreingestellt, und sie ist die einzige, die
+  ein Semester wirklich hat.
+· Things 3 — Bereiche statt Ordner, und die Gruppe trägt einen Zähler.
+  Übernommen für die Wochenmarken.
+· Day One — die Datums-Schiene als durchgehende senkrechte Ordnung.
+  Übernommen als Wochenfolge; die Schiene selbst ist hier aber KEIN Faden
+  (siehe unten), weil zwei benachbarte Wochen keine Beziehung sind.
+· Apple Kalender / Semesterplaner — die Woche als Einheit des Studiums.
+  Konvention, unverändert.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Notions Ansichtsgalerie mit elf Layouts. Drei Achsen, fertig geliefert.
+· Notions Vorlagen. Sie sind die Reparatur eines leer ausgelieferten
+  Produkts; Velums Antwort auf denselben Bedarf ist der eigene Bestand.
+· Fünf Modulreiter innerhalb des Fachs. Genau das soll dieser Schirm
+  ersetzen — ein Fach ist keine Sammlung von fünf Listen.
+· Ein Fortschrittsbalken „Semester zu 57 % erledigt". Ein Semester ist keine
+  Menge, die man abarbeitet, und eine Zahl, die niemand nachrechnen kann,
+  ist Dekoration.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Hier wird sichtbar, dass fünf Werkzeuge EIN Datenmodell teilen: In einer
+einzigen Liste stehen Notiz, Canvas-Blatt, Journaleintrag, Aufgabe und Deck
+nebeneinander — nach Zeit geordnet, nicht nach Werkzeug. Und weil das Raster
+durchläuft, überquert der Herkunfts-Faden die Wochengrenze: Was in Woche 7
+geschrieben wurde, ist in Woche 8 zu zwölf Karten, einer Aufgabe und einer
+Notiz geworden. Seine Länge ist die Verzögerung zwischen Schreiben und
+Verarbeiten — und die leere Woche 6 ist damit genauso lesbar wie die volle.
+
+ADA-KATEGORIE: Innovation (ein Fach als Zeitspur über fünf Module) und
+Interaktion (die Ansicht ist fertig, statt gebaut werden zu müssen).
+
+KONTRAST (gerechnet, Tokenwerte aus mockups/shared/system.css §1)
+  Titel/Fließtext   ink-1 auf Papier    17,8:1 (hell) · 15,9:1 (dunkel)
+  Sekundärtext      ink-2 auf Papier     5,3:1 (hell) ·  7,1:1 (dunkel)
+  Metadaten         ink-3 auf Papier     5,14:1 (hell) · 5,57:1 (dunkel)
+  Wochenmarke jetzt ink-1 auf accent-soft 15,43:1 (hell) · 12,12:1 (dunkel)
+  Faden ruhend      thread auf Papier    3,29:1 (hell) · 3,34:1 (dunkel)
+  Ring hohler Punkt dot-hollow           3,29:1 (hell) · 3,34:1 (dunkel)
+  CTA-Text          accent-on auf Ink   17,8:1 (hell) · 17,3:1 (dunkel)
+  Kein Bild auf diesem Schirm, deshalb kein Wert gegen Bildpunkte.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Semester — „Biologie"</h1>
+  <p>Ein Fach ist kein Ordner, sondern eine fertige Sicht auf alles, was dazugehört: Notizen, Blätter, Einträge, Aufgaben und Decks in einer Liste, geordnet nach Semesterwochen — und dort, wo etwas auseinander entstanden ist, läuft ein Faden über die Wochengrenze.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · Semesterspur und Kontextspalte</span></div>
+    <div class="screen screen--ipad" id="se-ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar — auf allen Schirmen gleich, hier ist „Biologie" aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem is-active"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar" style="padding-top:6px; padding-bottom:6px">
+            <div style="flex:none">
+              <div class="serif--screen-title">Biologie</div>
+              <div class="t-sub c-3" style="white-space:nowrap">Wintersemester · Woche 8 von 14</div>
+            </div>
+
+            <!-- Die Ansichtszeile. Drei fertige Achsen statt einer Baukasten-
+                 galerie — „Zeit" ist voreingestellt, weil ein Semester genau
+                 diese Achse wirklich hat. „Fäden" ist derselbe Schalter wie auf
+                 notes-list und tasks: er zeigt die echten Kanten zwischen dem,
+                 was gerade sichtbar ist. Er trägt ein WORT und kein Fadenbild —
+                 ein Faden als Piktogramm auf einem Knopf verbände nichts. -->
+            <div class="segmented" style="margin-left:16px">
+              <button class="is-on" style="padding:0 12px">Zeit</button>
+              <button style="padding:0 12px">Modul</button>
+              <button style="padding:0 12px">Herkunft</button>
+            </div>
+            <button class="chip chip--solid" style="height:32px; margin-left:8px">Fäden</button>
+
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+            <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
+            <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neu</button>
+          </div>
+
+          <div class="scroll" style="padding-top:10px; display:flex; flex-direction:column; gap:10px">
+
+            <div style="display:grid; grid-template-columns:minmax(0,1fr) 244px; gap:16px; align-items:start">
+
+              <!-- ── Die Semesterspur ── -->
+              <section class="card" style="padding:6px 6px 8px">
+                <div class="sem">
+
+                  <!-- ══ WOCHE 5 ══ -->
+                  <div class="sem__rinne"></div>
+                  <div class="sem__woche"><span class="t-label c-3">WOCHE 5</span><span class="t-label c-3" style="font-weight:400">20.–26. Oktober</span></div>
+
+                  <!-- Quelle einer kurzen Klammer: der Journaleintrag hat am
+                       nächsten Tag eine Aufgabe erzeugt. Ein abgehender Faden,
+                       also gefüllter Modulpunkt und kein Knoten (N7). -->
+                  <div class="sem__rinne">
+                    <svg class="thread thread--v thread--origin sem__zug sem__zug--ab"></svg>
+                    <span class="dot dot--journal sem__marke"></span>
+                  </div>
+                  <button class="row sem__zeile" id="se-w5-journal">
+                    <div class="row__main">
+                      <span class="t-body row__title">Erste Woche im Labor</span>
+                      <span class="t-label c-3" style="font-weight:400">Journaleintrag · 24. Okt · daraus: 1 Aufgabe</span>
+                    </div>
+                    <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </button>
+
+                  <div class="sem__rinne">
+                    <svg class="thread thread--v thread--origin sem__zug sem__zug--an"></svg>
+                    <span class="dot dot--tasks sem__marke"></span>
+                  </div>
+                  <button class="row sem__zeile" id="se-w5-aufgabe">
+                    <div class="row__main">
+                      <span class="t-body row__title">Schutzbrille und Kittel besorgen</span>
+                      <span class="t-label c-3" style="font-weight:400">Aufgabe · 25. Okt · erledigt</span>
+                    </div>
+                    <div class="row__meta"><span class="check is-done"></span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </button>
+
+                  <!-- ══ WOCHE 6 ══ -->
+                  <div class="sem__rinne"></div>
+                  <div class="sem__woche"><span class="t-label c-3">WOCHE 6</span><span class="t-label c-3" style="font-weight:400">27. Oktober – 2. November</span></div>
+
+                  <div class="sem__rinne"><span class="dot dot--canvas sem__marke"></span></div>
+                  <button class="row sem__zeile" id="se-w6-canvas">
+                    <div class="row__main">
+                      <span class="t-body row__title">Zellkultur-Skizze</span>
+                      <span class="t-label c-3" style="font-weight:400">Canvas-Blatt · 28. Okt · 1 Beschriftung gefunden</span>
+                    </div>
+                    <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </button>
+
+                  <div class="sem__rinne"><span class="dot dot--notes sem__marke"></span></div>
+                  <button class="row sem__zeile" id="se-w6-notiz">
+                    <div class="row__main">
+                      <span class="t-body row__title">Vorlesung 3 — Diffusion</span>
+                      <span class="t-label c-3" style="font-weight:400">Notiz · 30. Okt · 11 Absätze · nichts daraus entstanden</span>
+                    </div>
+                    <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </button>
+
+                  <!-- ══ WOCHE 7 ══ -->
+                  <div class="sem__rinne"></div>
+                  <div class="sem__woche"><span class="t-label c-3">WOCHE 7</span><span class="t-label c-3" style="font-weight:400">3.–9. November</span></div>
+
+                  <!-- ══ DIE QUELLE DER LANGEN KLAMMER ══
+                       Von hier läuft der 2,5-pt-Faden über die Wochengrenze
+                       hinweg bis zu den drei Objekten in Woche 8. Er ist lang,
+                       und die Länge ist die Aussage: eine Woche zwischen
+                       Schreiben und Verarbeiten. -->
+                  <div class="sem__rinne">
+                    <svg class="thread thread--v thread--origin sem__zug sem__zug--ab"></svg>
+                    <span class="dot dot--notes sem__marke"></span>
+                  </div>
+                  <button class="row sem__zeile is-selected" id="se-w7-quelle">
+                    <div class="row__main">
+                      <span class="t-body row__title">Zellbiologie — Vorlesung 6. November</span>
+                      <span class="t-label c-2" style="font-weight:400">Notiz · 14 Absätze · daraus: 12 Karten, 1 Aufgabe, 1 Notiz</span>
+                    </div>
+                    <div class="row__meta"><span class="chip"><span class="ico" data-ico="mic" style="width:13px;height:13px"></span>72 Min.</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </button>
+
+                  <!-- Der Faden läuft hier nur durch: der Journaleintrag gehört
+                       nicht zu dieser Klammer und trägt deshalb keinen Punkt
+                       AUF dem Faden, sondern seinen eigenen daneben. -->
+                  <div class="sem__rinne">
+                    <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                    <span class="dot dot--journal sem__marke" style="left:calc(50% + 11px)"></span>
+                  </div>
+                  <button class="row sem__zeile" id="se-w7-journal" style="padding-left:20px">
+                    <div class="row__main">
+                      <span class="t-body row__title">Nach dem Praktikum</span>
+                      <span class="t-label c-3" style="font-weight:400">Journaleintrag · 7. Nov · Stimmung 4</span>
+                    </div>
+                    <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </button>
+
+                  <!-- ══ WOCHE 8 — diese Woche ══
+                       Die Wochenmarke liegt in Spalte 2 und lässt die Rinne
+                       frei. Der Faden überquert die Grenze sichtbar. -->
+                  <div class="sem__rinne">
+                    <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                  </div>
+                  <div class="sem__woche sem__woche--jetzt"><span class="t-label">WOCHE 8</span><span class="t-label" style="font-weight:400">10.–13. November · diese Woche</span></div>
+
+                  <div class="sem__rinne">
+                    <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                    <span class="dot dot--cards sem__marke"></span>
+                  </div>
+                  <button class="row sem__zeile" id="se-w8-deck">
+                    <div class="row__main">
+                      <span class="t-body row__title">Deck „Zellbiologie"</span>
+                      <span class="t-label c-3" style="font-weight:400">12 Lernkarten · 11. Nov · 8 heute fällig</span>
+                    </div>
+                    <div class="row__meta"><span class="chip"><span class="dot dot--cards"></span>8 fällig</span><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </button>
+
+                  <div class="sem__rinne">
+                    <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                    <span class="dot dot--tasks sem__marke"></span>
+                  </div>
+                  <button class="row sem__zeile" id="se-w8-aufgabe">
+                    <div class="row__main">
+                      <span class="t-body row__title">Laborprotokoll Zellkultur schreiben</span>
+                      <span class="t-label c-3" style="font-weight:400">Aufgabe · 12. Nov · heute geplant 14:00</span>
+                    </div>
+                    <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </button>
+
+                  <div class="sem__rinne">
+                    <svg class="thread thread--v thread--origin sem__zug sem__zug--an"></svg>
+                    <span class="dot dot--notes sem__marke"></span>
+                  </div>
+                  <button class="row sem__zeile" id="se-w8-osmose">
+                    <div class="row__main">
+                      <span class="t-body row__title">Osmose</span>
+                      <span class="t-label c-3" style="font-weight:400">Notiz · 12. Nov · aus dem Wiki-Link · 3 Absätze</span>
+                    </div>
+                    <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </button>
+
+                  <!-- Geplant, noch nicht da: hohler Punkt, kein Faden. -->
+                  <div class="sem__rinne"><span class="dot dot--hollow sem__marke"></span></div>
+                  <div class="row sem__zeile">
+                    <div class="row__main">
+                      <span class="t-body row__title c-2">Vorlesung 7 — Membranpotenzial</span>
+                      <span class="t-label c-3" style="font-weight:400">Notiz · heute 16:20 · noch nichts geschrieben</span>
+                    </div>
+                    <div class="row__meta"><span class="t-label c-3">geplant</span></div>
+                  </div>
+                </div>
+
+                <p class="t-sub c-2" style="margin:8px 12px 0">Aus Woche 7 sind zwölf Karten, eine Aufgabe und eine Notiz geworden — alle in Woche 8. Aus Woche 6 bisher nichts.</p>
+              </section>
+
+              <!-- ── Kontextspalte ── -->
+              <div style="display:flex; flex-direction:column; gap:12px">
+
+                <!-- Fünf Werkzeuge, ein Datenmodell — als Zahlen ausgeschrieben -->
+                <section class="card" style="padding:11px 14px">
+                  <div class="card__head" style="margin-bottom:8px">
+                    <span class="t-label c-3" style="flex:1">DAS FACH ENTHÄLT</span>
+                    <span class="t-label c-3 num">118</span>
+                  </div>
+                  <button class="row" style="min-height:44px; padding:0; width:100%">
+                    <span class="dot dot--notes"></span><span class="t-sub" style="flex:1; text-align:left">Notizen</span><span class="t-label c-3 num">14</span>
+                  </button>
+                  <button class="row" style="min-height:44px; padding:0; width:100%">
+                    <span class="dot dot--canvas"></span><span class="t-sub" style="flex:1; text-align:left">Canvas-Blätter</span><span class="t-label c-3 num">6</span>
+                  </button>
+                  <button class="row" style="min-height:44px; padding:0; width:100%">
+                    <span class="dot dot--journal"></span><span class="t-sub" style="flex:1; text-align:left">Journaleinträge</span><span class="t-label c-3 num">5</span>
+                  </button>
+                  <button class="row" style="min-height:44px; padding:0; width:100%">
+                    <span class="dot dot--tasks"></span><span class="t-sub" style="flex:1; text-align:left">Aufgaben</span><span class="t-label c-3 num">9</span>
+                  </button>
+                  <button class="row" style="min-height:44px; padding:0; width:100%">
+                    <span class="dot dot--cards"></span><span class="t-sub" style="flex:1; text-align:left">Lernkarten</span><span class="t-label c-3 num">84</span>
+                  </button>
+                  <p class="t-label c-3" style="margin:8px 0 0">In drei Notizbüchern: Zellbiologie · Laborjournal · Genetik.</p>
+                </section>
+
+                <!-- Der Satz, den kein Konkurrent schreiben kann -->
+                <section class="card" style="padding:11px 14px">
+                  <div class="card__head" style="margin-bottom:8px">
+                    <span class="dot dot--hollow"></span>
+                    <span class="t-label c-3" style="flex:1">WOCHE 6 HAT NICHTS ERZEUGT</span>
+                  </div>
+                  <p class="t-sub c-2" style="margin:0 0 10px">Elf Absätze geschrieben, keine Karte, keine Aufgabe. Aus Woche 7 wurden vierzehn Objekte.</p>
+                  <button class="btn btn--sm" style="width:100%">Woche 6 nacharbeiten<span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></button>
+                </section>
+
+                <!-- Der Knopf, der die Zukunft ändert, nennt die Änderung —
+                     dieselbe app-weite Regel wie „Gut — in 5 Tagen" auf
+                     review-session.html. -->
+                <section class="card" style="padding:11px 14px">
+                  <div class="card__head" style="margin-bottom:8px">
+                    <span class="ico" data-ico="flag" style="width:16px;height:16px; color:var(--ink-3)"></span>
+                    <span class="t-label c-3" style="flex:1">KLAUSUR</span>
+                    <span class="t-label c-3">4. Februar</span>
+                  </div>
+                  <div class="count" style="margin-bottom:8px"><span class="count__n num">83</span><span class="count__w t-sub">Tage · 84 Karten im Fach</span></div>
+                  <p class="t-label c-3" style="margin:0 0 10px; font-weight:400">Bei zwölf Karten am Tag bist du am 2. Februar durch.</p>
+                  <button class="btn btn--primary btn--sm" style="width:100%"><span class="ico" data-ico="calendar" style="width:16px;height:16px"></span>Lernplan · 12/Tag</button>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · dieselbe Spur, frühere Wochen eingeklappt</span></div>
+    <div class="screen screen--iphone" id="se-iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <button class="iconbtn" aria-label="Zurück zur Bibliothek"><span class="ico" data-ico="chevL"></span></button>
+          <div>
+            <div class="serif--screen-title">Biologie</div>
+          </div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+          <button class="iconbtn"><span class="ico" data-ico="filter"></span></button>
+        </div>
+
+        <div style="flex:none; display:flex; align-items:center; gap:8px; padding:0 var(--pad-iphone) 6px">
+          <div class="segmented" style="flex:1">
+            <button class="is-on" style="flex:1">Zeit</button>
+            <button style="flex:1">Modul</button>
+            <button style="flex:1">Herkunft</button>
+          </div>
+          <button class="chip chip--solid" style="height:32px">Fäden</button>
+        </div>
+
+        <div class="scroll" style="padding-top:4px; display:flex; flex-direction:column; gap:8px">
+
+          <section class="card" style="padding:4px 4px 8px">
+            <div class="sem">
+
+              <!-- Frühere Wochen eingeklappt: auf dem iPhone zählt, was jetzt
+                   gilt — die Wochen davor bleiben erreichbar, aber der Faden,
+                   der die Wochengrenze überquert, muss sichtbar sein. -->
+              <div class="sem__rinne"></div>
+              <button class="row sem__zeile" id="se-frueher-p" style="min-height:44px">
+                <span class="ico c-3" data-ico="chevD" style="width:16px;height:16px"></span>
+                <span class="row__main"><span class="t-sub c-2">Woche 1–6 · <span class="num">41</span> Objekte</span></span>
+              </button>
+
+              <!-- ══ WOCHE 7 ══ -->
+              <div class="sem__rinne"></div>
+              <div class="sem__woche"><span class="t-label c-3">WOCHE 7</span><span class="t-label c-3" style="font-weight:400">3.–9. Nov</span></div>
+
+              <div class="sem__rinne">
+                <svg class="thread thread--v thread--origin sem__zug sem__zug--ab"></svg>
+                <span class="dot dot--notes sem__marke"></span>
+              </div>
+              <button class="row sem__zeile is-selected" id="se-w7-quelle-p">
+                <div class="row__main">
+                  <span class="t-body row__title">Zellbiologie</span>
+                  <span class="t-label c-2" style="font-weight:400">Notiz · 6. Nov · daraus 14 Objekte</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </button>
+
+              <div class="sem__rinne">
+                <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                <span class="dot dot--journal sem__marke" style="left:calc(50% + 11px)"></span>
+              </div>
+              <button class="row sem__zeile" id="se-w7-journal-p" style="padding-left:20px">
+                <div class="row__main">
+                  <span class="t-body row__title">Nach dem Praktikum</span>
+                  <span class="t-label c-3">Journaleintrag · 7. Nov</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </button>
+
+              <!-- ══ WOCHE 8 ══ -->
+              <div class="sem__rinne">
+                <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+              </div>
+              <div class="sem__woche sem__woche--jetzt"><span class="t-label">WOCHE 8</span><span class="t-label" style="font-weight:400">diese Woche</span></div>
+
+              <div class="sem__rinne">
+                <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                <span class="dot dot--cards sem__marke"></span>
+              </div>
+              <button class="row sem__zeile" id="se-w8-deck-p">
+                <div class="row__main">
+                  <span class="t-body row__title">Deck „Zellbiologie"</span>
+                  <span class="t-label c-3">12 Karten · 8 heute fällig</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </button>
+
+              <div class="sem__rinne">
+                <svg class="thread thread--v thread--origin sem__zug sem__zug--durch"></svg>
+                <span class="dot dot--tasks sem__marke"></span>
+              </div>
+              <button class="row sem__zeile" id="se-w8-aufgabe-p">
+                <div class="row__main">
+                  <span class="t-body row__title">Laborprotokoll schreiben</span>
+                  <span class="t-label c-3">Aufgabe · heute 14:00</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </button>
+
+              <div class="sem__rinne">
+                <svg class="thread thread--v thread--origin sem__zug sem__zug--an"></svg>
+                <span class="dot dot--notes sem__marke"></span>
+              </div>
+              <button class="row sem__zeile" id="se-w8-osmose-p">
+                <div class="row__main">
+                  <span class="t-body row__title">Osmose</span>
+                  <span class="t-label c-3">Notiz · aus dem Wiki-Link</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </button>
+
+              <div class="sem__rinne"><span class="dot dot--hollow sem__marke"></span></div>
+              <div class="row sem__zeile">
+                <div class="row__main">
+                  <span class="t-body row__title c-2">Vorlesung 7</span>
+                  <span class="t-label c-3">Membranpotenzial · 16:20</span>
+                </div>
+                <div class="row__meta"><span class="t-label c-3">geplant</span></div>
+              </div>
+            </div>
+          </section>
+
+          <p class="t-label c-2" style="margin:0; font-weight:400">Aus Woche 7 sind vierzehn Objekte geworden — alle in Woche 8. Aus Woche 6 bisher nichts.</p>
+
+          <section class="card" style="padding:11px 14px">
+            <div class="card__head" style="margin-bottom:8px">
+              <span class="ico" data-ico="flag" style="width:16px;height:16px; color:var(--ink-3)"></span>
+              <span class="t-label c-3" style="flex:1">KLAUSUR ZELLBIOLOGIE</span>
+              <span class="t-label c-3">4. Februar</span>
+            </div>
+            <div class="count" style="margin-bottom:6px"><span class="count__n num">83</span><span class="count__w t-sub">Tage · 84 Karten</span></div>
+            <button class="btn btn--primary btn--sm" style="width:100%"><span class="ico" data-ico="calendar" style="width:16px;height:16px"></span>Lernplan · 12 Karten/Tag</button>
+          </section>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Semester — Steckbrief</h2>
+  <p>„Biologie" und „Analysis II" standen seit Runde 1 in jeder Seitenleiste und führten nirgendwohin. Das hier ist der Schirm dahinter — und zugleich die Stelle, an der man sieht, dass fünf Werkzeuge ein Datenmodell teilen.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Notion</td><td>Mehrere Ansichten auf denselben Daten; eine Ansicht ist keine eigene Datenbank, sondern ein Regelfenster. Übernommen als Ansichtszeile <em>Zeit · Modul · Herkunft</em>. <strong>Der Unterschied:</strong> Notion trennt Daten und Darstellung richtig, liefert die Regeln aber nicht mit — man baut sich die Ansicht selbst, und elf Layouts erzeugen null Wiedererkennung. Velum liefert drei fertige Achsen, und die voreingestellte ist die einzige, die ein Semester wirklich hat.</td></tr>
+    <tr><td>Things 3</td><td>Bereiche statt Ordner, Gruppe mit Zähler, trennlinienfreie Liste. Übernommen für die Wochenmarken und die Zeilen.</td></tr>
+    <tr><td>Day One</td><td>Die durchgehende senkrechte Datumsordnung, an der man sich ohne Lesen entlangbewegt. Übernommen als Wochenfolge — aber die Schiene selbst ist hier <em>kein</em> Faden, siehe unten.</td></tr>
+    <tr><td>Craft / Obsidian</td><td>„Was ist daraus geworden" als Inhalt, nicht als Werkzeug. Hier trägt es die Zeile selbst: „daraus: 12 Karten, 1 Aufgabe, 1 Notiz" — und der Faden zeigt, <em>welche</em> und <em>wann</em>.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Notions Ansichtsgalerie</strong> mit elf Layouts und einem Regelbaukasten. Drei Achsen, fertig geliefert. Eine Ansicht, die man sich erst bauen muss, ist eine unfertige Ansicht.</li>
+    <li><strong>Notions Vorlagen.</strong> Sie sind die Reparatur eines leer ausgelieferten Produkts. Velums Antwort auf denselben Bedarf ist der eigene Bestand — hier steht er.</li>
+    <li><strong>Fünf Modulreiter innerhalb des Fachs.</strong> Genau die soll dieser Schirm ersetzen; ein Fach ist keine Sammlung von fünf Listen.</li>
+    <li><strong>Ein Fortschrittsbalken „Semester zu 57 % erledigt".</strong> Ein Semester ist keine Menge, die man abarbeitet, und eine Zahl, die niemand nachrechnen kann, ist Dekoration.</li>
+    <li><strong>Die Wochenschiene als Faden.</strong> Zwei benachbarte Wochen sind keine Beziehung im Datenmodell — sie folgen nur aufeinander. Die Wochenmarken tragen deshalb eine Trennlinie in <span class="num">--line</span>, und die sieht sichtbar anders aus als ein Faden.</li>
+  </ul>
+
+  <h3>Der Faden auf diesem Schirm — zwei Stellen, zwei echte Kanten</h3>
+  <table>
+    <tr><td>Die kurze Klammer (Woche 5)</td><td><strong>Kante: Journaleintrag „Erste Woche im Labor" (24. Okt) → Aufgabe „Schutzbrille und Kittel besorgen" (25. Okt).</strong> Herkunft, also 2,5 pt. Der Faden ist genau eine Zeile lang — <em>am nächsten Tag verarbeitet</em>.</td></tr>
+    <tr><td>Die lange Klammer (Woche 7 → Woche 8)</td><td><strong>Kante: Notiz „Zellbiologie — Vorlesung 6. November" → Deck „Zellbiologie" (12 Karten), → Aufgabe „Laborprotokoll", → Notiz „Osmose".</strong> Dieselben Kanten, die <span class="num">today.html</span> als Kette, <span class="num">tasks.html</span> als Klammer und <span class="num">suche.html</span> als Trefferweg zeichnet — hier zum ersten Mal <em>in der Zeit</em>. Der Faden überquert die Wochengrenze sichtbar, weil die Wochenmarke in Spalte 2 liegt und die Rinne freilässt. <strong>Seine Länge ist die Verzögerung:</strong> eine Woche zwischen Schreiben und Verarbeiten. Neben dem kurzen Faden aus Woche 5 liest man den Unterschied ohne ein einziges Wort.</td></tr>
+    <tr><td>Kein Knoten</td><td>Auf diesem Schirm steht keiner, und das ist kein Versehen: N7 verlangt für einen Knoten zwei zusammenlaufende Fäden. Beide Quellen haben genau einen abgehenden Faden — dort steht deshalb ihr gefüllter Modulpunkt, so wie N7 es für Kettenenden ausdrücklich vorschreibt.</td></tr>
+    <tr><td>Der durchlaufende Faden</td><td>Zwischen Quelle und letztem Ergebnis liegen zwei Zeilen, die nicht zur Klammer gehören (der Journaleintrag vom 7. November und die Wochenmarke). Sie tragen deshalb <em>keinen</em> Punkt auf dem Faden: Der Journaleintrag rückt seinen Modulpunkt um 11 pt nach rechts und seine Zeile um 20 pt ein — der Faden läuft an ihm vorbei, nicht durch ihn hindurch.</td></tr>
+  </table>
+  <p><strong>Wo bewusst kein Faden steht:</strong> zwischen den Wochen (Aufeinanderfolge ist keine Beziehung), an den beiden Objekten aus Woche 6 (aus ihnen ist nichts entstanden — die Abwesenheit <em>ist</em> die Auskunft, und die Karte rechts spricht sie aus), und an der geplanten Vorlesung von heute: Sie trägt einen <strong>hohlen Punkt</strong> — das Objekt ist angelegt, aber es gibt es noch nicht, also kann auch keine Beziehung bestehen.</p>
+
+  <h3>Was dieser Schirm kann, das kein Konkurrent kann</h3>
+  <p>Notion kann mehrere Ansichten auf dieselben Daten legen — aber bei Notion entsteht nichts aus etwas anderem; die Achse „Herkunft" hätte dort keine Werte. Things und Todoist haben Bereiche, aber nur Aufgaben darin. GoodNotes und Notability haben das Fach als Ordner, aber nur Seiten darin. Obsidian hätte die Kanten, aber weder Karte noch Aufgabe noch Handschrift. <strong>Nur hier stehen Notiz, Canvas-Blatt, Journaleintrag, Aufgabe und Deck in einer einzigen nach Zeit geordneten Liste — und nur hier kann ein Strich zwischen zwei Zeilen dieser Liste sagen: das eine ist aus dem anderen entstanden, eine Woche später.</strong> Der Satz, den der Schirm dadurch schreiben kann, steht unter der Liste: „Aus Woche 7 sind zwölf Karten, eine Aufgabe und eine Notiz geworden. Aus Woche 6 bisher nichts."</p>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>gefüllt</td><td>Zehn Objekte, fünf Module, vier Wochen — neun davon gibt es, das zehnte ist geplant.</td></tr>
+    <tr><td>hohl</td><td>Die Vorlesung von heute 16:20: angelegt, noch nichts geschrieben. 6 pt, 1,4-pt-Ring, gerechnet 3,29:1 hell / 3,34:1 dunkel.</td></tr>
+    <tr><td>ausgewählt</td><td>Die Quellzeile in Woche 7: getönte Fläche + 1,5-pt-Ring + Gewicht im Titel. Drei Merkmale.</td></tr>
+    <tr><td>diese Woche</td><td>Getönte Fläche + das Wort „diese Woche" + Ink-Text. Nie Farbe allein.</td></tr>
+    <tr><td>erledigt</td><td>Die Aufgabe aus Woche 5 trägt den gefüllten Haken und das Wort „erledigt".</td></tr>
+    <tr><td>eingeklappt</td><td>Auf dem iPhone: „Woche 1–6 · 41 Objekte" mit Chevron. Die frühere Zeit verschwindet nicht, sie ruht.</td></tr>
+    <tr><td>leer</td><td>Ein Fach ohne Objekte zeigt einen Faden, der ins Leere läuft und in einem hohlen Punkt endet, dazu „In Biologie liegt noch nichts. Die erste Vorlesung ist am Donnerstag." (Form aus <span class="num">leere-zustaende.html</span>)</td></tr>
+  </table>
+
+  <h3>Affordanz (die vier Regeln)</h3>
+  <table>
+    <tr><td>R1 primär</td><td>„Neu" ist eine gefüllte Ink-Fläche mit hellem Text; „Fäden" ist der eingeschaltete Zustand desselben Musters.</td></tr>
+    <tr><td>R2 sekundär</td><td>Die Ansichtszeile ist ein Segment mit eigener Fläche; die aktive Zelle trägt Papierfläche + Schatten + Ink-Text. „Woche 6 nacharbeiten" ist ein <span class="num">.btn</span> mit <span class="num">--fill</span>-Fläche.</td></tr>
+    <tr><td>R3 Text</td><td>Jede Zeile trägt einen Chevron; die geplante Vorlesung trägt <em>keinen</em>, weil sie nichts zu öffnen hat — sie ist deshalb auch kein Knopf, sondern ein <span class="num">&lt;div&gt;</span>. Das ist der Unterschied, den ein Fremder in drei Sekunden sehen soll.</td></tr>
+    <tr><td>R4 44 pt</td><td>Gemessen, nicht geschätzt: Auf beiden Geräten liegt <strong>kein</strong> Bedienelement dieses Schirms unter 44 pt. Die Spurzeilen tragen ihre Höhe aus dem Inhalt (49–61 pt), die eingeklappte Wochenzeile 44 pt, die fünf Filterzeilen in „Das Fach enthält" ebenfalls 44 pt; Segmentzellen, Chips und Icon-Knöpfe bekommen ihren unsichtbaren 44-pt-Bereich aus system.css §5.9. Die einzige Ausnahme sind die zwölf <span class="num">.navitem</span> der Seitenleiste mit 40 pt — das ist der in system.css §5.9 offen vermerkte Befund des Bestands und steht auf allen dreizehn Schirmen gleich; dieser Schirm erbt ihn, er erzeugt ihn nicht.</td></tr>
+  </table>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Modul = 6-pt-Punkt + Modulwort in derselben Zeile („Journaleintrag", „Canvas-Blatt", „Lernkarten"). Diese Woche = Fläche + Wort. Ausgewählt = Fläche + Ring + Gewicht. Geplant = hohler Punkt + das Wort „geplant" + fehlender Chevron. Erledigt = Haken + Wort. Herkunft = Faden + der ausgeschriebene Satz in der Quellzeile.</p>
+
+  <h3>Die Schrift</h3>
+  <p>Der Screen-Titel („Biologie") trägt <span class="num">.serif--screen-title</span> — der einzige Serif-Ort dieses Schirms. Wochenmarken sind Beschriftungen, keine Datumsmarken im Journal-Sinn; sie laufen deshalb in Sans (<span class="num">.t-label</span>). Blankes <span class="num">.serif</span> kommt in dieser Datei nicht vor.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
+</body>
+</html>

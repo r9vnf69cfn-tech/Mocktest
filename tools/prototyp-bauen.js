@@ -2,8 +2,10 @@
 /* ============================================================================
  * prototyp-bauen.js — der Auszug
  *
- * Zieht aus jedem der 13 Schirme in mockups/app-next/ den iPad- und den
+ * Zieht aus jedem Schaubild in mockups/app-next/ den iPad- und den
  * iPhone-Rahmen und schreibt beide in EINE Seite: mockups/prototyp/index.html.
+ * Dazu kommt der Canvas-Schirm, der nicht ausgezogen, sondern gebaut wird
+ * (§1b): das eigenständige Canvas-Mockup läuft als iframe im Rahmen.
  *
  *   node tools/prototyp-bauen.js
  *
@@ -72,18 +74,34 @@ const ZIEL_DIR = path.join(WURZEL, 'mockups', 'prototyp');
 const ZIEL     = path.join(ZIEL_DIR, 'index.html');
 
 /* ══════════════════════════════════════════════════════════════════════════
- * 1 · DIE 13 SCHIRME
+ * 1 · DIE SCHIRME
  *
  * Reihenfolge und deutsche Namen wortgleich mit mock.js (SCREENS['app-next'])
  * und der Übersicht mockups/index.html — damit derselbe Schirm überall gleich
  * heißt. Der Schlüssel ist zugleich der Anker in der Adresse (#heute) und der
  * Wert von data-pv-screen. Die Wegekarte spricht die Schirme über diesen
  * Schlüssel an; prototyp.js nimmt zusätzlich den Dateinamen als Alias an.
+ *
+ * Die Reihenfolge ist die der Seitenleiste, nicht die der Entstehung: Heute ·
+ * Bibliothek · Eingang · dann die fünf Module in ihrer Leistenfolge (Canvas
+ * zuerst) · dann die Semester-Gruppe · dann Suche und Einstellungen. Wer mit
+ * ← und → blättert, läuft damit die Leiste von oben nach unten ab.
+ *
+ * ── DREI ARTEN VON EINTRAG ────────────────────────────────────────────────
+ *   (ohne Merkmal)  ein Schaubild aus mockups/app-next/. Fehlt es, bricht der
+ *                   Lauf ab — dreizehn Schirme sind gebaut und müssen da sein.
+ *   optional: true  ein Schirm, der gerade entsteht. Fehlt die Datei, wird er
+ *                   mit einem Hinweis übersprungen und der Lauf geht weiter.
+ *                   Sobald sie abgelegt ist, genügt ein neuer Lauf.
+ *   eigen: fn       kein Auszug, sondern hier gebaut. Das Canvas ist ein
+ *                   eigenständiges Mockup mit eigener Zeichen-Engine (§1b).
  * ════════════════════════════════════════════════════════════════════════ */
 
 const SCHIRME = [
   { datei: 'today.html',           schluessel: 'heute',            name: 'Heute' },
   { datei: 'library.html',         schluessel: 'bibliothek',       name: 'Bibliothek' },
+  { datei: 'eingang.html',         schluessel: 'eingang',          name: 'Eingang',        optional: true },
+  { datei: 'index.html',           schluessel: 'canvas',           name: 'Canvas',         eigen: true },
   { datei: 'notes-list.html',      schluessel: 'notizen',          name: 'Notizen-Liste' },
   { datei: 'note-editor.html',     schluessel: 'notiz',            name: 'Notiz-Editor' },
   { datei: 'journal-home.html',    schluessel: 'journal',          name: 'Journal-Start' },
@@ -92,10 +110,83 @@ const SCHIRME = [
   { datei: 'task-detail.html',     schluessel: 'aufgabe',          name: 'Aufgaben-Detail' },
   { datei: 'flashcards-home.html', schluessel: 'lernkarten',       name: 'Lernkarten-Start' },
   { datei: 'review-session.html',  schluessel: 'lernsitzung',      name: 'Review-Session' },
+  { datei: 'semester.html',        schluessel: 'semester',         name: 'Semester-Ordner', optional: true },
   { datei: 'graph.html',           schluessel: 'graph',            name: 'Graph' },
+  { datei: 'suche.html',           schluessel: 'suche',            name: 'Suche',          optional: true },
   { datei: 'settings.html',        schluessel: 'einstellungen',    name: 'Einstellungen' },
   { datei: 'leere-zustaende.html', schluessel: 'leere-zustaende',  name: 'Leere Zustände' },
 ];
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * 1b · DER CANVAS-SCHIRM — das fremde Mockup im eigenen Rahmen
+ *
+ * Das Canvas ist kein Schaubild, sondern eine laufende Anwendung: eigene
+ * Zeichen-Engine, elf Werkzeuge, Formerkennung, Lasso, eigenes CSS. Es hier
+ * als Standbild abzuzeichnen hieße, das Beste daran wegzuwerfen — man kann
+ * darin zeichnen, und genau das soll man im Rahmen können.
+ *
+ * Deshalb ein <iframe>. Es bringt zwei Dinge geschenkt, die anders teuer
+ * wären:
+ *
+ *   1  Sein CSS trifft nie auf system.css. Das Canvas setzt eigene :root-
+ *      Variablen, eigene .navbar, eigene .iconbtn — im gemeinsamen Dokument
+ *      wäre das ein Feld voller Kollisionen; im iframe ist es ein zweites
+ *      Dokument und die Frage stellt sich nicht.
+ *   2  Seine Innenmaße bleiben seine. Der Rahmen wird auf schmalen Fenstern
+ *      über transform: scale() verkleinert; eine Transformation ändert keine
+ *      Layout-Maße, das iframe rechnet innen weiter mit 1194 × 834 bzw.
+ *      393 × 852. Geprüft: die Zeichenfläche misst sich selbst über
+ *      getBoundingClientRect ihres eigenen Dokuments und bekommt dort die
+ *      unskalierten Werte.
+ *
+ * Die Quelle steht in data-pv-canvas, NICHT in src: prototyp.js hängt sie
+ * erst ein, wenn der Schirm zum ersten Mal gezeigt wird (prototyp.js §11a).
+ * Sonst liefen beim Laden der Seite zwei vollständige Zeichen-Engines an,
+ * die niemand angesehen hat.
+ *
+ * ── EIN BEFUND, DER DEM CANVAS GEHÖRT, NICHT DIESER DATEI ─────────────────
+ * Das Canvas sichert seinen Zustand — Bretter, Striche UND die Kamera — unter
+ * dem Schlüssel „goodnotes-canvas-mockup/v2" im localStorage. Über file://
+ * teilen sich alle Dokumente denselben Speicher, also teilen sich beide
+ * Rahmen ihn auch.
+ *
+ * Das ist zur Hälfte ein Geschenk: was auf dem iPad gezeichnet wurde, steht
+ * beim Wechsel auf dem iPhone da. Genau das verspricht Velum — ein
+ * Datenmodell, mehrere Geräte.
+ *
+ * Die andere Hälfte ist ein Befund: die Kamera kommt mit. Wer zuerst das
+ * iPad-Canvas öffnet (Ausschnitt auf 137 % eingepasst) und dann aufs iPhone
+ * wechselt, sieht dort denselben Ausschnitt statt der 41 %, die auf 393 pt
+ * passen — das Bild steht rechts über der Kante. Der Ort für die Behebung
+ * ist das Canvas selbst: es müsste beim Start prüfen, ob die gesicherte
+ * Kamera zum jetzigen Fenster passt, und sonst neu einpassen. Von hier aus
+ * geht es nicht: über file:// ist jedes Dokument ein eigener Ursprung, das
+ * Innere des iframes ist unerreichbar (geprüft: contentDocument ist null).
+ * Ein sandbox-Attribut isolierte den Speicher zwar, nähme dem Canvas aber
+ * zugleich sein eigenes CSS und JS — auch geprüft, das Bild bleibt leer.
+ * Den Speicher von außen zu löschen wäre möglich und wird bewusst nicht
+ * getan: es ist der Zustand einer anderen Anwendung.
+ *
+ * ── DER WEG ZURÜCK ────────────────────────────────────────────────────────
+ * Ein iframe schluckt Zeiger und Tastatur: sobald man einmal hineingetippt
+ * hat, sieht das äußere Dokument weder die Zurück-Geste noch <esc>. Der Weg
+ * hinaus muss deshalb AUSSERHALB des iframes liegen und sichtbar sein. Er
+ * liegt als Kapsel im Rahmen, nicht als Streifen darüber — der Rahmen bleibt
+ * ein Gerät. Sie trägt die Sprache der Bedienleiste, nicht die der App: sie
+ * gehört zum Prototyp, nicht zum Entwurf, und sagt das auch.
+ * ════════════════════════════════════════════════════════════════════════ */
+
+function canvasSchirm(art) {
+  return [
+    '<div class="screen screen--' + art + ' pv-canvas">',
+    '  <iframe class="pv-canvas__flaeche" data-pv-canvas="../../index.html"',
+    '          title="Canvas — das eigenständige Mockup, lauffähig im Rahmen"></iframe>',
+    '  <button type="button" class="pv-canvas__zurueck" data-pv-canvas-zurueck>',
+    '    <span class="pv-canvas__pfeil" aria-hidden="true"></span>Zurück zu Velum',
+    '  </button>',
+    '</div>',
+  ].join('\n');
+}
 
 /* ══════════════════════════════════════════════════════════════════════════
  * 2 · HTML AUSSCHNEIDEN — ein Tag-Leser, kein regulärer Ausdruck
@@ -378,14 +469,32 @@ function selektorenSammeln(css) {
  * 4 · DER LAUF
  * ════════════════════════════════════════════════════════════════════════ */
 
-const bericht = { fehler: [], warnung: [], hinweis: [] };
+const bericht = { fehler: [], warnung: [], hinweis: [], offen: [] };
 const teile   = [];   /* je Schirm: {schluessel, name, ipad, iphone, css, js} */
 const kuren   = [];   /* Zeilen für den Bericht: welche Ausbesserung wo griff */
 const selVonSchirm = new Map();
 
 for (const schirm of SCHIRME) {
+  /* Der eigene Schirm wird nicht ausgeschnitten, sondern gebaut (§1b). */
+  if (schirm.eigen) {
+    teile.push({
+      schluessel: schirm.schluessel, name: schirm.name, datei: schirm.datei,
+      ipad: canvasSchirm('ipad'), iphone: canvasSchirm('iphone'), css: '', js: '',
+    });
+    continue;
+  }
+
   const pfad = path.join(QUELLE, schirm.datei);
   if (!fs.existsSync(pfad)) {
+    /* Ein Schirm, der gerade gebaut wird. Der Lauf bricht nicht ab — sonst
+       stünde die ganze Seite still, bis die letzte Datei da ist. Er wird
+       genannt, übersprungen, und beim nächsten Lauf ist er dabei. */
+    if (schirm.optional) {
+      bericht.offen.push(schirm.datei + ' fehlt noch — „' + schirm.name +
+        '" (#' + schirm.schluessel + ') ist übersprungen. Sobald die Datei in ' +
+        'mockups/app-next/ liegt, genügt ein neuer Lauf; die Reihenfolge steht schon.');
+      continue;
+    }
     bericht.fehler.push(schirm.datei + ': Datei fehlt.');
     continue;
   }
@@ -497,8 +606,9 @@ if (bericht.fehler.length) {
  * 5 · DIE SEITE SCHREIBEN
  *
  * Die Hülle steht hier, weil index.html vollständig erzeugt wird und nie von
- * Hand angefasst werden soll. Gestalt (prototyp.css) und Bedienung
- * (prototyp.js) liegen daneben und werden von Hand gepflegt.
+ * Hand angefasst werden soll. Gestalt (prototyp.css), Bedienung
+ * (prototyp.js) und die Wegekarte (wege.js) liegen daneben und werden von
+ * Hand gepflegt.
  * ════════════════════════════════════════════════════════════════════════ */
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -525,6 +635,14 @@ const umschalter = [
   '  <button type="button" class="pv-geraetwahl__knopf" role="radio" data-pv-geraet-wahl="ipad" aria-checked="true">iPad</button>',
   '  <button type="button" class="pv-geraetwahl__knopf" role="radio" data-pv-geraet-wahl="iphone" aria-checked="false">iPhone</button>',
   '</div>',
+  /* Der Wege-Modus. Er gehört zum Prüfwerkzeug, nicht zum Entwurf — deshalb
+     steht er hier oben bei der Gerätewahl und trägt deren Form, nicht die der
+     App. Die Zahl daneben steht IMMER, auch bei ausgeschaltetem Modus: sie
+     ist die schnellste Antwort auf „ist dieser Schirm arm?". */
+  '<div class="pv-pruefung">',
+  '  <button type="button" class="pv-pruefung__knopf" id="pv-wege-schalter" aria-pressed="false">Wege zeigen</button>',
+  '  <span class="pv-pruefung__zahl" id="pv-wege-zahl" role="status" aria-live="polite"></span>',
+  '</div>',
 ].join('\n');
 
 const seite = `<!DOCTYPE html>
@@ -538,7 +656,7 @@ const seite = `<!DOCTYPE html>
 <link rel="stylesheet" href="prototyp.css">
 <style>
 /* ══════════════════════════════════════════════════════════════════════════
- * SEITENEIGENES CSS DER 13 SCHIRME — erzeugt von tools/prototyp-bauen.js
+ * SEITENEIGENES CSS DER SCHIRME — erzeugt von tools/prototyp-bauen.js
  *
  * Nicht von Hand ändern. Jeder Block steht wortgleich in seiner Quelldatei
  * unter mockups/app-next/; hier ist ihm nur der Namensraum seines Schirms
@@ -553,8 +671,9 @@ ${cssTeile.join('\n\n')}
 <!-- ============================================================================
 DER BEGEHBARE PROTOTYP
 
-Erzeugt von tools/prototyp-bauen.js aus den 13 Schaubildern in
-mockups/app-next/. Nicht von Hand ändern — der nächste Lauf überschreibt alles.
+Erzeugt von tools/prototyp-bauen.js aus den Schaubildern in mockups/app-next/
+und dem Canvas-Mockup im Wurzelordner. Nicht von Hand ändern — der nächste
+Lauf überschreibt alles.
 
 Die Schaubilder bleiben, wie sie sind: dort stehen iPad und iPhone
 nebeneinander auf einer Bühne, darunter der Steckbrief. Diese Seite ist die
@@ -572,8 +691,10 @@ Was keinen Weg hat, hat auch keinen Klickfinger (siehe prototyp.js §4).
   <p class="pv-kopf__hinweis" id="pv-hinweis">
     Begehbarer Entwurf, ohne Funktion. Notizbücher, Zeilen, Karten und Chips führen
     wirklich — was keinen Weg hat, zeigt auch keinen Klickfinger.
-    <kbd>←</kbd> <kbd>→</kbd> blättern durch alle 13 Schirme, <kbd>esc</kbd> geht zurück.
-    <a href="../../index.html" target="_blank" rel="noopener">Das Canvas ist ein eigenes Mockup</a> und öffnet in einem neuen Tab.
+    <kbd>←</kbd> <kbd>→</kbd> blättern durch alle ${teile.length} Schirme, <kbd>esc</kbd> geht zurück,
+    <kbd>w</kbd> zeigt die Wege.
+    Das Canvas läuft als eigener Schirm im Rahmen — man kann darin wirklich zeichnen
+    (<a href="../../index.html" target="_blank" rel="noopener">auch als eigene Seite</a>).
   </p>
 </header>
 
@@ -590,10 +711,11 @@ ${teile.map((t) => rahmenBlock(t, 'iphone')).join('\n')}
 
 <script src="../shared/mock.js"></script>
 <script src="../shared/bewegung.js"></script>
-<!-- Die Wegekarte — welches Element wohin führt — steht als Datenblock in
-     prototyp.js §10. Wer sie von außen ersetzen will, legt vor dieser Zeile
-     ein eigenes <script> mit window.VELUM_WEGE ab; prototyp.js nimmt es dann
-     statt der eingebauten Karte. -->
+<!-- Die Wegekarte — welches Element wohin führt. Sie ist reine Daten und
+     steht VOR prototyp.js: sie legt window.VELUM_WEGE ab, prototyp.js §10
+     holt sie beim Start. Fehlt diese Zeile, lebt nur die Grundnavigation,
+     und die Konsole sagt warum. -->
+<script src="wege.js"></script>
 <script src="prototyp.js"></script>
 <script>
 /* ══════════════════════════════════════════════════════════════════════════
@@ -634,6 +756,12 @@ if (kollisionen.size) {
 if (kuren.length) {
   console.log('  AUSBESSERUNGEN an der Kopie (§3b) — die Schaubilder bleiben unberührt:');
   kuren.forEach((z) => console.log(z));
+  console.log('');
+}
+
+if (bericht.offen.length) {
+  console.log('  NOCH NICHT DA — übersprungen, nicht vergessen:');
+  bericht.offen.forEach((z) => console.log('    ' + z));
   console.log('');
 }
 

@@ -4,7 +4,7 @@
  * Ohne Funktion: es wird nichts gespeichert, nichts gerechnet, nichts
  * eingegeben. Diese Datei tut genau drei Dinge:
  *
- *   sie bewegt einen von 26 Rahmen in den Vordergrund,
+ *   sie bewegt einen von 34 Rahmen in den Vordergrund,
  *   sie merkt sich, woher man kam,
  *   und sie sagt jedem Element im Rahmen, ob es ein Ziel ist oder keines.
  *
@@ -13,7 +13,7 @@
  *   2  Der Weg                Geschichte, Adresse, Richtung
  *   3  Der Wechsel            die Rolle WECHSELN aus bewegung.css
  *   4  Tote und lebende Ziele die eine zentrale Stelle
- *   5  Die Grundnavigation    Seitenleiste · Tab-Bar · Zurück
+ *   5  Die Grundnavigation    Seitenleiste · Tab-Bar · Zurück · Lupe
  *   5b Die Wegekarte          welcher Eintrag welches Element belebt
  *   5c Die Übergänge          ÖFFNEN als Hero · als Blatt · rückwärts
  *   5d Herkunft zeigen        der Faden, dann die Quelle
@@ -21,44 +21,31 @@
  *   6  Tastatur und Geste
  *   7  Der Maßstab
  *   8  Der Gerätewechsel
+ *  11  Das Prüfwerkzeug       das Canvas im Rahmen · der Wege-Modus
  *   9  Start und Ankunft
- *  10  DIE WEGEKARTE          die Daten — 145 Wege, 172 Ziele
+ *  10  Die Wegekarte          liegt seit dieser Runde daneben: wege.js
  *
  * ── DIE WEGEKARTE ─────────────────────────────────────────────────────────
  * Alles über die Grundnavigation hinaus — Bibliothek → Notiz-Editor,
- * Aufgabe → Detail, Deck → Review, Herkunfts-Chip → Ursprung — steht als
- * reiner Datenblock in §10 dieser Datei. Ein Eintrag:
+ * Aufgabe → Detail, Deck → Review, Treffer → Objekt, Herkunfts-Chip →
+ * Ursprung — steht als reiner Datenblock in wege.js. Sie wird VOR dieser
+ * Datei geladen und legt window.VELUM_WEGE ab; §10 hier holt sie und sagt
+ * in der Konsole Bescheid, wenn sie fehlt. Ihr Aufbau, ihre Felder und ihre
+ * Begründung stehen im Kopf von wege.js — sie sind dort nachzulesen, wo sie
+ * gebraucht werden.
  *
- *     { s:'bibliothek', g:'ipad', wo:'article.book.is-selected',
- *       ziel:'notiz', art:'oeffnen', t:'Notizbuch Zellbiologie öffnen' }
- *
- *   s      Schlüssel des Schirms, in dem das Element steht: heute ·
- *          bibliothek · notizen · notiz · journal · journal-eintrag ·
- *          aufgaben · aufgabe · lernkarten · lernsitzung · graph ·
- *          einstellungen · leere-zustaende. Der Dateiname (note-editor.html,
- *          note-editor) wird ebenfalls angenommen.
- *   g      'ipad' | 'iphone' | 'beide'   (Vorgabe: 'beide')
- *   wo     CSS-Selektor, gesucht wird NUR innerhalb dieses Rahmens. Jeder
- *          Treffer wird ein Ziel; keiner ist kein Fehler, wird aber beim
- *          Start in der Konsole gemeldet — ein Weg ins Leere ist schlimmer
- *          als keiner.
- *   ziel   Schlüssel eines Schirms · 'canvas' (das eigene Canvas-Mockup im
- *          Wurzelordner, öffnet in einem neuen Tab) · 'zurueck' · 'nichts'
- *   art    'oeffnen' (Vorgabe) · 'herkunft' · 'zurueck'
- *   t      Klartext für aria-label und Fußzeile
- *
- * Die Karte darf von außen ersetzt werden — window.VELUM_WEGE vor dieser
- * Datei setzen oder zur Laufzeit PROTOTYP.wege(karte) rufen. Danach ist
- * alles wieder tot, was nicht mehr in der Karte steht: die Karte ist die
- * einzige Quelle, nicht ein Zusatz zum Bestehenden.
+ * Die Karte darf auch zur Laufzeit ersetzt werden: PROTOTYP.wege(karte).
+ * Danach ist alles wieder tot, was nicht mehr in der Karte steht — sie ist
+ * die einzige Quelle, nicht ein Zusatz zum Bestehenden.
  *
  * Elemente mit data-bw (die fünf Signature-Momente) sind IMMER lebendig:
  * sie führen zwar nicht auf einen anderen Schirm, aber sie tun etwas
  * Sichtbares, und damit sind sie keine toten Ziele.
  *
  * ── WAS NICHT IN DER KARTE STEHT UND TROTZDEM LEBT ────────────────────────
- * Seitenleiste, Tab-Leiste und der Zurück-Weg (§5) — sie sind in allen 13
- * Schirmen wortgleich, sie 26-mal aufzuzählen hieße 26-mal dasselbe pflegen.
+ * Seitenleiste, Symbolschiene, Lupe, Tab-Leiste und der Zurück-Weg (§5) —
+ * sie sind in allen siebzehn Schirmen wortgleich, sie 34-mal aufzuzählen
+ * hieße 34-mal dasselbe pflegen.
  * Dazu die drei Schalter Hell · Dunkel · Automatisch in den Einstellungen:
  * der einzige Ort, an dem im Prototyp ein Bedienelement wirklich etwas tut.
  * ========================================================================== */
@@ -279,6 +266,7 @@
     /* Der neue Rahmen steht sofort. */
     aufraeumen(neu);
     neu.hidden = false;
+    canvasWecken(neu);          /* §11a — das iframe bekommt seine Quelle */
 
     if (!alt || richtung === 'keine') {
       alleRahmen(function (r) { if (r !== neu) { r.hidden = true; aufraeumen(r); } });
@@ -348,6 +336,11 @@
     }
     DOK.title = 'Velum — ' + schirm.name;
     rueckwegPruefen();
+    /* Der Wege-Modus zählt und zeichnet für den Schirm, der jetzt steht (§11b).
+       Zweimal: einmal sofort, damit die Zahl nicht hinterherhinkt, und einmal,
+       wenn die Bewegung durch ist und alles an seinem Platz liegt. */
+    markenAuffrischen();
+    global.setTimeout(markenAuffrischen, tempo(WECHSEL_MS) + 40);
 
     /* Der verlassene Schirm wird wieder der, der er war (§5e) — aber erst,
        wenn er hinter dem neuen verschwunden ist. Ein Zurücksetzen im Bild
@@ -500,16 +493,16 @@
     e.preventDefault();
     if (weg.ziel === 'zurueck') { zurueck(weg.rueckfall); return; }
     if (weg.ziel === 'nichts') return;
-    if (weg.ziel === 'canvas') { canvasOeffnen(); return; }
+    if (weg.ziel === 'canvas' && !NACH_SCHLUESSEL['canvas']) { canvasOeffnen(); return; }
     if (weg.ziel.indexOf('extern:') === 0) { location.href = weg.ziel.slice(7); return; }
     gehen(weg.ziel, weg.richtung || 'vor', false, el);
   });
 
-  /* Das Canvas ist ein eigenes, lauffähiges Mockup im Wurzelordner — kein
-     Schirm dieses Prototyps. Es öffnet in einem neuen Tab, damit der Weg
-     hierher nicht verloren geht: wer aus der Bibliothek ein Canvas-Notizbuch
-     antippt, will das Canvas sehen und danach weitersuchen. Ein Sprung, der
-     den Prototyp unter einem wegzieht, wäre der teuerste Klick der Seite. */
+  /* Der Rückfall, falls der Canvas-Schirm einmal nicht mit im Dokument steht
+     (eine ältere Fassung von tools/prototyp-bauen.js). Dann öffnet das
+     Mockup in einem neuen Tab, statt dass 22 Wege ins Leere zeigen. Im
+     Regelfall läuft das Canvas im Rahmen und diese Funktion wird nie
+     gerufen. */
   function canvasOeffnen() {
     var url = '../../index.html';
     var w = null;
@@ -536,9 +529,9 @@
   /* ══════════════════════════════════════════════════════════════════════
    * 5 · DIE GRUNDNAVIGATION
    *
-   * Sie steht hier und nicht in der Wegekarte, weil sie in ALLEN 13 Schirmen
+   * Sie steht hier und nicht in der Wegekarte, weil sie in ALLEN 17 Schirmen
    * dieselbe ist: dieselbe Seitenleiste, dieselbe Tab-Bar, wortgleich. Sie
-   * über 13 × 2 Einträge in einer Datendatei zu wiederholen hieße, 26-mal
+   * über 17 × 2 Einträge in einer Datendatei zu wiederholen hieße, 34-mal
    * dasselbe zu pflegen.
    *
    * Zugeordnet wird über das WORT, nicht über die Stelle in der Liste:
@@ -546,17 +539,35 @@
    * kein „Analysis II". Eine Zuordnung über nth-child träfe dort daneben.
    * ==================================================================== */
 
+  /* Jedes Wort der Leiste auf den Schirm, den es meint. „Biologie" und
+     „Analysis II" sind zwei Ordner desselben Bauplans und führen deshalb auf
+     denselben Schirm — wie fünf Notizzeilen auf denselben Editor (§10).
+
+     Steht ein Schirm noch nicht im Dokument, bleibt sein Eintrag hier stehen
+     und wird beim Aufbau übersprungen (siehe leitetAuf): ein Ziel, das es
+     nicht gibt, darf keinen Klickfinger bekommen. Seit dieser Runde gibt es
+     alle zwölf: eingang.html, semester.html und suche.html liegen in
+     mockups/app-next/, und damit lösen die vier Einträge ein, die bis eben
+     nur angeboten waren — Eingang, Canvas, Biologie und Analysis II. */
   var SEITENLEISTE = {
     'heute':         'heute',
     'bibliothek':    'bibliothek',
+    'eingang':       'eingang',
     'notizen':       'notizen',
     'journal':       'journal',
     'aufgaben':      'aufgaben',
     'lernkarten':    'lernkarten',
+    'biologie':      'semester',
+    'analysis ii':   'semester',
     'graph':         'graph',
     'einstellungen': 'einstellungen',
     'canvas':        'canvas',
   };
+
+  /* Ein Ziel gilt nur, wenn der Schirm dazu wirklich im Dokument steht. */
+  function leitetAuf(schluessel) {
+    return schluessel && NACH_SCHLUESSEL[schluessel] ? schluessel : null;
+  }
 
   var TABBAR = {
     'heute':      'heute',
@@ -584,14 +595,49 @@
 
     /* ── Seitenleiste (iPad) ── */
     Array.prototype.forEach.call(rahmen.querySelectorAll('.sidebar .navitem'), function (knopf) {
-      var ziel = SEITENLEISTE[wortVon(knopf)];
-      if (!ziel) return;                                   /* Eingang, Biologie, Analysis II: kein Schirm */
+      var ziel = leitetAuf(SEITENLEISTE[wortVon(knopf)]);
+      if (!ziel) return;                    /* Schirm noch nicht gebaut: bleibt tot */
       if (ziel === schirmSchluessel) { beleben(knopf, { ziel: 'nichts' }); return; }
-      beleben(knopf, {
-        ziel: ziel,
-        richtung: ziel === 'canvas' ? 'vor' : seitlicheRichtung(schirmSchluessel, ziel),
-      });
+      beleben(knopf, { ziel: ziel, richtung: seitlicheRichtung(schirmSchluessel, ziel) });
     });
+
+    /* ── Die Lupe ────────────────────────────────────────────────────────
+       Sie steht in fast jeder Leiste — mal als Knopf, mal als Attrappe aus
+       <span>, mal gar nicht. Sie meint überall dasselbe, also führt sie
+       überall auf denselben Schirm. Das war der Weg, der bis zu dieser Runde
+       am häufigsten ins Leere zeigte; seit suche.html da ist, löst er ein.
+
+       ZWEI GESTALTEN, EIN ZIEL. Auf dem iPad sitzt die Lupe als .iconbtn in
+       der Leiste. Auf dem iPhone tragen Bibliothek und Notizenliste KEINE
+       Lupe in der Leiste — sie tragen das Suchfeld über der Liste, und darin
+       steht „Suchen" bzw. „In 42 Notizen suchen". Ein Feld, das dieses Wort
+       trägt und nicht führt, ist genau der Fall, den diese Runde abräumt: auf
+       diesen beiden Schirmen wäre es sonst der einzige Weg zur Suche, und er
+       wäre keiner. Also führt auch das Feld.
+
+       DIE EINE AUSNAHME sind die Einstellungen: „In Einstellungen suchen"
+       meint einen anderen Index als den der Inhalte — dort stünde nach dem
+       Tap „12 Fundstellen zu Osmose", und das wäre gelogen. Das Feld bleibt
+       dort tot und sieht auch so aus; die Lupe in derselben Leiste führt.
+
+       Auf dem Suche-Schirm selbst führt nichts davon: das Feld ist dort die
+       laufende Eingabe, nicht der Weg dorthin. Das erledigt schon die Zeile
+       „suche !== schirmSchluessel". */
+    var suche = leitetAuf('suche');
+    if (suche && suche !== schirmSchluessel) {
+      Array.prototype.forEach.call(rahmen.querySelectorAll('.ico[data-ico="search"]'), function (ico) {
+        var traeger = ico.parentElement;
+        if (!traeger) return;
+        var imFeld = traeger.classList.contains('field');
+        if (!imFeld && !traeger.classList.contains('iconbtn')) return;
+        if (imFeld && schirmSchluessel === 'einstellungen') return;
+        beleben(traeger, {
+          ziel: suche,
+          richtung: seitlicheRichtung(schirmSchluessel, suche),
+          titel: 'Suchen',
+        });
+      });
+    }
 
     /* ── Die Symbolschiene (Notiz-Editor, iPad) ──────────────────────────
        Elf Schirme tragen die 295-pt-Seitenleiste; der Notiz-Editor trägt
@@ -603,12 +649,12 @@
        ausgeklappte Fassung ist ein zweites Bild derselben Datei und wird nicht
        ausgezogen. Er bleibt darum tot — und sieht auch so aus. */
     Array.prototype.forEach.call(rahmen.querySelectorAll('.sidebar .iconbtn[title]'), function (knopf) {
-      var ziel = SEITENLEISTE[(knopf.getAttribute('title') || '').trim().toLowerCase()];
+      var ziel = leitetAuf(SEITENLEISTE[(knopf.getAttribute('title') || '').trim().toLowerCase()]);
       if (!ziel) return;
       if (ziel === schirmSchluessel) { beleben(knopf, { ziel: 'nichts' }); return; }
       beleben(knopf, {
         ziel: ziel,
-        richtung: ziel === 'canvas' ? 'vor' : seitlicheRichtung(schirmSchluessel, ziel),
+        richtung: seitlicheRichtung(schirmSchluessel, ziel),
         titel: knopf.getAttribute('title'),
       });
     });
@@ -636,6 +682,16 @@
       if (zeichen === 'chevL' || zeichen === 'close') rueck.push(erster);
     });
     Array.prototype.forEach.call(rahmen.querySelectorAll('[aria-label^="Zurück"]'), function (k) {
+      if (rueck.indexOf(k) < 0) rueck.push(k);
+    });
+    /* Der Canvas-Schirm hat keine Navigationsleiste — er hat das fremde
+       Mockup. Sein Weg hinaus ist die Kapsel darauf (§11a). Sie kommt in
+       dieselbe Liste wie jeder andere Zurück-Weg, damit sie dieselbe Regel
+       bekommt: sie lebt, solange es etwas gibt, wohin sie führt.
+       Der Rückfall ohne Vorgeschichte ist die Bibliothek — dort steht das
+       Regal, in dem die Canvas-Notizbücher liegen. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('[data-pv-canvas-zurueck]'), function (k) {
+      beleben(k, { ziel: 'bibliothek', art: 'zurueck', richtung: 'zurueck', titel: 'Zurück zu Velum' });
       if (rueck.indexOf(k) < 0) rueck.push(k);
     });
     rahmen.__pvRueck = rueck;
@@ -962,7 +1018,12 @@
    * und die Richtung sagt die Navigationsleiste.
    * ==================================================================== */
 
-  var OBJEKT = '.book, .row, .card, .gn, .chain__link';
+  /* .ei-schnipsel ist der Schnipsel im Eingang. Er trägt keinen der Namen des
+     Bestands, ist aber genau das, was diese Liste meint: ein Ding mit
+     Kartenschatten, das man in die Hand nimmt. Ohne ihn öffnete der einzige
+     Schnipsel mit einer echten Beziehung als Blatt — und der Faden „wird zu"
+     endete an einem Schirm, der aus dem Nichts kommt statt aus ihm. */
+  var OBJEKT = '.book, .row, .card, .gn, .chain__link, .ei-schnipsel';
   var stapel = [];          /* je Tiefe: woraus dieser Schirm gewachsen ist */
   var gesperrt = false;
 
@@ -1023,6 +1084,10 @@
 
     if (laeuft) { clearTimeout(laeuft.uhr); laeuft.fertig(); }
     zwillingeFegen();
+    /* Der Zwilling wächst auf das Rechteck des neuen Schirms und blendet ihn
+       dabei ein. Ist das Canvas noch leer, wüchse die Karte auf eine weiße
+       Fläche — also bekommt es seine Quelle, bevor die Bewegung anläuft. */
+    canvasWecken(neu);
     var huelle = huelleVon(quelle, alt);
     var kern = wachstumsKern(quelle);
     var tiefe = jetzt.tiefe + 1;
@@ -1287,6 +1352,10 @@
     if (e.key === 'ArrowRight') { e.preventDefault(); blaettern(1); }
     else if (e.key === 'ArrowLeft') { e.preventDefault(); blaettern(-1); }
     else if (e.key === 'Escape') { e.preventDefault(); zurueck(); }
+    /* Der Wege-Modus auf eine Taste — er wird beim Prüfen zwanzigmal
+       hintereinander an- und ausgeschaltet, und der Weg zum Kopf der Seite
+       ist dabei der längste Teil. */
+    else if (e.key === 'w' || e.key === 'W') { e.preventDefault(); wegeSchalten(!wegeAn); }
     else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { /* der Leiste überlassen */ }
   });
 
@@ -1348,6 +1417,7 @@
     Array.prototype.forEach.call(DOK.querySelectorAll('[data-pv-geraet-wahl]'), function (k) {
       k.setAttribute('aria-checked', String(k.getAttribute('data-pv-geraet-wahl') === geraet));
     });
+    markenAuffrischen();
   }
 
   function geraetWechseln(geraet) {
@@ -1362,11 +1432,304 @@
   });
 
   /* ══════════════════════════════════════════════════════════════════════
+   * 11 · DAS PRÜFWERKZEUG
+   *
+   * Zwei Dinge, die nicht zum Entwurf gehören, sondern zu seiner Prüfung.
+   * Beide sprechen die Sprache der Bedienleiste oben — Ink, Papier, Sans,
+   * Kapsel —, damit man sie nie mit der App verwechselt.
+   * ==================================================================== */
+
+  /* ── 11a · Das Canvas bekommt seine Quelle ───────────────────────────────
+     Der Canvas-Schirm ist ein <iframe> auf das eigenständige Mockup
+     (tools/prototyp-bauen.js §1b). Seine Adresse steht in data-pv-canvas und
+     wird erst eingehängt, wenn der Schirm zum ersten Mal gezeigt wird.
+
+     Warum nicht gleich beim Laden: es sind zwei Rahmen, iPad und iPhone, und
+     jeder brächte eine vollständige Zeichen-Engine mit — zwei Anwendungen,
+     die niemand angesehen hat, laufen im Hintergrund und rechnen. Warum
+     überhaupt vorher: weil die Karte, die zum Schirm wächst, sonst auf eine
+     weiße Fläche wüchse. Also: beim ersten Zeigen, und beim Hero eine
+     Bewegungslänge früher (§5c).
+
+     Einmal geladen, bleibt es geladen. Was jemand hineingezeichnet hat, steht
+     beim Zurückkommen noch da — anders als bei den dreizehn Schaubildern
+     (§5e), und mit Absicht: eine Zeichnung ist Arbeit, keine Vorführung. Ein
+     Neuladen würde sie wegwerfen und dabei weiß aufblitzen. */
+  function canvasWecken(rahmen) {
+    if (!rahmen || !rahmen.querySelectorAll) return;
+    Array.prototype.forEach.call(rahmen.querySelectorAll('iframe[data-pv-canvas]'), function (f) {
+      if (f.getAttribute('src')) return;
+      /* Nur laden, wenn der Rahmen wirklich Maß hat. Das Canvas passt seine
+         Ansicht beim Start einmal ein und misst dafür sein eigenes Fenster;
+         in einem Rahmen ohne Maß käme es auf 10 % und bliebe dort. Dass er
+         Maß hat, besorgt prototyp.css §6 — die Prüfung hier ist die Wache
+         darüber: wer die Regel dort löscht, bekommt kein falsch eingepasstes
+         Canvas, sondern gar keins, und sieht sofort, dass etwas fehlt. */
+      if (!f.clientWidth || !f.clientHeight) return;
+      f.setAttribute('src', f.getAttribute('data-pv-canvas'));
+    });
+  }
+
+  /* ── 11b · Der Wege-Modus: was lebt, und wohin es führt ─────────────────
+     Der Prototyp weiß das alles längst. Jedes lebende Element trägt .pv-lebt
+     (§4) und an sich seinen Weg (el.__pvWeg). Hier wird nichts neu erfasst —
+     es wird nur sichtbar gemacht.
+
+     Der Rahmen um ein Element sagt „lebt". Die Beschriftung daneben sagt,
+     WOHIN — und das ist der eigentliche Wert: „→ Notiz-Editor" ist eine
+     Auskunft, ein Rahmen allein ist nur ein Befund.
+
+     Die Zahl im Kopf steht immer, auch bei ausgeschaltetem Modus. Sie ist die
+     schnellste Antwort auf die Frage, die diesen Prototyp trägt: ist dieser
+     Schirm arm? */
+
+  var SCHALTER_WEGE = DOK.getElementById('pv-wege-schalter');
+  var ZAHL_WEGE     = DOK.getElementById('pv-wege-zahl');
+  var SCHICHT       = null;
+  var wegeAn        = false;
+
+  var BEWEGUNG_WORT = {
+    erledigen:  'Erledigen',
+    bewerten:   'Bewerten',
+    drehen:     'Karte drehen',
+    uebergeben: 'Übergabe',
+    herkunft:   'Herkunft',
+    oeffnen:    'Öffnen',
+    zurueck:    'Zurück',
+  };
+  var ERSCHEINUNG_WORT = { light: 'Hell', dark: 'Dunkel', auto: 'Automatisch' };
+
+  function schirmName(schluessel) {
+    var s = NACH_SCHLUESSEL[schluessel];
+    return s ? s.name : schluessel;
+  }
+
+  /* Was steht an diesem Element? weg=true heißt: es führt auf einen anderen
+     Schirm. weg=false heißt: es lebt, bleibt aber hier. */
+  function auskunft(el) {
+    var w  = el.__pvWeg;
+    var bw = el.getAttribute('data-bw');
+    if (w && w.ziel && w.ziel !== 'nichts') {
+      if (w.ziel === 'zurueck') {
+        return { text: '→ zurück' + (w.rueckfall ? ' · ' + schirmName(w.rueckfall) : ''), weg: true };
+      }
+      if (w.ziel.indexOf('extern:') === 0) return { text: '→ ' + w.ziel.slice(7), weg: true };
+      /* Der Herkunfts-Chip zeichnet erst den Faden und geht dann. Das ist ein
+         anderer Weg als „öffnen", und wer prüft, will das unterscheiden. */
+      if (w.art === 'herkunft') return { text: 'Faden → ' + schirmName(w.ziel), weg: true };
+      return { text: '→ ' + schirmName(w.ziel), weg: true };
+    }
+    if (el.__pvSchalter) {
+      return { text: 'schaltet ' + (ERSCHEINUNG_WORT[el.__pvSchalter] || el.__pvSchalter), weg: false };
+    }
+    if (bw) return { text: 'Bewegung: ' + (BEWEGUNG_WORT[bw] || bw), weg: false };
+    if (el.hasAttribute('data-pv-haken')) return { text: 'Bewegung: Haken', weg: false };
+    if (w && w.ziel === 'nichts') return { text: 'dieser Schirm', weg: false };
+    return { text: 'lebt, ohne Weg', weg: false };
+  }
+
+  function schicht() {
+    if (SCHICHT || !BUEHNE) return SCHICHT;
+    SCHICHT = DOK.createElement('div');
+    SCHICHT.className = 'pv-wegeschicht';
+    /* Für Bildschirmleser ist die Schicht stumm: sie wiederholt nur, was als
+       aria-label ohnehin schon am Element steht (§4). */
+    SCHICHT.setAttribute('aria-hidden', 'true');
+    BUEHNE.appendChild(SCHICHT);
+    return SCHICHT;
+  }
+
+  /* Was von einem Element wirklich zu sehen ist. Eine Zeile, die aus ihrer
+     Rollfläche hinausgescrollt ist, wird vom overflow abgeschnitten — ihre
+     Beschriftung stünde sonst über einer Zeile, die niemand sieht. Deshalb
+     wird der Ausschnitt gegen das Glas UND gegen jede Rollfläche darüber
+     verschnitten. Bleibt fast nichts übrig, entfällt die Beschriftung. */
+  /* Die abgewandte Seite einer Lernkarte. Sie steht im Dokument, sie hat
+     volle Maße, und sie lebt auch wirklich — nur sieht man sie gerade nicht,
+     weil sie um 180° gedreht hinter der anderen liegt (bewegung.css §.bw-flip).
+     Ohne diese Prüfung stünde ihre Beschriftung mitten auf der Vorderseite
+     und zeigte auf einen Knopf, der dort nicht ist. Sie zählt trotzdem mit:
+     der Weg ist da, er ist nur eine Drehung entfernt. */
+  function abgewandt(el) {
+    var seite = el.closest ? el.closest('.bw-flip__seite') : null;
+    if (!seite) return false;
+    var karte = seite.closest('.bw-flip');
+    if (!karte) return false;
+    var hinten = seite.classList.contains('bw-flip__seite--hinten');
+    return karte.classList.contains('is-gedreht') ? !hinten : hinten;
+  }
+
+  function sichtbarerAusschnitt(el, gR) {
+    if (abgewandt(el)) return null;
+    var r = el.getBoundingClientRect();
+    var l = Math.max(r.left, gR.left);
+    var t = Math.max(r.top, gR.top);
+    var re = Math.min(r.right, gR.right);
+    var b = Math.min(r.bottom, gR.bottom);
+    var p = el.parentElement;
+    while (p && p !== GLAS) {
+      if (p.classList && p.classList.contains('scroll')) {
+        var pr = p.getBoundingClientRect();
+        l  = Math.max(l, pr.left);
+        t  = Math.max(t, pr.top);
+        re = Math.min(re, pr.right);
+        b  = Math.min(b, pr.bottom);
+      }
+      p = p.parentElement;
+    }
+    if (re - l < 4 || b - t < 4) return null;
+    return { l: l, t: t, r: re, b: b };
+  }
+
+  /* ── 11c · Ein Durchgang ─────────────────────────────────────────────────
+     Zählen tut er immer, zeichnen nur im eingeschalteten Modus. */
+  function wegeZeichnen() {
+    var lage = wegeAn ? schicht() : SCHICHT;
+    if (lage) lage.textContent = '';
+    var rahmen = sichtbarerRahmen();
+    if (!rahmen) { zahlSchreiben(0, 0); return; }
+
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.pv-wege-ort'), function (el) {
+      el.classList.remove('pv-wege-ort');
+    });
+
+    var gR = GLAS.getBoundingClientRect();
+    var bR = BUEHNE.getBoundingClientRect();
+    var wege = 0, orte = 0;
+    var offen = [];
+
+    function anmelden(el, text, weg) {
+      if (!wegeAn || !lage) return;
+      var s = sichtbarerAusschnitt(el, gR);
+      if (!s) return;
+      var marke = DOK.createElement('span');
+      marke.className = 'pv-wegemarke' + (weg ? '' : ' pv-wegemarke--ort');
+      marke.textContent = text;
+      marke.style.left = '-9999px';
+      lage.appendChild(marke);
+      offen.push({ marke: marke, s: s, w: 0, h: 0, weg: weg });
+    }
+
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.pv-lebt'), function (el) {
+      var a = auskunft(el);
+      if (a.weg) { wege++; } else { orte++; el.classList.add('pv-wege-ort'); }
+      anmelden(el, a.text, a.weg);
+    });
+
+    /* Das Canvas trägt kein .pv-lebt — es ist kein Ziel der Wegekarte,
+       sondern eine fremde Anwendung. Ohne diese vier Zeilen meldete sein
+       Schirm „1 Weg · 0 wirken an Ort und Stelle" und sähe damit ärmer aus
+       als jeder andere, während dort in Wahrheit jeder Punkt der Fläche
+       etwas tut. Ein Prüfwerkzeug, das den reichsten Schirm für den ärmsten
+       hält, prüft nichts. */
+    Array.prototype.forEach.call(rahmen.querySelectorAll('iframe[data-pv-canvas]'), function (f) {
+      orte++;
+      anmelden(f, 'die ganze Fläche zeichnet', false);
+    });
+
+    zahlSchreiben(wege, orte);
+    if (!wegeAn || !lage || !offen.length) return;
+
+    /* Erst alle messen, dann alle setzen: ein einziger Umbruch für vierzig
+       Beschriftungen statt vierzig. */
+    offen.forEach(function (o) { o.w = o.marke.offsetWidth; o.h = o.marke.offsetHeight; });
+
+    /* Fünf Plätze, in dieser Reihenfolge.
+       Der erste sitzt AUF der eigenen Oberkante, halb darüber, halb darauf —
+       wie die Beschriftung an einem Feldrahmen. Das ist der einzige Platz,
+       der eindeutig zum Element gehört: über dem Element liegt in einer Liste
+       schon die nächste Zeile, und eine Beschriftung, die mitten auf der
+       Nachbarzeile steht, beschriftet in den Augen des Lesers diese.
+       Die weiteren fangen den Fall auf, den es hier oft gibt: ein Kästchen,
+       das in einer Zeile liegt, die selbst einen Weg hat. */
+    /* Wer zuerst kommt, bekommt den Platz — deshalb kommen die Wege zuerst.
+       Ein Erledigen-Kästchen liegt in einer Zeile, die ins Detail führt;
+       beide wollen denselben Fleck, und die Auskunft „→ Aufgaben-Detail" ist
+       die, wegen der man das Werkzeug eingeschaltet hat. Die Reihenfolge
+       innerhalb der beiden Gruppen bleibt die des Dokuments. */
+    var belegt = [];
+    offen.sort(function (a, b) { return (b.weg ? 1 : 0) - (a.weg ? 1 : 0); });
+    offen.forEach(function (o) {
+      var s = o.s, w = o.w, h = o.h;
+      var mitte = (s.t + s.b) / 2;
+      var plaetze = [
+        [s.l + 6,     s.t - h / 2],      /* auf der eigenen Oberkante */
+        [s.l + 6,     s.b - h / 2],      /* auf der eigenen Unterkante */
+        [s.r + 4,     mitte - h / 2],    /* rechts daneben */
+        [s.l - w - 4, mitte - h / 2],    /* links daneben */
+        [s.l + 2,     s.t + 2],          /* zur Not hinein */
+      ];
+      for (var i = 0; i < plaetze.length; i++) {
+        var x = plaetze[i][0], y = plaetze[i][1];
+        if (x < bR.left + 2 || y < bR.top + 2 ||
+            x + w > bR.right - 2 || y + h > bR.bottom - 2) continue;
+        var frei = true;
+        for (var j = 0; j < belegt.length; j++) {
+          var k = belegt[j];
+          if (x < k.x + k.w + 2 && x + w + 2 > k.x &&
+              y < k.y + k.h + 2 && y + h + 2 > k.y) { frei = false; break; }
+        }
+        if (!frei) continue;
+        belegt.push({ x: x, y: y, w: w, h: h });
+        o.marke.style.left = Math.round(x - bR.left) + 'px';
+        o.marke.style.top  = Math.round(y - bR.top) + 'px';
+        return;
+      }
+      /* Kein Platz. Der Rahmen bleibt und sagt weiter „lebt"; die Auskunft
+         entfällt. Zwei Beschriftungen übereinander wären zwei unlesbare. */
+      o.marke.remove();
+    });
+  }
+
+  function zahlSchreiben(wege, orte) {
+    if (!ZAHL_WEGE) return;
+    var t;
+    if (!wege && !orte)  t = 'nichts lebt auf diesem Schirm';
+    else if (!wege)      t = '<b>kein Weg</b> auf diesem Schirm · ' + orte + ' wirken an Ort und Stelle';
+    else t = '<b>' + wege + (wege === 1 ? ' Weg' : ' Wege') + '</b> auf diesem Schirm · ' +
+             orte + ' ' + (orte === 1 ? 'wirkt' : 'wirken') + ' an Ort und Stelle';
+    ZAHL_WEGE.innerHTML = t;
+  }
+
+  /* Gebündelt auf das nächste Bild: Rollen, Größe ändern und Schirmwechsel
+     lösen sonst drei Durchgänge im selben Augenblick aus. */
+  var wegeWartet = false;
+  function markenAuffrischen() {
+    if (wegeWartet) return;
+    wegeWartet = true;
+    var tun = function () { wegeWartet = false; wegeZeichnen(); };
+    if (global.requestAnimationFrame) global.requestAnimationFrame(tun);
+    else global.setTimeout(tun, 16);
+  }
+
+  function wegeSchalten(an) {
+    wegeAn = !!an;
+    if (wegeAn) GLAS.setAttribute('data-pv-wege', '1');
+    else GLAS.removeAttribute('data-pv-wege');
+    if (SCHALTER_WEGE) SCHALTER_WEGE.setAttribute('aria-pressed', String(wegeAn));
+    wegeZeichnen();
+  }
+
+  if (SCHALTER_WEGE) {
+    SCHALTER_WEGE.addEventListener('click', function () {
+      wegeSchalten(SCHALTER_WEGE.getAttribute('aria-pressed') !== 'true');
+    });
+  }
+
+  global.addEventListener('resize', markenAuffrischen);
+  /* Rollen im Schirm verschiebt jede Beschriftung mit. In der Erfassungsphase,
+     weil Rollflächen kein Ereignis nach oben schicken. */
+  GLAS.addEventListener('scroll', markenAuffrischen, true);
+  /* Eine Bewegung räumt Zeilen weg und legt Karten um. Danach stimmt das Bild
+     wieder, aber erst nach ihr — deshalb ein zweiter Blick, wenn sie durch ist. */
+  GLAS.addEventListener('click', function () { global.setTimeout(markenAuffrischen, 420); });
+
+  /* ══════════════════════════════════════════════════════════════════════
    * 9 · START
    * ==================================================================== */
 
   function start() {
-    wegeAnlegen(global.VELUM_WEGE || WEGEKARTE);
+    wegeAnlegen(karteHolen());
     bedienleisteNachziehen();
 
     var a = ankerLesen(location.hash) || { schirm: START, geraet: 'ipad' };
@@ -1387,7 +1750,17 @@
       aufbauen();                                /* jetzt steht auch, was die Schirme selbst bauen */
       if (global.MOTION && global.MOTION.merken) alleRahmen(global.MOTION.merken);
       ankunft();
+      markenAuffrischen();
     }, 0);
+
+    /* Das Canvas im Voraus: eine Drittelsekunde nachdem alles steht, lädt der
+       Rahmen des gerade gewählten Geräts still das Mockup. Wer dann darauf
+       tippt, sieht es sofort — statt einer weißen Fläche, die sich füllt.
+       Das andere Gerät lädt erst, wenn man dorthin wechselt. */
+    global.setTimeout(function () {
+      var s = NACH_SCHLUESSEL['canvas'];
+      if (s) canvasWecken(s.rahmen[jetzt.geraet]);
+    }, 1200);
   }
 
   /* ── DIE ANKUNFT ─────────────────────────────────────────────────────────
@@ -1418,209 +1791,35 @@
   else start();
 
   /* ══════════════════════════════════════════════════════════════════════
-   * 10 · DIE WEGEKARTE
+   * 10 · DIE WEGEKARTE — sie steht nicht mehr hier
    *
-   * Welches Element in welchem Schirm wohin führt. Reine Daten — jede Zeile
-   * ist im Browser geprüft: der Wähler trifft in seiner Schirmwurzel genau
-   * ein Element, und die Mitte dieses Elements wird auch wirklich von ihm
-   * gefangen (document.elementFromPoint). Ein Weg, der ins Leere führte, wäre
-   * schlimmer als keiner.
+   * Bis zu dieser Runde lag der Datenblock an dieser Stelle: 145 Zeilen
+   * mitten in zweitausend Zeilen Bedienung. Er liegt jetzt in wege.js
+   * daneben und wird VOR dieser Datei geladen (tools/prototyp-bauen.js §5).
    *
-   * Felder: siehe Kopf dieser Datei.
+   * Der Grund ist Arbeitsteilung, nicht Ordnung: die Bedienung ändert sich
+   * selten, die Karte bei jedem neuen Schirm. Wer einen Weg hinzufügt, soll
+   * nicht durch die Übergänge blättern; wer an den Übergängen arbeitet, soll
+   * nicht aus Versehen einen Weg löschen.
    *
-   * ── WARUM FÜNF NOTIZZEILEN IN DIESELBE NOTIZ FÜHREN ──────────────────────
-   * Velum hat je Modul genau einen gezeichneten Detailschirm. Ein Regal, in
-   * dem nur ein einziges Buch aufgeht, fühlt sich kaputt an; ein Regal, in dem
-   * jedes Buch aufgeht, fühlt sich wie eine App an. Der Übergang ist sichtbar
-   * und trägt — in den ersten dreißig Sekunden fragt niemand, ob im Editor
-   * „Genetik II" statt „Zellbiologie" steht. Ein Tap dagegen, der auf
-   * demselben Schirm mit demselben Inhalt landet, fiele sofort auf: solche
-   * Wege stehen nicht in dieser Karte.
-   *
-   * ── WAS BEWUSST NICHT DRINSTEHT ──────────────────────────────────────────
-   * 244 Bedienelemente führen nirgendwohin — örtliche Schalter ohne zweiten
-   * gezeichneten Zustand, Werkzeuge ohne Werkzeugwirkung, alles, was Daten
-   * änderte. Sie brauchen keine Liste: der Prototyp ist grundsätzlich tot
-   * (prototyp.css §4), lebendig wird nur, was hier steht. Damit ist die Regel
-   * „was nicht führt, fühlt sich nicht führend an" nicht gepflegt, sondern
-   * gebaut.
-   *
-   * Die vier Chips mit [data-bw="herkunft"] tragen ihre Bewegung schon im
-   * Markup. Bei ihnen kommt erst der Faden und dann der Weg (§5d) — beim
-   * Lernkarten-Chip bleibt es beim Faden, weil dort die Quelle an Ort und
-   * Stelle aufgeht und der Weg weiter als Knopf darin steht.
+   * Hier steht deshalb nur noch, was zu tun ist, wenn die Karte fehlt: Der
+   * Prototyp läuft weiter, aber es lebt nichts außer der Grundnavigation.
+   * Das ist Absicht — ein Prototyp ohne Karte soll sichtbar leer sein und
+   * nicht heimlich halb funktionieren. Die Konsole sagt, woran es liegt.
    * ==================================================================== */
 
-  var WEGEKARTE = { version: 2, wege: [
-    /* ── Heute ── 17 */
-    { s:'heute', wo:'div.row:nth-child(1)', ziel:'aufgabe', t:'Aufgabe „Statistik-Blatt 4 abgeben" öffnet das Aufgaben-Detail' },
-    { s:'heute', wo:'div.row:nth-child(2)', ziel:'aufgabe', t:'Aufgabe „Laborprotokoll Zellkultur schreiben" öffnet das Aufgaben-Detail' },
-    { s:'heute', wo:'div.row:nth-child(3)', ziel:'aufgabe', t:'Aufgabe „Rückmeldung an Prof. Wendt" öffnet das Aufgaben-Detail' },
-    { s:'heute', wo:'[data-bw="herkunft"]', ziel:'notiz', art:'herkunft', t:'Herkunfts-Chip „aus Zellbiologie" zeichnet den Faden und geht zur Notiz' },
-    { s:'heute', wo:'section.card > .btn--sm', ziel:'journal-eintrag', t:'„Eintrag beginnen" führt in den Journal-Eintrag' },
-    { s:'heute', g:'ipad', wo:'#t-notiz', ziel:'notiz', t:'Kette Station 1 „Notiz · Zellbiologie" öffnet den Notiz-Editor' },
-    { s:'heute', g:'ipad', wo:'#t-karten', ziel:'lernkarten', t:'Kette Station 2 „Wurde zu 12 Karten" öffnet die Lernkarten-Übersicht' },
-    { s:'heute', g:'ipad', wo:'#t-faellig', ziel:'lernsitzung', t:'Kette Station 3 „Heute fällig · 8 Karten" öffnet die Lernsitzung' },
-    { s:'heute', g:'ipad', wo:'.chain__link--end .btn--primary', ziel:'lernsitzung', t:'„Lernen" am Ende der Kette startet die Sitzung' },
-    { s:'heute', g:'ipad', wo:'button.card:nth-child(2)', ziel:'journal-eintrag', t:'Weitermachen-Karte „Entwurf ohne Titel" öffnet den Journal-Eintrag' },
-    { s:'heute', g:'ipad', wo:'button.card:nth-child(1)', ziel:'canvas', t:'Weitermachen-Karte „Analysis II — Übungsblatt 5" öffnet das Canvas-Mockup' },
-    { s:'heute', g:'ipad', wo:'div.row:nth-child(4)', ziel:'aufgabe', t:'Aufgabe „Bücher in der Bibliothek verlängern" öffnet das Aufgaben-Detail' },
-    { s:'heute', g:'ipad', wo:'div.row:nth-child(5)', ziel:'aufgabe', t:'Aufgabe „Karteikarten Anatomie nacharbeiten" öffnet das Aufgaben-Detail' },
-    { s:'heute', g:'iphone', wo:'#p-notiz', ziel:'notiz', t:'Kette Station 1 „Zellbiologie · 14 Absätze" öffnet den Notiz-Editor' },
-    { s:'heute', g:'iphone', wo:'button:has(> .dot--node)', ziel:'lernkarten', t:'Kette Station 2 „wurde zu 12 Karten" öffnet die Lernkarten-Übersicht' },
-    { s:'heute', g:'iphone', wo:'.btn--primary.btn--sm', ziel:'lernsitzung', t:'„Lernen" an Station 3 startet die Sitzung' },
-    { s:'heute', g:'iphone', wo:'button.card--flat', ziel:'canvas', t:'Weitermachen-Karte Canvas öffnet das Canvas-Mockup' },
+  var LEERE_KARTE = { version: 0, wege: [] };
 
-    /* ── Bibliothek ── 22 */
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm.is-selected.is-lifted', ziel:'notiz', t:'Notizbuch „Zellbiologie" (Notizen) öffnet den Notiz-Editor' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(2)', ziel:'journal', t:'Notizbuch „Laborjournal" (Journal) öffnet das Journal' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(3)', ziel:'notiz', t:'Notizbuch „Genetik II" (Notizen) öffnet den Notiz-Editor' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(4)', ziel:'notiz', t:'Notizbuch „Wendt · Vorlesung" (Notizen) öffnet den Notiz-Editor' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(5)', ziel:'journal', t:'Notizbuch „Praktikum Zellkultur" (Journal) öffnet das Journal' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(6)', ziel:'aufgaben', t:'Notizbuch „Semesterplanung" (Aufgaben) öffnet die Aufgaben' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(7)', ziel:'lernkarten', t:'Notizbuch „Prüfungsfragen" (Lernkarten) öffnet die Lernkarten' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(8)', ziel:'canvas', t:'Notizbuch „Statistik" (Canvas) öffnet das Canvas-Mockup' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(9)', ziel:'notiz', t:'Notizbuch „Zitate" (Notizen) öffnet den Notiz-Editor' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(10)', ziel:'journal', t:'Notizbuch „Exkursion Harz" (Journal) öffnet das Journal' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(11)', ziel:'canvas', t:'Notizbuch „Messreihen" (Canvas) öffnet das Canvas-Mockup' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(13)', ziel:'canvas', t:'Notizbuch „Diagramme" (Canvas) öffnet das Canvas-Mockup' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(14)', ziel:'canvas', t:'Notizbuch „Analysis II" (Canvas) öffnet das Canvas-Mockup' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(15)', ziel:'notiz', t:'Notizbuch „Lesenotizen Soziologie" (Notizen) öffnet den Notiz-Editor' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(16)', ziel:'aufgaben', t:'Notizbuch „Fragen an Wendt" (Aufgaben) öffnet die Aufgaben' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(17)', ziel:'journal', t:'Notizbuch „Protokolle" (Journal) öffnet das Journal' },
-    { s:'bibliothek', g:'ipad', wo:'article.book.book--sm:nth-child(18)', ziel:'canvas', t:'Notizbuch „Skizzen Mikroskop" (Canvas) öffnet das Canvas-Mockup' },
-    { s:'bibliothek', g:'ipad', wo:'button.card.card--flat:nth-child(4)', ziel:'graph', t:'Smart-Ordner „Prüfung Februar · aus dem Graphen" öffnet den Graphen (dort steht derselbe Blick mit denselben 14)' },
-    { s:'bibliothek', g:'iphone', wo:'article.book.is-selected', ziel:'notiz', t:'Notizbuch „Zellbiologie" öffnet den Notiz-Editor' },
-    { s:'bibliothek', g:'iphone', wo:'article.book:nth-child(2)', ziel:'journal', t:'Notizbuch „Laborjournal" öffnet das Journal' },
-    { s:'bibliothek', g:'iphone', wo:'article.book:nth-child(3)', ziel:'notiz', t:'Notizbuch „Genetik II" öffnet den Notiz-Editor' },
-    { s:'bibliothek', g:'iphone', wo:'article.book:nth-child(4)', ziel:'notiz', t:'Notizbuch „Wendt · Vorlesung" öffnet den Notiz-Editor' },
-
-    /* ── Notizen-Liste ── 10 */
-    { s:'notizen', wo:'div.row:nth-child(10)', ziel:'notiz', t:'Notizzeile „Lesenotizen Soziologie" öffnet den Editor' },
-    { s:'notizen', g:'ipad', wo:'#nl-zell', ziel:'notiz', t:'Notizzeile „Zellbiologie — Vorlesung 9" öffnet den Editor' },
-    { s:'notizen', g:'ipad', wo:'#nl-sem', ziel:'notiz', t:'Notizzeile „Semesterplanung Wintersemester" öffnet den Editor' },
-    { s:'notizen', g:'ipad', wo:'#nl-osmose', ziel:'notiz', t:'Notizzeile „Osmose und Zellmembran" öffnet den Editor' },
-    { s:'notizen', g:'ipad', wo:'#nl-labor', ziel:'notiz', t:'Notizzeile „Laborjournal — Zellkultur, Tag 3" öffnet den Editor' },
-    { s:'notizen', g:'ipad', wo:'div.row:nth-child(9)', ziel:'notiz', t:'Notizzeile „Analysis II — Grenzwertsätze" öffnet den Editor' },
-    { s:'notizen', g:'iphone', wo:'#p-zell', ziel:'notiz', t:'Notizzeile „Zellbiologie — Vorlesung 9" öffnet den Editor' },
-    { s:'notizen', g:'iphone', wo:'#p-osmose', ziel:'notiz', t:'Notizzeile „Osmose und Zellmembran" öffnet den Editor' },
-    { s:'notizen', g:'iphone', wo:'#p-labor', ziel:'notiz', t:'Notizzeile „Laborjournal — Zellkultur, Tag 3" öffnet den Editor' },
-    { s:'notizen', g:'iphone', wo:'div.row:nth-child(11)', ziel:'notiz', t:'Notizzeile „Lesenotizen Soziologie" öffnet den Editor' },
-
-    /* ── Notiz-Editor ── 8 */
-    { s:'notiz', wo:'[aria-label="Zurück zur Notizenliste"]', ziel:'notizen', art:'zurueck', t:'„Notizen" in der Navigationsleiste führt zurück in die Notizenliste' },
-    { s:'notiz', wo:'div.navbar:nth-child(1) > button.iconbtn:nth-child(1)', ziel:'notizen', art:'zurueck', t:'Zurück-Pfeil führt in die Notizenliste' },
-    { s:'notiz', g:'ipad', wo:'#ipad-target', ziel:'lernkarten', t:'„12 Karten" unter DARAUS ENTSTANDEN öffnet die Lernkarten' },
-    { s:'notiz', g:'ipad', wo:'#ipad-target + div', ziel:'aufgabe', t:'„1 Aufgabe · Laborprotokoll Zellkultur" unter DARAUS ENTSTANDEN öffnet das Aufgaben-Detail' },
-    { s:'notiz', g:'ipad', wo:'section:nth-child(3) > div:nth-child(2) > button:nth-child(1)', ziel:'journal-eintrag', t:'Backlink „Laborjournal · 12. Nov" öffnet den Journal-Eintrag' },
-    { s:'notiz', g:'ipad', wo:'section:nth-child(3) > div:nth-child(2) > button:nth-child(3)', ziel:'journal-eintrag', t:'Backlink „Erster Tag im Labor" öffnet den Journal-Eintrag' },
-    { s:'notiz', g:'iphone', wo:'#iphone-target', ziel:'lernkarten', t:'Chip „12 Karten" öffnet die Lernkarten' },
-    { s:'notiz', g:'iphone', wo:'#iphone-target + .chip', ziel:'aufgabe', t:'Chip „1 Aufgabe" öffnet das Aufgaben-Detail' },
-
-    /* ── Journal-Start ── 10 */
-    { s:'journal', wo:'div:nth-child(1) > article.card:nth-child(2)', ziel:'journal-eintrag', t:'Eintrag „Vor dem Praktikum" öffnet den Journal-Eintrag' },
-    { s:'journal', wo:'div:nth-child(2) > article.card:nth-child(2)', ziel:'journal-eintrag', t:'Eintrag „Ohne Titel · Entwurf" öffnet den Journal-Eintrag' },
-    { s:'journal', g:'ipad', wo:'div:nth-child(4) > article.card:nth-child(2)', ziel:'journal-eintrag', t:'Eintrag „Zellkultur angesetzt" öffnet den Journal-Eintrag' },
-    { s:'journal', g:'ipad', wo:'article.card button', ziel:'notiz', art:'herkunft', t:'Herkunfts-Chip „aus Laborjournal" führt zur Quellnotiz' },
-    { s:'journal', g:'ipad', wo:'button.row:nth-child(5)', ziel:'aufgabe', t:'DARAUS ENTSTANDEN „Laborprotokoll · Aufgabe" öffnet das Aufgaben-Detail' },
-    { s:'journal', g:'ipad', wo:'button.row:nth-child(6)', ziel:'notiz', t:'DARAUS ENTSTANDEN „Passage 3 · Notiz" öffnet den Notiz-Editor' },
-    { s:'journal', g:'ipad', wo:'button.row:nth-child(7)', ziel:'lernkarten', t:'DARAUS ENTSTANDEN „2 Karten · Deck Zellbiologie" öffnet die Lernkarten' },
-    { s:'journal', g:'ipad', wo:'.card > .btn--sm', ziel:'journal-eintrag', t:'„Eintrag beginnen" führt in den Journal-Eintrag' },
-    { s:'journal', g:'iphone', wo:'button.card--flat', ziel:'journal-eintrag', t:'„Impuls für heute" führt in den Journal-Eintrag' },
-    { s:'journal', g:'iphone', wo:'button.iconbtn:nth-child(1)', ziel:'heute', art:'zurueck', t:'Der Zurück-Pfeil führt aus dem Journal heraus' },
-
-    /* ── Journal-Eintrag ── 5 */
-    { s:'journal-eintrag', wo:'button.iconbtn:nth-child(1)', ziel:'journal', art:'zurueck', t:'Der Zurück-Pfeil führt in die Journal-Zeitleiste' },
-    { s:'journal-eintrag', g:'ipad', wo:'button.chain__link.chain__link--tap:nth-child(1)', ziel:'notiz', art:'herkunft', t:'Kette „ENTSTANDEN AUS · Zellbiologie · Notiz" öffnet die Quellnotiz' },
-    { s:'journal-eintrag', g:'ipad', wo:'button.chain__link.chain__link--tap:nth-child(3)', ziel:'aufgabe', t:'Kette „DARAUS WURDE · Laborprotokoll · Aufgabe" öffnet das Aufgaben-Detail' },
-    { s:'journal-eintrag', g:'iphone', wo:'button.jek__stat:nth-child(2)', ziel:'notiz', art:'herkunft', t:'„ENTSTANDEN AUS · Zellbiologie" öffnet die Quellnotiz' },
-    { s:'journal-eintrag', g:'iphone', wo:'button.jek__stat:nth-child(6)', ziel:'aufgabe', t:'„DARAUS WURDE · Laborprotokoll" öffnet das Aufgaben-Detail' },
-
-    /* ── Aufgaben ── 14 */
-    { s:'aufgaben', wo:'.row:has([aria-label="Karteikarten erledigen"])', ziel:'aufgabe', t:'Aufgabe „Karteikarten Anatomie nacharbeiten" öffnet das Detail' },
-    { s:'aufgaben', wo:'.row:has([aria-label="Statistik-Blatt erledigen"])', ziel:'aufgabe', t:'Aufgabe „Statistik-Blatt 4 abgeben" öffnet das Detail' },
-    { s:'aufgaben', wo:'.row:has([aria-label="Rückmeldung erledigen"])', ziel:'aufgabe', t:'Aufgabe „Rückmeldung an Prof. Wendt" öffnet das Detail' },
-    { s:'aufgaben', wo:'.row:has([aria-label="Bücher verlängern erledigen"])', ziel:'aufgabe', t:'Aufgabe „Bücher in der Bibliothek verlängern" öffnet das Detail' },
-    { s:'aufgaben', g:'ipad', wo:'#a-labor', ziel:'aufgabe', t:'Aufgabe „Laborprotokoll Zellkultur schreiben" öffnet das Detail' },
-    { s:'aufgaben', g:'ipad', wo:'#h-labor', ziel:'notiz', art:'herkunft', t:'Klammer-Kopf „Zellbiologie · Notiz" führt zur Quellnotiz' },
-    { s:'aufgaben', g:'ipad', wo:'section.card:nth-child(2) > div.klammer:nth-child(2) > button.klammer__quelle:nth-child(2)', ziel:'canvas', art:'herkunft', t:'Klammer-Kopf „Übungen 12. Nov. · Canvas" führt zum Canvas-Mockup' },
-    { s:'aufgaben', g:'ipad', wo:'section.card:nth-child(2) > div.klammer:nth-child(2) > div.row:nth-child(4)', ziel:'aufgabe', t:'Aufgabe „Übungsblatt 5 fertig rechnen“ öffnet das Detail' },
-    { s:'aufgaben', g:'ipad', wo:'section.card:nth-child(3) > div:nth-child(2) > button:nth-child(2)', ziel:'notiz', art:'herkunft', t:'„Woher heute kommt: Zellbiologie" führt zur Quellnotiz' },
-    { s:'aufgaben', g:'ipad', wo:'section.card:nth-child(3) > div:nth-child(2) > button:nth-child(4)', ziel:'canvas', art:'herkunft', t:'„Woher heute kommt: Übungen 12. Nov." führt zum Canvas-Mockup' },
-    { s:'aufgaben', g:'iphone', wo:'.row:has([aria-label="Laborprotokoll erledigen"])', ziel:'aufgabe', t:'Aufgabe „Laborprotokoll Zellkultur schreiben" öffnet das Detail' },
-    { s:'aufgaben', g:'iphone', wo:'#h-labor-p', ziel:'notiz', art:'herkunft', t:'Klammer-Kopf „Zellbiologie · Notiz" führt zur Quellnotiz' },
-    { s:'aufgaben', g:'iphone', wo:'section.card:nth-child(3) > div.klammer:nth-child(2) > button.klammer__quelle:nth-child(2)', ziel:'canvas', art:'herkunft', t:'Klammer-Kopf „Übungen 12. Nov. · Canvas" führt zum Canvas-Mockup' },
-    { s:'aufgaben', g:'iphone', wo:'section.card:nth-child(3) > div.klammer:nth-child(2) > div.row:nth-child(4)', ziel:'aufgabe', t:'Aufgabe „Übungsblatt 5 fertig rechnen“ öffnet das Detail' },
-
-    /* ── Aufgaben-Detail ── 7 */
-    { s:'aufgabe', g:'ipad', wo:'button.iconbtn.is-active:nth-child(4)', ziel:'aufgaben', art:'zurueck', t:'Der Aufklapp-Pfeil klappt die Aufgabe zu — zurück in die Aufgabenliste' },
-    { s:'aufgabe', g:'ipad', wo:'#quelle-notiz', ziel:'notiz', t:'VERKNÜPFT „Zellbiologie · Notiz · Quelle" öffnet die Notiz' },
-    { s:'aufgabe', g:'ipad', wo:'button.row:nth-child(6)', ziel:'lernkarten', t:'VERKNÜPFT „Zellbiologie · Deck · 8 fällig" öffnet die Lernkarten' },
-    { s:'aufgabe', g:'ipad', wo:'button.row:nth-child(7)', ziel:'canvas', t:'VERKNÜPFT „Messreihe Probe 1–5 · Canvas" öffnet das Canvas-Mockup' },
-    { s:'aufgabe', g:'ipad', wo:'[data-bw="herkunft"]', ziel:'notiz', art:'herkunft', t:'„aus Zellbiologie → diese Aufgabe · Zur Stelle" zeichnet den Faden und geht zur Notiz' },
-    { s:'aufgabe', g:'iphone', wo:'article:nth-child(4) > div:nth-child(1) > button.iconbtn.is-active:nth-child(3)', ziel:'aufgaben', art:'zurueck', t:'Der Aufklapp-Pfeil klappt die Aufgabe zu — zurück in die Aufgabenliste' },
-    { s:'aufgabe', g:'iphone', wo:'article > button', ziel:'notiz', art:'herkunft', t:'„aus Zellbiologie → diese Aufgabe" führt zur Quellnotiz' },
-
-    /* ── Lernkarten-Start ── 18 */
-    { s:'lernkarten', g:'ipad', wo:'button.btn.btn--primary.btn--sm:nth-child(5)', ziel:'lernsitzung', t:'„Alle lernen · 23" startet die Sitzung' },
-    { s:'lernkarten', g:'ipad', wo:'.card:has([data-bw="herkunft"]) .btn--primary', ziel:'lernsitzung', t:'„Lernen" am Deck Zellbiologie startet die Sitzung' },
-    { s:'lernkarten', g:'ipad', wo:'button.btn.btn--primary.btn--sm:nth-child(8)', ziel:'lernsitzung', t:'„Lernen" am Deck Anatomie Grundlagen startet die Sitzung' },
-    { s:'lernkarten', g:'ipad', wo:'section.card:nth-child(3) > div:nth-child(2) > button.btn.btn--sm:nth-child(7)', ziel:'lernsitzung', t:'„Lernen“ am Deck Statistik-Formeln startet die Sitzung' },
-    /* Kein Ziel: dieser Chip lässt die Quelle an Ort und Stelle aufgehen —
-       der Weg weiter steht als Knopf darin, der Rückweg heißt „Loslassen". */
-    { s:'lernkarten', g:'ipad', wo:'[data-bw="herkunft"]', ziel:'nichts', art:'herkunft', t:'Herkunfts-Chip „aus Zellbiologie" zeichnet den Faden zur Quellnotiz' },
-    { s:'lernkarten', g:'ipad', wo:'#fc-quelle .btn:nth-child(1)', ziel:'notiz', t:'„Notiz öffnen" in der aufgedeckten Quelle öffnet den Notiz-Editor' },
-    { s:'lernkarten', g:'ipad', wo:'button.btn.btn--sm:nth-child(2)', ziel:'notiz', t:'„Notiz öffnen" am leeren Deck Lesenotizen öffnet den Notiz-Editor' },
-    { s:'lernkarten', g:'ipad', wo:'section.card:nth-child(3) > div.card__head:nth-child(1) > button.origin:nth-child(3)', ziel:'notizen', art:'herkunft', t:'Herkunfts-Chip „aus 3 Notizen“ am Deck Anatomie führt in die Notizenliste' },
-    { s:'lernkarten', g:'ipad', wo:'section.card:nth-child(4) > div.card__head:nth-child(1) > button.origin:nth-child(3)', ziel:'notiz', art:'herkunft', t:'Herkunfts-Chip „aus Formelsammlung“ führt zur Quellnotiz' },
-    { s:'lernkarten', g:'ipad', wo:'section.card:nth-child(5) > div.card__head:nth-child(1) > button.origin:nth-child(3)', ziel:'notiz', art:'herkunft', t:'Herkunfts-Chip „aus Weber“ führt zur Quellnotiz' },
-    { s:'lernkarten', g:'iphone', wo:'.card .btn--primary.btn--sm', ziel:'lernsitzung', t:'„Lernen" am Deck Zellbiologie startet die Sitzung' },
-    { s:'lernkarten', g:'iphone', wo:'button.btn.btn--primary:nth-child(2)', ziel:'lernsitzung', t:'„Alle lernen · 23" startet die Sitzung' },
-    { s:'lernkarten', g:'iphone', wo:'section.card:nth-child(1) > button.origin:nth-child(2)', ziel:'notiz', art:'herkunft', t:'Herkunfts-Chip „aus Zellbiologie" führt zur Quellnotiz' },
-    { s:'lernkarten', g:'iphone', wo:'section.card:nth-child(2) > button.origin:nth-child(2)', ziel:'notizen', art:'herkunft', t:'Herkunfts-Chip „aus 3 Notizen“ führt in die Notizenliste' },
-    { s:'lernkarten', g:'iphone', wo:'section.card:nth-child(3) > button.origin:nth-child(2)', ziel:'notiz', art:'herkunft', t:'Herkunfts-Chip „aus Formelsammlung“ führt zur Quellnotiz' },
-    { s:'lernkarten', g:'iphone', wo:'section.card:nth-child(4) > button.origin:nth-child(2)', ziel:'notiz', art:'herkunft', t:'Herkunfts-Chip „aus Weber“ führt zur Quellnotiz' },
-    { s:'lernkarten', g:'iphone', wo:'button.btn.btn--primary.btn--sm', ziel:'lernsitzung', t:'„Lernen“ am Deck Anatomie Grundlagen startet die Sitzung' },
-    { s:'lernkarten', g:'iphone', wo:'section.card:nth-child(2) > div:nth-child(1) > button.btn.btn--sm:nth-child(2)', ziel:'lernsitzung', t:'„Lernen“ am Deck Statistik-Formeln startet die Sitzung' },
-
-    /* ── Review-Session ── 4 */
-    { s:'lernsitzung', wo:'button.iconbtn:nth-child(1)', ziel:'lernkarten', art:'zurueck', t:'Das Kreuz beendet die Sitzung und führt zurück zur Lernkarten-Übersicht' },
-    { s:'lernsitzung', wo:'.bw-flip__seite--vorn [aria-label^="Zur Stelle"]', ziel:'notiz', art:'herkunft', t:'„aus Zellbiologie" auf der Frageseite führt zur Stelle in der Notiz' },
-    { s:'lernsitzung', wo:'.bw-flip__seite--hinten [aria-label^="Zur Stelle"]', ziel:'notiz', art:'herkunft', t:'„Zur Stelle in der Notiz" auf der Antwortseite führt zur Notiz' },
-    { s:'lernsitzung', g:'iphone', wo:'.scroll > button', ziel:'canvas', t:'„Canvas · Mitrechnen" öffnet das Canvas-Mockup' },
-
-    /* ── Graph ── 30 */
-    { s:'graph', wo:'.gn[aria-label^="Zellbiologie,"]', ziel:'notiz', t:'Knoten „Zellbiologie" öffnet die Notiz' },
-    { s:'graph', wo:'.gn[aria-label^="Laborjournal,"]', ziel:'notiz', t:'Knoten „Laborjournal" öffnet die Notiz' },
-    { s:'graph', wo:'.gn[aria-label^="Laborprotokoll,"]', ziel:'aufgabe', t:'Knoten „Laborprotokoll" öffnet das Aufgaben-Detail' },
-    { s:'graph', wo:'.gn[aria-label^="Stapel Zellbiologie,"]', ziel:'lernkarten', t:'Knoten „Stapel Zellbiologie" öffnet die Lernkarten' },
-    { s:'graph', wo:'.gn[aria-label^="Zellkultur-Skizze,"]', ziel:'canvas', t:'Knoten „Zellkultur-Skizze" öffnet das Canvas-Mockup' },
-    { s:'graph', wo:'.gn[aria-label^="Osmose,"]', ziel:'lernsitzung', t:'Knoten „Osmose" (Lernkarte) öffnet die Lernsitzung' },
-    { s:'graph', wo:'.gn[aria-label^="Anatomie Grundlagen,"]', ziel:'lernkarten', t:'Knoten „Anatomie Grundlagen“ (Deck) öffnet die Lernkarten' },
-    { s:'graph', wo:'.gn[aria-label^="Mitochondrium,"]', ziel:'lernsitzung', t:'Knoten „Mitochondrium“ (Lernkarte) öffnet die Lernsitzung' },
-    { s:'graph', wo:'.gn[aria-label^="Zellmembran,"]', ziel:'lernsitzung', t:'Knoten „Zellmembran“ (Lernkarte) öffnet die Lernsitzung' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Entwurf ohne Titel,"]', ziel:'journal-eintrag', t:'Knoten „Entwurf ohne Titel" öffnet den Journal-Eintrag' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Erster Tag im Labor,"]', ziel:'journal-eintrag', t:'Knoten „Erster Tag im Labor" öffnet den Journal-Eintrag' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Übungsblatt 5,"]', ziel:'canvas', t:'Knoten „Übungsblatt 5" öffnet das Canvas-Mockup' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Statistik-Blatt 4,"]', ziel:'aufgabe', t:'Knoten „Statistik-Blatt 4" öffnet das Aufgaben-Detail' },
-    { s:'graph', g:'ipad', wo:'.ginspect .btn--primary', ziel:'notiz', t:'„Öffnen" im Inspektor öffnet das gewählte Objekt' },
-    { s:'graph', g:'ipad', wo:'button.row.girow:nth-child(6)', ziel:'lernkarten', t:'„12 erzeugte Karten" öffnet die Lernkarten' },
-    { s:'graph', g:'ipad', wo:'button.row.girow:nth-child(7)', ziel:'aufgabe', t:'„1 Aufgabe" öffnet das Aufgaben-Detail' },
-    { s:'graph', g:'ipad', wo:'button.row.girow:nth-child(5)', ziel:'notizen', t:'„3 Rückverweise" öffnet die Notizenliste' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Analysis II,"]', ziel:'notiz', t:'Knoten „Analysis II“ (Notiz) öffnet den Notiz-Editor' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Semesterplan,"]', ziel:'notiz', t:'Knoten „Semesterplan“ (Notiz) öffnet den Notiz-Editor' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Lesenotizen Soziologie,"]', ziel:'notiz', t:'Knoten „Lesenotizen Soziologie“ (Notiz) öffnet den Notiz-Editor' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Vorlesung Genetik,"]', ziel:'notiz', t:'Knoten „Vorlesung Genetik“ (Notiz) öffnet den Notiz-Editor' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Skizze Mitose,"]', ziel:'canvas', t:'Knoten „Skizze Mitose“ (Canvas) öffnet das Canvas-Mockup' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Bücher verlängern,"]', ziel:'aufgabe', t:'Knoten „Bücher verlängern“ (Aufgabe) öffnet das Aufgaben-Detail' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Rückmeldung Wendt,"]', ziel:'aufgabe', t:'Knoten „Rückmeldung Wendt“ (Aufgabe) öffnet das Aufgaben-Detail' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Statistik-Formeln,"]', ziel:'lernkarten', t:'Knoten „Statistik-Formeln“ (Deck) öffnet die Lernkarten' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Golgi-Apparat,"]', ziel:'lernsitzung', t:'Knoten „Golgi-Apparat“ (Lernkarte) öffnet die Lernsitzung' },
-    { s:'graph', g:'ipad', wo:'.gn[aria-label^="Grenzwertsätze,"]', ziel:'lernsitzung', t:'Knoten „Grenzwertsätze“ (Lernkarte) öffnet die Lernsitzung' },
-    { s:'graph', g:'iphone', wo:'section .btn--primary', ziel:'notiz', t:'„Öffnen" im Blatt öffnet das gewählte Objekt' },
-    { s:'graph', g:'iphone', wo:'button.row.girow:nth-child(5)', ziel:'lernkarten', t:'„12 Karten aus Absatz 3" öffnet die Lernkarten' },
-    { s:'graph', g:'iphone', wo:'button.row.girow:nth-child(4)', ziel:'notizen', t:'„3 Rückverweise" öffnet die Notizenliste' },
-  ] };
+  function karteHolen() {
+    var k = global.VELUM_WEGE;
+    if (k && k.wege && k.wege.length) return k;
+    if (global.console && console.warn) {
+      console.warn('[prototyp] wege.js fehlt oder ist leer — es lebt nur die ' +
+        'Grundnavigation (Seitenleiste, Lupe, Tab-Leiste, Zurück). Die Karte ' +
+        'wird als <script src="wege.js"> vor prototyp.js erwartet.');
+    }
+    return LEERE_KARTE;
+  }
 
   /* ══════════════════════════════════════════════════════════════════════
    * DIE ÖFFENTLICHE HAND
@@ -1635,5 +1834,6 @@
     schirme:   SCHIRME,
     zustand:   function () { return { schirm: jetzt.schirm, geraet: jetzt.geraet, tiefe: jetzt.tiefe }; },
     neuAufbauen: aufbauen,
+    wegeModus: wegeSchalten,      /* PROTOTYP.wegeModus(true)                */
   };
 })(window);

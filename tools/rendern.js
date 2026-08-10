@@ -91,6 +91,7 @@ function playwright() {
 const APP_NEXT = [
   ['today',           'Heute'],
   ['library',         'Bibliothek'],
+  ['eingang',         'Eingang'],
   ['notes-list',      'Notizen-Liste'],
   ['note-editor',     'Notiz-Editor'],
   ['journal-home',    'Journal-Start'],
@@ -99,7 +100,9 @@ const APP_NEXT = [
   ['task-detail',     'Aufgaben-Detail'],
   ['flashcards-home', 'Lernkarten-Start'],
   ['review-session',  'Review-Session'],
+  ['semester',        'Semester-Ordner'],
   ['graph',           'Graph'],
+  ['suche',           'Suche'],
   ['settings',        'Einstellungen'],
   ['leere-zustaende', 'Leere Zustände'],
 ];
@@ -628,7 +631,7 @@ async function main() {
       const wort = modus === 'hell' ? 'heller' : 'dunkler';
       merken(`kontaktbogen app-next ${modus}`, await bogen(browser, 'app-next',
         'Der Entwurf',
-        `13 Screens · iPad · ${wort} Modus · alle auch als iPhone-Fassung im Ordner _renders/`,
+        `${APP_NEXT.length} Screens · iPad · ${wort} Modus · alle auch als iPhone-Fassung im Ordner _renders/`,
         3, APP_NEXT.map(([f, n]) => [`app-next-${f}-ipad-${modus}.png`, n]), modus, 1002, bericht, true));
 
       merken(`kontaktbogen best-of ${modus}`, await bogen(browser, 'best-of',

@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suche — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+ * Nur für diesen Schirm.
+ *
+ * 1 · DIE KLAMMER. Sie ist NICHT neu — es ist wortgleich das Bauteil aus
+ *     tasks.html: 20-pt-Rinne, 9-pt-Knoten oben, 2,5-pt-Faden senkrecht
+ *     nach unten, ein 6-pt-Punkt je Ergebniszeile darauf. Dort hält sie eine
+ *     Quelle und ihre Aufgaben zusammen; hier hält sie einen Treffer und das,
+ *     was aus ihm geworden ist. Ein Bauteil, zwei Schirme, dieselbe Aussage:
+ *     oben der Ursprung, unten das Ergebnis (N6). Deshalb steht sie hier
+ *     unverändert und nicht in einer eigenen Fassung.
+ *
+ * 2 · DIE TINTE. Der Handschrift-Treffer ist keine Schriftart und kein Bild,
+ *     sondern echte Striche in SVG — dieselbe Bauweise wie die Handschrift
+ *     in platform/pencil.html. Nur so kann der Treffer im Strich markiert
+ *     werden statt in einem Textlauf.
+ * ══════════════════════════════════════════════════════════════════════ */
+
+.klammer            { display: grid; grid-template-columns: 20px minmax(0,1fr); align-items: stretch; }
+.klammer__rinne     { position: relative; }
+.klammer__marke     { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 1; }
+/* Stumpfe Enden: an den Nähten zwischen zwei Stücken desselben Zuges lägen
+   sonst zwei runde Köpfe übereinander und sähen aus wie ein Punkt. */
+.klammer .thread > * { stroke-linecap: butt; }
+.klammer__zug       { position: absolute; left: 50%; margin-left: -5px; width: 10px; }
+.klammer__zug--ab   { top: 50%; height: 50%; }
+.klammer__zug--durch{ top: 0;   height: 100%; }
+.klammer__zug--an   { top: 0;   height: 50%; }
+/* Der waagerechte Stummel vom Knoten zum Modulpunkt der Trefferzeile. Er ist
+   der zweite Faden am Knoten und macht ihn nach N7 erst zu einem. */
+.klammer__stummel   { width: 10px; height: 10px; flex: none; margin-left: -10px; margin-right: -8px; }
+
+/* Handschrift: echte Tinte, kein Bild und keine Schreibschrift-Datei. */
+.su-ink            { display: block; }
+.su-ink path       { fill: none; stroke: var(--ink-1); stroke-linecap: round; stroke-linejoin: round; }
+/* Der Treffer IM Strich: getönte Fläche + Ring. Zwei Merkmale, keine Farbe.
+   Der Ring steht in --line-tap und NICHT in --accent-ring: --accent-ring hält
+   gerechnet 1,95:1 auf Papier und trägt seine Aussage sonst immer zusammen mit
+   einer getönten Fläche, die für sich schon auffällt (.row.is-selected). Hier
+   ist der Ring das einzige, was den Treffer von der übrigen Tinte trennt —
+   dann gilt die 3:1-Schwelle für Bedienoberfläche. --line-tap ist der Pegel,
+   den system.css §1.4b genau dafür führt: gerechnet 3,26:1 hell und 3,31:1
+   dunkel gegen die getönte Fläche, auf der er liegt. Ink wäre
+   die Alternative, scheidet aber aus: der Ring hätte dann exakt die Farbe der
+   Striche, die er umschließt. */
+.su-ink rect.tref  { fill: var(--accent-soft); stroke: var(--line-tap); stroke-width: 1.5; }
+
+/* Die Fundstelle im getippten Text. Fläche + Gewicht, nicht Farbe. */
+.su-tref           { background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--line-2);
+                     border-radius: 5px; padding: 0 4px; font-weight: 600; }
+
+/* Die Schicht-Marke. Kein Modulpunkt, kein Farbwert: Symbol + Wort.
+   Die vier Schichten sind keine Module und dürfen deshalb keine Modulfarbe
+   tragen — sie stehen als <span>, also als Etikett, nicht als Knopf. */
+.su-schicht        { color: var(--ink-2); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Suche
+
+DIE LUPE STAND IN JEDER LEISTE, DER SCHIRM FEHLTE
+Auf allen dreizehn Schirmen sitzt oben rechts (und in der Seitenleiste) ein
+Suchsymbol. Es führte nirgendwohin.
+
+ÜBERNOMMEN
+· OneNote — die Suche findet Handschrift, Bildtext und gesprochene Wörter, und
+  sie SAGT, in welcher Schicht sie fündig wurde (OneNote umrandet gefundene
+  Tinte). Übernommen als Schicht-Marke an jeder Zeile: Tinte · Text · Bild ·
+  gesprochen. Bewertung: die stärkste Suchidee im ganzen Feld, und OneNote
+  liefert sie seit Jahren kostenlos in 25 Sprachen.
+· Apple/iOS — Suchfeld in der Leiste, „Abbrechen" rechts, zuletzt Gesuchtes
+  vor der Eingabe. Konvention, unverändert übernommen.
+· Spotlight — Filter als waagerechte Reihe über den Treffern statt in einem
+  Menü. Übernommen als Punkt-Reihe der fünf Module.
+
+BEWUSST NICHT ÜBERNOMMEN
+· OneNotes gelbe Umrandung um gefundene Tinte. Gelb ist in Velum keine Farbe;
+  der Treffer trägt dieselbe Auswahl-Grammatik wie überall — getönte Fläche
+  plus Ring.
+· Relevanz-Sortierung ohne Angabe, woran sie hängt. Sortiert wird nach der
+  Ordnung, die dasteht („Zuletzt geändert"), und die steht als Wort im Kopf.
+· „Alles"-Reiter neben Modulreitern (Spotlight, OneNote). Die Module sind
+  Filter, keine Ansichten — sonst hätte Velum acht Suchergebnislisten.
+· Vorschau-Panel rechts mit dem ganzen Dokument. Das ist ein Fenstermanager,
+  keine Suche.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Velums Suche gibt WEGE zurück, nicht Treffer. OneNote kann sagen, wo „Osmose"
+steht — in vier Schichten, auf jedem Betriebssystem. Nur Velum kann sagen, was
+aus der Fundstelle geworden ist: aus Absatz 9 der Vorlesungsnotiz sind eine
+Lernkarte und eine eigene Notiz geworden, aus der Skizzenbeschriftung eine
+Aufgabe. Deshalb ist eine Ergebniszeile hier keine Zeile, sondern eine Klammer.
+
+ADA-KATEGORIE: Innovation (die Suche antwortet mit Kanten, nicht mit Zeilen)
+und Interaktion (die Aufnahme spielt an der Fundstelle, ohne den Schirm zu
+verlassen).
+
+KONTRAST (gerechnet, Tokenwerte aus mockups/shared/system.css §1)
+  Titel/Fließtext   ink-1 auf Papier    17,8:1 (hell) · 15,9:1 (dunkel)
+  Sekundärtext      ink-2 auf Papier     5,3:1 (hell) ·  7,1:1 (dunkel)
+  Metadaten         ink-3 auf Papier     5,14:1 (hell) · 5,57:1 (dunkel)
+  Fundstelle        ink-1 auf accent-soft 15,43:1 (hell) · 12,12:1 (dunkel)
+  Tinte (Strich)    ink-1 auf Papier    17,8:1 (hell) · 15,9:1 (dunkel)
+  Trefferring       line-tap             3,26:1 (hell) · 3,31:1 (dunkel)
+  Faden ruhend      thread auf Papier    3,29:1 (hell) · 3,34:1 (dunkel)
+  CTA-Text          accent-on auf Ink   17,8:1 (hell) · 17,3:1 (dunkel)
+  Kein Text über Bildern — die Bild-Fundstelle ist als Wort beschrieben, nicht
+  als Beschriftung auf einer Fotografie.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Suche</h1>
+  <p>Velums Suche gibt Wege zurück, nicht Treffer. Jede Zeile sagt, in welcher Schicht sie fündig wurde — Tinte, Text, Bild, gesprochen — und was aus der Fundstelle geworden ist.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · nach der Eingabe: „Osmose"</span></div>
+    <div class="screen screen--ipad" id="su-ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar — auf allen Schirmen gleich; hier ist die Lupe aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn is-active"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar" style="gap:10px">
+            <div class="field" style="flex:1 1 auto; height:40px">
+              <span class="ico" data-ico="search"></span>
+              <span class="t-body">Osmose</span>
+              <span style="display:inline-block; width:2px; height:20px; background:var(--accent); margin-left:2px"></span>
+              <span style="flex:1"></span>
+              <button class="iconbtn" style="width:28px;height:28px" aria-label="Eingabe löschen"><span class="ico" data-ico="close" style="width:16px;height:16px"></span></button>
+            </div>
+            <button class="btn btn--sm btn--quiet" id="su-abbrechen">Abbrechen</button>
+          </div>
+
+          <!-- Filter nach Modul als Punkt-Reihe. Steht in beiden Zuständen,
+               vor und nach der Eingabe — es ist Suchoberfläche, kein Ergebnis. -->
+          <div style="flex:none; display:flex; align-items:center; gap:8px; padding:8px var(--pad-ipad) 6px">
+            <button class="chip chip--solid">Alle <span class="num">12</span></button>
+            <button class="chip"><span class="dot dot--notes"></span>Notizen</button>
+            <button class="chip"><span class="dot dot--canvas"></span>Canvas</button>
+            <button class="chip"><span class="dot dot--journal"></span>Journal</button>
+            <button class="chip"><span class="dot dot--cards"></span>Lernkarten</button>
+            <button class="chip chip--ghost is-off"><span class="dot dot--tasks"></span>Aufgaben <span class="num c-3">0</span></button>
+            <span style="flex:1"></span>
+            <button class="btn btn--sm" style="padding:0 10px; gap:6px; white-space:nowrap"><span class="ico" data-ico="sort" style="width:16px;height:16px"></span>Zuletzt geändert<span class="ico" data-ico="chevD" style="width:15px;height:15px;margin-left:-3px"></span></button>
+          </div>
+
+          <div class="scroll" style="padding-top:6px; display:flex; flex-direction:column; gap:8px">
+
+            <div style="display:grid; grid-template-columns:minmax(0,1fr) 244px; gap:16px; align-items:start">
+
+              <!-- ── Die Treffer ── -->
+              <div style="display:flex; flex-direction:column; gap:8px">
+
+                <p class="t-sub c-3" style="margin:0"><span class="num">12</span> Fundstellen in vier Schichten. <span class="c-2">Drei davon haben etwas erzeugt.</span></p>
+
+                <!-- ══ TREFFER 1 — Tinte, mit Klammer ══
+                     Die Fundstelle liegt im Strich, nicht im Textlauf: Absatz 9
+                     der Vorlesungsnotiz ist handschriftlich. Aus ihr sind zwei
+                     Objekte entstanden — die Kante steht im Datenmodell und ist
+                     dieselbe, die today.html als Kette und graph.html als
+                     Herkunfts-Faden zeichnet. -->
+                <section class="card" style="padding:8px">
+                  <div class="klammer">
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab" style="top:17px; height:calc(100% - 17px)"></svg>
+                      <span class="dot dot--node klammer__marke" style="top:17px; transform:translate(-50%,-50%)"></span>
+                    </div>
+                    <button id="su-tinte" style="display:flex; align-items:flex-start; gap:8px; width:100%; min-height:44px; padding:6px 10px 6px 0; text-align:left; border-radius:9px">
+                      <svg class="thread thread--h thread--origin klammer__stummel" style="margin-top:6px"></svg>
+                      <span class="dot dot--notes" style="margin-top:8px"></span>
+                      <span style="flex:1; min-width:0">
+                        <span style="display:flex; align-items:center; gap:8px">
+                          <span class="t-sub is-strong" style="white-space:nowrap">Zellbiologie</span>
+                          <span class="t-label c-3" style="white-space:nowrap">Notiz · Absatz 9 · 6. Nov, 16:42</span>
+                          <span style="flex:1"></span>
+                          <span class="chip su-schicht"><span class="ico" data-ico="edit" style="width:13px;height:13px"></span>Tinte</span>
+                        </span>
+                        <!-- Echte Striche, kein Bild: die Fundstelle wird IM
+                             Strich markiert. Grundlinie y = 30, Höhe 48. -->
+                        <svg class="su-ink" viewBox="0 0 330 48" width="296" height="43" style="margin-top:3px" role="img"
+                             aria-label="Handschriftliche Zeile aus der Notiz; das Wort Osmose ist als Fundstelle markiert">
+                          <rect class="tref" x="54" y="4" width="120" height="38" rx="6"></rect>
+                          <path d="M10 30c5-11 9 7 14-3 5-10 9 8 14-2" stroke-width="2"></path>
+                          <path d="M78 14C77 7 66 5 60 12 53 20 54 33 62 36c9 3 17-5 17-14" stroke-width="2.2"></path>
+                          <path d="M90 18c-4-3-9-1-8 3 1 4 9 5 9 9 0 4-6 6-9 3" stroke-width="2.2"></path>
+                          <path d="M97 36 100 20c1-3 5-3 5 2v12c0-7 2-15 6-15s4 8 4 15" stroke-width="2.2"></path>
+                          <path d="M124 22c-4-6 4-9 7-4 3 6-3 16-8 13-3-2-3-6 1-9" stroke-width="2.2"></path>
+                          <path d="M143 18c-4-3-9-1-8 3 1 4 9 5 9 9 0 4-6 6-9 3" stroke-width="2.2"></path>
+                          <path d="M150 27c6-1 12-3 12-7 0-4-7-5-10 0-3 5-1 14 5 15 4 0 7-2 9-5" stroke-width="2.2"></path>
+                          <path d="M186 30c5-11 9 7 14-3 5-10 9 8 14-2 5-10 9 8 14-2" stroke-width="2"></path>
+                          <path d="M236 30c5-11 9 7 14-3 5-10 9 8 14-2" stroke-width="2"></path>
+                          <path d="M284 30c4-9 8 6 12-2 4-8 8 6 12-2" stroke-width="2"></path>
+                        </svg>
+                      </span>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px; margin-top:8px"></span>
+                    </button>
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--durch"></svg>
+                      <span class="dot dot--cards klammer__marke"></span>
+                    </div>
+                    <div class="row" id="su-tinte-karte">
+                      <div class="row__main">
+                        <span class="t-body row__title">Was beschreibt <span class="su-tref">Osmose</span>?</span>
+                        <span class="t-sub c-3">Lernkarte · Deck „Zellbiologie" · heute fällig</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </div>
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                      <span class="dot dot--notes klammer__marke"></span>
+                    </div>
+                    <div class="row" id="su-tinte-notiz">
+                      <div class="row__main">
+                        <span class="t-body row__title"><span class="su-tref">Osmose</span></span>
+                        <span class="t-sub c-3">Notiz · aus dem Wiki-Link entstanden · 3 Absätze</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- ══ TREFFER 2 — gesprochen, ohne Klammer ══
+                     Aus der Aufnahme ist (noch) nichts entstanden, also steht
+                     hier kein Faden. Der Knopf spielt die Sekunde, in der das
+                     Wort fiel — ohne den Schirm zu verlassen. -->
+                <section class="card" style="padding:8px">
+                  <div class="row" style="align-items:flex-start">
+                    <span class="dot dot--notes" style="margin-top:9px"></span>
+                    <div class="row__main">
+                      <span style="display:flex; align-items:center; gap:8px; min-width:0">
+                        <span class="t-sub is-strong" style="white-space:nowrap">Vorlesung 6. Nov</span>
+                        <span class="t-label c-3" style="white-space:nowrap">Aufnahme</span>
+                      </span>
+                      <span class="t-body" style="margin-top:2px">„… die <span class="su-tref">Osmose</span> ist der Sonderfall der Diffusion …"</span>
+                    </div>
+                    <div class="row__meta">
+                      <span class="chip su-schicht"><span class="ico" data-ico="mic" style="width:13px;height:13px"></span>gesprochen</span>
+                      <button class="btn btn--sm" id="su-play" style="gap:6px"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>16:42</button>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- ══ TREFFER 3 — Bild, mit Klammer ══ -->
+                <section class="card" style="padding:8px">
+                  <div class="klammer">
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab"></svg>
+                      <span class="dot dot--node klammer__marke"></span>
+                    </div>
+                    <button id="su-bild" style="display:flex; align-items:center; gap:8px; width:100%; min-height:44px; padding:6px 10px 6px 0; text-align:left; border-radius:9px">
+                      <svg class="thread thread--h thread--origin klammer__stummel"></svg>
+                      <span class="dot dot--canvas"></span>
+                      <span style="flex:1; min-width:0">
+                        <span class="t-body row__title" style="display:block">Beschriftung „<span class="su-tref">Osmose</span>" in der Zellkultur-Skizze</span>
+                        <span class="t-sub c-3">Canvas-Blatt · Biologie · 28. Oktober</span>
+                      </span>
+                      <span class="chip su-schicht"><span class="ico" data-ico="photo" style="width:13px;height:13px"></span>Bild</span>
+                      <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                    </button>
+
+                    <div class="klammer__rinne">
+                      <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                      <span class="dot dot--tasks klammer__marke"></span>
+                    </div>
+                    <div class="row" id="su-bild-aufgabe">
+                      <div class="row__main">
+                        <span class="t-body row__title"><span class="su-tref">Osmose</span>-Versuch mit der zweiten Probe wiederholen</span>
+                        <span class="t-sub c-3">Aufgabe · Biologie · Freitag</span>
+                      </div>
+                      <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- ══ TREFFER 4 — Text, ohne Klammer ══ -->
+                <section class="card" style="padding:8px">
+                  <div class="row" style="align-items:flex-start">
+                    <span class="dot dot--journal" style="margin-top:9px"></span>
+                    <div class="row__main">
+                      <span style="display:flex; align-items:center; gap:8px">
+                        <span class="t-sub is-strong" style="white-space:nowrap">Nach dem Praktikum</span>
+                        <span class="t-label c-3" style="white-space:nowrap">Journaleintrag · 7. November</span>
+                        <span style="flex:1"></span>
+                        <span class="chip su-schicht"><span class="ico" data-ico="doc" style="width:13px;height:13px"></span>Text</span>
+                      </span>
+                      <span class="t-body" style="margin-top:2px">„… die <span class="su-tref">Osmose</span>-Versuche liefen anders als erwartet, Wendt war trotzdem zufrieden …"</span>
+                    </div>
+                    <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </div>
+                </section>
+
+                <!-- Text, ohne Klammer: aus dieser Notiz ist nichts entstanden.
+                     Genau derselbe Befund, den semester.html für Woche 6
+                     ausspricht — hier begegnet er einem beim Suchen. -->
+                <section class="card" style="padding:8px">
+                  <div class="row" style="align-items:flex-start">
+                    <span class="dot dot--notes" style="margin-top:9px"></span>
+                    <div class="row__main">
+                      <span style="display:flex; align-items:center; gap:8px">
+                        <span class="t-sub is-strong" style="white-space:nowrap">Vorlesung 3 — Diffusion</span>
+                        <span class="t-label c-3" style="white-space:nowrap">Notiz · 30. Oktober</span>
+                        <span style="flex:1"></span>
+                        <span class="chip su-schicht"><span class="ico" data-ico="doc" style="width:13px;height:13px"></span>Text</span>
+                      </span>
+                      <span class="t-body" style="margin-top:2px">„… Diffusion und <span class="su-tref">Osmose</span> gehören zusammen, nur die Membran unterscheidet sie …"</span>
+                    </div>
+                    <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+                  </div>
+                </section>
+
+              </div>
+
+              <!-- ── Kontextspalte ── -->
+              <div style="display:flex; flex-direction:column; gap:12px">
+
+                <!-- Die vier Schichten. Symbol + Wort + Zahl — keine Farbe,
+                     weil eine Schicht kein Modul ist. -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:8px">
+                    <span class="t-label c-3" style="flex:1">GEFUNDEN IN</span>
+                    <span class="t-label c-3 num">12</span>
+                  </div>
+                  <button class="row" style="width:100%; min-height:44px; padding:0">
+                    <span class="ico c-2" data-ico="edit" style="width:16px;height:16px"></span>
+                    <span class="t-sub" style="flex:1; text-align:left">Tinte</span>
+                    <span class="t-label c-3 num">3</span>
+                  </button>
+                  <button class="row" style="width:100%; min-height:44px; padding:0">
+                    <span class="ico c-2" data-ico="doc" style="width:16px;height:16px"></span>
+                    <span class="t-sub" style="flex:1; text-align:left">Text</span>
+                    <span class="t-label c-3 num">6</span>
+                  </button>
+                  <button class="row" style="width:100%; min-height:44px; padding:0">
+                    <span class="ico c-2" data-ico="photo" style="width:16px;height:16px"></span>
+                    <span class="t-sub" style="flex:1; text-align:left">Bild</span>
+                    <span class="t-label c-3 num">1</span>
+                  </button>
+                  <button class="row" style="width:100%; min-height:44px; padding:0">
+                    <span class="ico c-2" data-ico="mic" style="width:16px;height:16px"></span>
+                    <span class="t-sub" style="flex:1; text-align:left">gesprochen</span>
+                    <span class="t-label c-3 num">2</span>
+                  </button>
+                  <p class="t-label c-3" style="margin:8px 0 0">Vier Schichten, ein Index. Handschrift wird gesucht wie getippter Text.</p>
+                </section>
+
+                <!-- Der Zustand vor der Eingabe steht als Karte auch neben den
+                     Treffern: zuletzt Gesuchtes verschwindet nicht, sobald man
+                     tippt — man springt oft zwischen zwei Begriffen hin und her. -->
+                <section class="card" style="padding:12px 14px">
+                  <div class="card__head" style="margin-bottom:6px">
+                    <span class="ico" data-ico="clock" style="width:16px;height:16px; color:var(--ink-3)"></span>
+                    <span class="t-label c-3" style="flex:1">ZULETZT GESUCHT</span>
+                  </div>
+                  <div style="display:flex; flex-wrap:wrap; gap:6px">
+                    <button class="chip chip--solid">Osmose</button>
+                    <button class="chip">Mitose</button>
+                    <button class="chip">Prof. Wendt</button>
+                    <button class="chip"><span class="ico" data-ico="tag" style="width:13px;height:13px"></span>labor</button>
+                    <button class="chip">Gradient</button>
+                  </div>
+                </section>
+
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · nach der Eingabe</span></div>
+    <div class="screen screen--iphone" id="su-iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:4px; gap:8px">
+          <div class="field" style="flex:1 1 auto; height:38px">
+            <span class="ico" data-ico="search"></span>
+            <span class="t-body">Osmose</span>
+            <span style="display:inline-block; width:2px; height:19px; background:var(--accent); margin-left:2px"></span>
+            <span style="flex:1"></span>
+            <button class="iconbtn" style="width:26px;height:26px" aria-label="Eingabe löschen"><span class="ico" data-ico="close" style="width:15px;height:15px"></span></button>
+          </div>
+          <button class="btn btn--sm btn--quiet" id="su-abbrechen-p" style="padding:0 8px">Abbrechen</button>
+        </div>
+
+        <div style="flex:none; display:flex; align-items:center; gap:6px; padding:0 var(--pad-iphone) 6px; overflow:hidden">
+          <button class="chip chip--solid">Alle <span class="num">12</span></button>
+          <button class="chip"><span class="dot dot--notes"></span>Notizen <span class="num c-3">6</span></button>
+          <button class="chip"><span class="dot dot--canvas"></span>Canvas <span class="num c-3">2</span></button>
+          <button class="chip"><span class="dot dot--journal"></span>Journal <span class="num c-3">1</span></button>
+        </div>
+
+        <div class="scroll" style="padding-top:4px; display:flex; flex-direction:column; gap:8px">
+
+          <p class="t-label c-3" style="margin:0"><span class="num">12</span> Fundstellen · drei haben etwas erzeugt</p>
+
+          <!-- Treffer 1 mit Klammer, dieselbe Grammatik wie am iPad -->
+          <section class="card" style="padding:8px">
+            <div class="klammer">
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab" style="top:15px; height:calc(100% - 15px)"></svg>
+                <span class="dot dot--node klammer__marke" style="top:15px; transform:translate(-50%,-50%)"></span>
+              </div>
+              <button id="su-tinte-p" style="display:flex; align-items:flex-start; gap:8px; width:100%; min-height:44px; padding:4px 4px 4px 0; text-align:left; border-radius:9px">
+                <svg class="thread thread--h thread--origin klammer__stummel" style="margin-top:5px"></svg>
+                <span class="dot dot--notes" style="margin-top:7px"></span>
+                <span style="flex:1; min-width:0">
+                  <span style="display:flex; align-items:center; gap:6px">
+                    <span class="t-sub is-strong">Zellbiologie</span>
+                    <span style="flex:1"></span>
+                    <span class="chip su-schicht" style="height:22px; padding:0 8px"><span class="ico" data-ico="edit" style="width:12px;height:12px"></span>Tinte</span>
+                  </span>
+                  <span class="t-label c-3" style="display:block">Notiz · Absatz 9 · 6. Nov, 16:42</span>
+                  <svg class="su-ink" viewBox="0 0 330 48" width="248" height="36" style="margin-top:3px" role="img"
+                       aria-label="Handschriftliche Zeile aus der Notiz; das Wort Osmose ist als Fundstelle markiert">
+                    <rect class="tref" x="54" y="4" width="120" height="38" rx="6"></rect>
+                    <path d="M10 30c5-11 9 7 14-3 5-10 9 8 14-2" stroke-width="2"></path>
+                    <path d="M78 14C77 7 66 5 60 12 53 20 54 33 62 36c9 3 17-5 17-14" stroke-width="2.2"></path>
+                    <path d="M90 18c-4-3-9-1-8 3 1 4 9 5 9 9 0 4-6 6-9 3" stroke-width="2.2"></path>
+                    <path d="M97 36 100 20c1-3 5-3 5 2v12c0-7 2-15 6-15s4 8 4 15" stroke-width="2.2"></path>
+                    <path d="M124 22c-4-6 4-9 7-4 3 6-3 16-8 13-3-2-3-6 1-9" stroke-width="2.2"></path>
+                    <path d="M143 18c-4-3-9-1-8 3 1 4 9 5 9 9 0 4-6 6-9 3" stroke-width="2.2"></path>
+                    <path d="M150 27c6-1 12-3 12-7 0-4-7-5-10 0-3 5-1 14 5 15 4 0 7-2 9-5" stroke-width="2.2"></path>
+                    <path d="M186 30c5-11 9 7 14-3 5-10 9 8 14-2 5-10 9 8 14-2" stroke-width="2"></path>
+                    <path d="M236 30c5-11 9 7 14-3 5-10 9 8 14-2" stroke-width="2"></path>
+                    <path d="M284 30c4-9 8 6 12-2 4-8 8 6 12-2" stroke-width="2"></path>
+                  </svg>
+                </span>
+              </button>
+
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--durch"></svg>
+                <span class="dot dot--cards klammer__marke"></span>
+              </div>
+              <div class="row" id="su-tinte-karte-p" style="min-height:50px">
+                <div class="row__main">
+                  <span class="t-body row__title">Was beschreibt <span class="su-tref">Osmose</span>?</span>
+                  <span class="t-label c-3">Lernkarte · heute fällig</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                <span class="dot dot--notes klammer__marke"></span>
+              </div>
+              <div class="row" id="su-tinte-notiz-p" style="min-height:50px">
+                <div class="row__main">
+                  <span class="t-body row__title"><span class="su-tref">Osmose</span></span>
+                  <span class="t-label c-3">Notiz · aus dem Wiki-Link · 3 Absätze</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- gesprochen -->
+          <section class="card" style="padding:8px">
+            <div class="row" style="align-items:flex-start">
+              <span class="dot dot--notes" style="margin-top:8px"></span>
+              <div class="row__main">
+                <span style="display:flex; align-items:center; gap:6px">
+                  <span class="t-sub is-strong">Vorlesung 6. Nov</span>
+                  <span style="flex:1"></span>
+                  <span class="chip su-schicht" style="height:22px; padding:0 8px"><span class="ico" data-ico="mic" style="width:12px;height:12px"></span>gesprochen</span>
+                </span>
+                <span class="t-sub c-2" style="margin-top:2px">„… die <span class="su-tref">Osmose</span> ist der Sonderfall der Diffusion …"</span>
+                <span style="margin-top:6px"><button class="btn btn--sm" id="su-play-p" style="gap:6px"><span class="ico" data-ico="play" style="width:16px;height:16px"></span>16:42 abspielen</button></span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Bild mit Klammer -->
+          <section class="card" style="padding:8px">
+            <div class="klammer">
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--ab" style="top:15px; height:calc(100% - 15px)"></svg>
+                <span class="dot dot--node klammer__marke" style="top:15px; transform:translate(-50%,-50%)"></span>
+              </div>
+              <button id="su-bild-p" style="display:flex; align-items:flex-start; gap:8px; width:100%; min-height:44px; padding:4px 4px 4px 0; text-align:left; border-radius:9px">
+                <svg class="thread thread--h thread--origin klammer__stummel" style="margin-top:5px"></svg>
+                <span class="dot dot--canvas" style="margin-top:7px"></span>
+                <span style="flex:1; min-width:0">
+                  <span class="t-sub is-strong" style="display:block">Beschriftung „<span class="su-tref">Osmose</span>"</span>
+                  <span class="t-label c-3">Canvas · Zellkultur-Skizze · 28. Okt</span>
+                </span>
+                <span class="chip su-schicht" style="height:22px; padding:0 8px"><span class="ico" data-ico="photo" style="width:12px;height:12px"></span>Bild</span>
+              </button>
+              <div class="klammer__rinne">
+                <svg class="thread thread--v thread--origin klammer__zug klammer__zug--an"></svg>
+                <span class="dot dot--tasks klammer__marke"></span>
+              </div>
+              <div class="row" id="su-bild-aufgabe-p" style="min-height:50px">
+                <div class="row__main">
+                  <span class="t-body row__title"><span class="su-tref">Osmose</span>-Versuch wiederholen</span>
+                  <span class="t-label c-3">Aufgabe · Freitag</span>
+                </div>
+                <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Text, ohne Klammer: aus diesem Eintrag ist nichts entstanden -->
+          <section class="card" style="padding:8px">
+            <div class="row" style="align-items:flex-start">
+              <span class="dot dot--journal" style="margin-top:8px"></span>
+              <div class="row__main">
+                <span style="display:flex; align-items:center; gap:6px">
+                  <span class="t-sub is-strong">Nach dem Praktikum</span>
+                  <span style="flex:1"></span>
+                  <span class="chip su-schicht" style="height:22px; padding:0 8px"><span class="ico" data-ico="doc" style="width:12px;height:12px"></span>Text</span>
+                </span>
+                <span class="t-sub c-2" style="margin-top:2px">„… die <span class="su-tref">Osmose</span>-Versuche liefen anders als erwartet …"</span>
+              </div>
+              <div class="row__meta"><span class="ico" data-ico="chevR" style="width:16px;height:16px"></span></div>
+            </div>
+          </section>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ iPhone · vor der Eingabe ══════════════════
+       Der zweite Zustand desselben Schirms, nicht ein zweiter Schirm.
+       Er steht auf dem iPhone, weil dort am häufigsten aus dem Stand
+       gesucht wird — und weil das leere Feld hier etwas anbietet statt
+       eine Tastatur einzublenden. -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>vor der Eingabe: zuletzt Gesuchtes und die Filter</span></div>
+    <div class="screen screen--iphone" id="su-iphone-leer">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:4px; gap:8px">
+          <div class="field" style="flex:1 1 auto; height:38px">
+            <span class="ico" data-ico="search"></span>
+            <span style="display:inline-block; width:2px; height:19px; background:var(--accent)"></span>
+            <span class="field__ph t-body">Suchen</span>
+          </div>
+          <button class="btn btn--sm btn--quiet" style="padding:0 8px">Abbrechen</button>
+        </div>
+
+        <div style="flex:none; display:flex; align-items:center; gap:6px; padding:0 var(--pad-iphone) 6px; overflow:hidden">
+          <button class="chip chip--solid">Alle</button>
+          <button class="chip"><span class="dot dot--notes"></span>Notizen</button>
+          <button class="chip"><span class="dot dot--canvas"></span>Canvas</button>
+          <button class="chip"><span class="dot dot--journal"></span>Journal</button>
+        </div>
+
+        <div class="scroll" style="padding-top:6px; display:flex; flex-direction:column; gap:14px">
+
+          <section>
+            <div class="divider" style="margin:0 0 6px"><span class="t-label c-3">ZULETZT GESUCHT</span></div>
+            <div class="card" style="padding:4px">
+              <button class="row" id="su-leer-osmose" style="width:100%; min-height:46px; text-align:left">
+                <span class="ico c-3" data-ico="clock" style="width:16px;height:16px"></span>
+                <span class="t-body row__main">Osmose</span>
+                <span class="t-label c-3 num">12</span>
+                <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+              </button>
+              <button class="row" style="width:100%; min-height:46px; text-align:left">
+                <span class="ico c-3" data-ico="clock" style="width:16px;height:16px"></span>
+                <span class="t-body row__main">Mitose</span>
+                <span class="t-label c-3 num">7</span>
+                <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+              </button>
+              <button class="row" style="width:100%; min-height:46px; text-align:left">
+                <span class="ico c-3" data-ico="tag" style="width:16px;height:16px"></span>
+                <span class="t-body row__main">labor</span>
+                <span class="t-label c-3 num">23</span>
+                <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+              </button>
+            </div>
+          </section>
+
+          <section>
+            <div class="divider" style="margin:0 0 6px"><span class="t-label c-3">ZULETZT GEÖFFNET</span></div>
+            <div class="card" style="padding:4px">
+              <button class="row" style="width:100%; min-height:46px; text-align:left">
+                <span class="dot dot--notes"></span>
+                <span class="t-body row__main">Zellbiologie</span>
+                <span class="t-label c-3">Notiz</span>
+                <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+              </button>
+              <button class="row" style="width:100%; min-height:46px; text-align:left">
+                <span class="dot dot--canvas"></span>
+                <span class="t-body row__main">Übungsblatt 5</span>
+                <span class="t-label c-3">Canvas</span>
+                <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+              </button>
+              <button class="row" style="width:100%; min-height:46px; text-align:left">
+                <span class="dot dot--cards"></span>
+                <span class="t-body row__main">Deck „Zellbiologie"</span>
+                <span class="t-label c-3 num">84</span>
+                <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+              </button>
+            </div>
+          </section>
+
+          <section>
+            <div class="divider" style="margin:0 0 6px"><span class="t-label c-3">DURCHSUCHT WIRD</span><span class="t-label c-3" style="font-weight:400">42 Notizen · 6 Blätter · 84 Karten</span></div>
+            <div class="card" style="padding:12px 14px">
+              <div style="display:flex; align-items:center; gap:10px; min-height:32px">
+                <span class="ico c-2" data-ico="edit" style="width:16px;height:16px"></span>
+                <span class="t-sub" style="flex:1">Tinte — jede handschriftliche Seite</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; min-height:32px">
+                <span class="ico c-2" data-ico="doc" style="width:16px;height:16px"></span>
+                <span class="t-sub" style="flex:1">Text — Notizen, Journal, Aufgaben</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; min-height:32px">
+                <span class="ico c-2" data-ico="photo" style="width:16px;height:16px"></span>
+                <span class="t-sub" style="flex:1">Bild — Fotos und Skizzenbeschriftung</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; min-height:32px">
+                <span class="ico c-2" data-ico="mic" style="width:16px;height:16px"></span>
+                <span class="t-sub" style="flex:1">gesprochen — Aufnahmen zur Tinte</span>
+              </div>
+              <p class="t-label c-3" style="margin:8px 0 0">Vier Schichten, ein Index. Jeder Treffer sagt, was aus ihm geworden ist.</p>
+            </div>
+          </section>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Suche — Steckbrief</h2>
+  <p>Die Lupe stand in jeder Leiste und führte nirgendwohin. Jetzt gibt es den Schirm — und er antwortet nicht mit einer Liste, sondern mit Wegen.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>OneNote</td><td>Die Suche findet Handschrift, Bildtext und gesprochene Wörter und sagt, in welcher Schicht sie fündig wurde (OneNote umrandet gefundene Tinte auf der Seite). Übernommen als Schicht-Marke an jeder Zeile — <em>Tinte · Text · Bild · gesprochen</em> — und als Markierung <em>im Strich</em> statt im Textlauf.</td></tr>
+    <tr><td>iOS / Apple Notizen</td><td>Suchfeld in der Leiste, „Abbrechen" rechts, zuletzt Gesuchtes vor der Eingabe. Konvention seit Jahren, unverändert übernommen — Suchposition zu ändern erzeugt Lernkosten ohne Gegenwert.</td></tr>
+    <tr><td>Spotlight</td><td>Filter als waagerechte Reihe über den Treffern statt in einem Menü. Übernommen als Punkt-Reihe der fünf Module, mit Zähler je Modul.</td></tr>
+    <tr><td>Obsidian / Craft</td><td>„Was zeigt auf diese Stelle" als gleichrangiger Inhalt. Hier gedreht: nicht die eingehenden Verweise, sondern <strong>was aus der Fundstelle wurde</strong> — die Gegenrichtung, die beide nicht schreiben können.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>OneNotes gelbe Umrandung</strong> um gefundene Tinte. Gelb ist in Velum keine Farbe. Der Treffer trägt getönte Fläche + Ring — zwei Merkmale, keine Farbe. Der Ring steht dabei in <span class="num">--line-tap</span> (3,26:1 hell / 3,31:1 dunkel) und nicht in <span class="num">--accent-ring</span> (gerechnet 1,95:1): hier ist er das einzige Merkmal, das den Treffer von der übrigen Tinte trennt, und dann gilt die 3:1-Schwelle.</li>
+    <li><strong>Relevanz-Sortierung ohne Angabe, woran sie hängt.</strong> Sortiert wird nach „Zuletzt geändert", und das steht als Wort im Kopf.</li>
+    <li><strong>Ein „Alles"-Reiter neben Modulreitern.</strong> Die Module sind Filter, keine Ansichten — sonst hätte Velum acht Ergebnislisten statt einer.</li>
+    <li><strong>Das Vorschau-Panel</strong> mit dem ganzen Dokument daneben. Das ist ein Fenstermanager, keine Suche.</li>
+    <li><strong>Eine eigene Schicht-Farbe.</strong> Die vier Schichten sind keine Module und bekommen deshalb keinen Modulpunkt: Symbol + Wort, sonst nichts. Der 6-pt-Punkt an der Zeile gehört weiter dem Modul, in dem der Treffer liegt.</li>
+  </ul>
+
+  <h3>Der Faden auf diesem Schirm — zwei Stellen, zwei echte Kanten</h3>
+  <table>
+    <tr><td>Klammer am Tinte-Treffer</td><td><strong>Kante: Notiz „Zellbiologie", Absatz 9 → Lernkarte „Was beschreibt Osmose?" und → Notiz „Osmose".</strong> Herkunft, also 2,5 pt (<span class="num">.thread--origin</span>). Es ist dieselbe Kante, die <span class="num">today.html</span> als Kette und <span class="num">graph.html</span> als Herkunfts-Faden zeichnet — und wortgleich dasselbe Bauteil wie die Herkunfts-Klammer auf <span class="num">tasks.html</span>. Der Knoten trägt zwei Fäden (senkrecht nach unten, waagerecht zur Trefferzeile) und ist deshalb nach N7 einer. Richtung: Quelle oben, Ergebnisse unten (N6). Kein Fadenende hängt frei — jedes Stück grenzt an einen Punkt oder an das nächste Stück desselben Zuges.</td></tr>
+    <tr><td>Klammer am Bild-Treffer</td><td><strong>Kante: Canvas-Blatt „Zellkultur-Skizze", Beschriftung → Aufgabe „Osmose-Versuch wiederholen".</strong> Dieselbe Stärke, dieselbe Richtung, ein Ergebnis statt zweier. Damit steht auf einem Schirm, was Velums Datenmodell kann: Ein Treffer in einer <em>Zeichnung</em> hat eine Kante zu einer <em>Aufgabe</em>.</td></tr>
+  </table>
+  <p><strong>Wo bewusst kein Faden steht:</strong> an den beiden Treffern, aus denen (noch) nichts entstanden ist — der Aufnahme und dem Journaleintrag. Sie stehen als schlichte Zeile, und die Abwesenheit ist die Auskunft. Ebenso wenig steht ein Faden zwischen den vier Treffern untereinander (sie teilen nur einen Suchbegriff, das ist keine Beziehung) und keiner in der Karte „Gefunden in" — eine Zählung ist keine Kante.</p>
+
+  <h3>Was dieser Schirm kann, das kein Konkurrent kann</h3>
+  <p>OneNote findet „Osmose" in Handschrift, in Bildern und in Aufnahmen — auf jedem Betriebssystem, kostenlos, in 25 Sprachen. Das ist die beste Suche im Feld, und Velum übernimmt sie ohne Abstriche. <strong>Was OneNote nicht sagen kann, ist der zweite Halbsatz:</strong> Aus Absatz 9 dieser handgeschriebenen Seite sind eine Lernkarte und eine eigene Notiz geworden, aus der Beschriftung einer Skizze eine Aufgabe für Freitag. Obsidian und Craft könnten die Kante zeigen, haben aber keine Handschrift und keine Aufnahme; Anki und RemNote haben die Karte, aber kein Notizbuch. Velum ist der einzige Ort, an dem beide Hälften desselben Satzes stehen — <strong>wo es steht, und was daraus wurde</strong>.</p>
+
+  <h3>Die zwei Zustände</h3>
+  <table>
+    <tr><td>vor der Eingabe</td><td>Drittes Gerät auf der Bühne: leeres Feld mit Platzhalter, der den Bestand nennt („In 42 Notizen, 6 Blättern, 84 Karten suchen"), die Modul-Punktreihe, zuletzt Gesuchtes mit Trefferzahl, und die Karte „Durchsucht wird" — vier Schichten mit Symbol und Satz. Der leere Zustand behauptet nichts, er zeigt, was da ist.</td></tr>
+    <tr><td>nach der Eingabe</td><td>Zwölf Fundstellen, davon drei mit Klammer. Die Zeile über den Treffern sagt beides: <span class="num">12</span> Fundstellen, drei haben etwas erzeugt.</td></tr>
+    <tr><td>ausgefiltert</td><td>„Aufgaben 0" steht als Ghost-Chip mit <span class="num">.is-off</span> — Deckkraft <em>und</em> die Null, zwei Merkmale.</td></tr>
+    <tr><td>leer</td><td>Ohne Treffer: ein Faden, der ins Leere läuft und in einem hohlen Punkt endet, dazu der Satz „Zu ‚Osmose' steht noch nichts in deiner Tinte." (Form aus <span class="num">leere-zustaende.html</span>)</td></tr>
+  </table>
+
+  <h3>Affordanz (die vier Regeln)</h3>
+  <table>
+    <tr><td>R1 primär</td><td>Der aktive Filter („Alle 12", „Osmose" in „Zuletzt gesucht") ist eine gefüllte Ink-Fläche mit hellem Text.</td></tr>
+    <tr><td>R2 sekundär</td><td>Filter-Chips haben eine eigene Fläche (<span class="num">--fill</span>); der ausgefilterte trägt zusätzlich Umrandung in <span class="num">--line-tap</span> (3,1:1) statt Farbe. „Abbrechen" ist <span class="num">.btn--quiet</span> in einer Leiste — dort trägt die Lage die Auskunft, deshalb ohne Ring (system.css §5.1a).</td></tr>
+    <tr><td>R3 Text</td><td>Jede Trefferzeile trägt einen Chevron; die Fundstelle im Text trägt Fläche + Rand + Gewicht, nicht Farbe. Die Schicht-Marke ist ein <span class="num">&lt;span&gt;</span>, also ausdrücklich <em>kein</em> Knopf — sie sieht deshalb anders aus als die Filter-Chips darüber.</td></tr>
+    <tr><td>R4 44 pt</td><td>Gemessen: Auf allen drei Rahmen liegt <strong>kein</strong> Bedienelement dieses Schirms unter 44 pt. Trefferzeilen <span class="num">min-height:44px</span> bzw. <span class="num">.row</span> (52 pt), die vier Schicht-Filter rechts 44 pt, der Abspiel-Knopf ein <span class="num">.btn--sm</span> (44 pt über §5.9), Chips und Icon-Knöpfe ebenso. Die einzige Ausnahme sind die zwölf <span class="num">.navitem</span> der Seitenleiste mit 40 pt — der in system.css §5.9 offen vermerkte Befund des Bestands, auf allen dreizehn Schirmen gleich.</td></tr>
+  </table>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>Schicht = Symbol + Wort (nie Farbe — eine Schicht ist kein Modul). Modul = 6-pt-Punkt + Wort in derselben Zeile. Fundstelle = getönte Fläche + Rand + Gewicht. Fundstelle in Tinte = getönte Fläche + Ring um den Strich. Aktiver Filter = Fläche + Textfarbe + Zahl. Ausgefiltert = Deckkraft + Null.</p>
+
+  <h3>Die Schrift</h3>
+  <p>Dieser Schirm trägt <strong>kein</strong> Serif. Der Screen-Titel steht im Suchfeld selbst — ein Suchschirm hat keine Überschrift, er hat eine Eingabe; das ist die Konvention, und sie ist richtig. Damit fällt der einzige Serif-Ort weg, den ein Schirm sonst hätte. Blankes <span class="num">.serif</span> kommt in dieser Datei nicht vor.</p>
+
+  <h3>Die Handschrift ist gezeichnet, nicht gesetzt</h3>
+  <p>Der Tinte-Treffer besteht aus SVG-Strichen mit <span class="num">stroke-linecap: round</span>, wie die Handschrift in <span class="num">platform/pencil.html</span> — keine Schreibschrift-Datei, kein Bild. Nur so lässt sich die Fundstelle <em>im Strich</em> markieren statt in einem Textlauf, und nur so kostet sie null Byte Schriftdaten. Die umgebenden Wörter sind bewusst nicht lesbar: Gesucht wurde ein Wort, und genau dieses Wort steht lesbar da.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
+</body>
+</html>

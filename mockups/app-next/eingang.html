@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light" data-type="standard">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eingang — Entwurf</title>
+<link rel="stylesheet" href="../shared/system.css">
+<link rel="stylesheet" href="../shared/bewegung.css">
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+ * Nur für diesen Schirm: DIE FREIE FLÄCHE.
+ *
+ * Der Eingang ist der einzige Ort in Velum, an dem die Lage vom Nutzer kommt
+ * und nicht aus den Daten. Überall sonst ist Position berechnet (Woche,
+ * Herkunftstiefe, Zeitachse). Das ist keine Ausnahme aus Bequemlichkeit,
+ * sondern die Gegenrechnung zu einer Regel, die sonst etwas wegnimmt:
+ * „ich lege es dorthin, wo ich es wiederfinde" ist ein echtes Bedürfnis, und
+ * es bekommt genau einen Ort — befristet.
+ *
+ * .ei-flaeche ist deshalb sichtbar eine andere Fläche als der Rest der App
+ * (--paper-2 statt --paper), und jeder Schnipsel liegt mit Kartenschatten
+ * darauf statt in ihr. Zwei Schnipsel berühren sich; das ist Absicht.
+ *
+ * .ei-schnipsel trägt links eine 20-pt-Rinne. Darin sitzt der Punkt des
+ * Objekts — hohl, solange es keinen Faden gibt. Die Rinne ist zugleich die
+ * Fahrspur des Fadens: Wenn eine Beziehung entsteht, wächst er aus genau
+ * diesem Punkt nach unten, ohne die Karte zu kreuzen. Der Punkt sitzt
+ * deshalb NICHT im Kartenkörper — ein Faden, der aus seiner eigenen Karte
+ * herauslaufen müsste, wäre nicht zu zeichnen.
+ *
+ * Alle Lagen stehen als Inline-Maß am Element und sind gemessen, nicht
+ * geschätzt: Rinnenmitte = linke Kante + 9 pt, Punktmitte = Oberkante
+ * + 20 pt. Der Faden setzt genau dort an und endet genau dort.
+ * ══════════════════════════════════════════════════════════════════════ */
+
+.ei-flaeche      { position: relative; background: var(--paper-2);
+                   border-radius: 0 0 var(--r-card) var(--r-card);
+                   box-shadow: inset 0 1px 0 var(--line); overflow: hidden; }
+
+.ei-schnipsel    { position: absolute; padding-left: 20px; }
+.ei-schnipsel__k { background: var(--paper); border-radius: 12px;
+                   box-shadow: var(--sh-card); padding: 12px; text-align: left;
+                   width: 100%; display: block; }
+.ei-punkt        { position: absolute; left: 9px; top: 20px;
+                   transform: translate(-50%, -50%); z-index: 2; }
+.ei-zug          { position: absolute; width: 10px; z-index: 1; }
+
+/* Ausgewählt = getönte Fläche + Ring + der gefüllte Chip. Drei Merkmale,
+   keines davon Farbe allein (R2 / Zwei-Merkmal-Regel). */
+.ei-schnipsel--gewaehlt .ei-schnipsel__k {
+                   background: var(--accent-soft);
+                   box-shadow: var(--sh-card), 0 0 0 2.5px var(--accent-ring); }
+
+.ei-foto         { display: block; width: 100%; border-radius: 8px;
+                   object-fit: cover; background: var(--fill-2); }
+
+/* Die drei Ausgänge. Chips, weil sie sekundär sind und eine eigene Fläche
+   haben (R2); der gewählte trägt --accent (R1). Den 44-pt-Trefferbereich
+   liefert system.css §5.9, weil es <button class="chip"> sind. */
+.ei-wohin        { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+
+/* Das Wort am Faden (Idee 11): ein Faden muss lesbar sein, ohne dass man ihn
+   anfasst. Der Grund unter dem Wort ist die Fläche, nicht der Faden — sonst
+   liefe der Strich durch die Schrift. */
+.ei-amfaden      { position: absolute; z-index: 2; background: var(--paper-2);
+                   padding: 0 5px; white-space: nowrap; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================================
+KOMMENTARBLOCK — Eingang
+
+DER ORT WAR DA, DER SCHIRM NICHT
+„Eingang · 3" steht in der Seitenleiste jedes der dreizehn Schirme, seit
+Runde 1. Ein Ziel mit Zähler, das nirgendwohin führt, ist der teuerste Fehler,
+den ein Prototyp machen kann: Er verspricht etwas und löst es nicht ein.
+
+ÜBERNOMMEN
+· Milanote — die freie Fläche beim Sammeln. Eine Liste erzwingt im Moment des
+  Sammelns zwei Entscheidungen (Reihenfolge und Zugehörigkeit), die man da noch
+  nicht treffen kann. Übernommen als der EINE Ort mit freier Position.
+· Milanote — Haufen dürfen sich berühren. Übernommen: zwei der drei Schnipsel
+  berühren sich, und das ist kein Layoutfehler, sondern der Zustand „ungefähr".
+· iOS-Teilen-Blatt und Kamera — Herkunft steht am Schnipsel („geteilt aus
+  Safari", „abfotografiert"). Übernommen von der Plattform, weil richtig.
+· Things/Todoist — der Eingang als eigener Block mit einer Sammelaktion.
+  Übernommen als Kopfzeile mit Zähler, nicht als roter Alarm.
+
+BEWUSST NICHT ÜBERNOMMEN
+· Milanotes Ordnung als Dauerzustand. Eine gelegte Ordnung altert, überträgt
+  sich nicht auf eine zweite Person und skaliert nicht — Milanotes eigene
+  Suche findet keine Boards. Velums freie Position ist deshalb BEFRISTET.
+· Das Abhaken. Ein Schnipsel verlässt den Eingang nicht durch „erledigt",
+  sondern dadurch, dass eine Beziehung entsteht. Es gibt hier keine Checkbox.
+· Milanotes Boards, Spalten und Vorlagen — das wäre ein zweites Canvas.
+· Rot für Überliegendes. Rot bleibt der Frist; die Frist ist hier echt
+  („noch 3 Tage"), deshalb steht sie in der Frist-Grammatik: Wort + Flagge +
+  Resttage, nie Farbe allein.
+
+DAS BESONDERE AN DIESEM SCHIRM
+Der hohle Punkt ist die Aussage: Was hier liegt, gehört noch zu nichts. Kein
+Konkurrent kann diesen Punkt zeichnen, weil bei keinem „hat einen Faden" ein
+Zustand des Datenmodells ist. Und die freie Position ALTERT — das ist die
+Antwort auf Milanotes einzige echte Stärke und zugleich auf ihre Grenze.
+
+ADA-KATEGORIE: Interaktion (der Ausgang ist eine Beziehung, kein Haken) und
+Innovation (Abwesenheit einer Kante als sichtbarer Zustand).
+
+KONTRAST (gerechnet, Tokenwerte aus mockups/shared/system.css §1)
+  Titel/Fließtext   ink-1 auf Papier    17,8:1 (hell) · 15,9:1 (dunkel)
+  Sekundärtext      ink-2 auf Papier     5,3:1 (hell) ·  7,1:1 (dunkel)
+  Chip-Text         ink-2 auf fill       5,0:1 (hell) ·  6,7:1 (dunkel)
+  CTA-Text          accent-on auf Ink   17,8:1 (hell) · 17,3:1 (dunkel)
+  Frist rot         danger auf Papier    5,2:1 (hell) ·  6,3:1 (dunkel)
+  Faden ruhend      thread auf Papier-2  3,26:1 (hell) · 3,31:1 (dunkel)
+  Ring hohler Punkt dot-hollow           3,26:1 (hell) · 3,31:1 (dunkel)
+  Metadaten         ink-3 auf Papier-2   5,07:1 (hell) · 5,41:1 (dunkel)
+  Über dem Foto steht kein Text — die Beschriftung liegt unter dem Bild auf
+  Papier. Deshalb gibt es hier keinen Wert gegen Bildpunkte.
+
+TYPO: 5 Größen (28/20/17/15/13), 2 Gewichte (400/600). Keine Ausnahme.
+============================================================================= -->
+
+<div class="mocktitle">
+  <h1>Eingang</h1>
+  <p>Der einzige Ort mit freier Position — und der einzige mit Ablaufdatum. Was hier liegt, hat noch keinen Faden; es verlässt den Eingang nicht durch Abhaken, sondern dadurch, dass eine Beziehung entsteht.</p>
+</div>
+
+<div class="stage">
+
+  <!-- ══════════════════════════ iPad ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPad · 11″ quer <span>1194 × 834 pt · freie Fläche über die volle Breite</span></div>
+    <div class="screen screen--ipad" id="ei-ipad">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="t-label num">Do 13. Nov</span><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="body">
+        <!-- Sidebar — auf allen Schirmen gleich, hier ist „Eingang" aktiv -->
+        <aside class="sidebar">
+          <div class="sidebar__head">
+            <span class="t-section">Emil</span>
+            <span class="iconbtn"><span class="ico" data-ico="search"></span></span>
+          </div>
+
+          <button class="navitem"><span class="ico" data-ico="today"></span><span class="t-body">Heute</span></button>
+          <button class="navitem"><span class="ico" data-ico="library"></span><span class="t-body">Bibliothek</span></button>
+          <button class="navitem is-active"><span class="ico" data-ico="inbox"></span><span class="t-body">Eingang</span><span class="navitem__count t-label num">3</span></button>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Module</div>
+            <button class="navitem"><span class="ico" data-ico="canvas"></span><span class="t-body">Canvas</span><span class="dot dot--canvas"></span></button>
+            <button class="navitem"><span class="ico" data-ico="notes"></span><span class="t-body">Notizen</span><span class="dot dot--notes"></span></button>
+            <button class="navitem"><span class="ico" data-ico="journal"></span><span class="t-body">Journal</span><span class="dot dot--journal"></span></button>
+            <button class="navitem"><span class="ico" data-ico="tasks"></span><span class="t-body">Aufgaben</span><span class="dot dot--tasks"></span><span class="navitem__count t-label num">6</span></button>
+            <button class="navitem"><span class="ico" data-ico="cards"></span><span class="t-body">Lernkarten</span><span class="dot dot--cards"></span><span class="navitem__count t-label num">23</span></button>
+          </div>
+
+          <div class="sidebar__group">
+            <div class="sidebar__grouptitle t-label">Semester</div>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Biologie</span></button>
+            <button class="navitem"><span class="ico" data-ico="folder"></span><span class="t-body">Analysis II</span></button>
+            <button class="navitem"><span class="ico" data-ico="graph"></span><span class="t-body">Graph</span></button>
+          </div>
+
+          <div style="margin-top:auto; padding-top:12px">
+            <button class="navitem"><span class="ico" data-ico="settings"></span><span class="t-body">Einstellungen</span></button>
+          </div>
+        </aside>
+
+        <!-- Inhalt -->
+        <main class="content">
+          <div class="navbar">
+            <div style="flex:none">
+              <div class="serif--screen-title">Eingang</div>
+            </div>
+            <div class="navbar__spacer"></div>
+            <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+            <button class="btn btn--primary btn--sm"><span class="ico" data-ico="plus" style="width:18px;height:18px"></span>Neu</button>
+          </div>
+
+          <div class="scroll" style="padding-top:8px; display:flex; flex-direction:column; gap:10px">
+
+            <p class="t-body c-2" style="margin:0; max-width:92ch">
+              Drei Sachen liegen hier, und keine hat einen Faden. Der Ausgang ist kein Haken, sondern <strong class="c-1 is-strong">eine Beziehung, die entsteht</strong>.
+            </p>
+
+            <!-- ══ DIE FREIE FLÄCHE ══ -->
+            <section class="card" style="padding:0; overflow:hidden; flex:none">
+              <div style="display:flex; align-items:center; gap:10px; padding:6px 14px 5px">
+                <span class="t-label c-3">FREIE POSITION</span>
+                <span class="t-sub c-3">der einzige Ort in Velum, an dem du selbst legst — und der einzige mit Ablaufdatum</span>
+                <span style="flex:1"></span>
+                <span class="t-label c-3 num">3</span>
+              </div>
+
+              <div class="ei-flaeche" style="height:440px">
+
+                <!-- Schnipsel 1 — aus Safari geteilt -->
+                <div class="ei-schnipsel" id="ei-s1" style="left:10px; top:8px; width:320px">
+                  <span class="dot dot--hollow ei-punkt" title="ohne Faden"></span>
+                  <div class="ei-schnipsel__k">
+                    <div class="t-label c-3" style="display:flex; align-items:center; gap:6px">
+                      <span class="ico" data-ico="share" style="width:13px;height:13px"></span>geteilt aus Safari · vor 2 Stunden
+                    </div>
+                    <div class="t-body is-strong" style="margin-top:3px">Osmose – Wikipedia</div>
+                    <div class="t-sub c-3 clamp-1" style="margin-top:1px">de.wikipedia.org</div>
+                    <div style="height:1px; background:var(--line); margin:9px 0 7px"></div>
+                    <div class="t-label c-3">WOHIN DAMIT</div>
+                    <div class="ei-wohin">
+                      <button class="chip"><span class="dot dot--notes"></span>Notiz</button>
+                      <button class="chip"><span class="dot dot--tasks"></span>Aufgabe</button>
+                      <button class="chip"><span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Notizbuch</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Schnipsel 2 — abfotografiert -->
+                <div class="ei-schnipsel" id="ei-s2" style="left:336px; top:56px; width:400px">
+                  <span class="dot dot--hollow ei-punkt" title="ohne Faden"></span>
+                  <div class="ei-schnipsel__k" style="padding:8px">
+                    <img class="ei-foto" src="../assets/bilder/medien/notizseite-600.jpg"
+                         alt="Abfotografierte Seite aus dem Vorlesungsskript mit handschriftlichen Randnotizen"
+                         style="height:76px">
+                    <div class="t-label c-3" style="display:flex; align-items:center; gap:6px; margin-top:8px">
+                      <span class="ico" data-ico="photo" style="width:13px;height:13px"></span>abfotografiert · vor 3 Tagen
+                    </div>
+                    <div class="t-body is-strong" style="margin-top:2px">Skript Wendt, S. 214</div>
+                    <div style="height:1px; background:var(--line); margin:9px 0 7px"></div>
+                    <div class="t-label c-3">WOHIN DAMIT</div>
+                    <div class="ei-wohin">
+                      <button class="chip"><span class="dot dot--notes"></span>Notiz</button>
+                      <button class="chip"><span class="dot dot--tasks"></span>Aufgabe</button>
+                      <button class="chip"><span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Notizbuch</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ══ Schnipsel 3 — die Übergabe, eingefroren ══
+                     Er liegt seit elf Tagen. Gerade eben ist „Notiz" gedrückt
+                     worden: Der Punkt ist nicht mehr hohl, sondern trägt die
+                     Farbe des Moduls, in das er geht, und der 2,5-pt-Faden
+                     (Herkunft: A wurde zu B) wächst aus genau diesem Punkt
+                     nach unten zum Ziel. Im nächsten Bild ist der Schnipsel
+                     weg — der Eingang zählt dann 2.
+                     Punktmitte: 10 + 9 = 19 waagerecht, 172 + 20 = 192 senkrecht. -->
+                <div class="ei-schnipsel ei-schnipsel--gewaehlt" id="ei-s3" style="left:10px; top:172px; width:346px">
+                  <span class="dot dot--notes ei-punkt" title="bekommt gerade einen Faden"></span>
+                  <div class="ei-schnipsel__k">
+                    <div style="display:flex; align-items:center; gap:10px">
+                      <span class="t-label c-3" style="display:flex; align-items:center; gap:6px; flex:1; min-width:0; white-space:nowrap">
+                        <span class="ico" data-ico="share" style="width:13px;height:13px"></span>aus dem Teilen-Blatt
+                      </span>
+                      <span class="chip chip--danger" style="height:22px; padding:0 8px"><span class="ico" data-ico="flag" style="width:12px;height:12px"></span>noch 3 Tage</span>
+                    </div>
+                    <p class="serif--quote clamp-2" style="margin:5px 0 0">„Der Konzentrationsgradient bestimmt die Richtung."</p>
+                    <div class="t-label c-3" style="margin-top:4px">PDF „Membranphysiologie", S. 3 · <strong class="c-2">liegt seit 11 Tagen</strong></div>
+                    <div class="t-label c-3" style="margin-top:9px">WOHIN DAMIT</div>
+                    <div class="ei-wohin">
+                      <button class="chip chip--solid"><span class="dot dot--notes" style="box-shadow:0 0 0 1px rgba(255,255,255,.5)"></span>Notiz</button>
+                      <button class="chip"><span class="dot dot--tasks"></span>Aufgabe</button>
+                      <button class="chip"><span class="ico" data-ico="folder" style="width:13px;height:13px"></span>Notizbuch</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Der Faden: von der Punktmitte des Schnipsels (53 / 168) auf
+                     die Punktmitte des Ziels (19 / 404). Beide Enden auf 0,0 pt
+                     Abstand — die Endpunkt-Konvention erlaubt bis 5,2 pt. -->
+                <svg class="thread thread--v thread--origin ei-zug" style="left:14px; top:192px; height:212px" aria-hidden="true"></svg>
+                <span class="ei-amfaden t-label c-2" style="left:26px; top:366px">wird zu</span>
+
+                <!-- Das Ziel — dieselbe Rinne, damit der Faden gerade läuft -->
+                <div class="ei-schnipsel" style="left:10px; top:384px; width:346px">
+                  <span class="dot dot--notes ei-punkt" title="Zielobjekt"></span>
+                  <button class="ei-schnipsel__k" id="ei-ziel" style="display:flex; align-items:center; gap:10px; padding:6px 12px; min-height:44px">
+                    <span class="t-body is-strong" style="flex:1; text-align:left">Zellbiologie</span>
+                    <span class="t-sub c-3" style="white-space:nowrap">Notiz · wird Absatz 15</span>
+                    <span class="ico c-3" data-ico="chevR" style="width:16px;height:16px"></span>
+                  </button>
+                </div>
+
+              </div>
+            </section>
+
+            <!-- ── Zwei Karten unter der Fläche ── -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start">
+
+              <!-- ══ DAS ABLAUFDATUM ══
+                   Das ist die Hälfte, die Milanote fehlt: Die freie Position
+                   altert. Nach 14 Tagen fragt Velum nach — vorher passiert
+                   nichts, nachher wird nichts gelöscht, es wird gefragt. -->
+              <section class="card" style="padding:12px 14px">
+                <div class="card__head" style="margin-bottom:6px">
+                  <span class="ico" data-ico="clock" style="width:16px;height:16px; color:var(--ink-3)"></span>
+                  <span class="t-label c-3" style="flex:1">WIE LANGE SCHON</span>
+                  <span class="t-label c-3">nach 14 Tagen fragt Velum nach</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:9px; min-height:30px">
+                  <span class="dot dot--hollow"></span>
+                  <span class="t-sub clamp-1" style="flex:1">Osmose – Wikipedia</span>
+                  <span class="t-label c-3">2 Stunden</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:9px; min-height:30px">
+                  <span class="dot dot--hollow"></span>
+                  <span class="t-sub clamp-1" style="flex:1">Skript Wendt, S. 214</span>
+                  <span class="t-label c-3">3 Tage</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:9px; min-height:30px">
+                  <span class="dot dot--notes"></span>
+                  <span class="t-sub clamp-1" style="flex:1">Membranphysiologie, S. 3</span>
+                  <span class="chip chip--danger" style="height:20px; padding:0 7px"><span class="ico" data-ico="flag" style="width:11px;height:11px"></span>noch 3</span>
+                  <span class="t-label c-3">11 Tage</span>
+                </div>
+              </section>
+
+              <!-- ══ DER FÄCHER — wohin diese Woche ══
+                   Dasselbe Bauteil wie „Woher heute kommt" auf tasks.html,
+                   nur in der Gegenrichtung gelesen: dort laufen mehrere
+                   Quellen auf einen Tag zu, hier läuft ein Ort in drei Module
+                   auseinander. Der Knoten trägt drei Fäden (N7), die Richtung
+                   geht von oben nach unten (N6), und jede Kurve ist die Menge
+                   echter Kanten — neun Schnipsel, neun Fäden.
+                   Maße: Knoten 14/14, Ziele auf x = 44, y = 40 / 64 / 88. -->
+              <section class="card" style="padding:12px 14px">
+                <div class="card__head" style="margin-bottom:4px">
+                  <span class="t-label c-3" style="flex:1">DIESE WOCHE HINAUSGEGANGEN</span>
+                  <span class="t-label c-3 num">9</span>
+                </div>
+
+                <div style="position:relative; height:96px">
+                  <svg class="thread thread--origin" viewBox="0 0 360 96" width="360" height="96" aria-hidden="true" focusable="false" style="position:absolute; left:0; top:0">
+                    <path d="M14 14 Q14 40 44 40"></path>
+                    <path d="M14 14 Q14 64 44 64"></path>
+                    <path d="M14 14 Q14 88 44 88"></path>
+                  </svg>
+
+                  <div style="position:absolute; left:9.5px; top:4px; height:20px; display:flex; align-items:center; gap:9px">
+                    <span class="dot dot--node"></span>
+                    <span class="t-sub is-strong" style="white-space:nowrap">Eingang</span>
+                  </div>
+
+                  <div style="position:absolute; left:41px; top:30px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                    <span class="dot dot--notes"></span>
+                    <span class="t-sub c-1" style="flex:1">Notiz</span>
+                    <span class="t-label c-3 num">4</span>
+                    </div>
+                  <div style="position:absolute; left:41px; top:54px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                    <span class="dot dot--tasks"></span>
+                    <span class="t-sub c-1" style="flex:1">Aufgabe</span>
+                    <span class="t-label c-3 num">3</span>
+                    </div>
+                  <div style="position:absolute; left:41px; top:78px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                    <span class="dot dot--notes"></span>
+                    <span class="ico c-3" data-ico="folder" style="width:14px;height:14px"></span>
+                    <span class="t-sub c-1" style="flex:1">Notizbuch</span>
+                    <span class="t-label c-3 num">2</span>
+                    </div>
+                </div>
+
+                <div class="t-sub c-3">Neun Schnipsel haben diese Woche einen Faden bekommen. Gelöscht wurde keiner.</div>
+              </section>
+
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════ iPhone ══════════════════════════ -->
+  <div class="device">
+    <div class="device__label">iPhone · 6,3″ <span>393 × 852 pt · dieselbe Fläche, enger gelegt</span></div>
+    <div class="screen screen--iphone" id="ei-iphone">
+      <div class="statusbar">
+        <span class="num">9:41</span>
+        <span class="statusbar__right"><span class="statusbar__bat"></span></span>
+      </div>
+
+      <div class="content">
+        <div class="navbar" style="border:0; padding-bottom:2px">
+          <button class="iconbtn" aria-label="Zurück zu Mehr"><span class="ico" data-ico="chevL"></span></button>
+          <div class="serif--screen-title">Eingang</div>
+          <div class="navbar__spacer"></div>
+          <button class="iconbtn"><span class="ico" data-ico="search"></span></button>
+        </div>
+
+        <div class="scroll" style="display:flex; flex-direction:column; gap:12px">
+
+          <p class="t-sub c-2" style="margin:0">
+            Drei Sachen. Keine hat einen Faden.
+          </p>
+
+          <!-- Dieselbe Fläche, dieselbe Grammatik: Rinne links, hohler Punkt,
+               Faden nur dort, wo gerade eine Beziehung entsteht. -->
+          <section class="card" style="padding:0; overflow:hidden; flex:none">
+            <div style="display:flex; align-items:center; gap:8px; padding:9px 12px 7px">
+              <span class="t-label c-3" style="flex:1">FREIE POSITION</span>
+              <span class="t-label c-3 num">3</span>
+            </div>
+
+            <div class="ei-flaeche" style="height:418px">
+
+              <div class="ei-schnipsel" id="ei-s1-p" style="left:4px; top:6px; width:236px">
+                <span class="dot dot--hollow ei-punkt" title="ohne Faden"></span>
+                <div class="ei-schnipsel__k" style="padding:8px">
+                  <div class="t-label c-3" style="display:flex; align-items:center; gap:5px">
+                    <span class="ico" data-ico="share" style="width:12px;height:12px"></span>Safari · vor 2 Std.
+                  </div>
+                  <div class="t-sub is-strong clamp-1" style="margin-top:2px">Osmose – Wikipedia</div>
+                  <div class="ei-wohin" style="margin-top:8px">
+                    <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--notes"></span>Notiz</button>
+                    <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--tasks"></span>Aufgabe</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ei-schnipsel" id="ei-s2-p" style="left:128px; top:88px; width:216px">
+                <span class="dot dot--hollow ei-punkt" title="ohne Faden"></span>
+                <div class="ei-schnipsel__k" style="padding:8px">
+                  <img class="ei-foto" src="../assets/bilder/medien/notizseite-600.jpg"
+                       alt="Abfotografierte Seite aus dem Vorlesungsskript mit handschriftlichen Randnotizen"
+                       style="height:48px">
+                  <div class="t-label c-3" style="display:flex; align-items:center; gap:5px; margin-top:7px">
+                    <span class="ico" data-ico="photo" style="width:12px;height:12px"></span>Foto · 3 Tage
+                  </div>
+                  <div class="t-sub is-strong clamp-1" style="margin-top:2px">Skript Wendt, S. 214</div>
+                  <div class="ei-wohin" style="margin-top:8px">
+                    <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--notes"></span>Notiz</button>
+                    <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--tasks"></span>Aufgabe</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Punktmitte: 6 + 9 = 15 waagerecht, 220 + 20 = 240 senkrecht -->
+              <div class="ei-schnipsel ei-schnipsel--gewaehlt" id="ei-s3-p" style="left:6px; top:220px; width:284px">
+                <span class="dot dot--notes ei-punkt" title="bekommt gerade einen Faden"></span>
+                <div class="ei-schnipsel__k" style="padding:8px">
+                  <div style="display:flex; align-items:center; gap:6px">
+                    <span class="t-label c-3" style="flex:1; white-space:nowrap">Teilen-Blatt · 11 Tage</span>
+                    <span class="chip chip--danger" style="height:20px; padding:0 7px"><span class="ico" data-ico="flag" style="width:11px;height:11px"></span>noch 3</span>
+                  </div>
+                  <p class="serif--quote clamp-2" style="margin:4px 0 0">„Der Konzentrationsgradient bestimmt die Richtung."</p>
+                  <div class="ei-wohin" style="margin-top:8px">
+                    <button class="chip chip--solid" style="height:22px; padding:0 8px"><span class="dot dot--notes" style="box-shadow:0 0 0 1px rgba(255,255,255,.5)"></span>Notiz</button>
+                    <button class="chip" style="height:22px; padding:0 8px"><span class="dot dot--tasks"></span>Aufgabe</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Von der Punktmitte (15 / 240) auf die Punktmitte (15 / 390) -->
+              <svg class="thread thread--v thread--origin ei-zug" style="left:10px; top:240px; height:150px" aria-hidden="true"></svg>
+              <span class="ei-amfaden t-label c-2" style="left:24px; top:353px">wird zu</span>
+
+              <div class="ei-schnipsel" style="left:6px; top:370px; width:300px">
+                <span class="dot dot--notes ei-punkt" title="Zielobjekt"></span>
+                <button class="ei-schnipsel__k" id="ei-ziel-p" style="display:flex; align-items:center; gap:8px; padding:4px 10px; min-height:44px">
+                  <span class="t-sub is-strong" style="flex:1; text-align:left">Zellbiologie</span>
+                  <span class="t-label c-3" style="white-space:nowrap">wird Absatz 15</span>
+                  <span class="ico c-3" data-ico="chevR" style="width:15px;height:15px"></span>
+                </button>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Der Fächer, auch auf dem iPhone: dieselbe Zeichnung, engeres Maß -->
+          <section class="card" style="padding:10px 12px; flex:none">
+            <div class="card__head" style="margin-bottom:2px">
+              <span class="t-label c-3" style="flex:1">DIESE WOCHE HINAUSGEGANGEN</span>
+              <span class="t-label c-3 num">9</span>
+            </div>
+            <div style="position:relative; height:96px">
+              <svg class="thread thread--origin" viewBox="0 0 329 96" width="329" height="96" aria-hidden="true" focusable="false" style="position:absolute; left:0; top:0">
+                <path d="M14 14 Q14 40 44 40"></path>
+                <path d="M14 14 Q14 64 44 64"></path>
+                <path d="M14 14 Q14 88 44 88"></path>
+              </svg>
+              <div style="position:absolute; left:9.5px; top:4px; height:20px; display:flex; align-items:center; gap:9px">
+                <span class="dot dot--node"></span>
+                <span class="t-sub is-strong">Eingang</span>
+              </div>
+              <div style="position:absolute; left:41px; top:30px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                <span class="dot dot--notes"></span><span class="t-sub c-1" style="flex:1">Notiz</span><span class="t-label c-3 num">4</span></div>
+              <div style="position:absolute; left:41px; top:54px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                <span class="dot dot--tasks"></span><span class="t-sub c-1" style="flex:1">Aufgabe</span><span class="t-label c-3 num">3</span></div>
+              <div style="position:absolute; left:41px; top:78px; right:0; height:20px; display:flex; align-items:center; gap:7px; text-align:left">
+                <span class="dot dot--notes"></span><span class="ico c-3" data-ico="folder" style="width:14px;height:14px"></span><span class="t-sub c-1" style="flex:1">Notizbuch</span><span class="t-label c-3 num">2</span></div>
+            </div>
+          </section>
+        </div>
+
+        <nav class="tabbar">
+          <button class="tab"><span class="ico" data-ico="today"></span><span class="t-label">Heute</span></button>
+          <button class="tab"><span class="ico" data-ico="library"></span><span class="t-label">Bibliothek</span></button>
+          <button class="tab"><span class="ico" data-ico="tasks"></span><span class="t-label">Aufgaben</span></button>
+          <button class="tab"><span class="ico" data-ico="cards"></span><span class="t-label">Lernen</span></button>
+          <button class="tab is-active"><span class="ico" data-ico="more"></span><span class="t-label">Mehr</span></button>
+        </nav>
+        <div class="home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Steckbrief -->
+<div class="sheetnote">
+  <h2>Eingang — Steckbrief</h2>
+  <p>Die Seitenleiste bot diesen Ort seit Runde 1 an, samt Zähler. Jetzt gibt es ihn. Er ist der einzige Schirm, auf dem die Lage vom Nutzer kommt — und der einzige mit einem Ablaufdatum.</p>
+
+  <h3>Woher die Ideen stammen</h3>
+  <table>
+    <tr><td>Milanote</td><td>Die freie Fläche beim Sammeln. Eine Liste erzwingt im Moment des Sammelns Reihenfolge <em>und</em> Zugehörigkeit — zwei Entscheidungen, die man da noch nicht treffen kann. Übernommen als der eine Ort mit freier Position; zwei Schnipsel berühren sich, weil „ungefähr" ein zulässiger Zustand ist.</td></tr>
+    <tr><td>iOS Teilen-Blatt, Kamera</td><td>Woher ein Schnipsel kam, steht am Schnipsel: „geteilt aus Safari", „abfotografiert", „aus dem Teilen-Blatt". Konvention der Plattform, unverändert übernommen.</td></tr>
+    <tr><td>Things 3, Todoist</td><td>Der Eingang als eigener Block mit Zähler und einer Sammelaktion, statt Unsortiertes zwischen die Arbeit zu mischen. Übernommen als Kopfzeile mit Zähler — ohne Alarmfarbe.</td></tr>
+    <tr><td>Obsidian (mittelbar)</td><td>„Ein fehlender Faden ist auch eine Information" — das Prinzip hinter den <em>unlinked mentions</em>. Hier trägt es der hohle Punkt: nicht „ungelesen", sondern „gehört noch zu nichts".</td></tr>
+    <tr><td>Todoist</td><td>Ein unvollständiger Datensatz ist gültig. Übernommen als Grundgesetz dieses Schirms: Beim Sammeln wird nichts entschieden, nicht einmal ein Ordner.</td></tr>
+  </table>
+
+  <h3>Bewusst nicht übernommen</h3>
+  <ul>
+    <li><strong>Milanotes Ordnung als Dauerzustand.</strong> Eine gelegte Ordnung altert, überträgt sich nicht auf eine zweite Person und skaliert nicht — Milanotes eigene Suche findet keine Boards. Velums freie Position ist deshalb ein <em>Wartezustand</em> mit Frist, kein Ablageort. Genau das ist die Hälfte, die Milanote fehlt.</li>
+    <li><strong>Das Abhaken.</strong> Es gibt auf diesem Schirm keine Checkbox. Ein Schnipsel geht hinaus, indem eine Beziehung entsteht — sonst wäre der Eingang eine zweite Aufgabenliste.</li>
+    <li><strong>Boards, Spalten und Vorlagen</strong> (Milanote) — das wäre ein zweites Canvas an einer Stelle, an der nichts entworfen, sondern nur abgelegt wird.</li>
+    <li><strong>Rote Zeilen für Überliegendes.</strong> Rot bleibt der Frist. Die Frist ist hier echt, deshalb trägt sie die Frist-Grammatik des Systems: rotes Wort + Flaggen-Symbol + Resttage — nie Farbe allein.</li>
+    <li><strong>Die Übergabe-Leiste</strong> aus <span class="num">tasks.html</span>. Sie gehört zu einer Auswahl über mehrere Zeilen; im Eingang wird jeder Schnipsel für sich entschieden, deshalb trägt jede Karte ihre drei Ausgänge selbst.</li>
+  </ul>
+
+  <h3>Der Faden auf diesem Schirm — zwei Stellen, zwei echte Kanten</h3>
+  <table>
+    <tr><td>Die Übergabe</td><td><strong>Kante: Schnipsel → Notiz „Zellbiologie" (Herkunft, A wurde zu B).</strong> Deshalb 2,5 pt (<span class="num">.thread--origin</span>). Der Faden wächst aus der Punktmitte des Schnipsels senkrecht nach unten auf die Punktmitte des Ziels — Richtung oben → unten (N6), beide Enden auf 0,0 pt Abstand (Endpunkt-Konvention, system.css §9.2b, erlaubt bis 5,2 pt). Am Faden steht das Wort <em>wird zu</em>, damit die Beziehung lesbar ist, ohne dass man sie anfasst (Idee 11). Kein Knoten: an beiden Enden trifft genau ein Faden auf genau einen Punkt (N7).</td></tr>
+    <tr><td>Der Fächer</td><td><strong>Kante: Eingang → Notiz (4) · Aufgabe (3) · Notizbuch (2).</strong> Er ist eine <em>Bilanz</em>, kein Menü — die drei Zeilen sind keine Knöpfe und tragen deshalb auch keinen Chevron. Jede der drei Kurven ist die Menge echter Kanten dieser Woche, zusammen neun — genau die Zahl in der Kopfzeile. Der Knoten trägt drei Fäden und ist deshalb nach N7 einer. Es ist dasselbe Bauteil wie „Woher heute kommt" auf <span class="num">tasks.html</span>, nur in der Gegenrichtung gelesen: dort laufen Quellen auf einen Tag zu, hier läuft ein Ort in drei Module auseinander.</td></tr>
+  </table>
+  <p><strong>Wo bewusst kein Faden steht:</strong> an den drei liegenden Schnipseln. Das ist die Aussage des Schirms — was im Eingang liegt, hat noch keinen Faden. Auch zwischen zwei sich berührenden Schnipseln steht keiner: Nachbarschaft auf einer Fläche ist keine Beziehung im Datenmodell, und sie darf deshalb nicht so aussehen. Ebenso wenig trägt die Liste „Wie lange schon" einen Faden — Alter ist eine Eigenschaft, keine Kante.</p>
+
+  <h3>Zustände auf diesem Schirm</h3>
+  <table>
+    <tr><td>hohl</td><td>Zwei Schnipsel: das Objekt existiert, eine Beziehung nicht. 6 pt, 1,4-pt-Ring, gerechnet 3,26:1 hell / 3,31:1 dunkel gegen die Fläche, auf der er liegt.</td></tr>
+    <tr><td>gefüllt</td><td>Der dritte Schnipsel und das Ziel: hier gibt es die Kante. Der Punkt trägt die Farbe des Moduls, in das der Faden läuft.</td></tr>
+    <tr><td>ausgewählt</td><td>Getönte Fläche + 2,5-pt-Ring + der gefüllte Chip „Notiz". Drei Merkmale, keines davon Farbe allein.</td></tr>
+    <tr><td>Zwischenzustand</td><td>Der untere Teil der Fläche <em>ist</em> ein eingefrorener Zwischenzustand: Punkt gefüllt, Faden gewachsen, Schnipsel noch da. Im nächsten Bild zählt der Eingang 2.</td></tr>
+    <tr><td>Frist</td><td>„noch 3 Tage" — rotes Wort + Flagge + Restzeit. Nach 14 Tagen wird nicht gelöscht, sondern gefragt.</td></tr>
+    <tr><td>leer</td><td>Ohne Schnipsel steht hier ein Faden, der ins Leere läuft und in einem hohlen Punkt endet, dazu der Satz „Nichts wartet. Geteiltes landet hier." (Form aus <span class="num">leere-zustaende.html</span>)</td></tr>
+  </table>
+
+  <h3>Was dieser Schirm kann, das kein Konkurrent kann</h3>
+  <p>Milanote hat die freie Fläche und keine Kante: Ein Element weiß dort nie, woraus es entstanden ist oder was aus ihm wurde — die Lage <em>ist</em> die einzige Beziehung, und sie steht nur im Kopf dessen, der sie gelegt hat. Apple Notizen und Bear haben einen Eingang und keine freie Lage. Notion könnte beides modellieren, aber der Ausgang wäre ein Datenbankfeld, das ein Mensch pflegen muss. Velum ist der einzige Ort, an dem der Satz stimmt: <strong>Der Schnipsel geht hinaus, weil ein Faden entsteht — und der Faden ist derselbe Gegenstand, den der Graph zeichnet, die Kette auf „Heute" abläuft und die Klammer auf „Aufgaben" hält.</strong> Dazu die zweite Hälfte, die Milanote fehlt: <strong>die freie Position altert</strong>, und das steht am Schnipsel, nicht in einer Einstellung.</p>
+
+  <h3>Affordanz (die vier Regeln)</h3>
+  <table>
+    <tr><td>R1 primär</td><td>„Neu" in der Leiste und der gewählte Ausgang „Notiz" sind gefüllte Ink-Flächen mit hellem Text (17,8:1 hell / 17,3:1 dunkel).</td></tr>
+    <tr><td>R2 sekundär</td><td>Die Ausgänge sind Chips mit eigener Fläche (<span class="num">--fill</span>), nicht farbige Wörter. Der gewählte unterscheidet sich zusätzlich durch Fläche <em>und</em> Textfarbe.</td></tr>
+    <tr><td>R3 Text</td><td>Jede anspringbare Zeile trägt ein zweites Merkmal: Chevron (Ziel, Fächer) oder Chip-Fläche (Ausgänge). Kein farbiges Wort ohne Zeichen.</td></tr>
+    <tr><td>R4 44 pt</td><td>Gemessen: Auf beiden Geräten liegt <strong>kein</strong> Bedienelement dieses Schirms unter 44 pt. Chips und Icon-Knöpfe bekommen ihren Bereich aus system.css §5.9 (unsichtbares <span class="num">::after</span>) — das Zeichen bleibt 26 bzw. 24 pt, das Ziel wächst; die Zielkarte trägt <span class="num">min-height:44px</span>. <strong>Die drei Zeilen des Fächers sind absichtlich keine Knöpfe.</strong> Auf <span class="num">tasks.html</span> sind sie es, weil dort jede Zeile ein benanntes Objekt ist („Zellbiologie", „Übungen 12. Nov"). Hier stehen Mengen: „Notiz 4" ist kein Ort, sondern eine Bilanz. Ein 20-pt-Knopf wäre ein Verstoß gegen R4, und 44 pt hoch passten drei Zeilen nicht in die Karte — also ist der Fächer, was er ist: eine Zählung. Er trägt deshalb auch keinen Chevron.</td></tr>
+  </table>
+
+  <h3>Zwei-Merkmal-Regel</h3>
+  <p>„Ohne Faden" = hohler Punkt + Wortlaut des Einleitungssatzes + Abwesenheit eines Fadens. Frist = rotes Wort + Flagge + Zahl. Ausgewählt = Fläche + Ring + gefüllter Chip. Herkunft = Symbol + Wort („geteilt aus Safari"). Modul-Punkte sind 6 pt und stehen nie ohne ihr Wort; im Fächer trägt „Notizbuch" zusätzlich das Ordner-Symbol, weil es denselben Modulton hat wie „Notiz".</p>
+
+  <h3>Die Schrift</h3>
+  <p>Der Screen-Titel trägt <span class="num">.serif--screen-title</span>. Der zweite Serif-Ort ist der Satz auf dem dritten Schnipsel: Er ist wörtlich aus einem fremden PDF übernommen und läuft deshalb in <span class="num">.serif--quote</span> — fremde Stimme, andere Schrift. Sonst steht auf diesem Schirm kein Serif; blankes <span class="num">.serif</span> kommt nicht vor.</p>
+</div>
+
+<script src="../shared/mock.js"></script>
+<script src="../shared/bewegung.js"></script>
+</body>
+</html>
