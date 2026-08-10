@@ -1,0 +1,946 @@
+<!doctype html>
+<!--
+  Eigenstaendige Dokumentseite. Kein externes CSS, kein externes JS,
+  keine Web-Fonts, keine Netzwerkanfrage — laeuft ueber file://.
+
+  Erzeugt aus Markdown von scratchpad/md2html.js. Aenderungen gehoeren
+  in die Markdown-Quelle, nicht in diese Datei.
+
+  KONTRAST — gerechnet nach WCAG 2.1 (relative Luminanz, sRGB),
+  Alpha-Farben vorher auf ihren Untergrund gerechnet.
+
+  Hell:
+     Fliesstext  ink-1 auf --paper             17,77:1
+     Tabellenzelle ink-1 auf --paper           17,77:1
+     Tabellenzelle ink-1 auf Zebra (--fill)    16,08:1
+     Tabellenkopf ink-1 auf --paper-2          17,03:1
+     Code ink-1 auf --fill                     16,08:1
+     Sekundaertext ink-2 auf --paper           5,32:1
+     Inhaltsverzeichnis ink-2 auf --ground     5,10:1
+     Tertiaertext ink-3 auf --ground           4,77:1
+     Tertiaertext ink-3 auf --paper            4,97:1
+     Aktiver Schalter accent-on auf --accent   17,77:1
+     Schalter ink-2 auf --fill ueber --ground  4,90:1
+     Verweisstrich ink-3 auf --paper           4,97:1
+     Verweisstrich ink-3 auf Code-Feld         4,79:1
+
+  Dunkel:
+     Fliesstext  ink-1 auf --paper             15,86:1
+     Tabellenzelle ink-1 auf --paper           15,86:1
+     Tabellenzelle ink-1 auf Zebra (--fill)    13,26:1
+     Tabellenkopf ink-1 auf --paper-2          14,86:1
+     Code ink-1 auf --fill                     13,26:1
+     Sekundaertext ink-2 auf --paper           7,10:1
+     Inhaltsverzeichnis ink-2 auf --ground     7,40:1
+     Tertiaertext ink-3 auf --ground           5,23:1
+     Tertiaertext ink-3 auf --paper            5,11:1
+     Aktiver Schalter accent-on auf --accent   17,27:1
+     Schalter ink-2 auf --fill ueber --ground  6,82:1
+     Verweisstrich ink-3 auf --paper           5,11:1
+     Verweisstrich ink-3 auf Code-Feld         4,70:1
+
+  Fliesstext und Tabellenzellen liegen in beiden Modi weit ueber 4,5:1.
+  Die schwaechsten Werte sind Sekundaer- und Tertiaertext; auch die
+  halten 4,5:1 und tragen nie allein eine Aussage (Zwei-Merkmal-Regel).
+-->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>04 · Die Handschrift — Dokumentation</title>
+<style>
+/* ── Tokens. Jede Farbe ist auf blankem :root definiert; die beiden
+      dunklen Bloecke schreiben nur um. ───────────────────────────── */
+:root{
+  color-scheme: light;
+  --ground:#F2F2F4;
+  --paper:#FFFFFF;
+  --paper-2:#FAFAFB;
+  --ink-1:#16181C;
+  --ink-2:rgba(22,24,28,.64);
+  --ink-3:rgba(22,24,28,.62);
+  --ink-4:rgba(22,24,28,.30);
+  --line:rgba(22,24,28,.10);
+  --line-2:rgba(22,24,28,.18);
+  --fill:rgba(22,24,28,.05);
+  --fill-2:rgba(22,24,28,.09);
+  --accent:#16181C;
+  --accent-on:#FFFFFF;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  /* Nachgemessen, nicht geschaetzt: 52ch ergibt Zeilen von hoechstens
+     ~69 Zeichen. Die Einheit ch skaliert mit der Systemschrift, die
+     Zeichenzahl bleibt damit auch bei anderer Schrift stabil. */
+  --measure:52ch;
+  /* Blattbreite. Sie haengt an der Lesebreite: Blatt = Satzspiegel +
+     44 px Blattrand links/rechts + 24 px Seitenrand links/rechts +
+     82 px Zugabe, die Tabellen und Code nutzen. Sonst stuende zwischen
+     dem Zeilenende und der Blattkante leeres Papier.
+     Kommt das Verzeichnis dazu, waechst das Blatt um genau dessen
+     Spalte (--toc + --gap = 288 px) — die Textspalte bleibt dabei auf
+     den Pixel gleich breit (gemessen: 732 px mit und ohne Verzeichnis).
+     Vorher sprang sie an der Grenze von 732 auf 704 px zurueck. */
+  --toc:240px;
+  --gap:48px;
+  --sheet:calc(var(--measure) + 218px);
+  --bar:56px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0E0F11;
+    --paper:#17191C;
+    --paper-2:#1D1F23;
+    --ink-1:#F2F3F5;
+    --ink-2:rgba(242,243,245,.64);
+    --ink-3:rgba(242,243,245,.52);
+    --ink-4:rgba(242,243,245,.30);
+    --line:rgba(242,243,245,.12);
+    --line-2:rgba(242,243,245,.20);
+    --fill:rgba(242,243,245,.07);
+    --fill-2:rgba(242,243,245,.12);
+    --accent:#F2F3F5;
+    --accent-on:#0E0F11;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0E0F11;
+  --paper:#17191C;
+  --paper-2:#1D1F23;
+  --ink-1:#F2F3F5;
+  --ink-2:rgba(242,243,245,.64);
+  --ink-3:rgba(242,243,245,.52);
+  --ink-4:rgba(242,243,245,.30);
+  --line:rgba(242,243,245,.12);
+  --line-2:rgba(242,243,245,.20);
+  --fill:rgba(242,243,245,.07);
+  --fill-2:rgba(242,243,245,.12);
+  --accent:#F2F3F5;
+  --accent-on:#0E0F11;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink-1);
+  /* Dieselbe Skala, die das Dokument selbst abdruckt: 28/34 · 20/26 ·
+     17/23 · 15/20 · 13/16, zwei Gewichte. Auch die Zeilenhoehen. */
+  font:400 17px/23px var(--sans);
+  font-synthesis-weight:none;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Kein scroll-behavior:smooth: das 01-Dokument ist ueber 80 000 px hoch,
+   ein Sprung ans Ende wuerde sekundenlang durch leere Flaechen animieren. */
+::selection{ background:var(--fill-2); }
+/* Ein Verweis darf sich nicht allein durch die Farbe zeigen — er hat
+   ja dieselbe. Also traegt er die Unterstreichung, und die muss man
+   sehen: --line-2 (.18) ergab auf Papier 1,5:1, eine Haarlinie, die
+   neben einem bloss genannten Pfad nicht auffiel. --ink-3 misst
+   4,76:1 hell und 4,56:1 dunkel. */
+a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--ink-3); }
+a:hover{ text-decoration-color:currentColor; }
+/* Steht der Verweistext in einem Code-Feld — bei Pfaden die Regel —,
+   deckt dessen Flaeche die Unterstreichung des <a> zu: das Feld ist
+   22 px hoch, die Zeile des <a> nur 20. Dann unterstreicht das Feld
+   selbst; sonst waere ein anklickbarer Pfad von einem nur genannten
+   nicht zu unterscheiden. */
+a code{ text-decoration:underline; text-decoration-color:var(--ink-3); text-underline-offset:2px; }
+a:hover code{ text-decoration-color:currentColor; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+/* ── Kopfleiste: Zurueck + Umschalter ───────────────────────────── */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  height:var(--bar);
+  padding:0 24px;
+  background:var(--ground);
+  border-bottom:1px solid var(--line);
+}
+.back{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:15px; line-height:20px; color:var(--ink-2); text-decoration:none;
+  padding:6px 10px; margin-left:-10px; border-radius:8px;
+}
+.back:hover{ color:var(--ink-1); background:var(--fill); }
+.back svg{ flex:none; }
+.themes{ display:flex; gap:2px; padding:2px; background:var(--fill); border-radius:999px; }
+.themes button{
+  appearance:none; border:0; cursor:pointer;
+  font:600 13px/16px var(--sans);
+  color:var(--ink-2); background:transparent;
+  padding:7px 14px; border-radius:999px;
+}
+.themes button:hover{ color:var(--ink-1); }
+.themes button.is-on{ background:var(--accent); color:var(--accent-on); }
+
+/* ── Titelblock ─────────────────────────────────────────────────── */
+.masthead{ max-width:var(--sheet); margin:0 auto; padding:56px 24px 32px; }
+.eyebrow{
+  margin:0 0 12px; font:600 13px/16px var(--sans);
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3);
+}
+.masthead h1{ margin:0; font:600 28px/34px var(--sans); letter-spacing:-.015em; max-width:22ch; }
+.masthead .sub{ margin:12px 0 0; font:400 17px/23px var(--sans); color:var(--ink-2); max-width:var(--measure); }
+
+/* ── Seitenraster ───────────────────────────────────────────────── */
+.page{ max-width:var(--sheet); margin:0 auto; padding:0 24px 120px; }
+/* Die Grenze ist das Blatt selbst: 1068 px = Blatt ohne Verzeichnis
+   (780) + Verzeichnisspalte (240) + Rinne (48). Sobald das Fenster das
+   breitere Blatt traegt, erscheint das Verzeichnis — kein Streifen
+   dazwischen, in dem das Fenster schon breit genug waere und trotzdem
+   nichts passiert. Frueher lag die Grenze bei 1100 px, das Blatt aber
+   bei 1040 px: die 60 px dazwischen blieben ungenutzt. */
+@media (min-width:1068px){
+  :root{ --sheet:calc(var(--measure) + 218px + var(--toc) + var(--gap)); }
+  .page{ display:grid; grid-template-columns:var(--toc) minmax(0,1fr); gap:var(--gap); align-items:start; }
+}
+
+/* ── Inhaltsverzeichnis, breit ──────────────────────────────────── */
+.toc{ display:none; }
+@media (min-width:1068px){
+  .toc{
+    display:block; position:sticky; top:calc(var(--bar) + 24px);
+    max-height:calc(100vh - var(--bar) - 48px); overflow-y:auto;
+    padding-bottom:24px;
+  }
+}
+.toc-title{ margin:0 0 12px; font:600 13px/16px var(--sans); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
+.toc ol,.toc ul{ list-style:none; margin:0; padding:0; }
+.toc-l2,.toc-l3{
+  display:block; text-decoration:none;
+  border-left:2px solid transparent;
+  color:var(--ink-2);
+}
+.toc-l2{ font:400 15px/20px var(--sans); padding:7px 10px 7px 12px; }
+.toc-l3{ font:400 13px/16px var(--sans); padding:5px 10px 5px 24px; color:var(--ink-3); }
+.toc-l2:hover,.toc-l3:hover{ color:var(--ink-1); background:var(--fill); }
+.toc-sub{ display:none; margin-bottom:4px; }
+.toc-group.is-open > .toc-sub{ display:block; }
+.toc-group.is-open > .toc-l2{ color:var(--ink-1); }
+.toc a.is-current{ color:var(--ink-1); font-weight:600; border-left-color:var(--accent); background:var(--fill); }
+
+/* ── Inhaltsverzeichnis, schmal ─────────────────────────────────── */
+.toc-narrow{
+  margin:0 0 32px; background:var(--paper); border:1px solid var(--line); border-radius:14px;
+}
+@media (min-width:1068px){ .toc-narrow{ display:none; } }
+.toc-narrow > summary{
+  cursor:pointer; list-style:none;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:16px 20px; font:600 15px/20px var(--sans); color:var(--ink-1);
+  border-radius:14px;
+}
+.toc-narrow > summary::-webkit-details-marker{ display:none; }
+.toc-narrow > summary .chev{ transition:transform .18s ease; color:var(--ink-3); flex:none; }
+.toc-narrow[open] > summary .chev{ transform:rotate(180deg); }
+.toc-narrow[open] > summary{ border-bottom:1px solid var(--line); border-radius:14px 14px 0 0; }
+.toc-narrow ol,.toc-narrow ul{ list-style:none; margin:0; padding:0; }
+.toc-narrow .toc-body{ padding:8px 12px 14px; max-height:min(60vh,520px); overflow-y:auto; }
+.toc-narrow .toc-sub{ display:block; }
+.toc-narrow .toc-l2{ font:600 15px/20px var(--sans); color:var(--ink-1); padding:8px 10px; }
+.toc-narrow .toc-l3{ padding:6px 10px 6px 24px; }
+
+/* ── Dokumentflaeche ────────────────────────────────────────────── */
+.doc{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:8px 44px 48px;
+  min-width:0;
+  overflow-wrap:break-word;
+}
+@media (max-width:640px){ .doc{ padding:4px 20px 36px; border-radius:14px; } }
+/* Fliesstext bleibt auf Lesebreite; Tabellen, Code und die
+   Abschnittslinie der H2 duerfen die volle Blattbreite nutzen.
+   Die Trennlinie vor einer H3 bleibt bewusst auf Satzbreite: kuerzere
+   Linie + kleinere Ueberschrift = zwei Merkmale, an denen man den
+   kleineren Einschnitt vom groesseren unterscheidet. */
+.doc > *{ max-width:var(--measure); }
+.doc > .tablewrap,.doc > pre,.doc > h2{ max-width:none; }
+.doc > h2 .h-t{ display:inline-block; max-width:var(--measure); }
+
+.doc p{ margin:0 0 20px; }
+.doc .lead{ font:400 20px/26px var(--sans); color:var(--ink-1); margin:32px 0 28px; }
+.doc{ counter-reset:sec; }
+.doc h2{
+  counter-increment:sec; counter-reset:sub;
+  margin:60px 0 20px; padding-top:28px;
+  border-top:1px solid var(--line);
+  font:600 20px/26px var(--sans); letter-spacing:-.01em;
+}
+.doc h3{
+  counter-increment:sub;
+  margin:44px 0 14px;
+  font:600 17px/23px var(--sans);
+}
+/* Abschnittsnummer als eigene Zeile: gibt Ueberschriften eine zweite,
+   von der Schriftgroesse unabhaengige Kennzeichnung — sonst waere eine
+   H3 von einem fett angefuehrten Absatz kaum zu unterscheiden. */
+.doc h2::before,.doc h3::before{
+  display:block; margin-bottom:9px;
+  font:400 13px/16px var(--mono); letter-spacing:.08em; color:var(--ink-3);
+}
+.doc h2::before{ content:counter(sec,decimal-leading-zero); }
+.doc h3::before{ content:counter(sec,decimal-leading-zero) "." counter(sub); }
+.doc h4{ margin:32px 0 12px; font:600 15px/20px var(--sans); color:var(--ink-2); }
+.doc h2:first-child,.doc h3:first-child{ margin-top:32px; }
+/* Die Linie der H2 trennt zwei Abschnitte voneinander. Steht die erste
+   H2 am Blattanfang — auf das-ist-die-app.html steht kein Vorspann
+   davor —, trennte sie den Blattrand von der Ueberschrift: ein Strich
+   ueber nichts. Am Blattanfang faellt sie deshalb weg; die Nummer ueber
+   der Ueberschrift kennzeichnet den Abschnitt dort allein. */
+.doc > h2:first-child{ border-top:0; padding-top:0; }
+.doc h2,.doc h3,.doc h4{ scroll-margin-top:calc(var(--bar) + 20px); }
+
+.anchor{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; margin-left:6px; vertical-align:-5px;
+  color:var(--ink-3); opacity:0; text-decoration:none; border-radius:6px;
+  transition:opacity .12s ease;
+}
+h2:hover .anchor,h3:hover .anchor,h4:hover .anchor,.anchor:focus-visible{ opacity:1; }
+.anchor:hover{ color:var(--ink-1); background:var(--fill); }
+/* Ohne Zeigegeraet gibt es kein :hover. Dort stuende sonst ein
+   unsichtbares, 24 px grosses Ziel neben jeder Ueberschrift, das beim
+   Antippen der Ueberschrift zuschnappt. Also sichtbar zeigen. */
+@media (hover:none){
+  .anchor{ opacity:1; }
+  .anchor:hover{ color:var(--ink-3); background:none; }
+}
+
+.doc ul,.doc ol{ margin:0 0 20px; padding-left:24px; }
+.doc li{ margin:0 0 10px; padding-left:4px; }
+.doc li::marker{ color:var(--ink-3); }
+.doc ol{ counter-reset:none; }
+.doc strong{ font-weight:600; }
+.doc em{ font-style:italic; }
+
+.doc hr{
+  border:0; height:1px; background:var(--line);
+  margin:44px 0;
+}
+.doc hr + h3{ margin-top:0; padding-top:0; }
+
+/* Der Balken ist Auszeichnung, kein Zustand: er darf den Ink-Akzent
+   nicht tragen, der aktivem Zustand, primaerer Aktion und Auswahl
+   vorbehalten ist. Der Kasten wird ohnehin durch Flaeche und Radius
+   erkannt — der Balken ist das dritte, schwaechste Merkmal. */
+blockquote{
+  margin:28px 0; padding:20px 24px;
+  background:var(--fill); border-left:2px solid var(--ink-4);
+  border-radius:0 12px 12px 0;
+}
+blockquote > *:last-child{ margin-bottom:0; }
+blockquote p{ margin:0 0 14px; }
+
+code{
+  font:400 15px/20px var(--mono);
+  background:var(--fill); color:var(--ink-1);
+  padding:2px 5px; border-radius:5px;
+  overflow-wrap:anywhere;
+}
+pre{
+  margin:24px 0; padding:20px 22px;
+  background:var(--paper-2); border:1px solid var(--line); border-radius:12px;
+  overflow-x:auto;
+}
+pre code{ background:none; padding:0; font-size:13px; line-height:16px; white-space:pre; }
+h2 code,h3 code,th code{ font-size:.9em; }
+
+/* ── Tabellen ───────────────────────────────────────────────────── */
+/* Eigene Scrollbox: die Seite selbst scrollt nie seitwaerts.
+   Passt eine Tabelle in der Breite, hebt das Skript die Box mit
+   .is-frei auf — dann klebt die Kopfzeile am Fensterrand statt in einem
+   Kasten, der gar nicht senkrecht scrollt. Muss die Tabelle seitwaerts
+   scrollen, hat das Vorrang. Abgeschnitten wird nie. */
+.tablewrap{ margin:24px 0 28px; }
+.tableframe{ position:relative; }
+/* Der Verlauf am rechten Rand plus die Zeile darunter sagen, dass rechts
+   noch etwas steht — der Rollbalken allein ist auf macOS unsichtbar.
+   Beides verschwindet, sobald man am Ende angekommen ist. */
+.tableframe::after{
+  content:""; position:absolute; top:1px; right:1px; bottom:1px; width:44px;
+  border-radius:0 11px 11px 0; pointer-events:none;
+  background:linear-gradient(to left,var(--paper) 30%,rgba(127,127,127,0));
+  opacity:0; transition:opacity .15s ease;
+}
+.tablewrap.is-mehr .tableframe::after{ opacity:1; }
+.tablehint{
+  display:none;
+  margin:8px 0 0; text-align:right;
+  font:400 13px/16px var(--sans); color:var(--ink-3);
+}
+.tablewrap.is-mehr .tablehint{ display:block; }
+.tablehint::after{ content:" →"; }
+.tablebox{
+  max-width:100%;
+  overflow-x:auto;
+  border:1px solid var(--line); border-radius:12px;
+  background:var(--paper);
+  -webkit-overflow-scrolling:touch;
+  /* Der Balken bleibt sichtbar: er ist der einzige Hinweis darauf, dass
+     rechts noch eine Spalte steht. */
+  scrollbar-width:thin; scrollbar-color:var(--line-2) transparent;
+}
+.tablebox::-webkit-scrollbar{ height:11px; }
+.tablebox::-webkit-scrollbar-track{ background:transparent; }
+.tablebox::-webkit-scrollbar-thumb{
+  background:var(--line-2); border-radius:999px;
+  border:3px solid transparent; background-clip:padding-box;
+}
+/* Tabellen duerfen breiter sein als der Fliesstext und greifen dafuer
+   in den Blattrand. */
+@media (min-width:1068px){
+  .doc > .tablewrap{ margin-left:-28px; margin-right:-28px; width:calc(100% + 56px); }
+}
+.tablebox table{
+  border-collapse:collapse;
+  width:100%;
+  font-variant-numeric:tabular-nums;
+}
+.tablebox th,.tablebox td{
+  text-align:left; vertical-align:top;
+  padding:12px 16px;
+  font-size:15px; line-height:20px;
+  border-bottom:1px solid var(--line);
+}
+.tablebox.is-frei{ overflow:visible; }
+.tablebox.is-frei th{ top:var(--bar); }
+.tablebox.is-frei thead th:first-child{ border-top-left-radius:11px; }
+.tablebox.is-frei thead th:last-child{ border-top-right-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:first-child{ border-bottom-left-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:last-child{ border-bottom-right-radius:11px; }
+/* top:0 solange die Box selbst der Scrollbereich ist — sonst schoebe
+   ein Versatz die Kopfzeile ins Leere. Erst wenn die Box aufgehoben ist
+   (.is-frei), ist das Fenster der Bezug und die Kopfzeile parkt unter
+   der Kopfleiste. */
+.tablebox th{
+  position:sticky; top:0; z-index:1;
+  font-weight:600; color:var(--ink-1);
+  background:var(--paper-2);
+  border-bottom:1px solid var(--line-2);
+  white-space:nowrap;
+}
+.tablebox tbody tr:nth-child(even) td{ background:var(--fill); }
+.tablebox tbody tr:last-child td{ border-bottom:0; }
+.tablebox td{ color:var(--ink-1); }
+.ta-right{ text-align:right; }
+.ta-center{ text-align:center; }
+
+/* Muss die Tabelle seitwaerts scrollen, bleiben die vordersten Spalten
+   stehen — sonst sieht man beim Scrollen nach rechts die Optionen, aber
+   nicht mehr das Werkzeug, zu dem sie gehoeren. Wie viele Spalten das
+   sind, entscheidet das Skript: nur so viele, wie zusammen unter 45 %
+   der sichtbaren Breite bleiben, hoechstens zwei. Die Flaeche muss
+   decken, sonst schiebt sich Text darunter durch. */
+.tablebox td.kleb,.tablebox th.kleb{
+  position:sticky; z-index:1;
+  background-color:var(--paper);
+}
+.tablebox tbody tr:nth-child(even) td.kleb{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--fill),var(--fill));
+}
+.tablebox th.kleb{ top:0; z-index:2; background-color:var(--paper-2); }
+/* Die Kante zeigt sich erst, wenn wirklich etwas dahinter liegt. */
+.tablewrap.is-ab .tablebox .kleb-letzte{ box-shadow:1px 0 0 var(--line-2); }
+
+/* Spaltennamen sind kurz, ihre Zellen sind so breit wie der laengste
+   Inhalt darunter. Beim Scrollen nach rechts verschwand der Name daher
+   als Erstes unter den festgehaltenen Spalten, waehrend vom Inhalt noch
+   ein Rest herausragte — ein Wortfetzen ohne Ueberschrift. Der Name
+   klebt jetzt am rechten Rand des festgehaltenen Blocks (--klebw, vom
+   Skript gesetzt) und wandert nur so weit mit, wie seine Zelle reicht.
+   Ist die Spalte ganz durchgelaufen, geht der Name mit ihr. */
+.tablebox th > .th-t{
+  display:inline-block; max-width:100%;
+  position:sticky; left:var(--klebw,0px);
+}
+/* Die festgehaltenen Spalten stehen ohnehin still. */
+.tablebox th.kleb > .th-t{ position:static; }
+
+/* ── Fuss ───────────────────────────────────────────────────────── */
+/* Am Ende eines langen Dokuments ist die Kopfleiste zehntausende Pixel
+   entfernt. Der Fuss verspricht deshalb nicht den Weg zurueck, er ist
+   er: dieselbe Adresse wie oben links, als eigene Verknuepfung. */
+.colophon{
+  max-width:var(--sheet); margin:0 auto; padding:0 24px 64px;
+  font:400 13px/16px var(--sans); color:var(--ink-3);
+}
+.colophon a{ color:var(--ink-1); }
+@media (min-width:1068px){ .colophon{ padding-left:calc(var(--toc) + var(--gap) + 24px); } }
+
+/* ── Druck ──────────────────────────────────────────────────────── */
+@media print{
+  :root{
+    --ground:#FFFFFF; --paper:#FFFFFF; --paper-2:#FFFFFF;
+    --ink-1:#000000; --ink-2:#333333; --ink-3:#444444;
+    --line:#BBBBBB; --line-2:#888888; --fill:#F2F2F2; --accent:#000000;
+  }
+  body{ background:#FFFFFF; color:#000000; font-size:11pt; line-height:15pt; }
+  .topbar,.toc,.toc-narrow,.themes,.back,.anchor{ display:none !important; }
+  .masthead{ padding:0 0 18pt; }
+  .page{ display:block; max-width:none; padding:0; }
+  .doc{ border:0; border-radius:0; padding:0; background:#FFFFFF; }
+  /* Die Lesebreite gilt auch auf Papier; Tabellen, Code und die
+     Abschnittslinien nutzen wie am Bildschirm die volle Satzbreite. */
+  /* Dieselbe Skala, in Punkt statt Pixel — sonst waeren Titel und
+     Vorspann auf Papier doppelt so gross wie der Fliesstext. */
+  .masthead h1{ font:600 20pt/24pt var(--sans); }
+  .masthead .sub{ font-size:10pt; line-height:14pt; }
+  .eyebrow{ font-size:8pt; line-height:11pt; }
+  .doc .lead{ font:400 13pt/17pt var(--sans); margin:14pt 0 12pt; }
+  .doc h2{ font:600 14pt/18pt var(--sans); }
+  .doc h3{ font:600 12pt/16pt var(--sans); margin-top:18pt; }
+  .doc h2::before,.doc h3::before{ font-size:8.5pt; line-height:11pt; margin-bottom:4pt; }
+  .tablebox th,.tablebox td{ font-size:9.5pt; line-height:13pt; padding:6pt 8pt; }
+  code{ font-size:9.5pt; }
+  pre code{ font-size:8.5pt; line-height:12pt; }
+  blockquote{ padding:8pt 12pt; margin:12pt 0; }
+  .doc p,.doc ul,.doc ol{ margin-bottom:10pt; }
+  .doc h2{ break-after:avoid; page-break-after:avoid; margin-top:24pt; }
+  .doc h3,.doc h4{ break-after:avoid; page-break-after:avoid; }
+  .tablewrap{ margin-left:0 !important; margin-right:0 !important; width:auto !important; }
+  .tableframe::after,.tablehint{ display:none !important; }
+  .tablebox{ overflow:visible; max-height:none; break-inside:avoid; page-break-inside:avoid; border:1px solid #BBBBBB; }
+  .tablebox table{ min-width:0 !important; }
+  .tablebox th{ position:static; background:#F2F2F2; }
+  /* Auf Papier scrollt nichts, also klebt auch nichts. */
+  .tablebox td.kleb,.tablebox th.kleb{ position:static; box-shadow:none; background:none; }
+  .tablebox th.kleb{ background:#F2F2F2; }
+  .tablebox th > .th-t{ position:static; }
+  tr,thead,blockquote,pre,li{ break-inside:avoid; page-break-inside:avoid; }
+  a{ color:#000000; text-decoration:none; }
+  .colophon{ padding:0; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back" href="../mockups/index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
+  <div class="themes" role="group" aria-label="Erscheinungsbild">
+    <button type="button" data-val="light">Hell</button>
+    <button type="button" data-val="dark">Dunkel</button>
+  </div>
+</div>
+<header class="masthead">
+  <p class="eyebrow">Entwurf</p>
+  <h1>04 · Die Handschrift</h1>
+  <p class="sub">Das Leitmotiv, seine drei Grundformen und die sieben Serif-Rollen — die Regeln, gegen die jeder Schirm gebaut ist.</p>
+</header>
+<div class="page">
+  <nav class="toc" aria-label="Inhalt">
+    <p class="toc-title">Inhalt</p>
+    <ol><li class="toc-group"><a class="toc-l2" data-t="0-das-leitmotiv" href="#0-das-leitmotiv">0 · Das Leitmotiv</a><ul class="toc-sub"><li><a class="toc-l3" data-t="0-1-der-name" href="#0-1-der-name">0.1 Der Name</a></li><li><a class="toc-l3" data-t="0-2-das-zeichen" href="#0-2-das-zeichen">0.2 Das Zeichen</a></li><li><a class="toc-l3" data-t="0-3-der-rohstoff" href="#0-3-der-rohstoff">0.3 Der Rohstoff</a></li><li><a class="toc-l3" data-t="0-4-die-vier-eigenschaften-die-nur-velum-hat" href="#0-4-die-vier-eigenschaften-die-nur-velum-hat">0.4 Die vier Eigenschaften, die nur Velum hat</a></li><li><a class="toc-l3" data-t="0-5-die-regel-die-beides-trennt" href="#0-5-die-regel-die-beides-trennt">0.5 Die Regel, die beides trennt</a></li><li><a class="toc-l3" data-t="0-6-was-eine-handschrift-ist-die-lehre-aus-arc-und-linear" href="#0-6-was-eine-handschrift-ist-die-lehre-aus-arc-und-linear">0.6 Was eine Handschrift ist — die Lehre aus Arc und Linear</a></li><li><a class="toc-l3" data-t="0-7-der-anschluss-an-das-was-schon-existierte" href="#0-7-der-anschluss-an-das-was-schon-existierte">0.7 Der Anschluss an das, was schon existierte</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="1-die-drei-primitive" href="#1-die-drei-primitive">1 · Die drei Primitive</a><ul class="toc-sub"><li><a class="toc-l3" data-t="1-1-der-punkt-ein-objekt" href="#1-1-der-punkt-ein-objekt">1.1 Der Punkt — ein Objekt</a></li><li><a class="toc-l3" data-t="1-2-der-faden-eine-beziehung" href="#1-2-der-faden-eine-beziehung">1.2 Der Faden — eine Beziehung</a></li><li><a class="toc-l3" data-t="1-3-der-knoten-wo-faeden-sich-treffen" href="#1-3-der-knoten-wo-faeden-sich-treffen">1.3 Der Knoten — wo Fäden sich treffen</a></li><li><a class="toc-l3" data-t="1-4-wo-die-eigene-vorgabe-korrigiert-wurde" href="#1-4-wo-die-eigene-vorgabe-korrigiert-wurde">1.4 Wo die eigene Vorgabe korrigiert wurde</a></li><li><a class="toc-l3" data-t="1-5-die-elf-orte" href="#1-5-die-elf-orte">1.5 Die elf Orte</a></li><li><a class="toc-l3" data-t="1-6-die-endpunkt-konvention" href="#1-6-die-endpunkt-konvention">1.6 Die Endpunkt-Konvention</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="2-die-verwandlungs-tabelle" href="#2-die-verwandlungs-tabelle">2 · Die Verwandlungs-Tabelle</a><ul class="toc-sub"><li><a class="toc-l3" data-t="2-1-der-massstab" href="#2-1-der-massstab">2.1 Der Maßstab</a></li><li><a class="toc-l3" data-t="2-2-die-zeilen-die-tragen" href="#2-2-die-zeilen-die-tragen">2.2 Die Zeilen, die tragen</a></li><li><a class="toc-l3" data-t="2-3-was-1-1-bleibt-und-warum" href="#2-3-was-1-1-bleibt-und-warum">2.3 Was 1 : 1 bleibt — und warum</a></li><li><a class="toc-l3" data-t="2-4-die-bilanz" href="#2-4-die-bilanz">2.4 Die Bilanz</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="3-die-marke" href="#3-die-marke">3 · Die Marke</a><ul class="toc-sub"><li><a class="toc-l3" data-t="3-1-die-serif-new-york" href="#3-1-die-serif-new-york">3.1 Die Serif: New York</a></li><li><a class="toc-l3" data-t="3-2-die-sieben-orte" href="#3-2-die-sieben-orte">3.2 Die sieben Orte</a></li><li><a class="toc-l3" data-t="3-3-der-siebte-ort-und-warum-er-kein-day-one-zitat-ist" href="#3-3-der-siebte-ort-und-warum-er-kein-day-one-zitat-ist">3.3 Der siebte Ort — und warum er kein Day-One-Zitat ist</a></li><li><a class="toc-l3" data-t="3-4-die-optische-korrektur-warum-sie-gemessen-und-nicht-gesetzt-wird" href="#3-4-die-optische-korrektur-warum-sie-gemessen-und-nicht-gesetzt-wird">3.4 Die optische Korrektur — warum sie gemessen und nicht gesetzt wird</a></li><li><a class="toc-l3" data-t="3-5-wo-farbe-lebt" href="#3-5-wo-farbe-lebt">3.5 Wo Farbe lebt</a></li><li><a class="toc-l3" data-t="3-6-das-zeichen-und-der-platz-den-es-nicht-bekommt" href="#3-6-das-zeichen-und-der-platz-den-es-nicht-bekommt">3.6 Das Zeichen — und der Platz, den es nicht bekommt</a></li><li><a class="toc-l3" data-t="3-7-warum-amber-nur-im-zeichen-lebt" href="#3-7-warum-amber-nur-im-zeichen-lebt">3.7 Warum Amber nur im Zeichen lebt</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="4-der-preis-der-zurueckhaltung" href="#4-der-preis-der-zurueckhaltung">4 · Der Preis der Zurückhaltung</a></li><li class="toc-group"><a class="toc-l2" data-t="5-wo-der-entwurf-noch-nah-an-einer-vorlage-steht" href="#5-wo-der-entwurf-noch-nah-an-einer-vorlage-steht">5 · Wo der Entwurf noch nah an einer Vorlage steht</a><ul class="toc-sub"><li><a class="toc-l3" data-t="5-1-der-graph-ist-obsidians-graph-view-mit-besseren-beschriftungen" href="#5-1-der-graph-ist-obsidians-graph-view-mit-besseren-beschriftungen">5.1 Der Graph ist Obsidians Graph View mit besseren Beschriftungen</a></li><li><a class="toc-l3" data-t="5-2-das-info-panel-im-notiz-editor-ist-obsidians-rechte-sidebar" href="#5-2-das-info-panel-im-notiz-editor-ist-obsidians-rechte-sidebar">5.2 Das Info-Panel im Notiz-Editor ist Obsidians rechte Sidebar</a></li><li><a class="toc-l3" data-t="5-3-die-ketten-karte-die-signatur-der-app-ist-als-breadcrumb-gezeichnet" href="#5-3-die-ketten-karte-die-signatur-der-app-ist-als-breadcrumb-gezeichnet">5.3 Die Ketten-Karte, die Signatur der App, ist als Breadcrumb gezeichnet</a></li><li><a class="toc-l3" data-t="5-4-die-leeren-zustaende-sprechen-mit-apples-stimme" href="#5-4-die-leeren-zustaende-sprechen-mit-apples-stimme">5.4 Die leeren Zustände sprechen mit Apples Stimme</a></li><li><a class="toc-l3" data-t="5-5-vier-gleich-breite-bewertungsknoepfe-gegen-die-eigene-analyse" href="#5-5-vier-gleich-breite-bewertungsknoepfe-gegen-die-eigene-analyse">5.5 Vier gleich breite Bewertungsknöpfe, gegen die eigene Analyse</a></li><li><a class="toc-l3" data-t="5-6-serif-als-textur-im-journal" href="#5-6-serif-als-textur-im-journal">5.6 Serif als Textur im Journal</a></li><li><a class="toc-l3" data-t="5-7-das-12-wochen-raster-misst-anwesenheit-nicht-arbeit" href="#5-7-das-12-wochen-raster-misst-anwesenheit-nicht-arbeit">5.7 Das 12-Wochen-Raster misst Anwesenheit, nicht Arbeit</a></li><li><a class="toc-l3" data-t="5-8-die-zusammenfassung-in-einem-satz-und-der-stand" href="#5-8-die-zusammenfassung-in-einem-satz-und-der-stand">5.8 Die Zusammenfassung in einem Satz — und der Stand</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="6-die-zahlen-in-diesem-dokument" href="#6-die-zahlen-in-diesem-dokument">6 · Die Zahlen in diesem Dokument</a><ul class="toc-sub"><li><a class="toc-l3" data-t="6-1-was-die-belege-wert-sind" href="#6-1-was-die-belege-wert-sind">6.1 Was die Belege wert sind</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="7-was-fuer-dieses-dokument-geprueft-wurde" href="#7-was-fuer-dieses-dokument-geprueft-wurde">7 · Was für dieses Dokument geprüft wurde</a></li><li class="toc-group"><a class="toc-l2" data-t="verweise" href="#verweise">Verweise</a></li></ol>
+  </nav>
+  <main class="doc-wrap">
+    <details class="toc-narrow">
+      <summary>Inhalt<svg class="chev" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+      <div class="toc-body"><ol><li class="toc-group"><a class="toc-l2" data-t="0-das-leitmotiv" href="#0-das-leitmotiv">0 · Das Leitmotiv</a><ul class="toc-sub"><li><a class="toc-l3" data-t="0-1-der-name" href="#0-1-der-name">0.1 Der Name</a></li><li><a class="toc-l3" data-t="0-2-das-zeichen" href="#0-2-das-zeichen">0.2 Das Zeichen</a></li><li><a class="toc-l3" data-t="0-3-der-rohstoff" href="#0-3-der-rohstoff">0.3 Der Rohstoff</a></li><li><a class="toc-l3" data-t="0-4-die-vier-eigenschaften-die-nur-velum-hat" href="#0-4-die-vier-eigenschaften-die-nur-velum-hat">0.4 Die vier Eigenschaften, die nur Velum hat</a></li><li><a class="toc-l3" data-t="0-5-die-regel-die-beides-trennt" href="#0-5-die-regel-die-beides-trennt">0.5 Die Regel, die beides trennt</a></li><li><a class="toc-l3" data-t="0-6-was-eine-handschrift-ist-die-lehre-aus-arc-und-linear" href="#0-6-was-eine-handschrift-ist-die-lehre-aus-arc-und-linear">0.6 Was eine Handschrift ist — die Lehre aus Arc und Linear</a></li><li><a class="toc-l3" data-t="0-7-der-anschluss-an-das-was-schon-existierte" href="#0-7-der-anschluss-an-das-was-schon-existierte">0.7 Der Anschluss an das, was schon existierte</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="1-die-drei-primitive" href="#1-die-drei-primitive">1 · Die drei Primitive</a><ul class="toc-sub"><li><a class="toc-l3" data-t="1-1-der-punkt-ein-objekt" href="#1-1-der-punkt-ein-objekt">1.1 Der Punkt — ein Objekt</a></li><li><a class="toc-l3" data-t="1-2-der-faden-eine-beziehung" href="#1-2-der-faden-eine-beziehung">1.2 Der Faden — eine Beziehung</a></li><li><a class="toc-l3" data-t="1-3-der-knoten-wo-faeden-sich-treffen" href="#1-3-der-knoten-wo-faeden-sich-treffen">1.3 Der Knoten — wo Fäden sich treffen</a></li><li><a class="toc-l3" data-t="1-4-wo-die-eigene-vorgabe-korrigiert-wurde" href="#1-4-wo-die-eigene-vorgabe-korrigiert-wurde">1.4 Wo die eigene Vorgabe korrigiert wurde</a></li><li><a class="toc-l3" data-t="1-5-die-elf-orte" href="#1-5-die-elf-orte">1.5 Die elf Orte</a></li><li><a class="toc-l3" data-t="1-6-die-endpunkt-konvention" href="#1-6-die-endpunkt-konvention">1.6 Die Endpunkt-Konvention</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="2-die-verwandlungs-tabelle" href="#2-die-verwandlungs-tabelle">2 · Die Verwandlungs-Tabelle</a><ul class="toc-sub"><li><a class="toc-l3" data-t="2-1-der-massstab" href="#2-1-der-massstab">2.1 Der Maßstab</a></li><li><a class="toc-l3" data-t="2-2-die-zeilen-die-tragen" href="#2-2-die-zeilen-die-tragen">2.2 Die Zeilen, die tragen</a></li><li><a class="toc-l3" data-t="2-3-was-1-1-bleibt-und-warum" href="#2-3-was-1-1-bleibt-und-warum">2.3 Was 1 : 1 bleibt — und warum</a></li><li><a class="toc-l3" data-t="2-4-die-bilanz" href="#2-4-die-bilanz">2.4 Die Bilanz</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="3-die-marke" href="#3-die-marke">3 · Die Marke</a><ul class="toc-sub"><li><a class="toc-l3" data-t="3-1-die-serif-new-york" href="#3-1-die-serif-new-york">3.1 Die Serif: New York</a></li><li><a class="toc-l3" data-t="3-2-die-sieben-orte" href="#3-2-die-sieben-orte">3.2 Die sieben Orte</a></li><li><a class="toc-l3" data-t="3-3-der-siebte-ort-und-warum-er-kein-day-one-zitat-ist" href="#3-3-der-siebte-ort-und-warum-er-kein-day-one-zitat-ist">3.3 Der siebte Ort — und warum er kein Day-One-Zitat ist</a></li><li><a class="toc-l3" data-t="3-4-die-optische-korrektur-warum-sie-gemessen-und-nicht-gesetzt-wird" href="#3-4-die-optische-korrektur-warum-sie-gemessen-und-nicht-gesetzt-wird">3.4 Die optische Korrektur — warum sie gemessen und nicht gesetzt wird</a></li><li><a class="toc-l3" data-t="3-5-wo-farbe-lebt" href="#3-5-wo-farbe-lebt">3.5 Wo Farbe lebt</a></li><li><a class="toc-l3" data-t="3-6-das-zeichen-und-der-platz-den-es-nicht-bekommt" href="#3-6-das-zeichen-und-der-platz-den-es-nicht-bekommt">3.6 Das Zeichen — und der Platz, den es nicht bekommt</a></li><li><a class="toc-l3" data-t="3-7-warum-amber-nur-im-zeichen-lebt" href="#3-7-warum-amber-nur-im-zeichen-lebt">3.7 Warum Amber nur im Zeichen lebt</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="4-der-preis-der-zurueckhaltung" href="#4-der-preis-der-zurueckhaltung">4 · Der Preis der Zurückhaltung</a></li><li class="toc-group"><a class="toc-l2" data-t="5-wo-der-entwurf-noch-nah-an-einer-vorlage-steht" href="#5-wo-der-entwurf-noch-nah-an-einer-vorlage-steht">5 · Wo der Entwurf noch nah an einer Vorlage steht</a><ul class="toc-sub"><li><a class="toc-l3" data-t="5-1-der-graph-ist-obsidians-graph-view-mit-besseren-beschriftungen" href="#5-1-der-graph-ist-obsidians-graph-view-mit-besseren-beschriftungen">5.1 Der Graph ist Obsidians Graph View mit besseren Beschriftungen</a></li><li><a class="toc-l3" data-t="5-2-das-info-panel-im-notiz-editor-ist-obsidians-rechte-sidebar" href="#5-2-das-info-panel-im-notiz-editor-ist-obsidians-rechte-sidebar">5.2 Das Info-Panel im Notiz-Editor ist Obsidians rechte Sidebar</a></li><li><a class="toc-l3" data-t="5-3-die-ketten-karte-die-signatur-der-app-ist-als-breadcrumb-gezeichnet" href="#5-3-die-ketten-karte-die-signatur-der-app-ist-als-breadcrumb-gezeichnet">5.3 Die Ketten-Karte, die Signatur der App, ist als Breadcrumb gezeichnet</a></li><li><a class="toc-l3" data-t="5-4-die-leeren-zustaende-sprechen-mit-apples-stimme" href="#5-4-die-leeren-zustaende-sprechen-mit-apples-stimme">5.4 Die leeren Zustände sprechen mit Apples Stimme</a></li><li><a class="toc-l3" data-t="5-5-vier-gleich-breite-bewertungsknoepfe-gegen-die-eigene-analyse" href="#5-5-vier-gleich-breite-bewertungsknoepfe-gegen-die-eigene-analyse">5.5 Vier gleich breite Bewertungsknöpfe, gegen die eigene Analyse</a></li><li><a class="toc-l3" data-t="5-6-serif-als-textur-im-journal" href="#5-6-serif-als-textur-im-journal">5.6 Serif als Textur im Journal</a></li><li><a class="toc-l3" data-t="5-7-das-12-wochen-raster-misst-anwesenheit-nicht-arbeit" href="#5-7-das-12-wochen-raster-misst-anwesenheit-nicht-arbeit">5.7 Das 12-Wochen-Raster misst Anwesenheit, nicht Arbeit</a></li><li><a class="toc-l3" data-t="5-8-die-zusammenfassung-in-einem-satz-und-der-stand" href="#5-8-die-zusammenfassung-in-einem-satz-und-der-stand">5.8 Die Zusammenfassung in einem Satz — und der Stand</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="6-die-zahlen-in-diesem-dokument" href="#6-die-zahlen-in-diesem-dokument">6 · Die Zahlen in diesem Dokument</a><ul class="toc-sub"><li><a class="toc-l3" data-t="6-1-was-die-belege-wert-sind" href="#6-1-was-die-belege-wert-sind">6.1 Was die Belege wert sind</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="7-was-fuer-dieses-dokument-geprueft-wurde" href="#7-was-fuer-dieses-dokument-geprueft-wurde">7 · Was für dieses Dokument geprüft wurde</a></li><li class="toc-group"><a class="toc-l2" data-t="verweise" href="#verweise">Verweise</a></li></ol></div>
+    </details>
+    <article class="doc">
+<p class="lead">Warum dieser Entwurf so aussieht, wie er aussieht — und woran man nachprüfen kann, dass die Antwort nicht „weil es gefällt“ lautet.</p>
+<p>Das Dokument setzt drei Dinge zusammen: das Leitmotiv und seine Herleitung, die Verwandlungs-Tabelle (was von wem stammt, welches Prinzip dahintersteckt, was Velum daraus macht) und den unbequemen Teil — die Stellen, an denen der Entwurf noch nah an einer Vorlage steht.</p>
+<p>Grundlage sind <a href="konkurrenz-anatomie.html"><code>01_konkurrenz-anatomie.md</code></a> (18 Plätze, sechs Bereiche), die Wiederlesung von neun weiteren Produkten aus Runde 2 und der Entwurf selbst: <code>mockups/app-next/</code> (13 Schirme), <code>mockups/shared/system.css</code> (das Gestaltungssystem), <code>mockups/shared/faden-probe.html</code> (die Musterseite der Primitive).</p>
+<h2 id="0-das-leitmotiv"><span class="h-t">0 · Das Leitmotiv</span><a class="anchor" href="#0-das-leitmotiv" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<blockquote><p><strong>Jede Verbindung in Velum ist ein Faden zwischen zwei Punkten — und man kann ihn in beide Richtungen ablaufen.</strong></p></blockquote>
+<p>Ein Leitmotiv ist billig zu behaupten. Die Frage ist, ob es aus der App folgt oder auf sie gelegt wurde. Vier Herleitungen, unabhängig voneinander.</p>
+<h3 id="0-1-der-name"><span class="h-t">0.1 Der Name</span><a class="anchor" href="#0-1-der-name" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><em>Velum</em> ist lateinisch für Segel, Vorhang, Tuch — gewebter Stoff. Ein Gewebe besteht aus Fäden. Das Motiv steht im Namen, bevor irgendjemand etwas gezeichnet hat.</p>
+<h3 id="0-2-das-zeichen"><span class="h-t">0.2 Das Zeichen</span><a class="anchor" href="#0-2-das-zeichen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Das Logo ist ein Serif-V mit einem kupferfarbenen Punkt rechts unten: zwei Striche, die sich in einem Punkt treffen. Faden und Knoten. Das Zeichen ist bereits das Motiv im kleinsten Maßstab.</p>
+<h3 id="0-3-der-rohstoff"><span class="h-t">0.3 Der Rohstoff</span><a class="anchor" href="#0-3-der-rohstoff" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Velums eigentliches Material ist Handschrift — und ein Handschrift-Strich <em>ist</em> ein Faden: er hat einen Anfang, eine Richtung, eine wechselnde Stärke und ein Ende. App und Motiv bestehen aus demselben Stoff. Das kann kein Konkurrent behaupten, weil bei keinem Handschrift gleichwertiger Inhalt ist: In Notability und Noteshelf ist sie das einzige Material, in Obsidian, Bear und Craft gar keins. Nur bei Velum steht sie neben getipptem Text im selben Datenmodell.</p>
+<h3 id="0-4-die-vier-eigenschaften-die-nur-velum-hat"><span class="h-t">0.4 Die vier Eigenschaften, die nur Velum hat</span><a class="anchor" href="#0-4-die-vier-eigenschaften-die-nur-velum-hat" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Alle vier sind Fäden. Das ist keine Umdeutung, sondern die Lesart, unter der sie zusammenfallen:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col"><span class="th-t">Velums Eigenschaft</span></th><th scope="col"><span class="th-t">Als Faden gelesen</span></th></tr></thead><tbody><tr><td>Fünf Module, ein Datenmodell</td><td>Der Faden läuft zwischen Modulen, nicht nur innerhalb</td></tr><tr><td>Handschrift ist gleichwertiger Inhalt</td><td>Der Strich selbst ist der Faden</td></tr><tr><td>Zeit ist Inhalt (Audio synchron zur Tinte)</td><td>Der Faden hat eine Richtung: die Zeit</td></tr><tr><td>Herkunft ist sichtbar</td><td>Der Faden ist rückwärts begehbar</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Wo diese vier Eigenschaften nicht im Spiel sind, ist auch kein Faden. Das ist der Unterschied zwischen einem Motiv und einer Verzierung.</p>
+<h3 id="0-5-die-regel-die-beides-trennt"><span class="h-t">0.5 Die Regel, die beides trennt</span><a class="anchor" href="#0-5-die-regel-die-beides-trennt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<blockquote><p><strong>Ein Faden wird nur dort gezeichnet, wo im Datenmodell wirklich eine Beziehung besteht. Kein Faden ohne Kante.</strong></p></blockquote>
+<p>Daraus folgt ein Verbot, das im Alltag mehr kostet als die Regel selbst: Der Faden darf nicht als Rahmen, Trennlinie, Unterstreichung oder Zierleiste auftreten. Trennlinien bleiben <code>--line</code> und sind kein Faden. Wenn man nicht sagen kann, welche zwei Objekte ein Strich verbindet, ist es keiner — und dann darf er auch nicht so aussehen.</p>
+<p>Die Musterseite <code>mockups/shared/faden-probe.html</code> zeigt genau diesen Unterschied nebeneinander: zwei Listenzeilen mit einer Trennlinie dazwischen („Zwei Zeilen, keine Beziehung. Hier gehört kein Faden hin.“) und darunter denselben Abstand mit einem Faden, der zwei benannte Punkte verbindet.</p>
+<p>Die Regel kostet an drei Stellen konkret etwas, und diese drei Stellen sind der Beleg dafür, dass sie eingehalten wird:</p>
+<ul><li><strong>Der Stimmungsverlauf im Journal</strong> wäre als Faden hübsch. Er verbindet aber keine zwei benannten Objekte, sondern vierzehn Messwerte. Er bleibt eine Diagrammlinie in <code>--line-2</code> und sieht sichtbar anders aus als ein Faden.</li><li><strong>Ort und Wetter im Journaleintrag</strong> sind Eigenschaften, keine Beziehungen. Kein Faden.</li><li><strong>Der Fortschrittsbalken auf der Deck-Karte</strong> bleibt ein Balken. Ein Balken ist eine Menge, kein Weg.</li></ul>
+<h3 id="0-6-was-eine-handschrift-ist-die-lehre-aus-arc-und-linear"><span class="h-t">0.6 Was eine Handschrift ist — die Lehre aus Arc und Linear</span><a class="anchor" href="#0-6-was-eine-handschrift-ist-die-lehre-aus-arc-und-linear" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Zwei Produkte außerhalb der Kategorie wurden für diese Runde gelesen, weil beide eine sofort erkennbare Handschrift haben, ohne gegen ihre Plattform zu arbeiten. Sie erreichen das über denselben Mechanismus:</p>
+<blockquote><p><strong>Sie nehmen sich ein Mittel weg, das alle anderen benutzen, und ersetzen es durch eine einzige strukturelle Entscheidung, die überall gilt.</strong></p></blockquote>
+<p>Arc nimmt sich die waagerechte Reiterleiste weg und ersetzt sie durch „Spaces“. Linear nimmt sich die Farbpalette weg und ersetzt sie durch einen Akzent plus Helligkeitsstufen (belegt: fast vollständig achromatisches System, ein Markenakzent, Wechsel von HSL auf LCH, damit dieselbe Regel in hell und dunkel gilt).</p>
+<p>Velums Fassung dieses Satzes: <strong>Velum nimmt sich die Trennung der Module weg und ersetzt sie durch den Faden.</strong></p>
+<p>Dazu gehört die unangenehme Hälfte. Arc wird nicht mehr entwickelt: Der Gründer hat am 27.05.2025 das Ende der aktiven Entwicklung angekündigt, Atlassian hat die Firma am 21.10.2025 übernommen, seither gibt es Sicherheitskorrekturen und keine neuen Funktionen (belegt). Eine Handschrift, die viele Gestalter als die prägnanteste der letzten Jahre nennen — das ist eine Einschätzung, keine Messung —, hat ihre Firma nicht getragen. Zwei Lehren daraus, beide in diesem Entwurf eingelöst:</p>
+<ol><li><strong>Eine Handschrift muss billig sein.</strong> Arcs Eigenart kostete eine eigene Rendering-Schicht und ein eigenes Fenstermodell. Velums Eigenart — New York als Systemserif, kein Web-Font, kein Ladezeitpunkt; Ink statt Buntfarbe; ein 1,5-pt-Strich in SVG — kostet null Byte und null Millisekunden. Das ist keine Sparsamkeit, das ist Haltbarkeit.</li><li><strong>Eine Handschrift muss aus dem Material folgen.</strong> Arcs Spaces folgten aus einem Problem. Velums Faden folgt aus Name, Zeichen, Rohstoff und vier Datenmodell-Eigenschaften — vier unabhängige Herleitungen statt einer.</li></ol>
+<h3 id="0-7-der-anschluss-an-das-was-schon-existierte"><span class="h-t">0.7 Der Anschluss an das, was schon existierte</span><a class="anchor" href="#0-7-der-anschluss-an-das-was-schon-existierte" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Velums eigene Design-Spec vom März 2026 hat das Motiv dreimal angefasst, ohne es zu benennen:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col"><span class="th-t">In der März-Spec</span></th><th scope="col"><span class="th-t">Was es tatsächlich ist</span></th></tr></thead><tbody><tr><td>„Wiki-Link Constellation“</td><td>Punkte mit Verbindungen — ein Graph aus Fäden</td></tr><tr><td>„Streak: consecutive days show connected line between circles“</td><td>ein Faden aus Punkten</td></tr><tr><td>„Cross-Module Drag Morph“</td><td>der Weg von Modul zu Modul, also ein Faden in Bewegung</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Drei Einzelfälle in einer Spec sind ein Zufall. Runde 2 macht daraus ein System: dieselben drei Bausteine, dieselbe Bedeutung, an elf Orten.</p>
+<h2 id="1-die-drei-primitive"><span class="h-t">1 · Die drei Primitive</span><a class="anchor" href="#1-die-drei-primitive" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Das ganze Motiv besteht aus genau drei Bausteinen. Mehr gibt es nicht. Alle drei stehen als Klassen in <code>system.css</code> §9 und sind auf <code>mockups/shared/faden-probe.html</code> in jedem Zustand nebeneinander zu sehen.</p>
+<h3 id="1-1-der-punkt-ein-objekt"><span class="h-t">1.1 Der Punkt — ein Objekt</span><a class="anchor" href="#1-1-der-punkt-ein-objekt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Der 6-pt-Dot aus Runde 1 wird vom Etikett zum Grundbaustein.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Zustand</span></th><th scope="col"><span class="th-t">Aussehen</span></th><th scope="col"><span class="th-t">Bedeutung</span></th></tr></thead><tbody><tr><td>gefüllt</td><td>6 pt, volle Modulfarbe</td><td>Objekt existiert</td></tr><tr><td>hohl</td><td>6 pt, 1,4-pt-Ring</td><td>geplant, offen, noch nicht da</td></tr><tr><td>Ring</td><td>6 pt Kern + Ring in Ink</td><td>aktiv, heute, ausgewählt</td></tr><tr><td>Knoten</td><td>9 pt, Ink gefüllt, Ring in der Farbe des Untergrunds</td><td>hier treffen sich Fäden</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Der <strong>hohle Punkt</strong> ist die Stelle, an der eine fremde Idee am weitesten getragen hat. Obsidians <em>unlinked mentions</em> zeigen an, was verlinkt sein <em>könnte</em> und es noch nicht ist — im ganzen Feld der einzige Ort, an dem eine App eine Beziehung vorschlägt, statt nur eingetragene wiederzugeben. Das Prinzip dahinter: <strong>ein fehlender Faden ist auch eine Information.</strong> Bei Obsidian betrifft das immer nur Notiz ↔ Notiz. Bei Velum läuft der vorgeschlagene Faden über Modulgrenzen: „zu diesem Merksatz gibt es keine Karte.“ Ein hohler Punkt am Absatzrand, ein Tap füllt ihn.</p>
+<p>Die Zwei-Merkmal-Regel bleibt in Kraft: <strong>Ein Punkt steht nie allein</strong> — immer Punkt + Wort, Punkt + Position oder Punkt + Fläche. Der Grund ist gerechnet: zwei der fünf Modulfarben halten im hellen Modus nur 2,95:1 (Notizen) und 2,83:1 (Journal) gegen Papier. Sie dürfen deshalb keine Aussage allein tragen.</p>
+<h3 id="1-2-der-faden-eine-beziehung"><span class="h-t">1.2 Der Faden — eine Beziehung</span><a class="anchor" href="#1-2-der-faden-eine-beziehung" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<ul><li><strong>Strich, nie Fläche.</strong> SVG statt CSS-Rahmen — nur so kann er sich zeichnen (<code>stroke-dasharray</code>) und rückwärts wieder einlaufen.</li><li><strong>Stärke sagt Nähe.</strong> 1 pt = schwache Beziehung (gleicher Tag) · 1,5 pt = normale (Verweis) · 2,5 pt = starke (Herkunft: A wurde zu B).</li><li><strong>Richtung ist Kausalität.</strong> In Bewegung zeichnet er sich immer vom Ursprung zum Ergebnis, nie umgekehrt. Beim Zurückgehen läuft er rückwärts ein.</li><li><strong>Verjüngung.</strong> Am Ursprung trägt er seine volle Stärke, am Ergebnis 60 % davon: 1,0 → 0,6 · 1,5 → 0,9 · 2,5 → 1,5 pt. Damit ist die Richtung auch im Standbild lesbar. Gemessen wird am Ursprung, deshalb bleiben die drei Stärken so unterscheidbar wie vorher.</li><li><strong>Form:</strong> gerade oder eine quadratische Bézier. Keine S-Kurven, keine Schnörkel, keine Bögen um Ecken.</li><li><strong>Farbe:</strong> ruhend grau, Ink <strong>nur wenn aktiv</strong>. <strong>Niemals bunt</strong> — Modulfarben gehören dem Punkt, nicht dem Faden.</li></ul>
+<p><strong>Warum eine Verjüngung und keine Pfeilspitze.</strong> Eine Bewerbung besteht aus Standbildern, und das Versprechen „man kann ihn in beide Richtungen ablaufen“ setzt voraus, dass man die Ruhelage einer Richtung ansieht. Die Verjüngung folgt dabei aus dem Rohstoff (§0.3): Ein Handschrift-Strich beginnt mit Druck und läuft aus — sie ist das, was ein Stift ohnehin tut, kein Zeichen, das dem Motiv aufgesetzt wird. Eine Pfeilspitze käme aus dem Flussdiagramm und machte den Faden zum Konnektor: genau das, was die Recherche an Freeform als „Geometrie zwischen zwei Kästen, keine Beziehung“ verworfen hat. Sie kostet außerdem nichts — kein zusätzliches Element, kein zusätzliches Wort.</p>
+<p>Gebaut ist sie als <code>clip-path</code> auf dem einen Strich, im Kastenmaß statt in der viewBox, damit die ungleichmäßige Dehnung sie nicht erreicht; Farbe, runde Kappe und die Zeichen-Animation bleiben am Strich. <strong>Ihre Grenze steht mitgeschrieben:</strong> Eine Maske braucht die Senkrechte auf den Faden, und die ist nur dort aus dem Kastenmaß zu gewinnen, wo <code>system.css</code> die Form vorgibt. 262 der 282 Fäden im Bestand verjüngen sich (93 %); die zwanzig frei gezeichneten — Kantenbündel im Graph, von <code>MOCK.thread()</code> gespannte Fäden, drei handgezeichnete, die Handschriftprobe — bleiben gleich stark, weil eine Maske, die den Winkel raten müsste, den Strich schief abschnitte. Die Rechnung und die Messung am dünnen Ende stehen in <code>system.css</code> §9.2.</p>
+<p><strong>Ink am Faden heißt ausschließlich „aktiv“.</strong> Ink hat drei Rollen — aktiver Zustand, primäre Aktion, Auswahl —, und „liegt hinter mir“ ist keine davon. Auf den Intervall-Leitern von <code>flashcards-home</code> und <code>review-session</code> trugen die bereits gelaufenen Fadenstücke volles Ink; sie stehen jetzt auf <code>--thread</code> wie jeder ruhende Faden. Was „gelaufen“ sagt, ist <strong>der Punkt</strong>: gefüllt für gelaufen, Ring für jetzt fällig, hohl für geplant (§1.1). Vorher trugen Faden und Punkt dieselbe Aussage doppelt; jetzt trägt jeder eine eigene.</p>
+<h3 id="1-3-der-knoten-wo-faeden-sich-treffen"><span class="h-t">1.3 Der Knoten — wo Fäden sich treffen</span><a class="anchor" href="#1-3-der-knoten-wo-faeden-sich-treffen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>9 pt, Ink gefüllt, mit einem 2-pt-Ring in der Farbe des Untergrunds, damit er auf einem Faden sitzen kann, ohne mit ihm zu verschmelzen. Der Knoten ist der einzige Ort, an dem der Ink-Akzent auf etwas sitzt, das kein Bedienelement ist — er markiert Auswahl, und Auswahl ist eine der drei erlaubten Ink-Rollen.</p>
+<p>Auf der Musterseite steht der Fehlerfall direkt daneben: derselbe Knoten mit Papierring auf grauem Grund, beschriftet „falsch — Papierring reißt den Faden auf“. Ein Baustein, dessen Fehlbedienung nicht gezeigt wird, ist nicht fertig beschrieben.</p>
+<h3 id="1-4-wo-die-eigene-vorgabe-korrigiert-wurde"><span class="h-t">1.4 Wo die eigene Vorgabe korrigiert wurde</span><a class="anchor" href="#1-4-wo-die-eigene-vorgabe-korrigiert-wurde" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Die interne Festlegung schrieb für den ruhenden Faden <code>--line-2</code> vor und für den Ring des hohlen Punktes <code>--ink-4</code>. Nachgerechnet halten diese beiden 1,46:1 und 1,95:1 — deutlich unter den 3:1, die dieselbe Festlegung für Bedienoberfläche verlangt. Beide Primitive liegen deshalb jetzt auf einem eigenen Pegel (<code>rgba(22,24,28,0.47)</code>, gerechnet 3,10:1 auf Papier, 3,03:1 auf Grund, 3,13:1 bzw. 3,10:1 im dunklen Modus).</p>
+<p>Das ist die Art Abweichung, die ein Gestaltungssystem haben darf: Sie ist begründet, gerechnet und im Quelltext an der Stelle vermerkt, an der sie steht (<code>system.css</code> §1.4b). Eine Regel, die man nicht gegen ihre eigene Vorgabe prüft, ist eine Behauptung.</p>
+<h3 id="1-5-die-elf-orte"><span class="h-t">1.5 Die elf Orte</span><a class="anchor" href="#1-5-die-elf-orte" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Verbindlich, alle Schirme:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col"><span class="th-t">Ort</span></th><th scope="col"><span class="th-t">Was der Faden dort ist</span></th></tr></thead><tbody><tr><td>Ketten-Karte auf Heute</td><td>Notiz → Karten → heute fällig, ein Faden mit drei Knoten</td></tr><tr><td>Herkunfts-Chip</td><td>Tap zeichnet den Faden zurück zum Ursprung</td></tr><tr><td>Graph</td><td>Kanten sind Fäden, Objekte sind Punkte</td></tr><tr><td>Journal-Zeitachse</td><td>Die Datums-Schiene ist ein senkrechter Faden, Einträge sind Knoten</td></tr><tr><td>Streak</td><td>Faden aus Punkten, gefüllte = erledigte Tage</td></tr><tr><td>Notizen-Editor</td><td>Wiki-Links hängen als kurze Fäden in der Marginalspalte</td></tr><tr><td>Lernkarten</td><td>Die Intervall-Reihe (1 d · 3 d · 8 d) als Faden mit Punkten</td></tr><tr><td>Aufgaben</td><td>Teilschritte hängen als Faden unter der Aufgabe</td></tr><tr><td>Notizbuch-Cover</td><td>Der Buchrücken ist ein Faden, das Cover-Motiv variiert ihn</td></tr><tr><td>Leere Zustände</td><td>Ein Faden, der ins Leere läuft und in einem hohlen Punkt endet</td></tr><tr><td>Übergabe</td><td>Der Faden wächst vom Ursprung zum Ziel, während die Karte wandert</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Der Stand dieser elf Orte steht in §5.8 — ungeschönt.</p>
+<h3 id="1-6-die-endpunkt-konvention"><span class="h-t">1.6 Die Endpunkt-Konvention</span><a class="anchor" href="#1-6-die-endpunkt-konvention" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Ein Fadenende sitzt auf der Punktmitte oder am Punktrand — höchstens 5,2 pt Abstand.</strong> Alles darüber ist ein Fehler, keine Gestaltung.</p>
+<p>Die Regel ist nicht neu, sie war nur nirgends aufgeschrieben: Drei Prüfrunden haben gegen sie gemessen, ohne dass das Gestaltungssystem sie führte. Sie steht deshalb jetzt als Kommentarblock in <code>system.css</code> §9.2b, dort, wo der Faden gebaut wird — eine Regel, die man messen kann, aber nicht lesen, ist keine. Dort steht auch, woher die 5,2 kommen: Ein Knoten misst 9 pt und hat 4,5 pt Radius; 5,2 lassen zusätzlich die halbe Fadenstärke und das Rundungsspiel des Layouts zu.</p>
+<p>Der Grund ist der Kern des Motivs: Ein Faden verbindet zwei Objekte. Hängt ein Ende frei, verbindet er ein Objekt mit nichts, und dann ist er kein Faden, sondern ein Strich — die eine Form, die §1.2 verbietet.</p>
+<p><strong>Die einzige Ausnahme ist der gekappte Faden.</strong> Er endet ohne Punkt und sagt damit, dass die Quelle gelöscht wurde. Das ist keine Nachlässigkeit, sondern eine Aussage: Die Kante hat es gegeben, ihr anderes Ende gibt es nicht mehr.</p>
+<h2 id="2-die-verwandlungs-tabelle"><span class="h-t">2 · Die Verwandlungs-Tabelle</span><a class="anchor" href="#2-die-verwandlungs-tabelle" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<h3 id="2-1-der-massstab"><span class="h-t">2.1 Der Maßstab</span><a class="anchor" href="#2-1-der-massstab" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Runde 1 hat gefragt: <em>Was übernehme ich?</em> Diese Tabelle fragt anders: <em>Welches Prinzip steckt hinter der übernommenen Idee — und wie sieht Velums eigene Antwort darauf aus?</em></p>
+<p>Eine Antwort in der vierten Spalte zählt nur, wenn sie</p>
+<ol><li>etwas nennt, das die Quelle <strong>nicht</strong> hat,</li><li>aus einer der vier Alleinstellungen folgt, und</li><li>sich als Faden zwischen zwei <strong>benannten</strong> Punkten zeichnen lässt.</li></ol>
+<p>Wo das nicht geht, steht <strong>1 : 1</strong> mit Begründung. Eine ehrliche Konventionszeile ist mehr wert als eine erfundene Verwandlung — und §2.3 ist deshalb kein Anhang, sondern Teil des Arguments.</p>
+<p>Kennzeichnung: <strong>✚</strong> Verwandlung, die aus einer Alleinstellung folgt · <strong>1 : 1</strong> bleibt wie beim Vorbild · <strong>offen</strong> entschieden, aber im Entwurf noch nicht gezeichnet · <strong>Befund</strong> die Übernahme geht zu weit, siehe §5.</p>
+<p>Die vollständige Fassung umfasst 70 Zeilen. Hier stehen die 32, die tragen, plus 13 Konventionszeilen in Kurzform (§2.3); die Bilanz in §2.4 rechnet über alle 70.</p>
+<h3 id="2-2-die-zeilen-die-tragen"><span class="h-t">2.2 Die Zeilen, die tragen</span><a class="anchor" href="#2-2-die-zeilen-die-tragen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Heute</strong> (<code>today.html</code>)</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Idee</span></th><th scope="col"><span class="th-t">Quelle</span></th><th scope="col"><span class="th-t">Prinzip dahinter</span></th><th scope="col"><span class="th-t">Velums Antwort</span></th></tr></thead><tbody><tr><td>Liste nach Bereich gruppiert statt nach Uhrzeit; der Tag hat ein sichtbares Ende</td><td>Things 3</td><td>Ein Tag ist eine endliche Menge, keine Uhr. Restlänge liest man räumlich.</td><td><strong>✚</strong> Bei Things ist die Gruppe ein <em>Ordner</em>. Bei Velum ist sie ein <strong>Knoten</strong>: „Biologie“ ist der Punkt, an dem Notiz, Karte und Aufgabe zusammenlaufen. Die Gruppenüberschrift ist anspringbar und zeigt alle fünf Module dieses Knotens — Things' Bereich zeigt nur Aufgaben.</td></tr><tr><td>Ketten-Karte „Notiz → 12 Karten → 8 heute fällig“</td><td>niemand; die Form stammt vom Fortschritts-Breadcrumb</td><td>Eine Kausalkette in einer Zeile erzählen statt in fünf Kacheln.</td><td><strong>offen ✚</strong> Muss ein Faden mit drei Knoten sein, 2,5 pt, in beide Richtungen begehbar: Tap auf „8 Karten“ läuft rückwärts bis zum Absatz. Im Entwurf sind es drei Kästen mit Winkeln. Siehe §5.3.</td></tr><tr><td>Impuls-Karte mit konkreter Frage statt leerem Feld</td><td>Apple Journal</td><td>Das leere Blatt ist die teuerste Hürde; ein Satz ist billiger als ein Knopf.</td><td><strong>1 : 1</strong> in Form und Ton. Verwandelt ist nur die Herkunft der Frage: Apple erzeugt sie aus Fotos und Orten, Velum aus dem eigenen Bestand. Kein Faden — hier wäre er Zierat.</td></tr><tr><td>Kennzahlen-Block „6 Aufgaben · 23 Karten · 12 Tage in Folge“</td><td>Todoist-Kopfzeile, Anki-Deck-Zähler</td><td>Vor der Arbeit sagen, woraus die Arbeit besteht.</td><td><strong>✚</strong> Bei Todoist und Anki sind das unabhängige Zahlen. Bei Velum sind es <strong>Enden desselben Fadens</strong>: Die 23 Karten <em>sind</em> die 12 Absätze von gestern. Jede Zahl führt deshalb nicht in eine Liste, sondern auf die Kette — an einer anderen Stelle betreten.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Bibliothek</strong> (<code>library.html</code>)</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Idee</span></th><th scope="col"><span class="th-t">Quelle</span></th><th scope="col"><span class="th-t">Prinzip dahinter</span></th><th scope="col"><span class="th-t">Velums Antwort</span></th></tr></thead><tbody><tr><td>Cover-Raster mit Buchgefühl (Rücken, Schnittkante, Papierart)</td><td>GoodNotes 6</td><td>Ein Dokument, das wie ein Gegenstand aussieht, wird an der Silhouette erkannt, bevor der Titel gelesen wird.</td><td><strong>offen ✚</strong> Der Buchrücken ist ein Faden, das Cover-Motiv variiert ihn — damit trägt jedes Cover dieselbe Grammatik wie der Rest der App, ohne bunt zu werden. GoodNotes löst dasselbe Problem mit Fertig-Covern; das ist Auswahl, keine Gestaltung.</td></tr><tr><td>Smart-Ordner mit Regel-Untertitel und Zähler</td><td>Craft, Apple Notes</td><td>Eine Zahl macht einen Ordner einschätzbar; „Markiert 4“ ist eine Aussage, „Markiert“ ein Etikett.</td><td><strong>✚</strong> Bei Craft und Apple filtert ein Smart-Ordner über <em>Attribute</em>. Velums filtert über die <strong>Kante</strong>: „Hat eine Aufgabe erzeugt“, „Ohne Herkunft“, „Aus dem Canvas gekommen“. Das kann keines der 21 Produkte, weil keines die Kante als Feld hat.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Notizen</strong> (<code>notes-list.html</code>, <code>note-editor.html</code>)</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Idee</span></th><th scope="col"><span class="th-t">Quelle</span></th><th scope="col"><span class="th-t">Prinzip dahinter</span></th><th scope="col"><span class="th-t">Velums Antwort</span></th></tr></thead><tbody><tr><td>Verschachtelte Tags als Baum, entstanden beim Schreiben (<code>#uni/bio</code>)</td><td>Bear 2</td><td>Organisation entsteht im Fließtext, nicht im Metadatenfeld.</td><td><strong>✚</strong> Bear filtert eine Notizliste. Velums Tag ist ein <strong>Knoten</strong>, an dem Fäden aus fünf Modulen zusammenlaufen: <code>#labor</code> hält die Notiz, den Journaleintrag, drei Karten und eine Aufgabe. Ein Tap zeigt deshalb keine Liste, sondern die Fäden, die durch ihn laufen. Die Syntax bleibt Bears; das Ergebnis kann Bear strukturell nicht.</td></tr><tr><td>Zwei Zeilen Vorschau in der Listenzeile</td><td>Apple Notes</td><td>Zwei Zeilen Anfangstext sagen mehr als jedes Symbol.</td><td><strong>1 : 1</strong> in der Form. <strong>✚</strong> in der Metazeile: statt des Ordnernamens stehen dort Chips für das, was aus der Notiz geworden ist („12 Karten“, „1 Aufgabe“). Apple Notes und Bear verschweigen das, weil sie es nicht wissen.</td></tr><tr><td>Blockgriff in der linken Rinne, im Ruhezustand leer</td><td>Craft</td><td>Die gesamte Manipulationsebene sieht aus wie Leerraum.</td><td><strong>offen ✚</strong> Bei Craft ist die Rinne nur ein Griff. Bei Velum ist sie der <strong>Herkunfts-Rand</strong>: Jeder Absatz, aus dem etwas entstanden ist, trägt dort einen 1,5-pt-Fadenstumpf mit einem Punkt am Ende — gefüllt heißt „existiert“, hohl heißt „vorgeschlagen“. Beim Scrollen liest man am Rand mit, welche Absätze gearbeitet haben.</td></tr><tr><td>Backlinks als permanenter Abschnitt, nicht in einer Schublade</td><td>Craft, Obsidian</td><td>Verbindungen sind Inhalt, nicht Werkzeug.</td><td><strong>✚</strong> Beide zeigen <strong>eingehende</strong> Links. Velum zeigt die Gegenrichtung gleichrangig: <strong>„Daraus entstanden — 12 Karten · 1 Aufgabe“</strong>. Das ist die eine Zeile, die weder Craft noch Obsidian schreiben können.</td></tr><tr><td>Wiki-Link <code>[[Osmose]]</code> mit sichtbaren Klammern</td><td>Obsidian, Roam, Bear</td><td>Die Verbindung wird getippt, nicht geklickt.</td><td><strong>1 : 1</strong> in der Syntax. <strong>offen ✚</strong> in der Darstellung: kurze Fäden in der Marginalspalte, sichtbar, ohne den Satz zu unterbrechen. Im Entwurf sind es bisher nur Klammern im Text.</td></tr><tr><td>Info-Panel rechts mit Abschnitten</td><td>Bear, Obsidian</td><td>Zusatzinformation neben dem Text, nicht darüber.</td><td><strong>Befund</strong>, keine Verwandlung. Siehe §5.2.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Journal</strong> (<code>journal-home.html</code>, <code>journal-entry.html</code>)</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Idee</span></th><th scope="col"><span class="th-t">Quelle</span></th><th scope="col"><span class="th-t">Prinzip dahinter</span></th><th scope="col"><span class="th-t">Velums Antwort</span></th></tr></thead><tbody><tr><td>Datums-Schiene links, Marke außerhalb der Karte, durchgehende Linie dazwischen</td><td>Day One</td><td>Weil die Zahl immer auf derselben x-Achse sitzt, entsteht ein senkrechtes Lineal, das man ohne Lesen verfolgt. Dann braucht die Liste weder Trennlinien noch Rahmen.</td><td><strong>offen ✚</strong> Die Schiene <em>ist</em> der Faden, die Einträge sind Knoten darauf. Die Journal-Zeitachse ist damit dieselbe Zeichnung wie der Graph, nur in einer Dimension. Wo ein Eintrag eine Herkunft in einem anderen Modul hat, verlässt ein kurzer Zweig die Schiene nach links. Day One kann keinen Zweig zeichnen, weil dort nichts außer Journal existiert.</td></tr><tr><td>Serif für den Eintragstext</td><td>Day One</td><td>Ein Journal muss sich anders anfühlen als eine Notiz-App.</td><td><strong>✚, nach einem Konflikt.</strong> Bleibt — aber mit einer anderen Begründung und einer Gegenprobe: Der <strong>Notiz-Editor bekommt Sans</strong>. Siehe §3.3.</td></tr><tr><td>Streak als Zahl mit Rekord und einer Reihe aus Punkten</td><td>Day One, RemNote, Duolingo</td><td>Eine Serie ist eine Tatsache, kein Spiel.</td><td><strong>✚</strong> Der Streak <em>ist</em> bereits ein Faden aus Punkten: gefüllt = erledigt, hohl = Lücke. Damit trägt er dieselbe Grammatik wie alles andere. Weggelassen sind Trophäen, Verlustwarnung und Jahresvideo — die haben alle drei Vorbilder.</td></tr><tr><td>Stimmungsverlauf als Linie über 14 Tage</td><td>Journey, Daylio</td><td>Der Verlauf ist aussagekräftiger als der Tageswert.</td><td><strong>✚ mit Einschränkung.</strong> Eine Diagrammlinie ist <strong>kein Faden</strong> (§0.5). Sie bleibt sichtbar eine Diagrammlinie. Die Verwandlung gegenüber Journey liegt in der Farbe: fünf Ink-Balken mit ausgeschriebenem Wort statt bunter Emojis — lesbar in Graustufen und bei Farbfehlsichtigkeit.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Aufgaben</strong> (<code>tasks.html</code>, <code>task-detail.html</code>)</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Idee</span></th><th scope="col"><span class="th-t">Quelle</span></th><th scope="col"><span class="th-t">Prinzip dahinter</span></th><th scope="col"><span class="th-t">Velums Antwort</span></th></tr></thead><tbody><tr><td>Checkbox links, Haken wächst mit Federung, ~1 s Verweildauer vor dem Ausgleiten</td><td>Things 3</td><td>Die Pause <strong>ist</strong> das Undo. Es braucht kein Banner, weil die Zeile noch da ist.</td><td><strong>1 : 1</strong> in der Mechanik — beste Lösung im Feld, und sie kostet nichts. <strong>✚</strong> in der Wirkung: In derselben Sekunde zeichnet sich am anderen Ende des Herkunfts-Fadens, in der Notiz, das letzte Stück. Keine Aufgaben-App kann das, weil keine das andere Ende hat.</td></tr><tr><td>Natürliche Sprache mit sichtbaren Chips („Morgen 14:00 · #labor“)</td><td>Todoist</td><td>Man sieht vor dem Absenden, was die App verstanden hat, und korrigiert im Satz statt im Formular.</td><td><strong>1 : 1</strong> in Mechanik und Regeln. <strong>✚</strong> durch einen Chip-Typ, den Todoist nicht haben kann: den <strong>Herkunfts-Chip</strong>. Wird aus einer Markierung erfasst, steht „aus ‚Zellbiologie'“ als vierter Chip da — die Kante entsteht beim Erfassen, nicht danach.</td></tr><tr><td>Fünf Ansichten auf einem Datenbestand (Liste · Planer · Matrix · Board · Kalender)</td><td>TickTick</td><td>Ansichten sind Regelfenster auf einen Bestand, keine Module. Ziehen schreibt das Attribut um.</td><td><strong>✚</strong> Velum ergänzt einen Filter, den keines der 21 Produkte hat: <strong>Herkunft als Spalte</strong> („aus einer Notiz“ · „aus dem Canvas“ · „ohne Herkunft“). Und Ziehen ist dort kein Attributwechsel, sondern <strong>Fadenzeichnen oder Fadenkappen</strong>: Wer eine Aufgabe nach „ohne Herkunft“ zieht, sieht die Verbindung rückwärts einlaufen und verschwinden.</td></tr><tr><td>Teilschritte mit Fortschrittsbalken („2 von 4“)</td><td>Todoist</td><td>Ein Schritt ist keine eigene Aufgabe mit eigener Frist — sonst verdoppelt sich die Liste.</td><td><strong>offen ✚</strong> Teilschritte hängen als Faden unter der Aufgabe, Knoten = Schritte. Der Balken sagt „2 von 4“; der Faden sagt zusätzlich <strong>welche zwei</strong> und in welcher Reihenfolge. Im Entwurf ist es bisher ein Balken.</td></tr><tr><td>Termin und Frist sind zwei verschiedene Sachen</td><td>Todoist, Sorted</td><td>„Wann ich es tue“ und „wann es zu spät ist“ sind verschiedene Fragen; ein Feld für beides erzeugt jeden Abend ein schlechtes Gewissen.</td><td><strong>1 : 1</strong> im Konzept, <strong>✚</strong> in der Darstellung: Todoist hat die richtige Idee in der falschen Form (beides als kleiner Text in derselben Metazeile). Velum gibt ihnen zwei Grammatiken — Termin grau links, Frist als roter Chip mit Flagge und Resttagen rechts. Zwei Merkmale, nicht nur Farbe.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Lernkarten</strong> (<code>flashcards-home.html</code>, <code>review-session.html</code>)</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Idee</span></th><th scope="col"><span class="th-t">Quelle</span></th><th scope="col"><span class="th-t">Prinzip dahinter</span></th><th scope="col"><span class="th-t">Velums Antwort</span></th></tr></thead><tbody><tr><td>Intervall-Vorschau <strong>im</strong> Bewertungsknopf („Gut — in 5 Tagen“)</td><td>Anki</td><td>Der Knopf sagt, was aus ihm folgt. Der Planer erklärt sich, bevor man ihn bedient.</td><td><strong>✚</strong> Velum macht daraus eine app-weite Regel statt eines Lernkarten-Merkmals: Jeder Knopf, der die Zukunft ändert, nennt die Änderung — „Planen · Mi“, „Ziel 90 % · 17 Karten/Tag“. Nebenregel aus RemNotes Fehler: kein Modus ändert die Terminierung und verschweigt zugleich das Intervall.</td></tr><tr><td>Vier Bewertungsstufen</td><td>Anki, RemNote (dort fünf)</td><td>Die Stufe ist eine Terminwahl, kein Gefühlsregler.</td><td><strong>offen.</strong> „Gut“ bekommt mehr Fläche, weil es in den meisten Fällen richtig ist; vier gleich breite Zellen sind Ankis HTML-Tabellen-Altlast. Im Entwurf sind sie gleich breit. Siehe §5.5.</td></tr><tr><td>„So stand es in deiner Notiz“ — der Quellsatz auf der Antwortseite</td><td>niemand vollständig; Ansatz bei RemNote</td><td>Die Antwort ist glaubwürdiger, wenn sie im eigenen Wortlaut danebensteht.</td><td><strong>✚</strong> Einer der sieben Serif-Orte: fremde Stimme, andere Schrift. Und der Satz ist nicht kopiert, sondern <strong>das andere Ende des Fadens</strong> — ändert sich die Notiz, ändert sich der Satz. Bei jedem Vorbild wäre das ein toter Textschnipsel.</td></tr><tr><td>Herkunft bleibt während des Lernens sichtbar</td><td>RemNote</td><td>Wer beim dritten „Nochmal“ merkt, dass er nachlesen muss, soll die Sitzung nicht verlassen müssen.</td><td><strong>✚</strong> RemNote versteckt die Beziehung in Referenz-Syntax, und der Rückweg kostet die Sitzung. Bei Velum ist der Rückweg kein Sprung, sondern der Faden, der sich rückwärts abspult: Die Karte weicht nach links, der Quellabsatz kommt von rechts, dazwischen steht der Faden gespannt — und der Sitzungszähler bewegt sich nicht.</td></tr><tr><td>12-Wochen-Punktraster (Aktivitätsdichte)</td><td>Anki-Heatmap, GitHub-Beitragsraster</td><td>Ein Streak sagt <em>ob</em>, eine Heatmap sagt <em>wie viel</em>.</td><td><strong>✚ und Befund.</strong> Verwandelt ist die Farbe (Ink-Deckkraft statt Grün, Zahl darunter). Nicht verwandelt ist die <strong>Bedeutung</strong>. Siehe §5.7.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Graph</strong> (<code>graph.html</code>)</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Idee</span></th><th scope="col"><span class="th-t">Quelle</span></th><th scope="col"><span class="th-t">Prinzip dahinter</span></th><th scope="col"><span class="th-t">Velums Antwort</span></th></tr></thead><tbody><tr><td>Linien haben eine Grammatik: durchgezogen = Wiki-Link, gestrichelt = Tag, punktiert = Herkunft</td><td>niemand; Obsidian kennt nur eine Linienart</td><td>Eine Kante mit Typ ist eine Aussage; eine Kante ohne Typ ist ein Bild.</td><td><strong>✚ Die stärkste Zeile der Tabelle.</strong> Die dritte Linienart kann kein Konkurrent haben, weil keiner Notizen, Karten und Aufgaben in einem Datenmodell hält. Nur hier ist sichtbar, dass die 12 Karten <strong>Kinder</strong> der Vorlesungsnotiz sind und nicht bloß Nachbarn. Dazu die zweite Dimension: Stärke sagt Nähe. Der Graph ist damit kein Bild des Wissens, sondern ein Bild der Arbeit.</td></tr><tr><td>Filter-Chips über der Fläche (Notizen · Karten · Aufgaben · Journal · Canvas)</td><td>Obsidian-Farbgruppen</td><td>Man will Teilmengen sehen, nicht Physik einstellen.</td><td><strong>✚</strong> Obsidians Farbgruppen sind frei wählbare Buntfarben je Suchabfrage — Wolken, deren Bedeutung nur der Autor kennt. Velum hat fünf Farben, die überall dasselbe Modul bedeuten, als 6-pt-Punkt neben dem Wort. Statt Obsidians Reglerwand (Center force, Repel force, Link distance …) genau fünf Chips und Zoom.</td></tr><tr><td>Kräfte-Layout, Kreisgröße = Anzahl Verbindungen</td><td>Obsidian Graph View</td><td>Man sieht, wo das eigene Wissen dicht ist und wo es dünn bleibt.</td><td><strong>Befund.</strong> Siehe §5.1.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Einstellungen und leere Zustände</strong></p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Idee</span></th><th scope="col"><span class="th-t">Quelle</span></th><th scope="col"><span class="th-t">Prinzip dahinter</span></th><th scope="col"><span class="th-t">Velums Antwort</span></th></tr></thead><tbody><tr><td>Design-Auswahl als maßstäblicher Mini-Screen statt als Farbfläche</td><td>Things 3</td><td>Wer „Dunkel“ wählt, soll es vorher gesehen haben.</td><td><strong>✚</strong> Things zeigt drei Farbflächen mit Häkchen. Velum zeigt <em>diese App</em> in klein — mit Sidebar und zwei Karten auf dem iPad, mit Tab-Bar auf dem iPhone. Daneben steht die Folge im Klartext: „Folgt dem System — wechselt heute um 16:38 auf Dunkel.“ Bear zeigt die Reihe, verschweigt aber die Wirkung.</td></tr><tr><td>Leerer Zustand zeigt eigenes Material statt einer Aufforderung</td><td>Apple Journal</td><td>Der beste leere Zustand ist gar nicht leer — die Karte ist gleichzeitig Anzeige und Startknopf.</td><td><strong>1 : 1</strong> im Prinzip, <strong>✚</strong> in der Quelle des Materials: Apple greift auf Fotos und Orte zu, Velum auf den eigenen Bestand über Modulgrenzen — „Drei Stellen sind in ‚Zellbiologie' schon markiert“ auf einem leeren Deck.</td></tr><tr><td>Symbol im getönten Quadrat, Titel, Satz, Knopf</td><td>iOS-Konvention (<code>ContentUnavailableView</code>)</td><td>Erwartbarkeit.</td><td><strong>offen.</strong> Für leere Zustände gilt etwas anderes: ein einzelner Faden, der ins Leere läuft und in einem hohlen Punkt endet. Siehe §5.4.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<h3 id="2-3-was-1-1-bleibt-und-warum"><span class="h-t">2.3 Was 1 : 1 bleibt — und warum</span><a class="anchor" href="#2-3-was-1-1-bleibt-und-warum" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Diese Zeilen sind kein Rest. Sie sind der Beleg dafür, dass die anderen Entscheidungen welche sind.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Übernommen</span></th><th scope="col"><span class="th-t">Von wem</span></th><th scope="col"><span class="th-t">Warum unverändert</span></th></tr></thead><tbody><tr><td>Raster/Liste-Umschalter oben rechts</td><td>GoodNotes 6, Apple Notes</td><td>Konvention seit 2010, überall gleich, und richtig. Hier etwas zu erfinden wäre Eitelkeit.</td></tr><tr><td>Sortier-Menü „Zuletzt geändert“</td><td>GoodNotes 6, Finder</td><td>Eine Sammlung braucht genau eine sichtbare Ordnungsaussage.</td></tr><tr><td>Suchfeld in der Navigationsleiste · Wischen zum Löschen · Angeheftet oben</td><td>Apple Notes, Bear, iOS</td><td>Konventionen, die man ohne Anleitung findet. Suchposition oder Wischrichtung zu ändern erzeugt Lernkosten ohne Gegenwert.</td></tr><tr><td>Long-Press-Kontextmenü, Löschen rot und unten, Trennlinie darüber</td><td>iOS</td><td>Plattformgrammatik. Wer sie ändert, arbeitet gegen die Plattform — genau der Fehler, den Arc und Linear nicht machen.</td></tr><tr><td>Trennlinienfreie Liste, Gruppen nur über Abstand, Titel immer neutral</td><td>Things 3</td><td>Das Grundgesetz der Liste. Nichts daran verbessern zu wollen ist die richtige Selbstbeherrschung.</td></tr><tr><td>Überfällig / Eingang als eigener Block mit einer Sammelaktion</td><td>Todoist, Things</td><td>Überfälliges gehört nicht rot zwischen die heutigen Aufgaben gemischt.</td></tr><tr><td>Detail klappt <strong>in</strong> der Liste auf, der Titel behält seine y-Position</td><td>Things 3</td><td>Das Detail ist kein Ort, sondern ein Zustand der Zeile. Man verliert nie, wo man war.</td></tr><tr><td>Slash-Befehl am Cursor öffnet die Blocktypen</td><td>Craft, Notion</td><td>Die Aktion kommt zum Text, nicht der Text zum Menü. Beste Lösung im Feld. (Verwandelt ist nur ein Eintrag der Liste: „Karte aus diesem Absatz“.)</td></tr><tr><td>Editor ohne Werkzeugleiste über dem Text</td><td>Bear 2</td><td>Bear ist der ruhigste Texteditor auf iOS. Das ist eine Leistung, keine Geschmacksfrage.</td></tr><tr><td>Eingeklappte Sidebar als senkrechte Icon-Schiene</td><td>Craft, Obsidian</td><td>Konvention aller Drei-Spalten-Apps. Erfindungen kosten hier Orientierung und liefern nichts.</td></tr><tr><td>Zweispaltige Einstellungen, iPhone-Liste mit dem Wert rechts</td><td>Apple Einstellungen</td><td>Die beste Struktur, die es für Einstellungen gibt — und der Grund, warum niemand sie neu erfinden muss.</td></tr><tr><td>Kartendrehung als Bewegung</td><td>Quizlet</td><td>Das Umdrehen ist der einzige Moment, in dem eine Lernkarte sich wie ein Gegenstand anfühlt. Ohne ihn ist die Sitzung ein Formular.</td></tr><tr><td>Foto-Streifen mit unterschiedlichen Seitenverhältnissen statt Quadratraster</td><td>Day One</td><td>Ein Quadratraster macht aus Erinnerungen einen Feed.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<h3 id="2-4-die-bilanz"><span class="h-t">2.4 Die Bilanz</span><a class="anchor" href="#2-4-die-bilanz" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Nachgezählt über alle 70 Zeilen der vollständigen Fassung:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t"></span></th><th class="ta-right" scope="col"><span class="th-t">Zeilen</span></th><th scope="col"><span class="th-t"></span></th></tr></thead><tbody><tr><td>nur 1 : 1</td><td class="ta-right">10</td><td>Konvention, bleibt unverändert, mit Begründung</td></tr><tr><td>1 : 1 in einem Punkt, ✚ in einem anderen</td><td class="ta-right">19</td><td>Form bleibt, Bedeutung wird verwandelt</td></tr><tr><td>nur ✚</td><td class="ta-right">26</td><td>Verwandlung, die aus einer Alleinstellung folgt</td></tr><tr><td>offen / Befund</td><td class="ta-right">15</td><td>entschieden, im Entwurf noch nicht gezeichnet</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Dass 29 von 70 Zeilen ganz oder teilweise „1 : 1“ tragen, ist kein Mangel. Eine App, die auch die Checkbox links neu erfindet, ist keine Handschrift, sondern eine Zumutung.</p>
+<h2 id="3-die-marke"><span class="h-t">3 · Die Marke</span><a class="anchor" href="#3-die-marke" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<h3 id="3-1-die-serif-new-york"><span class="h-t">3.1 Die Serif: New York</span><a class="anchor" href="#3-1-die-serif-new-york" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><code>--serif: "New York", ui-serif, Charter, Georgia, "Times New Roman", serif</code></p>
+<p>Vier Gründe, in dieser Reihenfolge:</p>
+<ol><li><strong>Es ist Apples eigene Serif.</strong> Auf iOS, iPadOS und macOS systemseitig da — keine Lizenz, kein Web-Font, kein Ladezeitpunkt. Eine App, die Apples Systemserif benutzt, sieht am ersten Tag nativ aus. Das ist zugleich die Einlösung der Arc-Lehre aus §0.6: Diese Handschrift kostet null Byte.</li><li><strong>Optisch je Größe korrigiert.</strong> New York ist in sechs optischen Größen gezeichnet; dieselbe Schrift trägt eine 34-pt-Überschrift und eine 13-pt-Datumsmarke, ohne dass eine davon falsch wirkt.</li><li><strong>Sie passt zum Zeichen.</strong> Das Logo ist ein Serif-V. New Yorks V hat denselben klaren Ansatz und dieselbe ruhige Achse — die Stimme des Zeichens und die Stimme der App sind dieselbe.</li><li><strong>Variabel.</strong> Ein Gewicht mehr kostet keine Datei.</li></ol>
+<h3 id="3-2-die-sieben-orte"><span class="h-t">3.2 Die sieben Orte</span><a class="anchor" href="#3-2-die-sieben-orte" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Serif ist <strong>Stimme, nicht Textur</strong>. Sie erscheint an genau sieben Orten:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Ort</span></th><th scope="col"><span class="th-t">Klasse</span></th><th scope="col"><span class="th-t">Warum</span></th></tr></thead><tbody><tr><td>Große Screen-Titel</td><td><code>.serif--screen-title</code></td><td>Der erste Eindruck jedes Schirms trägt die Stimme</td></tr><tr><td>Journal-Datumsmarken</td><td><code>.serif--journal-date</code></td><td>Das Datum ist im Journal Inhalt, nicht Metadatum</td></tr><tr><td>Zitate und der markierte Satz im Review</td><td><code>.serif--quote</code></td><td>Fremde Stimme, andere Schrift</td></tr><tr><td>Titel leerer Zustände</td><td><code>.serif--empty-title</code></td><td>Der leere Schirm ist der Ort, an dem die App spricht</td></tr><tr><td>Notizbuch-Titel auf dem Cover</td><td><code>.serif--cover-title</code></td><td>Ein Buch trägt seinen Titel gesetzt, nicht beschriftet</td></tr><tr><td>Die Wortmarke (Onboarding, Über)</td><td><code>.serif--wordmark</code></td><td>Das Zeichen selbst</td></tr><tr><td>Der Journal-Eintragstext</td><td><code>.serif--voice</code></td><td>Siehe §3.3</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Nirgends sonst.</strong> Kein Serif in Listen, Knöpfen, Chips, Beschriftungen, Zahlen, Werkzeugleisten.</p>
+<p>Die Typo-Regel bleibt unangetastet: <strong>fünf Größen, zwei Gewichte.</strong> Die Serif belegt dieselben Größen, sie fügt keine hinzu — <code>28/34 · 20/26 · 17/23 · 15/20 · 13/16</code>, Gewichte 400 und 600.</p>
+<h3 id="3-3-der-siebte-ort-und-warum-er-kein-day-one-zitat-ist"><span class="h-t">3.3 Der siebte Ort — und warum er kein Day-One-Zitat ist</span><a class="anchor" href="#3-3-der-siebte-ort-und-warum-er-kein-day-one-zitat-ist" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Runde 1 hat den Journal-Eintragstext von Day One in Serif übernommen und das „zur Regel“ erklärt. Der Befund dagegen: Das blanke <code>.serif</code> trug damit an rund 45 Stellen Fließtext, und Fließtext ist Textur, nicht Stimme.</p>
+<p>Aufgelöst ist der Konflikt nicht dadurch, dass die Liste einfach länger wurde, sondern durch eine Definition, die nur für Velum gilt:</p>
+<blockquote><p><strong><code>.serif--voice</code> gilt für durchgehende Prosa, die der Nutzer selbst verfasst hat und die als Stimme gelesen wird, nicht als Arbeitsmaterial.</strong></p></blockquote>
+<p>Das trifft den Journal-Eintragstext — und sonst nichts.</p>
+<p>Der Beweis, dass es eine Entscheidung ist und keine Übernahme, ist das, was Velum dadurch <strong>nicht</strong> tut: <strong>Der Notiz-Editor bekommt Sans.</strong> Eine Notiz ist Arbeitsmaterial — Blöcke, Verweise, Struktur, etwas, das man umbaut. Ein Journaleintrag ist eine Stimme, die man wieder liest. Velum hält beides im selben Datenmodell und muss sie deshalb unterscheiden können; Day One hat diese Unterscheidung gar nicht zu treffen. Die Schrift markiert hier den Unterschied zwischen <em>Material</em> und <em>Stimme</em> — und genau diese Unterscheidung braucht eine App, in der Handschrift gleichwertiger Inhalt ist.</p>
+<p>Daraus folgt eine Aufräumregel, die nachprüfbar ist: <strong>Das blanke <code>.serif</code> verschwindet aus den Schirmen.</strong> Jede Stelle wechselt auf Sans oder auf eine der sieben benannten Rollen. Die Prüfung ist eine Zeile — wer in <code>mockups/app-next/*.html</code> noch ein <code>class="serif"</code> ohne Rolle findet, hat einen offenen Befund.</p>
+<h3 id="3-4-die-optische-korrektur-warum-sie-gemessen-und-nicht-gesetzt-wird"><span class="h-t">3.4 Die optische Korrektur — warum sie gemessen und nicht gesetzt wird</span><a class="anchor" href="#3-4-die-optische-korrektur-warum-sie-gemessen-und-nicht-gesetzt-wird" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>New York und SF Pro haben verschiedene x-Höhen. 28 px Serif wirken neben 28 px Sans kleiner. Die naheliegende Lösung — ein fester Korrekturfaktor in der CSS-Datei — wäre falsch: Der Faktor gilt nur für das Schriftpaar, das gerade zur Verfügung steht. <code>mock.js</code> misst deshalb beide Stapel beim Start im Browser und schreibt das Ergebnis nach <code>--serif-adjust</code>. Fällt das Skript aus, wird gar nicht korrigiert — nie falsch korrigiert.</p>
+<p>Zwei Details, die dabei entschieden wurden:</p>
+<ul><li>Korrigiert wird auf das <strong>geometrische Mittel aus x-Höhen- und Versalhöhen-Faktor</strong>, nicht auf die x-Höhe allein. Reine x-Höhen-Angleichung wurde gerendert und angesehen: Die Versalien der Serif überschießen dann sichtbar. Deutsch schreibt jedes Substantiv groß — eine Korrektur, die nur die Kleinbuchstaben trifft, ist für diese Sprache die falsche.</li><li><code>font-size-adjust</code> verändert die <em>benutzte</em> Schriftgröße, nicht die angegebene. Die Fünfer-Skala bleibt also nicht nur dem Sinn nach in Kraft, sondern buchstäblich: Der Titel misst weiterhin 28 px.</li></ul>
+<h3 id="3-5-wo-farbe-lebt"><span class="h-t">3.5 Wo Farbe lebt</span><a class="anchor" href="#3-5-wo-farbe-lebt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Die Oberfläche ist Papier und Grau. Es gibt genau drei Orte, an denen Farbe vorkommt, und jeder hat eine Regel:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col"><span class="th-t">Ort</span></th><th scope="col"><span class="th-t">Regel</span></th></tr></thead><tbody><tr><td><strong>Ink</strong> (<code>#16181C</code> hell / <code>#F2F3F5</code> dunkel)</td><td>Genau drei Rollen: aktiver Zustand · primärer CTA · Auswahl. Nichts sonst.</td></tr><tr><td><strong>Die fünf Modulfarben</strong></td><td>Ausschließlich als 6-pt-Punkte und als Cover-Akzent. Nie eine Fläche, nie ein Text, nie ein Knopf — und nie allein, immer neben ihrem Wort.</td></tr><tr><td><strong>Amber</strong> (<code>--brand-copper</code>, vorläufig <code>#B5621A</code>)</td><td>Nur im Zeichen. Siehe §3.7.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Dazu zwei semantische Farben, die keine Gestaltungsentscheidung sind, sondern eine Bedeutung: Rot <code>#D02B20</code> für Löschen und Deadline, Grün <code>#1D7F4E</code> für Erfolg.</p>
+<p>Die Modulfarben stehen zu vier Fünfteln wortgleich in Velums eigener März-Spec — die Punkte tragen also schon Velums Farben.</p>
+<h3 id="3-6-das-zeichen-und-der-platz-den-es-nicht-bekommt"><span class="h-t">3.6 Das Zeichen — und der Platz, den es nicht bekommt</span><a class="anchor" href="#3-6-das-zeichen-und-der-platz-den-es-nicht-bekommt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Wo das Zeichen erscheint:</strong> Onboarding und Start · Einstellungen → Über · Widget-Vorschauen · Sperrbildschirm-Mitteilung · Spotlight-Treffer · Teilen-Blatt · Store-Kontext.</p>
+<p><strong>Wo ausdrücklich nicht:</strong> im laufenden Betrieb. Keine Navigationsleiste, kein Tab, keine Kopfzeile, kein Wasserzeichen. Eine App, die ihr eigenes Logo dauerhaft mitführt, misstraut ihrer Gestaltung. Die Schirme in <code>mockups/app-next/</code> tragen deshalb keins.</p>
+<p><strong>Die drei Dateien liegen nicht vor.</strong> Nachzeichnen ist verboten — ein selbstgezeichnetes V wäre eine Erfindung, die später gegen das echte Zeichen ausgetauscht werden müsste, und bis dahin würde jeder Schirm eine Marke behaupten, die es nicht gibt. Der Entwurf geht deshalb so damit um:</p>
+<ul><li><code>assets/brand/</code> enthält den reservierten Platz und eine <code>LIESMICH.md</code>, die Dateiname, Größe (1024 × 1024 px), Farbraum und die Regel „ohne Eckenrundung, iOS rundet selbst“ festhält.</li><li>Der Baustein <code>.appicon</code> lädt genau diese Pfade per <code>&lt;img&gt;</code>. Fehlt die Datei, erscheint ein <strong>sichtbar leerer, gestrichelter Rahmen</strong> mit dem fehlenden Dateinamen daneben. Er macht sich in keiner Größe klein — er soll stören, solange er da ist.</li><li>Sobald die drei PNG abgelegt werden, erscheinen sie überall gleichzeitig, ohne dass eine Zeile geändert wird.</li></ul>
+<p>Dass die Konsole dabei <code>ERR_FILE_NOT_FOUND</code> meldet, ist kein Fehler des Entwurfs, sondern seine Buchführung.</p>
+<h3 id="3-7-warum-amber-nur-im-zeichen-lebt"><span class="h-t">3.7 Warum Amber nur im Zeichen lebt</span><a class="anchor" href="#3-7-warum-amber-nur-im-zeichen-lebt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><code>--brand-copper</code> ist <strong>innerhalb</strong> von <code>.brandmark</code> definiert und nirgends sonst. Das ist keine Bitte, sondern eine Sperre: Außerhalb existiert die Variable nicht, ein <code>var(--brand-copper)</code> fällt dort auf seinen Rückfallwert zurück. Kein Knopf, kein Chip, keine Fläche kann sie versehentlich erben.</p>
+<p>Der Ton trägt heute genau eine Sache — den Rahmen des reservierten Platzes. Als Textfarbe wäre er unzulässig: gerechnet 4,44:1 auf Papier im hellen und 3,96:1 im dunklen Modus, beides unter den 4,5:1 für Text. Als Rahmen (Bedienoberfläche, 3:1) hält er in beiden Modi. Die Wortmarke „Velum“ steht deshalb in Ink, nicht in Kupfer.</p>
+<p>Mit dem ersten echten PNG verschwindet der Rahmen — und mit ihm der einzige heutige Gebrauch der Farbe. Das Kupfer lebt dann dort, wo es hingehört: im Zeichen. Genau diese Zurückhaltung ist der Grund, warum das Zeichen auffällt, wenn es erscheint.</p>
+<h2 id="4-der-preis-der-zurueckhaltung"><span class="h-t">4 · Der Preis der Zurückhaltung</span><a class="anchor" href="#4-der-preis-der-zurueckhaltung" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Linears Akzent ist eine Buntfarbe. Auf einer dunklen Fläche heißt „violett“ ohne weiteres Zutun „bedienbar“. Velums Akzent ist Ink — fast-schwarz auf hell, fast-weiß auf dunkel. Damit fällt genau dieses Signal weg: <strong>Die App verliert die iOS-Konvention „farbig = tappbar“.</strong></p>
+<p>Das ist die Rechnung, die zur radikaleren Farbentscheidung gehört. Wer Linears Zurückhaltung übernimmt, ohne sie zu bezahlen, hat eine hübsche und unbedienbare App. Bezahlt wird sie mit vier Regeln:</p>
+<ol><li><strong>Primäre Aktion:</strong> gefüllte Ink-Fläche, heller Text. Nie schwarzer Text neben schwarzem Text.</li><li><strong>Sekundäre Aktion:</strong> Umrandung, Fläche oder Position — nie Farbe allein.</li><li><strong>Interaktiver Text:</strong> immer ein zweites Merkmal — Chevron, Chip-Fläche, Unterstreichung oder Symbol.</li><li><strong>Ziele mindestens 44 pt.</strong></li></ol>
+<p>Die Prüfung ist eine Frage an einen Fremden, der den Entwurf zum ersten Mal sieht: <em>Kannst du in drei Sekunden sagen, was hier anklickbar ist?</em> Wer sie nicht beantwortet, hat einen Befund, keinen Spielraum.</p>
+<p>Dieselbe Logik trägt die Zwei-Merkmal-Regel für Zustände: kein Zustand hängt an Farbe allein, weil Farbe hier fast nichts mehr sagt. Aktiv ist getönte Fläche + Schriftgewicht + Ink-Balken. Ausgewählt ist getönte Fläche + Ring. Deadline ist rotes Wort + Flaggen-Symbol + Restzeit.</p>
+<h2 id="5-wo-der-entwurf-noch-nah-an-einer-vorlage-steht"><span class="h-t">5 · Wo der Entwurf noch nah an einer Vorlage steht</span><a class="anchor" href="#5-wo-der-entwurf-noch-nah-an-einer-vorlage-steht" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Sieben Stellen. Alle sieben wurden an gerenderten Schirmen geprüft, nicht am Quelltext; vier davon zusätzlich gemessen. Der Abschnitt ist unbequem, und er soll es bleiben — ein Dokument, das nur die gelungenen Stellen aufzählt, ist eine Broschüre.</p>
+<p>Jeder Befund nennt drei Dinge: was gefunden wurde, was Runde 2 daran entschieden hat, und was offen bleibt.</p>
+<h3 id="5-1-der-graph-ist-obsidians-graph-view-mit-besseren-beschriftungen"><span class="h-t">5.1 Der Graph ist Obsidians Graph View mit besseren Beschriftungen</span><a class="anchor" href="#5-1-der-graph-ist-obsidians-graph-view-mit-besseren-beschriftungen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Befund.</strong> Kräfte-Layout, Filter-Chips oben links, Zoom-Steuerung unten rechts, Legende unten links, Panel zum ausgewählten Knoten oben rechts, „Nur diesen Cluster zeigen“ (= Obsidians Local Graph). Nimmt man die drei Linienarten heraus, bleibt Obsidian. Und die drei Linienarten sind eine Datenaussage, kein Entwurf — sie hätten in jedem beliebigen Graph-Layout Platz.</p>
+<p>Das eigentliche Problem trifft das Leitmotiv direkt: <strong>In einem Kräfte-Layout bedeutet die Position eines Knotens nichts.</strong> Der Faden ist als Beziehung zwischen zwei benannten Punkten definiert, deren Verlauf man ablaufen kann. Im Entwurf verläuft er dorthin, wo die Physik ihn hingeschoben hat. Der einzige Schirm, der das Leitmotiv im Titel trägt, ist der einzige, auf dem es nicht gilt. Fragt ein Betrachter „warum liegt ‚Osmose' rechts von ‚Zellbiologie'?“, lautet die ehrliche Antwort: aus keinem Grund.</p>
+<p>Dazu ein kleinerer, aber unangenehmer Nebenbefund: Die Navigationsleiste des Schirms trägt einen Umschalter <strong>Kräfte · Raster</strong>. Was „Raster“ tut, steht nirgends und ist nirgends gezeichnet.</p>
+<p><strong>Entschieden.</strong> Der Graph wird die Referenzfläche der Primitive: Kanten sind Fäden mit den drei Stärken, Objekte sind Punkte, der ausgewählte ist ein Knoten. Die Linien-Grammatik bekommt damit eine zweite Dimension — nicht nur <em>welche Art</em> Beziehung, sondern <em>wie nah</em>.</p>
+<p><strong>Offen.</strong> Die Position bedeutet weiterhin nichts. Der Weg heraus ist bekannt und nicht gebaut: eine Zeitachse über die acht Semesterwochen, an der sich der Graph vorwärts zeichnet — Knoten erscheinen an dem Tag, an dem sie entstanden sind, Fäden in der Reihenfolge, in der die Arbeit passiert ist. Sobald Zeit im Spiel ist, darf die x-Achse <em>Woche</em> bedeuten, und die Knotenposition wird von einem Simulationsergebnis zu einer Aussage. Solange das nicht gezeichnet ist, steht ausgerechnet dieser Schirm dem Leitmotiv im Weg — und der Umschalter „Raster“ sollte entweder etwas tun oder verschwinden.</p>
+<h3 id="5-2-das-info-panel-im-notiz-editor-ist-obsidians-rechte-sidebar"><span class="h-t">5.2 Das Info-Panel im Notiz-Editor ist Obsidians rechte Sidebar</span><a class="anchor" href="#5-2-das-info-panel-im-notiz-editor-ist-obsidians-rechte-sidebar" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Befund.</strong> Die Abschnittsfolge, aus dem gerenderten Schirm ausgelesen:</p>
+<pre><code>INHALT · BACKLINKS · DARAUS ENTSTANDEN · VERWANDTE NOTIZEN · STATISTIK</code></pre>
+<p>Daneben Obsidians Kernplugins: Outline · Backlinks · — · Unlinked mentions · Word count. <strong>Vier von fünf Abschnitten sind Obsidians Plugin-Liste auf Deutsch, in Obsidians Reihenfolge.</strong> Nur einer ist Velums eigener, und er steht an dritter Stelle.</p>
+<p>Zwei Konsequenzen. Erstens die Reihenfolge: Wenn Herkunft die Alleinstellung ist, kann „Daraus entstanden“ nicht unter dem Inhaltsverzeichnis stehen. Zweitens die Form: Ein Stapel aus fünf beschrifteten Abschnitten ist eine Datenbankansicht — genau die Kritik, die Runde 1 selbst an Obsidian formuliert hat („inhaltlich stark, gestalterisch ein Datenbank-Fenster“). Der Entwurf hat dasselbe Fenster gebaut, nur mit weniger Zeilen.</p>
+<p><strong>Entschieden.</strong> Nichts. Das Info-Panel steht nicht unter den elf Orten des Fadens.</p>
+<p><strong>Offen, und das ist eine Lücke im Leitmotiv.</strong> Die Verwandlung wäre bekannt: Das Panel ist kein Stapel aus Abschnitten, sondern <strong>ein Bild</strong> — die Notiz als Punkt, die Backlinks als Fäden von links, das Entstandene als Fäden nach rechts. Ein Objekt, zwei Richtungen. Das Mindeste ist die Reihenfolge.</p>
+<h3 id="5-3-die-ketten-karte-die-signatur-der-app-ist-als-breadcrumb-gezeichnet"><span class="h-t">5.3 Die Ketten-Karte, die Signatur der App, ist als Breadcrumb gezeichnet</span><a class="anchor" href="#5-3-die-ketten-karte-die-signatur-der-app-ist-als-breadcrumb-gezeichnet" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Befund.</strong> Auf <code>today.html</code> stehen drei Kästen nebeneinander — „Notiz / Zellbiologie“, „Wurde zu / 12 Karten“, „Heute fällig / 8 Karten“ —, rechts ein gefüllter Knopf „Lernen“. Das ist das Fortschritts-Breadcrumb aus jedem Kassen- und Onboarding-Ablauf im Web. Der Beleg steht in <code>system.css</code> §6 und ist eindeutiger als das Bild:</p>
+<pre><code>.chain__link + .chain__link { border-left: 1px solid var(--line); }
+.chain__link + .chain__link::before {
+  content: ""; …  transform: translateY(-50%) rotate(45deg);
+  width: 9px; height: 9px; background: var(--paper);
+  border-top: 1px solid var(--line); border-right: 1px solid var(--line);
+}</code></pre>
+<p>Die Verbindung zwischen zwei Stationen ist eine Trennlinie plus ein um 45° gedrehtes Quadrat — die kanonische Breadcrumb-Kerbe, gezeichnet in <code>--line</code>. Über genau dieses Token sagt §0.5: Trennlinien sind kein Faden. Der Signaturmoment der App verbindet seine drei Punkte also mit dem einen Mittel, das ausdrücklich zum Nicht-Faden erklärt ist.</p>
+<p>Ein Winkel <code>›</code> ist kein Faden: Er hat kein Ende, keine Stärke, keine Richtung außer der Leserichtung, und man kann ihn nicht rückwärts ablaufen. Dasselbe in kleiner Form auf <code>journal-entry.html</code>: Der Abschnitt VERBUNDEN zeigt zwei nebeneinanderstehende Kästen, „ENTSTANDEN AUS“ und „DARAUS ENTSTANDEN“. Die Richtung — das eine Merkmal, das Herkunft von einem gewöhnlichen Link unterscheidet — steht ausschließlich in den Überschriften. Gezeichnet ist sie nicht.</p>
+<p><strong>Entschieden.</strong> Die Kette wird ein echter Faden: drei Knoten auf einem Faden der Stärke 2,5 pt, Richtung von der Notiz über die Karten zu „heute fällig“. Die Kerbe entfällt. Es ist derselbe Baustein wie überall, keine Nachahmung davon.</p>
+<p><strong>Offen bleibt die Gegenrichtung.</strong> Ein Faden, den man nur vorwärts liest, ist ein halber Faden. Tap auf „8 Karten“ muss ihn rückwärts bis zum Absatz ablaufen; das ist Bewegung und nicht mit einem eingefrorenen Schirm zu belegen.</p>
+<h3 id="5-4-die-leeren-zustaende-sprechen-mit-apples-stimme"><span class="h-t">5.4 Die leeren Zustände sprechen mit Apples Stimme</span><a class="anchor" href="#5-4-die-leeren-zustaende-sprechen-mit-apples-stimme" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Befund.</strong> Vier der gezeigten leeren Orte („Noch kein Notizbuch“, „Noch keine Karten“, „Für heute alles erledigt“, „Nichts im Papierkorb“) bestehen aus einem Symbol in einem getönten, abgerundeten Quadrat, darunter Titel, Satz und Knopf. Das ist Apples <code>ContentUnavailableView</code>, unverändert.</p>
+<p>Der Widerspruch ist schmerzhaft, weil derselbe leere Schirm laut §3.2 einer der Orte ist, an denen die App spricht. Der Schirm, der die Handschrift am deutlichsten zeigen sollte, zeigt sie am wenigsten.</p>
+<p><strong>Lob an derselben Stelle:</strong> Der leere Graph auf demselben Schirm macht es richtig — dort läuft ein Faden zu drei hohlen Punkten, und der Text erklärt, wie das Bild von selbst entsteht.</p>
+<p><strong>Entschieden.</strong> Leere Zustände bekommen die Form, die die übrigen zehn Orte auch haben: ein einzelner Faden, der ins Leere läuft und in einem hohlen Punkt endet. Der Titel steht in <code>.serif--empty-title</code>. Der inhaltliche Teil bleibt unverändert richtig und ist ausdrücklich von Apple Journal übernommen: Der beste leere Zustand ist gar nicht leer, sondern zeigt eigenes Material.</p>
+<p><strong>Offen.</strong> Nichts — außer der Ausführung an allen zwölf Orten des Schirms.</p>
+<h3 id="5-5-vier-gleich-breite-bewertungsknoepfe-gegen-die-eigene-analyse"><span class="h-t">5.5 Vier gleich breite Bewertungsknöpfe, gegen die eigene Analyse</span><a class="anchor" href="#5-5-vier-gleich-breite-bewertungsknoepfe-gegen-die-eigene-analyse" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Befund.</strong> <code>01_konkurrenz-anatomie.md</code> schreibt in der Lernkarten-Synthese: „‚Gut' bekommt mehr Fläche, weil es in den allermeisten Fällen richtig ist; die Tabelle mit vier gleich breiten Zellen ist Altlast, keine Entscheidung.“ In <code>review-session.html</code> stehen vier Knöpfe nebeneinander. Nachgemessen im gerenderten Schirm (iPad-Rahmen, 1194 pt):</p>
+<pre><code>Nochmal &lt; 1 Min   181 px
+Schwer  2 Tage    181 px
+Gut     5 Tage    181 px
+Leicht  12 Tage   181 px</code></pre>
+<p>Auf das Pixel gleich; unterschieden ist ausschließlich die Füllung von „Gut“. Dieser Befund wiegt anders als die übrigen sechs, weil er nicht auf einer fremden Vorlage beruht, sondern auf der eigenen: Der Entwurf hat seine Anweisung nicht umgesetzt und trägt Ankis HTML-Tabelle aus 2006 weiter — inklusive der Fläche, die ein Fehlgriff bekommt, obwohl er selten richtig ist.</p>
+<p><strong>Entschieden.</strong> „Gut“ ist der primäre CTA und bekommt entsprechend Fläche und Ink-Füllung; die übrigen drei sind schmaler und sekundär. Das ist zugleich eine Anwendung von §4: Der primäre Weg ist an Fläche <em>und</em> Füllung erkennbar, nicht an einer davon.</p>
+<p><strong>Offen.</strong> Nichts, außer der Messung nach der Korrektur.</p>
+<h3 id="5-6-serif-als-textur-im-journal"><span class="h-t">5.6 Serif als Textur im Journal</span><a class="anchor" href="#5-6-serif-als-textur-im-journal" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Befund.</strong> <code>journal-entry.html</code> setzt den gesamten Eintragstext in Serif; der Kommentarblock erklärt das zur Regel und nennt Day One als Quelle. Nachgemessen ist die Schriftfamilie des Fließtextabsatzes exakt das Serif-Token — angewandt an einem Ort, den die Liste der Serif-Orte nicht aufzählte. Zusammen mit dem Notiz-Editor trug das blanke <code>.serif</code> an rund 45 Stellen Fließtext.</p>
+<p>Der Übernahmegrund aus Runde 1 („der einzige Grund, warum ein Journal sich anders anfühlt als eine Notiz-App“) ist ein Day-One-Argument, kein Velum-Argument. Bei Velum fühlt sich das Journal anders an, weil der Eintrag weiß, woher er kommt — nicht, weil er Serifen hat.</p>
+<p><strong>Entschieden.</strong> Der siebte Serif-Ort <code>.serif--voice</code> mit der Begründung aus §3.3, und als Gegenprobe: Der Notiz-Editor bekommt Sans. Die Serif steht damit nicht mehr für „Tagebuch“, sondern für den Unterschied zwischen Material und Stimme.</p>
+<p><strong>Offen.</strong> Die Aufräumarbeit selbst. Solange in <code>mockups/app-next/*.html</code> noch ein blankes <code>class="serif"</code> steht, ist die Regel eine Behauptung.</p>
+<h3 id="5-7-das-12-wochen-raster-misst-anwesenheit-nicht-arbeit"><span class="h-t">5.7 Das 12-Wochen-Raster misst Anwesenheit, nicht Arbeit</span><a class="anchor" href="#5-7-das-12-wochen-raster-misst-anwesenheit-nicht-arbeit" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Befund.</strong> <code>flashcards-home.html</code> zeigt ein Punktraster über 12 Wochen, „859 Wiederholungen · 50 aktive Tage“ darunter. Der Kommentarblock nennt GitHubs Beitragsraster ehrlich als Formvorbild und verwirft die Farbe. Verworfen wurde die Farbe — übernommen wurde die <strong>Bedeutung</strong>: Dichte = Menge der Wiederholungen.</p>
+<p>Das ist dieselbe Metrik, die Runde 1 an Duolingo und Todoist kritisiert („Fremdmotivation“, „eine Zahl, die keine Arbeit ist“). 859 Wiederholungen sind Anwesenheit.</p>
+<p><strong>Entschieden.</strong> Nichts.</p>
+<p><strong>Offen — und billiger zu beheben, als es aussieht.</strong> Velum hätte eine Größe zur Hand, die keines der 21 Produkte messen kann: die Tage, an denen <strong>ein Faden entstanden ist</strong> — eine Karte aus einem Absatz, eine Aufgabe aus einem Satz, ein Journaleintrag aus einer Sprachnotiz. Dieselbe Form, dieselbe Fläche, eine andere Aussage: Das Raster würde zeigen, an welchen Tagen wirklich etwas aus etwas geworden ist. Der Unterschied zwischen den beiden Zahlen <em>ist</em> die Alleinstellung, und der Entwurf zeigt bisher die falsche.</p>
+<h3 id="5-8-die-zusammenfassung-in-einem-satz-und-der-stand"><span class="h-t">5.8 Die Zusammenfassung in einem Satz — und der Stand</span><a class="anchor" href="#5-8-die-zusammenfassung-in-einem-satz-und-der-stand" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Der Entwurf hat die <strong>Farben</strong> seiner Vorbilder abgelegt und ihre <strong>Formen</strong> behalten: die Kette ein Breadcrumb, das Info-Panel ein Plugin-Register, der Graph ein Kräfte-Layout, der leere Zustand eine <code>ContentUnavailableView</code>, das Raster ein Beitragsdiagramm.</p>
+<p>Nachgezählt an den elf Orten aus §1.5, Stand nach Runde 1:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t"></span></th><th class="ta-right" scope="col"><span class="th-t">Orte</span></th><th scope="col"><span class="th-t"></span></th></tr></thead><tbody><tr><td>Der Faden trägt</td><td class="ta-right">2</td><td>Graph-Kanten · Herkunfts-Chip als Objekt (ohne Bewegung)</td></tr><tr><td>Angedeutet</td><td class="ta-right">2</td><td>Journal-Schiene als Linie · Übergabe als gestrichelte Flugspur</td></tr><tr><td>Nicht gezeichnet</td><td class="ta-right">7</td><td>Ketten-Karte · Streak · Wiki-Links · Intervall-Reihe · Teilschritte · Buchrücken · leere Zustände</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Das ist die ehrliche Ausgangslage: <strong>Das Motiv war entschieden, nicht ausgeführt.</strong> Die drei Primitive stehen seit dieser Runde als Bausteine bereit (<code>system.css</code> §9, Musterseite <code>shared/faden-probe.html</code>) — damit ist die Frage nicht mehr, ob der Faden zeichenbar ist, sondern nur noch, ob er an allen elf Orten gezeichnet wurde. Das ist eine Frage, die man an Bildern beantwortet, nicht an Absichten.</p>
+<h2 id="6-die-zahlen-in-diesem-dokument"><span class="h-t">6 · Die Zahlen in diesem Dokument</span><a class="anchor" href="#6-die-zahlen-in-diesem-dokument" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Wo eine Zahl steht, muss sie nachzählbar sein. Deshalb die Rechnung offen:</p>
+<p><strong>21 verschiedene Produkte in 25 Betrachtungen.</strong></p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col"><span class="th-t"></span></th><th scope="col"><span class="th-t">Rechnung</span></th></tr></thead><tbody><tr><td>Runde 1</td><td><strong>18 Plätze</strong> in sechs Bereichen (Notizen · Journal · Aufgaben · Bibliothek · Today · Lernkarten), je drei Vorbilder</td></tr><tr><td>davon verschieden</td><td><strong>14 Produkte</strong> — Craft, Apple Notes, Things 3 und Apple Journal stehen in je zwei Bereichen</td></tr><tr><td>Runde 2</td><td><strong>+7 neue Produkte</strong>: Notability · Noteshelf 3 · Obsidian · Structured · Amie · Arc · Linear</td></tr><tr><td>Summe</td><td><strong>21 verschiedene Produkte</strong> (14 + 7) in <strong>25 Betrachtungen</strong> (18 + 7)</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>TickTick und RemNote wurden in Runde 2 erneut gelesen, aber <strong>nicht doppelt gezählt</strong>: Beide stehen bereits vollständig in <code>01_konkurrenz-anatomie.md</code>; der zweite Blick fragte nur nach dem Stand August 2026 und nach dem Prinzip dahinter.</p>
+<p>Eine gelegentlich genannte Zahl „26 Apps“ ist angreifbar und wird hier nicht benutzt: Sie addiert Plätze und Produkte. <strong>Eine kleinere richtige Zahl ist in einer Bewerbung mehr wert als eine größere angreifbare.</strong></p>
+<h3 id="6-1-was-die-belege-wert-sind"><span class="h-t">6.1 Was die Belege wert sind</span><a class="anchor" href="#6-1-was-die-belege-wert-sind" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Beide Recherchen unterscheiden sauber zwischen <strong>belegt</strong> (im Suchtreffer wörtlich oder sinngemäß enthalten, mit Datum) und <strong>Modellwissen</strong> (nicht in diesem Lauf verifiziert). Keine Versionsnummer, kein pt-Maß und kein Farbwert steht ohne eine dieser beiden Markierungen. In Runde 2 waren alle direkten Herstellerseiten durch die Netzwerk-Richtlinie gesperrt; die Belege stammen deshalb ausschließlich aus Suchmaschinen-Auszügen vom August 2026.</p>
+<p>Ein Widerspruch bleibt ausdrücklich stehen, weil er die eigene Alleinstellung trifft: Bei <strong>Notability</strong> beschreibt eine Sekundärquelle die Audio-Synchronisierung als handschriftlich („handwritten notes animating onto the screen exactly when you wrote them“), eine andere sagt ausdrücklich, sie funktioniere nur mit getipptem Text. Beide sind aus 2026, ohne Gerät ist das nicht zu entscheiden. Genau dieser Punkt ist Velums Alleinstellung „Zeit ist Inhalt“. <strong>Was Velum darüber behauptet, muss unabhängig davon stimmen, wie dieser Widerspruch ausgeht</strong> — deshalb steht in diesem Dokument nirgends „das kann Notability nicht“, sondern nur, was Velum zusätzlich hat: Herkunftskanten mit Zeitstempel, die Notability in keiner der beiden Lesarten führt.</p>
+<h2 id="7-was-fuer-dieses-dokument-geprueft-wurde"><span class="h-t">7 · Was für dieses Dokument geprüft wurde</span><a class="anchor" href="#7-was-fuer-dieses-dokument-geprueft-wurde" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Alle Aussagen über den Entwurf stammen aus gerenderten Schirmen, nicht aus dem Quelltext: Chromium über <code>file://</code>, Ansichtsfenster 1500 × 1200, heller Modus, je zwei bis vier Streifen. Angesehen wurden <code>shared/faden-probe.html</code> sowie <code>today.html</code>, <code>note-editor.html</code>, <code>graph.html</code>, <code>journal-entry.html</code>, <code>review-session.html</code>, <code>flashcards-home.html</code>, <code>leere-zustaende.html</code>, <code>library.html</code> und <code>tasks.html</code>.</p>
+<p>Die Aufnahmen entstanden <strong>zu Beginn von Runde 2</strong>, also vor dem Umbau der Schirme. Alles, was in §5 unter „Befund“ steht, beschreibt deshalb den Stand nach Runde 1; was unter „Entschieden“ steht, ist die Festlegung dieser Runde. Wer die Schirme heute öffnet und einen Befund nicht mehr findet, liest kein falsches Dokument, sondern eine erledigte Zeile — und wer ihn noch findet, hat den Beleg, dass die Zeile offen ist.</p>
+<p>Im Bild bestätigt: die Breadcrumb-Kerben der Ketten-Karte (§5.3), die Abschnittsfolge des Info-Panels (§5.2), die vier gleich breiten Bewertungsknöpfe (§5.5), der Serif-Fließtext im Journaleintrag (§5.6), das Punktraster mit „859 Wiederholungen · 50 aktive Tage“ (§5.7), die vier <code>ContentUnavailableView</code>-Kacheln und der korrekt gebaute leere Graph daneben (§5.4), die Cover ohne Rücken-Faden (§2.2, Bibliothek) sowie der unerklärte Umschalter „Kräfte · Raster“ (§5.1).</p>
+<p>Die Kontrastwerte sind nicht nachgemessen, sondern zitiert: Sie stehen gerechnet in <code>mockups/shared/system.css</code> §1 und §9.0 und sind auf <code>shared/faden-probe.html</code> §5 ausgewiesen.</p>
+<h2 id="verweise"><span class="h-t">Verweise</span><a class="anchor" href="#verweise" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<ul><li>Der Entwurf: <a href="../mockups/app-next/"><code>mockups/app-next/</code></a> — 13 Schirme, je hell/dunkel und iPad/iPhone</li><li>Die Primitive: <a href="../mockups/shared/faden-probe.html"><code>mockups/shared/faden-probe.html</code></a> — Punkt, Faden, Knoten in jedem Zustand</li><li>Das Gestaltungssystem: <a href="../mockups/shared/system.css"><code>mockups/shared/system.css</code></a> — §9 Faden, §10 Serif, §11 Marke</li><li>Der Platz des Zeichens: <a href="../assets/brand/LIESMICH.md"><code>assets/brand/LIESMICH.md</code></a></li><li>Die Anatomie: <a href="konkurrenz-anatomie.html"><code>01_konkurrenz-anatomie.md</code></a> — 18 Plätze zerlegt</li><li>Der Entwurf in Worten: <a href="das-ist-die-app.html"><code>02_das-ist-die-app.md</code></a></li><li>Die Bewegung: <a href="bewegung.html"><code>03_bewegung.md</code></a></li></ul>
+    </article>
+  </main>
+</div>
+<p class="colophon">Aus 04_velum-dna.md erzeugt. <a href="../mockups/index.html">Zurück zur Übersicht</a></p>
+<script>
+(function(){
+  var root = document.documentElement;
+
+  /* Hell/Dunkel — setzt data-theme auf <html>. Ohne Auswahl gilt das
+     System (dritter Zustand). */
+  var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  var bar = document.querySelector('.themes');
+  function paint(){
+    var t = root.getAttribute('data-theme') || (mq && mq.matches ? 'dark' : 'light');
+    var bs = bar.querySelectorAll('button');
+    for (var i=0;i<bs.length;i++){
+      var on = bs[i].getAttribute('data-val') === t;
+      bs[i].classList.toggle('is-on', on);
+      bs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+  bar.addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if (!b) return;
+    root.setAttribute('data-theme', b.getAttribute('data-val'));
+    try { localStorage.setItem('docs-theme', b.getAttribute('data-val')); } catch(err){}
+    paint();
+  });
+  try {
+    var saved = localStorage.getItem('docs-theme');
+    if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+  } catch(err){}
+  if (mq && mq.addEventListener) mq.addEventListener('change', paint);
+  paint();
+
+  /* Inhaltsverzeichnis: sichtbarer Abschnitt wird hervorgehoben. */
+  var heads = [].slice.call(document.querySelectorAll('.doc h2[id], .doc h3[id]'));
+  var links = [].slice.call(document.querySelectorAll('[data-t]'));
+  if (!heads.length || !links.length) return;
+
+  var current = '';
+  function setActive(id){
+    if (id === current) return;
+    current = id;
+    var groups = [].slice.call(document.querySelectorAll('.toc-group'));
+    for (var g=0; g<groups.length; g++) groups[g].classList.remove('is-open');
+    for (var i=0;i<links.length;i++){
+      var on = links[i].getAttribute('data-t') === id;
+      links[i].classList.toggle('is-current', on);
+      if (on){
+        var grp = links[i].closest('.toc-group');
+        if (grp) grp.classList.add('is-open');
+        var box = links[i].closest('.toc');
+        if (box && box.scrollHeight > box.clientHeight){
+          var lt = links[i].offsetTop, lb = lt + links[i].offsetHeight;
+          if (lt < box.scrollTop + 8) box.scrollTop = lt - 8;
+          else if (lb > box.scrollTop + box.clientHeight - 8) box.scrollTop = lb - box.clientHeight + 8;
+        }
+      }
+    }
+    var wrap = links.filter(function(l){ return l.getAttribute('data-t') === id; })[0];
+    if (wrap){
+      var p = wrap.closest('.toc-group');
+      if (p) p.classList.add('is-open');
+    }
+  }
+
+  var LINE = 140;
+  function update(){
+    var pick = null;
+    for (var i=0;i<heads.length;i++){
+      if (heads[i].getBoundingClientRect().top <= LINE) pick = heads[i]; else break;
+    }
+    if (!pick){
+      pick = heads[0];
+      if (window.scrollY <= 4) { setActive(heads[0].id); return; }
+    }
+    /* am Dokumentende: letzte Ueberschrift gewinnt */
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) pick = heads[heads.length-1];
+    setActive(pick.id);
+  }
+
+  var ticking = false;
+  function schedule(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ ticking = false; update(); });
+  }
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(schedule, { rootMargin: '-' + LINE + 'px 0px -55% 0px', threshold: [0, 1] });
+    for (var i=0;i<heads.length;i++) io.observe(heads[i]);
+  }
+  window.addEventListener('scroll', schedule, { passive:true });
+  window.addEventListener('resize', schedule);
+  update();
+
+  /* Tabellen: passt eine in der Breite, wird die Scrollbox aufgehoben.
+     Dann klebt ihre Kopfzeile beim Weiterscrollen am oberen Fensterrand.
+     Muss sie seitwaerts scrollen, bleibt sie eine Box. */
+  var boxes = [].slice.call(document.querySelectorAll('.tablebox'));
+
+  /* Vordere Spalten festhalten, solange seitwaerts gescrollt wird.
+     Gemessen wird vor dem Kleben — sticky aendert die Breiten nicht.
+     Die 45-%-Grenze gilt ab der ERSTEN Spalte. Frueher war sie an
+     i > 0 gebunden; dadurch stand die erste Spalte immer fest, auch
+     wenn sie allein 79 % der sichtbaren Breite frass und zum Lesen
+     nur ein Streifen uebrig blieb. Passt die erste Spalte nicht in
+     die Grenze, klebt gar nichts — dann ist Scrollen ohne Anker
+     immer noch besser als eine Tabelle, die man nicht lesen kann. */
+  function klebSpalten(b, mehr){
+    var t = b.querySelector('table');
+    if (!t || !t.tHead) return;
+    var zeilen = [].slice.call(t.rows);
+    for (var r = 0; r < zeilen.length; r++){
+      var z = zeilen[r].cells;
+      for (var c = 0; c < z.length; c++){
+        z[c].classList.remove('kleb','kleb-letzte');
+        z[c].style.left = '';
+      }
+    }
+    b.style.setProperty('--klebw','0px');
+    if (!mehr) return;
+    var kopf = t.tHead.rows[0].cells;
+    var grenze = b.clientWidth * 0.45, summe = 0, links = [], n = 0;
+    for (var i = 0; i < kopf.length - 1 && i < 2; i++){
+      var w = kopf[i].getBoundingClientRect().width;
+      if (summe + w > grenze) break;
+      links.push(summe); summe += w; n = i + 1;
+    }
+    /* Bliebe nur eine schmale Zaehlspalte stehen, sagt sie nichts —
+       dann lieber gar nichts festhalten und die Breite dem Inhalt
+       geben. Genau das passiert auf dem Telefon. */
+    if (n === 1 && summe < 64) n = 0;
+    /* Breite des festgehaltenen Blocks: daran haengen die Namen der
+       Spalten, die gerade darunter durchlaufen (siehe --klebw im CSS). */
+    b.style.setProperty('--klebw', (n ? summe : 0) + 'px');
+    for (var r2 = 0; r2 < zeilen.length; r2++){
+      var z2 = zeilen[r2].cells;
+      for (var c2 = 0; c2 < n && c2 < z2.length; c2++){
+        z2[c2].classList.add('kleb');
+        if (c2 === n - 1) z2[c2].classList.add('kleb-letzte');
+        z2[c2].style.left = links[c2] + 'px';
+      }
+    }
+  }
+
+  function markBox(b, voll){
+    var wrap = b.closest('.tablewrap');
+    var mehr = b.scrollWidth > b.clientWidth + 2;
+    if (voll){
+      b.classList.toggle('is-frei', !mehr);
+      /* Rolle, Tabstopp und Ansage gelten nur, solange wirklich etwas zu
+         scrollen ist. Sonst schickte die Tabelle Tastatur und Vorlese-
+         software durch einen leeren Halt und kuendigte einen Weg an, den
+         es nicht gibt. */
+      if (mehr){
+        b.setAttribute('role','region');
+        b.setAttribute('tabindex','0');
+        b.setAttribute('aria-label','Tabelle, seitlich scrollbar');
+      } else {
+        b.removeAttribute('role');
+        b.removeAttribute('tabindex');
+        b.removeAttribute('aria-label');
+      }
+      klebSpalten(b, mehr);
+    }
+    wrap.classList.toggle('is-mehr', mehr && b.scrollLeft + b.clientWidth < b.scrollWidth - 2);
+    wrap.classList.toggle('is-ab', mehr && b.scrollLeft > 2);
+  }
+  function fitTables(){ for (var i=0;i<boxes.length;i++) markBox(boxes[i], true); }
+  if (boxes.length){
+    for (var bi=0; bi<boxes.length; bi++){
+      (function(b){
+        b.addEventListener('scroll', function(){ markBox(b, false); }, { passive:true });
+      })(boxes[bi]);
+    }
+    fitTables();
+    var rt;
+    window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(fitTables, 150); });
+  }
+
+  /* Auf schmalen Fenstern schliesst ein Klick das Verzeichnis wieder. */
+  var det = document.querySelector('.toc-narrow');
+  if (det) det.addEventListener('click', function(e){
+    if (e.target.closest('a')) det.removeAttribute('open');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,873 @@
+<!doctype html>
+<!--
+  Eigenstaendige Dokumentseite. Kein externes CSS, kein externes JS,
+  keine Web-Fonts, keine Netzwerkanfrage — laeuft ueber file://.
+
+  Erzeugt aus Markdown von scratchpad/md2html.js. Aenderungen gehoeren
+  in die Markdown-Quelle, nicht in diese Datei.
+
+  KONTRAST — gerechnet nach WCAG 2.1 (relative Luminanz, sRGB),
+  Alpha-Farben vorher auf ihren Untergrund gerechnet.
+
+  Hell:
+     Fliesstext  ink-1 auf --paper             17,77:1
+     Tabellenzelle ink-1 auf --paper           17,77:1
+     Tabellenzelle ink-1 auf Zebra (--fill)    16,08:1
+     Tabellenkopf ink-1 auf --paper-2          17,03:1
+     Code ink-1 auf --fill                     16,08:1
+     Sekundaertext ink-2 auf --paper           5,32:1
+     Inhaltsverzeichnis ink-2 auf --ground     5,10:1
+     Tertiaertext ink-3 auf --ground           4,77:1
+     Tertiaertext ink-3 auf --paper            4,97:1
+     Aktiver Schalter accent-on auf --accent   17,77:1
+     Schalter ink-2 auf --fill ueber --ground  4,90:1
+     Verweisstrich ink-3 auf --paper           4,97:1
+     Verweisstrich ink-3 auf Code-Feld         4,79:1
+
+  Dunkel:
+     Fliesstext  ink-1 auf --paper             15,86:1
+     Tabellenzelle ink-1 auf --paper           15,86:1
+     Tabellenzelle ink-1 auf Zebra (--fill)    13,26:1
+     Tabellenkopf ink-1 auf --paper-2          14,86:1
+     Code ink-1 auf --fill                     13,26:1
+     Sekundaertext ink-2 auf --paper           7,10:1
+     Inhaltsverzeichnis ink-2 auf --ground     7,40:1
+     Tertiaertext ink-3 auf --ground           5,23:1
+     Tertiaertext ink-3 auf --paper            5,11:1
+     Aktiver Schalter accent-on auf --accent   17,27:1
+     Schalter ink-2 auf --fill ueber --ground  6,82:1
+     Verweisstrich ink-3 auf --paper           5,11:1
+     Verweisstrich ink-3 auf Code-Feld         4,70:1
+
+  Fliesstext und Tabellenzellen liegen in beiden Modi weit ueber 4,5:1.
+  Die schwaechsten Werte sind Sekundaer- und Tertiaertext; auch die
+  halten 4,5:1 und tragen nie allein eine Aussage (Zwei-Merkmal-Regel).
+-->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>03 · Bewegung — Dokumentation</title>
+<style>
+/* ── Tokens. Jede Farbe ist auf blankem :root definiert; die beiden
+      dunklen Bloecke schreiben nur um. ───────────────────────────── */
+:root{
+  color-scheme: light;
+  --ground:#F2F2F4;
+  --paper:#FFFFFF;
+  --paper-2:#FAFAFB;
+  --ink-1:#16181C;
+  --ink-2:rgba(22,24,28,.64);
+  --ink-3:rgba(22,24,28,.62);
+  --ink-4:rgba(22,24,28,.30);
+  --line:rgba(22,24,28,.10);
+  --line-2:rgba(22,24,28,.18);
+  --fill:rgba(22,24,28,.05);
+  --fill-2:rgba(22,24,28,.09);
+  --accent:#16181C;
+  --accent-on:#FFFFFF;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  /* Nachgemessen, nicht geschaetzt: 52ch ergibt Zeilen von hoechstens
+     ~69 Zeichen. Die Einheit ch skaliert mit der Systemschrift, die
+     Zeichenzahl bleibt damit auch bei anderer Schrift stabil. */
+  --measure:52ch;
+  /* Blattbreite. Sie haengt an der Lesebreite: Blatt = Satzspiegel +
+     44 px Blattrand links/rechts + 24 px Seitenrand links/rechts +
+     82 px Zugabe, die Tabellen und Code nutzen. Sonst stuende zwischen
+     dem Zeilenende und der Blattkante leeres Papier.
+     Kommt das Verzeichnis dazu, waechst das Blatt um genau dessen
+     Spalte (--toc + --gap = 288 px) — die Textspalte bleibt dabei auf
+     den Pixel gleich breit (gemessen: 732 px mit und ohne Verzeichnis).
+     Vorher sprang sie an der Grenze von 732 auf 704 px zurueck. */
+  --toc:240px;
+  --gap:48px;
+  --sheet:calc(var(--measure) + 218px);
+  --bar:56px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0E0F11;
+    --paper:#17191C;
+    --paper-2:#1D1F23;
+    --ink-1:#F2F3F5;
+    --ink-2:rgba(242,243,245,.64);
+    --ink-3:rgba(242,243,245,.52);
+    --ink-4:rgba(242,243,245,.30);
+    --line:rgba(242,243,245,.12);
+    --line-2:rgba(242,243,245,.20);
+    --fill:rgba(242,243,245,.07);
+    --fill-2:rgba(242,243,245,.12);
+    --accent:#F2F3F5;
+    --accent-on:#0E0F11;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0E0F11;
+  --paper:#17191C;
+  --paper-2:#1D1F23;
+  --ink-1:#F2F3F5;
+  --ink-2:rgba(242,243,245,.64);
+  --ink-3:rgba(242,243,245,.52);
+  --ink-4:rgba(242,243,245,.30);
+  --line:rgba(242,243,245,.12);
+  --line-2:rgba(242,243,245,.20);
+  --fill:rgba(242,243,245,.07);
+  --fill-2:rgba(242,243,245,.12);
+  --accent:#F2F3F5;
+  --accent-on:#0E0F11;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink-1);
+  /* Dieselbe Skala, die das Dokument selbst abdruckt: 28/34 · 20/26 ·
+     17/23 · 15/20 · 13/16, zwei Gewichte. Auch die Zeilenhoehen. */
+  font:400 17px/23px var(--sans);
+  font-synthesis-weight:none;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Kein scroll-behavior:smooth: das 01-Dokument ist ueber 80 000 px hoch,
+   ein Sprung ans Ende wuerde sekundenlang durch leere Flaechen animieren. */
+::selection{ background:var(--fill-2); }
+/* Ein Verweis darf sich nicht allein durch die Farbe zeigen — er hat
+   ja dieselbe. Also traegt er die Unterstreichung, und die muss man
+   sehen: --line-2 (.18) ergab auf Papier 1,5:1, eine Haarlinie, die
+   neben einem bloss genannten Pfad nicht auffiel. --ink-3 misst
+   4,76:1 hell und 4,56:1 dunkel. */
+a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--ink-3); }
+a:hover{ text-decoration-color:currentColor; }
+/* Steht der Verweistext in einem Code-Feld — bei Pfaden die Regel —,
+   deckt dessen Flaeche die Unterstreichung des <a> zu: das Feld ist
+   22 px hoch, die Zeile des <a> nur 20. Dann unterstreicht das Feld
+   selbst; sonst waere ein anklickbarer Pfad von einem nur genannten
+   nicht zu unterscheiden. */
+a code{ text-decoration:underline; text-decoration-color:var(--ink-3); text-underline-offset:2px; }
+a:hover code{ text-decoration-color:currentColor; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+/* ── Kopfleiste: Zurueck + Umschalter ───────────────────────────── */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  height:var(--bar);
+  padding:0 24px;
+  background:var(--ground);
+  border-bottom:1px solid var(--line);
+}
+.back{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:15px; line-height:20px; color:var(--ink-2); text-decoration:none;
+  padding:6px 10px; margin-left:-10px; border-radius:8px;
+}
+.back:hover{ color:var(--ink-1); background:var(--fill); }
+.back svg{ flex:none; }
+.themes{ display:flex; gap:2px; padding:2px; background:var(--fill); border-radius:999px; }
+.themes button{
+  appearance:none; border:0; cursor:pointer;
+  font:600 13px/16px var(--sans);
+  color:var(--ink-2); background:transparent;
+  padding:7px 14px; border-radius:999px;
+}
+.themes button:hover{ color:var(--ink-1); }
+.themes button.is-on{ background:var(--accent); color:var(--accent-on); }
+
+/* ── Titelblock ─────────────────────────────────────────────────── */
+.masthead{ max-width:var(--sheet); margin:0 auto; padding:56px 24px 32px; }
+.eyebrow{
+  margin:0 0 12px; font:600 13px/16px var(--sans);
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3);
+}
+.masthead h1{ margin:0; font:600 28px/34px var(--sans); letter-spacing:-.015em; max-width:22ch; }
+.masthead .sub{ margin:12px 0 0; font:400 17px/23px var(--sans); color:var(--ink-2); max-width:var(--measure); }
+
+/* ── Seitenraster ───────────────────────────────────────────────── */
+.page{ max-width:var(--sheet); margin:0 auto; padding:0 24px 120px; }
+/* Die Grenze ist das Blatt selbst: 1068 px = Blatt ohne Verzeichnis
+   (780) + Verzeichnisspalte (240) + Rinne (48). Sobald das Fenster das
+   breitere Blatt traegt, erscheint das Verzeichnis — kein Streifen
+   dazwischen, in dem das Fenster schon breit genug waere und trotzdem
+   nichts passiert. Frueher lag die Grenze bei 1100 px, das Blatt aber
+   bei 1040 px: die 60 px dazwischen blieben ungenutzt. */
+@media (min-width:1068px){
+  :root{ --sheet:calc(var(--measure) + 218px + var(--toc) + var(--gap)); }
+  .page{ display:grid; grid-template-columns:var(--toc) minmax(0,1fr); gap:var(--gap); align-items:start; }
+}
+
+/* ── Inhaltsverzeichnis, breit ──────────────────────────────────── */
+.toc{ display:none; }
+@media (min-width:1068px){
+  .toc{
+    display:block; position:sticky; top:calc(var(--bar) + 24px);
+    max-height:calc(100vh - var(--bar) - 48px); overflow-y:auto;
+    padding-bottom:24px;
+  }
+}
+.toc-title{ margin:0 0 12px; font:600 13px/16px var(--sans); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
+.toc ol,.toc ul{ list-style:none; margin:0; padding:0; }
+.toc-l2,.toc-l3{
+  display:block; text-decoration:none;
+  border-left:2px solid transparent;
+  color:var(--ink-2);
+}
+.toc-l2{ font:400 15px/20px var(--sans); padding:7px 10px 7px 12px; }
+.toc-l3{ font:400 13px/16px var(--sans); padding:5px 10px 5px 24px; color:var(--ink-3); }
+.toc-l2:hover,.toc-l3:hover{ color:var(--ink-1); background:var(--fill); }
+.toc-sub{ display:none; margin-bottom:4px; }
+.toc-group.is-open > .toc-sub{ display:block; }
+.toc-group.is-open > .toc-l2{ color:var(--ink-1); }
+.toc a.is-current{ color:var(--ink-1); font-weight:600; border-left-color:var(--accent); background:var(--fill); }
+
+/* ── Inhaltsverzeichnis, schmal ─────────────────────────────────── */
+.toc-narrow{
+  margin:0 0 32px; background:var(--paper); border:1px solid var(--line); border-radius:14px;
+}
+@media (min-width:1068px){ .toc-narrow{ display:none; } }
+.toc-narrow > summary{
+  cursor:pointer; list-style:none;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:16px 20px; font:600 15px/20px var(--sans); color:var(--ink-1);
+  border-radius:14px;
+}
+.toc-narrow > summary::-webkit-details-marker{ display:none; }
+.toc-narrow > summary .chev{ transition:transform .18s ease; color:var(--ink-3); flex:none; }
+.toc-narrow[open] > summary .chev{ transform:rotate(180deg); }
+.toc-narrow[open] > summary{ border-bottom:1px solid var(--line); border-radius:14px 14px 0 0; }
+.toc-narrow ol,.toc-narrow ul{ list-style:none; margin:0; padding:0; }
+.toc-narrow .toc-body{ padding:8px 12px 14px; max-height:min(60vh,520px); overflow-y:auto; }
+.toc-narrow .toc-sub{ display:block; }
+.toc-narrow .toc-l2{ font:600 15px/20px var(--sans); color:var(--ink-1); padding:8px 10px; }
+.toc-narrow .toc-l3{ padding:6px 10px 6px 24px; }
+
+/* ── Dokumentflaeche ────────────────────────────────────────────── */
+.doc{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:8px 44px 48px;
+  min-width:0;
+  overflow-wrap:break-word;
+}
+@media (max-width:640px){ .doc{ padding:4px 20px 36px; border-radius:14px; } }
+/* Fliesstext bleibt auf Lesebreite; Tabellen, Code und die
+   Abschnittslinie der H2 duerfen die volle Blattbreite nutzen.
+   Die Trennlinie vor einer H3 bleibt bewusst auf Satzbreite: kuerzere
+   Linie + kleinere Ueberschrift = zwei Merkmale, an denen man den
+   kleineren Einschnitt vom groesseren unterscheidet. */
+.doc > *{ max-width:var(--measure); }
+.doc > .tablewrap,.doc > pre,.doc > h2{ max-width:none; }
+.doc > h2 .h-t{ display:inline-block; max-width:var(--measure); }
+
+.doc p{ margin:0 0 20px; }
+.doc .lead{ font:400 20px/26px var(--sans); color:var(--ink-1); margin:32px 0 28px; }
+.doc{ counter-reset:sec; }
+.doc h2{
+  counter-increment:sec; counter-reset:sub;
+  margin:60px 0 20px; padding-top:28px;
+  border-top:1px solid var(--line);
+  font:600 20px/26px var(--sans); letter-spacing:-.01em;
+}
+.doc h3{
+  counter-increment:sub;
+  margin:44px 0 14px;
+  font:600 17px/23px var(--sans);
+}
+/* Abschnittsnummer als eigene Zeile: gibt Ueberschriften eine zweite,
+   von der Schriftgroesse unabhaengige Kennzeichnung — sonst waere eine
+   H3 von einem fett angefuehrten Absatz kaum zu unterscheiden. */
+.doc h2::before,.doc h3::before{
+  display:block; margin-bottom:9px;
+  font:400 13px/16px var(--mono); letter-spacing:.08em; color:var(--ink-3);
+}
+.doc h2::before{ content:counter(sec,decimal-leading-zero); }
+.doc h3::before{ content:counter(sec,decimal-leading-zero) "." counter(sub); }
+.doc h4{ margin:32px 0 12px; font:600 15px/20px var(--sans); color:var(--ink-2); }
+.doc h2:first-child,.doc h3:first-child{ margin-top:32px; }
+/* Die Linie der H2 trennt zwei Abschnitte voneinander. Steht die erste
+   H2 am Blattanfang — auf das-ist-die-app.html steht kein Vorspann
+   davor —, trennte sie den Blattrand von der Ueberschrift: ein Strich
+   ueber nichts. Am Blattanfang faellt sie deshalb weg; die Nummer ueber
+   der Ueberschrift kennzeichnet den Abschnitt dort allein. */
+.doc > h2:first-child{ border-top:0; padding-top:0; }
+.doc h2,.doc h3,.doc h4{ scroll-margin-top:calc(var(--bar) + 20px); }
+
+.anchor{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; margin-left:6px; vertical-align:-5px;
+  color:var(--ink-3); opacity:0; text-decoration:none; border-radius:6px;
+  transition:opacity .12s ease;
+}
+h2:hover .anchor,h3:hover .anchor,h4:hover .anchor,.anchor:focus-visible{ opacity:1; }
+.anchor:hover{ color:var(--ink-1); background:var(--fill); }
+/* Ohne Zeigegeraet gibt es kein :hover. Dort stuende sonst ein
+   unsichtbares, 24 px grosses Ziel neben jeder Ueberschrift, das beim
+   Antippen der Ueberschrift zuschnappt. Also sichtbar zeigen. */
+@media (hover:none){
+  .anchor{ opacity:1; }
+  .anchor:hover{ color:var(--ink-3); background:none; }
+}
+
+.doc ul,.doc ol{ margin:0 0 20px; padding-left:24px; }
+.doc li{ margin:0 0 10px; padding-left:4px; }
+.doc li::marker{ color:var(--ink-3); }
+.doc ol{ counter-reset:none; }
+.doc strong{ font-weight:600; }
+.doc em{ font-style:italic; }
+
+.doc hr{
+  border:0; height:1px; background:var(--line);
+  margin:44px 0;
+}
+.doc hr + h3{ margin-top:0; padding-top:0; }
+
+/* Der Balken ist Auszeichnung, kein Zustand: er darf den Ink-Akzent
+   nicht tragen, der aktivem Zustand, primaerer Aktion und Auswahl
+   vorbehalten ist. Der Kasten wird ohnehin durch Flaeche und Radius
+   erkannt — der Balken ist das dritte, schwaechste Merkmal. */
+blockquote{
+  margin:28px 0; padding:20px 24px;
+  background:var(--fill); border-left:2px solid var(--ink-4);
+  border-radius:0 12px 12px 0;
+}
+blockquote > *:last-child{ margin-bottom:0; }
+blockquote p{ margin:0 0 14px; }
+
+code{
+  font:400 15px/20px var(--mono);
+  background:var(--fill); color:var(--ink-1);
+  padding:2px 5px; border-radius:5px;
+  overflow-wrap:anywhere;
+}
+pre{
+  margin:24px 0; padding:20px 22px;
+  background:var(--paper-2); border:1px solid var(--line); border-radius:12px;
+  overflow-x:auto;
+}
+pre code{ background:none; padding:0; font-size:13px; line-height:16px; white-space:pre; }
+h2 code,h3 code,th code{ font-size:.9em; }
+
+/* ── Tabellen ───────────────────────────────────────────────────── */
+/* Eigene Scrollbox: die Seite selbst scrollt nie seitwaerts.
+   Passt eine Tabelle in der Breite, hebt das Skript die Box mit
+   .is-frei auf — dann klebt die Kopfzeile am Fensterrand statt in einem
+   Kasten, der gar nicht senkrecht scrollt. Muss die Tabelle seitwaerts
+   scrollen, hat das Vorrang. Abgeschnitten wird nie. */
+.tablewrap{ margin:24px 0 28px; }
+.tableframe{ position:relative; }
+/* Der Verlauf am rechten Rand plus die Zeile darunter sagen, dass rechts
+   noch etwas steht — der Rollbalken allein ist auf macOS unsichtbar.
+   Beides verschwindet, sobald man am Ende angekommen ist. */
+.tableframe::after{
+  content:""; position:absolute; top:1px; right:1px; bottom:1px; width:44px;
+  border-radius:0 11px 11px 0; pointer-events:none;
+  background:linear-gradient(to left,var(--paper) 30%,rgba(127,127,127,0));
+  opacity:0; transition:opacity .15s ease;
+}
+.tablewrap.is-mehr .tableframe::after{ opacity:1; }
+.tablehint{
+  display:none;
+  margin:8px 0 0; text-align:right;
+  font:400 13px/16px var(--sans); color:var(--ink-3);
+}
+.tablewrap.is-mehr .tablehint{ display:block; }
+.tablehint::after{ content:" →"; }
+.tablebox{
+  max-width:100%;
+  overflow-x:auto;
+  border:1px solid var(--line); border-radius:12px;
+  background:var(--paper);
+  -webkit-overflow-scrolling:touch;
+  /* Der Balken bleibt sichtbar: er ist der einzige Hinweis darauf, dass
+     rechts noch eine Spalte steht. */
+  scrollbar-width:thin; scrollbar-color:var(--line-2) transparent;
+}
+.tablebox::-webkit-scrollbar{ height:11px; }
+.tablebox::-webkit-scrollbar-track{ background:transparent; }
+.tablebox::-webkit-scrollbar-thumb{
+  background:var(--line-2); border-radius:999px;
+  border:3px solid transparent; background-clip:padding-box;
+}
+/* Tabellen duerfen breiter sein als der Fliesstext und greifen dafuer
+   in den Blattrand. */
+@media (min-width:1068px){
+  .doc > .tablewrap{ margin-left:-28px; margin-right:-28px; width:calc(100% + 56px); }
+}
+.tablebox table{
+  border-collapse:collapse;
+  width:100%;
+  font-variant-numeric:tabular-nums;
+}
+.tablebox th,.tablebox td{
+  text-align:left; vertical-align:top;
+  padding:12px 16px;
+  font-size:15px; line-height:20px;
+  border-bottom:1px solid var(--line);
+}
+.tablebox.is-frei{ overflow:visible; }
+.tablebox.is-frei th{ top:var(--bar); }
+.tablebox.is-frei thead th:first-child{ border-top-left-radius:11px; }
+.tablebox.is-frei thead th:last-child{ border-top-right-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:first-child{ border-bottom-left-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:last-child{ border-bottom-right-radius:11px; }
+/* top:0 solange die Box selbst der Scrollbereich ist — sonst schoebe
+   ein Versatz die Kopfzeile ins Leere. Erst wenn die Box aufgehoben ist
+   (.is-frei), ist das Fenster der Bezug und die Kopfzeile parkt unter
+   der Kopfleiste. */
+.tablebox th{
+  position:sticky; top:0; z-index:1;
+  font-weight:600; color:var(--ink-1);
+  background:var(--paper-2);
+  border-bottom:1px solid var(--line-2);
+  white-space:nowrap;
+}
+.tablebox tbody tr:nth-child(even) td{ background:var(--fill); }
+.tablebox tbody tr:last-child td{ border-bottom:0; }
+.tablebox td{ color:var(--ink-1); }
+.ta-right{ text-align:right; }
+.ta-center{ text-align:center; }
+
+/* Muss die Tabelle seitwaerts scrollen, bleiben die vordersten Spalten
+   stehen — sonst sieht man beim Scrollen nach rechts die Optionen, aber
+   nicht mehr das Werkzeug, zu dem sie gehoeren. Wie viele Spalten das
+   sind, entscheidet das Skript: nur so viele, wie zusammen unter 45 %
+   der sichtbaren Breite bleiben, hoechstens zwei. Die Flaeche muss
+   decken, sonst schiebt sich Text darunter durch. */
+.tablebox td.kleb,.tablebox th.kleb{
+  position:sticky; z-index:1;
+  background-color:var(--paper);
+}
+.tablebox tbody tr:nth-child(even) td.kleb{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--fill),var(--fill));
+}
+.tablebox th.kleb{ top:0; z-index:2; background-color:var(--paper-2); }
+/* Die Kante zeigt sich erst, wenn wirklich etwas dahinter liegt. */
+.tablewrap.is-ab .tablebox .kleb-letzte{ box-shadow:1px 0 0 var(--line-2); }
+
+/* Spaltennamen sind kurz, ihre Zellen sind so breit wie der laengste
+   Inhalt darunter. Beim Scrollen nach rechts verschwand der Name daher
+   als Erstes unter den festgehaltenen Spalten, waehrend vom Inhalt noch
+   ein Rest herausragte — ein Wortfetzen ohne Ueberschrift. Der Name
+   klebt jetzt am rechten Rand des festgehaltenen Blocks (--klebw, vom
+   Skript gesetzt) und wandert nur so weit mit, wie seine Zelle reicht.
+   Ist die Spalte ganz durchgelaufen, geht der Name mit ihr. */
+.tablebox th > .th-t{
+  display:inline-block; max-width:100%;
+  position:sticky; left:var(--klebw,0px);
+}
+/* Die festgehaltenen Spalten stehen ohnehin still. */
+.tablebox th.kleb > .th-t{ position:static; }
+
+/* ── Fuss ───────────────────────────────────────────────────────── */
+/* Am Ende eines langen Dokuments ist die Kopfleiste zehntausende Pixel
+   entfernt. Der Fuss verspricht deshalb nicht den Weg zurueck, er ist
+   er: dieselbe Adresse wie oben links, als eigene Verknuepfung. */
+.colophon{
+  max-width:var(--sheet); margin:0 auto; padding:0 24px 64px;
+  font:400 13px/16px var(--sans); color:var(--ink-3);
+}
+.colophon a{ color:var(--ink-1); }
+@media (min-width:1068px){ .colophon{ padding-left:calc(var(--toc) + var(--gap) + 24px); } }
+
+/* ── Druck ──────────────────────────────────────────────────────── */
+@media print{
+  :root{
+    --ground:#FFFFFF; --paper:#FFFFFF; --paper-2:#FFFFFF;
+    --ink-1:#000000; --ink-2:#333333; --ink-3:#444444;
+    --line:#BBBBBB; --line-2:#888888; --fill:#F2F2F2; --accent:#000000;
+  }
+  body{ background:#FFFFFF; color:#000000; font-size:11pt; line-height:15pt; }
+  .topbar,.toc,.toc-narrow,.themes,.back,.anchor{ display:none !important; }
+  .masthead{ padding:0 0 18pt; }
+  .page{ display:block; max-width:none; padding:0; }
+  .doc{ border:0; border-radius:0; padding:0; background:#FFFFFF; }
+  /* Die Lesebreite gilt auch auf Papier; Tabellen, Code und die
+     Abschnittslinien nutzen wie am Bildschirm die volle Satzbreite. */
+  /* Dieselbe Skala, in Punkt statt Pixel — sonst waeren Titel und
+     Vorspann auf Papier doppelt so gross wie der Fliesstext. */
+  .masthead h1{ font:600 20pt/24pt var(--sans); }
+  .masthead .sub{ font-size:10pt; line-height:14pt; }
+  .eyebrow{ font-size:8pt; line-height:11pt; }
+  .doc .lead{ font:400 13pt/17pt var(--sans); margin:14pt 0 12pt; }
+  .doc h2{ font:600 14pt/18pt var(--sans); }
+  .doc h3{ font:600 12pt/16pt var(--sans); margin-top:18pt; }
+  .doc h2::before,.doc h3::before{ font-size:8.5pt; line-height:11pt; margin-bottom:4pt; }
+  .tablebox th,.tablebox td{ font-size:9.5pt; line-height:13pt; padding:6pt 8pt; }
+  code{ font-size:9.5pt; }
+  pre code{ font-size:8.5pt; line-height:12pt; }
+  blockquote{ padding:8pt 12pt; margin:12pt 0; }
+  .doc p,.doc ul,.doc ol{ margin-bottom:10pt; }
+  .doc h2{ break-after:avoid; page-break-after:avoid; margin-top:24pt; }
+  .doc h3,.doc h4{ break-after:avoid; page-break-after:avoid; }
+  .tablewrap{ margin-left:0 !important; margin-right:0 !important; width:auto !important; }
+  .tableframe::after,.tablehint{ display:none !important; }
+  .tablebox{ overflow:visible; max-height:none; break-inside:avoid; page-break-inside:avoid; border:1px solid #BBBBBB; }
+  .tablebox table{ min-width:0 !important; }
+  .tablebox th{ position:static; background:#F2F2F2; }
+  /* Auf Papier scrollt nichts, also klebt auch nichts. */
+  .tablebox td.kleb,.tablebox th.kleb{ position:static; box-shadow:none; background:none; }
+  .tablebox th.kleb{ background:#F2F2F2; }
+  .tablebox th > .th-t{ position:static; }
+  tr,thead,blockquote,pre,li{ break-inside:avoid; page-break-inside:avoid; }
+  a{ color:#000000; text-decoration:none; }
+  .colophon{ padding:0; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back" href="../mockups/index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
+  <div class="themes" role="group" aria-label="Erscheinungsbild">
+    <button type="button" data-val="light">Hell</button>
+    <button type="button" data-val="dark">Dunkel</button>
+  </div>
+</div>
+<header class="masthead">
+  <p class="eyebrow">Entwurf</p>
+  <h1>03 · Bewegung</h1>
+  <p class="sub">Die fünf Momente, in denen sich Velum bewegt — als Federn gerechnet, als Kurven gebaut, in Millisekunden nachgemessen.</p>
+</header>
+<div class="page">
+  <nav class="toc" aria-label="Inhalt">
+    <p class="toc-title">Inhalt</p>
+    <ol><li class="toc-group"><a class="toc-l2" data-t="0-der-grundsatz" href="#0-der-grundsatz">0 · Der Grundsatz</a></li><li class="toc-group"><a class="toc-l2" data-t="1-die-uebersetzung-feder-cubic-bezier" href="#1-die-uebersetzung-feder-cubic-bezier">1 · Die Übersetzung: Feder → cubic-bezier</a><ul class="toc-sub"><li><a class="toc-l3" data-t="1-1-wie-gerechnet-wurde" href="#1-1-wie-gerechnet-wurde">1.1 Wie gerechnet wurde</a></li><li><a class="toc-l3" data-t="1-2-die-tabelle" href="#1-2-die-tabelle">1.2 Die Tabelle</a></li><li><a class="toc-l3" data-t="1-3-wo-die-uebersetzung-nicht-aufgeht" href="#1-3-wo-die-uebersetzung-nicht-aufgeht">1.3 Wo die Übersetzung nicht aufgeht</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="2-die-vier-rollen" href="#2-die-vier-rollen">2 · Die vier Rollen</a><ul class="toc-sub"><li><a class="toc-l3" data-t="2-1-oeffnen-320-ms-cubic-bezier-216-052-330-1-110" href="#2-1-oeffnen-320-ms-cubic-bezier-216-052-330-1-110">2.1 Öffnen · 320 ms · cubic-bezier(.216,.052,.330,1.110)</a></li><li><a class="toc-l3" data-t="2-2-wechseln-180-ms-cubic-bezier-239-071-325-913" href="#2-2-wechseln-180-ms-cubic-bezier-239-071-325-913">2.2 Wechseln · 180 ms · cubic-bezier(.239,.071,.325,.913)</a></li><li><a class="toc-l3" data-t="2-3-uebergeben-780-ms-velums-signatur" href="#2-3-uebergeben-780-ms-velums-signatur">2.3 Übergeben · 780 ms · Velums Signatur</a></li><li><a class="toc-l3" data-t="2-4-bestaetigen-180-ms-1000-ms-240-ms-260-ms" href="#2-4-bestaetigen-180-ms-1000-ms-240-ms-260-ms">2.4 Bestätigen · 180 ms + 1000 ms + 240 ms + 260 ms</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="3-die-fuenf-momente-und-wie-man-sie-ausloest" href="#3-die-fuenf-momente-und-wie-man-sie-ausloest">3 · Die fünf Momente — und wie man sie auslöst</a><ul class="toc-sub"><li><a class="toc-l3" data-t="3-1-uebergabe-auswahl-wird-lernkarte" href="#3-1-uebergabe-auswahl-wird-lernkarte">3.1 Übergabe — Auswahl wird Lernkarte</a></li><li><a class="toc-l3" data-t="3-2-erledigen" href="#3-2-erledigen">3.2 Erledigen</a></li><li><a class="toc-l3" data-t="3-3-karte-bewerten" href="#3-3-karte-bewerten">3.3 Karte bewerten</a></li><li><a class="toc-l3" data-t="3-4-dokument-oeffnen" href="#3-4-dokument-oeffnen">3.4 Dokument öffnen</a></li><li><a class="toc-l3" data-t="3-5-herkunft-zeigen" href="#3-5-herkunft-zeigen">3.5 Herkunft zeigen</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="4-die-kleinbewegungen" href="#4-die-kleinbewegungen">4 · Die Kleinbewegungen</a></li><li class="toc-group"><a class="toc-l2" data-t="5-reduce-motion-ein-pfad-je-bewegung" href="#5-reduce-motion-ein-pfad-je-bewegung">5 · Reduce Motion — ein Pfad je Bewegung</a><ul class="toc-sub"><li><a class="toc-l3" data-t="5-1-wie-der-zustand-entsteht" href="#5-1-wie-der-zustand-entsteht">5.1 Wie der Zustand entsteht</a></li><li><a class="toc-l3" data-t="5-2-die-tabelle" href="#5-2-die-tabelle">5.2 Die Tabelle</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="6-der-verlangsamer" href="#6-der-verlangsamer">6 · Der Verlangsamer</a></li><li class="toc-group"><a class="toc-l2" data-t="7-was-absichtlich-nicht-bewegt-wird" href="#7-was-absichtlich-nicht-bewegt-wird">7 · Was absichtlich nicht bewegt wird</a></li><li class="toc-group"><a class="toc-l2" data-t="8-die-ersten-30-sekunden" href="#8-die-ersten-30-sekunden">8 · Die ersten 30 Sekunden</a></li><li class="toc-group"><a class="toc-l2" data-t="9-was-geprueft-wurde" href="#9-was-geprueft-wurde">9 · Was geprüft wurde</a></li></ol>
+  </nav>
+  <main class="doc-wrap">
+    <details class="toc-narrow">
+      <summary>Inhalt<svg class="chev" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+      <div class="toc-body"><ol><li class="toc-group"><a class="toc-l2" data-t="0-der-grundsatz" href="#0-der-grundsatz">0 · Der Grundsatz</a></li><li class="toc-group"><a class="toc-l2" data-t="1-die-uebersetzung-feder-cubic-bezier" href="#1-die-uebersetzung-feder-cubic-bezier">1 · Die Übersetzung: Feder → cubic-bezier</a><ul class="toc-sub"><li><a class="toc-l3" data-t="1-1-wie-gerechnet-wurde" href="#1-1-wie-gerechnet-wurde">1.1 Wie gerechnet wurde</a></li><li><a class="toc-l3" data-t="1-2-die-tabelle" href="#1-2-die-tabelle">1.2 Die Tabelle</a></li><li><a class="toc-l3" data-t="1-3-wo-die-uebersetzung-nicht-aufgeht" href="#1-3-wo-die-uebersetzung-nicht-aufgeht">1.3 Wo die Übersetzung nicht aufgeht</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="2-die-vier-rollen" href="#2-die-vier-rollen">2 · Die vier Rollen</a><ul class="toc-sub"><li><a class="toc-l3" data-t="2-1-oeffnen-320-ms-cubic-bezier-216-052-330-1-110" href="#2-1-oeffnen-320-ms-cubic-bezier-216-052-330-1-110">2.1 Öffnen · 320 ms · cubic-bezier(.216,.052,.330,1.110)</a></li><li><a class="toc-l3" data-t="2-2-wechseln-180-ms-cubic-bezier-239-071-325-913" href="#2-2-wechseln-180-ms-cubic-bezier-239-071-325-913">2.2 Wechseln · 180 ms · cubic-bezier(.239,.071,.325,.913)</a></li><li><a class="toc-l3" data-t="2-3-uebergeben-780-ms-velums-signatur" href="#2-3-uebergeben-780-ms-velums-signatur">2.3 Übergeben · 780 ms · Velums Signatur</a></li><li><a class="toc-l3" data-t="2-4-bestaetigen-180-ms-1000-ms-240-ms-260-ms" href="#2-4-bestaetigen-180-ms-1000-ms-240-ms-260-ms">2.4 Bestätigen · 180 ms + 1000 ms + 240 ms + 260 ms</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="3-die-fuenf-momente-und-wie-man-sie-ausloest" href="#3-die-fuenf-momente-und-wie-man-sie-ausloest">3 · Die fünf Momente — und wie man sie auslöst</a><ul class="toc-sub"><li><a class="toc-l3" data-t="3-1-uebergabe-auswahl-wird-lernkarte" href="#3-1-uebergabe-auswahl-wird-lernkarte">3.1 Übergabe — Auswahl wird Lernkarte</a></li><li><a class="toc-l3" data-t="3-2-erledigen" href="#3-2-erledigen">3.2 Erledigen</a></li><li><a class="toc-l3" data-t="3-3-karte-bewerten" href="#3-3-karte-bewerten">3.3 Karte bewerten</a></li><li><a class="toc-l3" data-t="3-4-dokument-oeffnen" href="#3-4-dokument-oeffnen">3.4 Dokument öffnen</a></li><li><a class="toc-l3" data-t="3-5-herkunft-zeigen" href="#3-5-herkunft-zeigen">3.5 Herkunft zeigen</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="4-die-kleinbewegungen" href="#4-die-kleinbewegungen">4 · Die Kleinbewegungen</a></li><li class="toc-group"><a class="toc-l2" data-t="5-reduce-motion-ein-pfad-je-bewegung" href="#5-reduce-motion-ein-pfad-je-bewegung">5 · Reduce Motion — ein Pfad je Bewegung</a><ul class="toc-sub"><li><a class="toc-l3" data-t="5-1-wie-der-zustand-entsteht" href="#5-1-wie-der-zustand-entsteht">5.1 Wie der Zustand entsteht</a></li><li><a class="toc-l3" data-t="5-2-die-tabelle" href="#5-2-die-tabelle">5.2 Die Tabelle</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="6-der-verlangsamer" href="#6-der-verlangsamer">6 · Der Verlangsamer</a></li><li class="toc-group"><a class="toc-l2" data-t="7-was-absichtlich-nicht-bewegt-wird" href="#7-was-absichtlich-nicht-bewegt-wird">7 · Was absichtlich nicht bewegt wird</a></li><li class="toc-group"><a class="toc-l2" data-t="8-die-ersten-30-sekunden" href="#8-die-ersten-30-sekunden">8 · Die ersten 30 Sekunden</a></li><li class="toc-group"><a class="toc-l2" data-t="9-was-geprueft-wurde" href="#9-was-geprueft-wurde">9 · Was geprüft wurde</a></li></ol></div>
+    </details>
+    <article class="doc">
+<p class="lead">Vier Rollen, fünf Momente, ein Reduce-Motion-Pfad je Bewegung. Gebaut in <code>mockups/shared/bewegung.css</code> und <code>mockups/shared/bewegung.js</code>. Laufend zu sehen in <code>mockups/motion/index.html</code> (Musterseite) und <code>mockups/motion/onboarding.html</code> (die ersten 30 Sekunden).</p>
+<h2 id="0-der-grundsatz"><span class="h-t">0 · Der Grundsatz</span><a class="anchor" href="#0-der-grundsatz" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p><strong>Bewegung nur, wo sie etwas erklärt: Herkunft, Fortschritt, Zustandswechsel.</strong> Alles andere steht still. §7 zählt auf, was deshalb <em>nicht</em> bewegt wird, und warum — das ist der Teil dieses Dokuments, an dem sich der Rest messen lassen muss.</p>
+<p>Zwei Regeln aus Velums eigener März-Spec §9 bleiben in Kraft und werden hier nur präzisiert:</p>
+<ul><li>Feder für alles Körperliche (Ort, Größe, Drehung), <code>easeInOut</code> nur für Deckkraft und Farbe.</li><li>Nie <code>linear</code>. Die einzige Ausnahme ist technisch, nicht gestalterisch: der Flug auf dem Faden (§4.1) ist eine Punktfolge, in die die Kurve bereits eingerechnet wurde; die Animation selbst läuft dann gleichförmig durch die Punkte. Die Kurve steckt in den Punkten, nicht in der Zeit.</li></ul>
+<h2 id="1-die-uebersetzung-feder-cubic-bezier"><span class="h-t">1 · Die Übersetzung: Feder → cubic-bezier</span><a class="anchor" href="#1-die-uebersetzung-feder-cubic-bezier" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Velums März-Spec §9 beschreibt Bewegung in SwiftUI-Federn. Ein Mockup läuft im Browser und kennt keine Federn. Die Übersetzung ist gerechnet, nicht geschätzt.</p>
+<h3 id="1-1-wie-gerechnet-wurde"><span class="h-t">1.1 Wie gerechnet wurde</span><a class="anchor" href="#1-1-wie-gerechnet-wurde" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Die Sprungantwort einer Feder <code>.spring(response:, dampingFraction:)</code> mit Anfangsgeschwindigkeit 0:</p>
+<pre><code>ω   = 2π / response
+ζ   = dampingFraction
+ω_d = ω · √(1 − ζ²)
+
+x(t) = 1 − e^(−ζωt) · ( cos(ω_d t) + ζ/√(1−ζ²) · sin(ω_d t) )</code></pre>
+<p><strong>Zeitfenster.</strong> Eine Feder wird mathematisch nie fertig. Das Fenster endet bei <strong>2 % Restweg</strong>: <code>T = −ln(0,02) / (ζω)</code>, danach auf 20 ms gerundet. Was danach von der Feder übrig wäre, fällt weg — die Bézier landet exakt auf 1. Bei der längsten Strecke im System (Übergabe, ~420 pt) sind das 8 pt, die in den letzten 40 ms statt in weiteren 170 ms zurückgelegt werden. Genau diese Straffung unterscheidet eine Bedienoberfläche von einer Physiksimulation.</p>
+<p><strong>Anpassung.</strong> Vier freie Parameter (<code>x1, y1, x2, y2</code>), Nelder-Mead mit acht Startpunkten, 120 Stützstellen, Zielgröße das quadratische Mittel der Abweichung. <code>y1</code> und <code>y2</code> dürfen über 1 hinaus — nur so lässt sich ein Überschwingen abbilden. <code>x1</code> und <code>x2</code> bleiben in [0, 1], wie CSS es verlangt.</p>
+<h3 id="1-2-die-tabelle"><span class="h-t">1.2 Die Tabelle</span><a class="anchor" href="#1-2-die-tabelle" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:984px"><thead><tr><th scope="col"><span class="th-t">Feder</span></th><th scope="col"><span class="th-t">response / damping</span></th><th scope="col"><span class="th-t">Einschwingzeit → Fenster</span></th><th scope="col"><span class="th-t">cubic-bezier</span></th><th scope="col"><span class="th-t">Fehler (RMS)</span></th><th scope="col"><span class="th-t">Überschwingen Feder → Bézier</span></th></tr></thead><tbody><tr><td><code>springQuick</code></td><td>0,25 / 0,85</td><td>183,1 ms → <strong>180 ms</strong></td><td><code>cubic-bezier(.239,.071,.325,.913)</code></td><td>0,36 %</td><td>0,63 % → 0 %</td></tr><tr><td><code>springStandard</code></td><td>0,40 / 0,80</td><td>311,3 ms → <strong>320 ms</strong></td><td><code>cubic-bezier(.216,.052,.330,1.110)</code></td><td>0,33 %</td><td>1,52 % → 0,80 %</td></tr><tr><td><code>springBouncy</code></td><td>0,50 / 0,65</td><td>478,9 ms → <strong>480 ms</strong></td><td><code>cubic-bezier(.280,.224,.224,1.370)</code></td><td>0,76 %</td><td>6,81 % → 7,30 %</td></tr><tr><td><code>springGentle</code></td><td>0,60 / 0,90</td><td>415,1 ms → <strong>420 ms</strong></td><td><code>cubic-bezier(.271,.115,.268,.755)</code></td><td>0,92 %</td><td>0,15 % → 0 %</td></tr><tr><td><code>quick</code> (easeInOut 150 ms)</td><td>—</td><td><strong>150 ms</strong></td><td><code>cubic-bezier(.42,0,.58,1)</code></td><td>0 %</td><td>1 : 1 übernommen</td></tr><tr><td><code>standard</code> (easeInOut 300 ms)</td><td>—</td><td><strong>300 ms</strong></td><td><code>cubic-bezier(.42,0,.58,1)</code></td><td>0 %</td><td>1 : 1 übernommen</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Fehler ohne den Endpunkt gerechnet (bis x = 0,95), also reiner Formfehler: 0,76 % · 0,70 % · 1,45 % · 2,30 %.</p>
+<p>Zwei Zahlen fallen dabei mit Werten zusammen, die schon in <code>system.css</code> stehen — das ist kein Zufall, sondern die Bestätigung, dass die Fundament-Runde richtig geschätzt hat: <code>springQuick</code> = 180 ms = <code>--t-fast</code>, <code>springGentle</code> = 420 ms = <code>--t-hand</code>.</p>
+<h3 id="1-3-wo-die-uebersetzung-nicht-aufgeht"><span class="h-t">1.3 Wo die Übersetzung nicht aufgeht</span><a class="anchor" href="#1-3-wo-die-uebersetzung-nicht-aufgeht" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>(a) Das Unterschwingen nach dem Überschwingen.</strong> <code>springBouncy</code> (ζ = 0,65) schwingt um 6,81 % über und danach um 0,46 % unter. Eine <code>cubic-bezier</code> kann das Überschwingen (7,30 %), nicht aber die zweite, gegenläufige Auslenkung — sie kehrt einsinnig zurück. <em>Was stattdessen geschieht:</em> nichts. Zwei verkettete Animationen könnten das Unterschwingen nachbauen; sie werden bewusst nicht verkettet. Es fiele in dieselben 60 ms, in denen bei der Übergabe der Zähler hochzählt, und zwei Bewegungen an derselben Stelle heben sich gegenseitig auf. 0,46 % von 420 pt sind 1,9 pt — der Preis ist kleiner als der Schaden.</p>
+<p><strong>(b) Die Geschwindigkeit beim Loslassen.</strong> Eine Feder nimmt die Wurfgeschwindigkeit auf. Eine <code>cubic-bezier</code> hat eine feste Anfangssteigung (<code>3·y1/x1</code> je Zeiteinheit) und kann das grundsätzlich nicht. <em>Was stattdessen geschieht:</em> Die Geschwindigkeit wandert in die <strong>Dauer</strong>. Beim Wischen einer Lernkarte misst <code>bewegung.js</code> die Zeigergeschwindigkeit der letzten Bewegung in pt/ms und rechnet</p>
+<pre><code>Dauer = 480 ms − min(1; v / 1,2 pt·ms⁻¹) · 220 ms      →  260 … 480 ms</code></pre>
+<p>Dieselbe Kurve, andere Länge. Das ist keine Feder — aber der Unterschied zwischen einem Wurf und einem Legen bleibt spürbar, und das war der Zweck.</p>
+<h2 id="2-die-vier-rollen"><span class="h-t">2 · Die vier Rollen</span><a class="anchor" href="#2-die-vier-rollen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Rolle</span></th><th scope="col"><span class="th-t">Dauer</span></th><th scope="col"><span class="th-t">Kurve</span></th><th scope="col"><span class="th-t">Zweck</span></th></tr></thead><tbody><tr><td><strong>Öffnen</strong></td><td>320 ms</td><td><code>springStandard</code></td><td>Dokument, Detail</td></tr><tr><td><strong>Wechseln</strong></td><td>180 ms hinaus / 180 ms herein, 60 ms Überlappung (300 ms)</td><td><code>springQuick</code></td><td>Modul, Ansicht</td></tr><tr><td><strong>Übergeben</strong></td><td>780 ms in drei Sätzen</td><td><code>springBouncy</code> (Flug) + <code>--t-hand</code> (Faden)</td><td>Modul zu Modul — Velums Signatur</td></tr><tr><td><strong>Bestätigen</strong></td><td>180 ms + 1000 ms Verweildauer + 240 ms + 260 ms</td><td><code>springQuick</code></td><td>erledigt, gespeichert, bewertet</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<h3 id="2-1-oeffnen-320-ms-cubic-bezier-216-052-330-1-110"><span class="h-t">2.1 Öffnen · 320 ms · <code>cubic-bezier(.216,.052,.330,1.110)</code></span><a class="anchor" href="#2-1-oeffnen-320-ms-cubic-bezier-216-052-330-1-110" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Die Frage, die diese Bewegung beantwortet: <strong>Woher kommt das hier?</strong></p>
+<p>Was sich bewegt:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Eigenschaft</span></th><th scope="col"><span class="th-t">von</span></th><th scope="col"><span class="th-t">nach</span></th></tr></thead><tbody><tr><td>Ort (links / oben)</td><td>Rechteck der Ursprungskarte</td><td>Rechteck des Ziels</td></tr><tr><td>Breite / Höhe</td><td>Kartenmaß</td><td>Zielmaß</td></tr><tr><td>Eckradius</td><td>14 pt</td><td>0 pt (bzw. der Radius des Ziels)</td></tr><tr><td>Deckkraft der Umgebung</td><td>1</td><td>0,55 (160 ms, <code>easeInOut</code>)</td></tr><tr><td>Inhalt des Ziels</td><td>Deckkraft 0 → 1, ab 55 % der Zeit, 160 ms</td><td></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Breite und Höhe, nicht <code>scale</code>.</strong> Ein skaliertes Rechteck zieht seinen Eckradius und sein Coverbild mit; eine Bibliothekskarte von 132 × 168 pt, die auf 640 × 700 pt skaliert, hat am Ende einen Radius von 48 pt und ein gestauchtes Papier. Die Eigenschaften einzeln zu animieren kostet Kompositionsleistung und ist hier die richtige Wahl, weil das Bild sonst lügt.</p>
+<h3 id="2-2-wechseln-180-ms-cubic-bezier-239-071-325-913"><span class="h-t">2.2 Wechseln · 180 ms · <code>cubic-bezier(.239,.071,.325,.913)</code></span><a class="anchor" href="#2-2-wechseln-180-ms-cubic-bezier-239-071-325-913" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Die Frage: <strong>Bin ich vor oder zurück gegangen?</strong></p>
+<p>Was sich bewegt: Deckkraft 1 → 0 und 0 → 1, dazu ein Versatz von <strong>8 pt</strong> in Laufrichtung (<code>--bw-richtung: 1 | -1</code>). Die eintretende Ansicht startet 120 ms nach dem Beginn der austretenden — 60 ms Überlappung, damit nie ein leerer Rahmen zu sehen ist.</p>
+<p>Kein Maßstab, kein Schatten, keine Blende. Eine Ansicht ist kein Gegenstand, der auffliegt.</p>
+<h3 id="2-3-uebergeben-780-ms-velums-signatur"><span class="h-t">2.3 Übergeben · 780 ms · Velums Signatur</span><a class="anchor" href="#2-3-uebergeben-780-ms-velums-signatur" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Drei Sätze. Die Zeiten sind absolut ab dem Tap.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:820px"><thead><tr><th scope="col"><span class="th-t">ab</span></th><th scope="col"><span class="th-t">bis</span></th><th scope="col"><span class="th-t">Satz</span></th><th scope="col"><span class="th-t">Kurve</span></th><th scope="col"><span class="th-t">Was sich bewegt</span></th></tr></thead><tbody><tr><td>0</td><td>180</td><td>Verdichten</td><td><code>springQuick</code></td><td>Breite/Höhe der Auswahl → Kartenmaß (176 × 96 pt); Eckradius 8 → 11 pt; der Absatz geht auf Deckkraft 0,32</td></tr><tr><td>120</td><td>600</td><td>Flug</td><td><code>springBouncy</code></td><td>Ort <strong>auf dem Fadenpfad</strong>; Maßstab 1 → 0,42 (mit 7,3 % Überschwingen); Drehung −4° → 0°</td></tr><tr><td>120</td><td>540</td><td>Faden</td><td><code>--t-hand</code> 420 ms, <code>--ease-spring</code></td><td>Weglänge 0 → voll (<code>stroke-dashoffset</code>), Richtung Ursprung → Ziel</td></tr><tr><td>600</td><td>780</td><td>Ankunft</td><td><code>springQuick</code></td><td>Zähler +1 (alte Ziffer −100 %, neue von +100 %); Zielpunkt hohl → Ink-Ring; Zielkachel auf <code>--accent-soft</code>; Flugkarte Deckkraft → 0 in 140 ms; Absatz zurück auf 1</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Zwei Entscheidungen darin sind nicht selbstverständlich:</p>
+<p><strong>Die Karte fliegt auf dem Faden, nicht daneben.</strong> Die Bahn wird nicht erfunden. <code>bewegung.js</code> liest sie Punkt für Punkt aus dem SVG-Pfad, den <code>MOCK.thread()</code> gespannt hat (<code>path.getPointAtLength()</code>). Der Faden ist damit nicht die Illustration der Bewegung, sondern ihre Fahrbahn — und beide können gar nicht auseinanderlaufen. Nur die letzten 28 % zieht die Bahn quadratisch gewichtet zur Mitte der Zielkachel: der Faden endet dort, wo ein Faden enden muss, am Rand des Objekts; die Karte legt sich hinein.</p>
+<p><strong>Der Faden ist 60 ms vor der Karte am Ziel</strong> (540 gegen 600 ms). Erst liegt der Weg, dann kommt, was ihn geht. Umgekehrt sähe der Faden aus wie eine Spur — also wie Dekoration hinter einem fliegenden Objekt, statt wie die Beziehung, die durch die Übergabe entsteht.</p>
+<p>Der Absatz kehrt am Ende auf volle Zeichnung zurück. Er hat etwas abgegeben, er ist nicht selbst fort; bliebe er blass, hieße das „nicht mehr hier", und das wäre falsch.</p>
+<h3 id="2-4-bestaetigen-180-ms-1000-ms-240-ms-260-ms"><span class="h-t">2.4 Bestätigen · 180 ms + 1000 ms + 240 ms + 260 ms</span><a class="anchor" href="#2-4-bestaetigen-180-ms-1000-ms-240-ms-260-ms" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">ab</span></th><th scope="col"><span class="th-t">bis</span></th><th scope="col"><span class="th-t">Was</span></th></tr></thead><tbody><tr><td>0</td><td>180</td><td>Haken: <code>stroke-dashoffset</code> 15 → 0, Kreisfüllung <code>scale</code> 0,72 → 1, Ring 1,5 → 0 pt. Der Haken startet 60 ms nach der Füllung.</td></tr><tr><td>0</td><td>180</td><td>Gleichzeitig am anderen Ende des Herkunftsfadens: die Notiz, aus der die Aufgabe stammt, wird aktiv.</td></tr><tr><td>180</td><td>1180</td><td><strong>Verweildauer.</strong> Nichts bewegt sich.</td></tr><tr><td>1180</td><td>1420</td><td>Zeile: Deckkraft 1 → 0, 16 pt nach rechts</td></tr><tr><td>1420</td><td>1680</td><td>Lücke: Höhe, Innenabstand und Außenabstand auf 0</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Die 1000 ms Verweildauer sind der Grund, warum Velum kein „Rückgängig"-Banner braucht: <strong>die Pause ist das Rückgängig.</strong> Die Zeile steht noch da, man kann sie zurücknehmen. Ein Banner wäre eine zweite Erfindung für dasselbe Problem.</p>
+<p>Die gleichzeitige Wirkung in der Notiz ist die Stelle, an der Velums Datenmodell sichtbar wird: keine reine Aufgaben-App kann sie zeigen, weil keine das andere Ende des Fadens hat.</p>
+<h2 id="3-die-fuenf-momente-und-wie-man-sie-ausloest"><span class="h-t">3 · Die fünf Momente — und wie man sie auslöst</span><a class="anchor" href="#3-die-fuenf-momente-und-wie-man-sie-ausloest" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Alle fünf laufen in <code>mockups/motion/index.html</code>. Runde 3 braucht <strong>keine Zeile JavaScript</strong>, um sie in die Schirme zu holen — nur Attribute. Ein einziger Zuhörer am Dokument fängt jeden Klick auf <code>[data-bw]</code> ab.</p>
+<p>Zielangaben sind gewöhnliche CSS-Selektoren; beginnt einer mit <code>^</code>, wird er als <code>closest()</code> vom Knopf aus gelesen (<code>data-bw-zeile="^.row"</code>).</p>
+<h3 id="3-1-uebergabe-auswahl-wird-lernkarte"><span class="h-t">3.1 Übergabe — Auswahl wird Lernkarte</span><a class="anchor" href="#3-1-uebergabe-auswahl-wird-lernkarte" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<pre><code>&lt;button data-bw="uebergeben"
+        data-bw-von="#absatz-7"          &lt;!-- Pflicht: der Ursprung --&gt;
+        data-bw-nach="#kachel-karten"    &lt;!-- Pflicht: das Ziel     --&gt;
+        data-bw-zaehler="#karten-zahl"   &lt;!-- .bw-zaehler, zählt +1  --&gt;
+        data-bw-punkt="#karten-punkt"    &lt;!-- .dot, bekommt den Ring --&gt;
+        data-bw-box="#buehne"            &lt;!-- Bezugsrahmen, sonst automatisch --&gt;
+        data-bw-kurve="34"&gt;              &lt;!-- Auslenkung des Fadens in pt --&gt;
+  In Lernkarten
+&lt;/button&gt;</code></pre>
+<pre><code>MOTION.uebergeben({ von, nach, zaehler, punkt, box, kurve, text, breite, hoehe })
+  // → Promise, löst nach 780 ms auf; liefert { faden }</code></pre>
+<h3 id="3-2-erledigen"><span class="h-t">3.2 Erledigen</span><a class="anchor" href="#3-2-erledigen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<pre><code>&lt;button data-bw="erledigen"
+        data-bw-zeile="^.row"        &lt;!-- Pflicht --&gt;
+        data-bw-kreis=".bw-check"    &lt;!-- sonst der erste .bw-check in der Zeile --&gt;
+        data-bw-echo="#absatz-3"&gt;    &lt;!-- das andere Ende des Herkunftsfadens --&gt;</code></pre>
+<pre><code>MOTION.erledigen({ zeile, kreis, echo, faden })   // faden = Rückgabe von MOTION.faden()
+  // → Promise, löst nach 1680 ms auf</code></pre>
+<p>Der Kreis braucht die Klasse <code>.bw-check</code>; <code>bewegung.js</code> füllt ihn beim Start mit dem SVG. <code>.check</code> aus <code>system.css</code> bleibt unangetastet — er ist aus zwei Rändern gebaut und kann alles außer sich zeichnen.</p>
+<h3 id="3-3-karte-bewerten"><span class="h-t">3.3 Karte bewerten</span><a class="anchor" href="#3-3-karte-bewerten" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<pre><code>&lt;button data-bw="drehen"  data-bw-karte="#karte"&gt;Umdrehen&lt;/button&gt;
+
+&lt;button data-bw="bewerten" data-bw-karte="#karte"
+        data-bw-note="gut"                    &lt;!-- nochmal | schwer | gut | leicht --&gt;
+        data-bw-intervalle="#intervallreihe"  &lt;!-- .threadrow mit .dot und .thread --&gt;
+        data-bw-zaehler="#sitzungszahl"
+        data-bw-naechste="#karte-naechste"&gt;Gut&lt;/button&gt;</code></pre>
+<pre><code>MOTION.drehen({ karte })
+MOTION.bewerten({ karte, note, intervalle, zaehler, naechste, dauer })
+MOTION.wischen({ karte, intervalle, zaehler, naechste })  // hängt Zeiger-Ereignisse ein
+MOTION.intervallVorschau(reihe, index)                    // setzt Ring und aktive Stücke</code></pre>
+<p>Die Karte braucht <code>.bw-flip</code> (Perspektive 1200 px) mit <code>.bw-flip__innen</code> und zwei <code>.bw-flip__seite</code>; zum Wischen zusätzlich <code>.bw-wisch</code>. Die vier Noten verschieben den Index der Intervall-Reihe: <code>nochmal</code> → 0 · <code>schwer</code> → ±0 · <code>gut</code> → +1 · <code>leicht</code> → +2.</p>
+<h3 id="3-4-dokument-oeffnen"><span class="h-t">3.4 Dokument öffnen</span><a class="anchor" href="#3-4-dokument-oeffnen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<pre><code>&lt;button data-bw="oeffnen"
+        data-bw-von="#buch-zellbiologie"  &lt;!-- die Bibliothekskarte --&gt;
+        data-bw-nach="#editor"            &lt;!-- das Ziel, mit hidden --&gt;
+        data-bw-huelle="#regal"&gt;          &lt;!-- tritt auf 0,55 zurück --&gt;</code></pre>
+<pre><code>MOTION.oeffnen({ von, nach, huelle })     // → Promise, 320 ms</code></pre>
+<p>Das Ziel wird kurz sichtbar, aber <code>visibility: hidden</code> gemessen, damit sein Rechteck feststeht, bevor der Zwilling losläuft.</p>
+<h3 id="3-5-herkunft-zeigen"><span class="h-t">3.5 Herkunft zeigen</span><a class="anchor" href="#3-5-herkunft-zeigen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<pre><code>&lt;button data-bw="herkunft"
+        data-bw-ursprung="#notiz-anker"   &lt;!-- Pflicht --&gt;
+        data-bw-karte="#karte"            &lt;!-- weicht nach links --&gt;
+        data-bw-quelle="#quellpanel"      &lt;!-- kommt von rechts --&gt;
+        data-bw-box="#buehne" data-bw-kurve="26"
+        aria-expanded="false"&gt;
+  &lt;span class="origin"&gt;aus „Zellbiologie · Vorlesung 7"&lt;/span&gt;
+&lt;/button&gt;
+
+&lt;button data-bw="zurueck"&gt;Loslassen&lt;/button&gt;</code></pre>
+<pre><code>const weg = MOTION.herkunft({ chip, ursprung, karte, quelle, box, kurve });
+weg.zurueck();     // Quelle hinaus, dann drawBack(), dann destroy()</code></pre>
+<p>Ablauf: Faden zeichnen (420 ms) → 160 ms halten → Karte −38 % / Quelle herein (320 ms). Während dieser 320 ms wird der Faden <strong>Bild für Bild nachgerechnet</strong> (<code>MOTION.nachfuehren</code>), weil der Chip auf der Karte sitzt, die gerade weicht — <code>MOCK.thread</code> hört sonst nur auf Anfang und Ende einer Bewegung. Der Sitzungszähler bewegt sich nicht. Das ist der ganze Unterschied zu RemNotes „im Dokument zeigen", das die Sitzung verlässt.</p>
+<p>Gezeichnet wird mit <code>MOCK.thread(...).draw()</code> aus der Fundament-Runde. Es gibt keinen zweiten Faden.</p>
+<blockquote><p><strong>Begründete Abweichung von <code>dna-kern.md</code> §2.2.</strong> Dort steht: „In Bewegung zeichnet sich der Faden immer vom Ursprung zum Ergebnis, nie umgekehrt." Hier läuft der Stift vom <strong>Chip zum Ursprung</strong>, also gegen die Kausalität. Der Grund steht im selben Absatz der DNA: „Beim Zurückgehen läuft er rückwärts wieder ein." Dies <em>ist</em> der Rückweg. Die Bewegung geht vom Finger aus; ein Faden, der irgendwo am Bildrand losliefe, wäre keine Antwort auf einen Tap. Die Kante im Datenmodell bleibt unverändert Ursprung → Ergebnis, nur der Stift läuft sie rückwärts ab — und beim Loslassen zieht er sich zum Chip zurück, dorthin, wo der Finger war.</p></blockquote>
+<h2 id="4-die-kleinbewegungen"><span class="h-t">4 · Die Kleinbewegungen</span><a class="anchor" href="#4-die-kleinbewegungen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Bewegung</span></th><th scope="col"><span class="th-t">Werte</span></th><th scope="col"><span class="th-t">Warum genau so</span></th></tr></thead><tbody><tr><td><strong>Zeigen</strong></td><td>180 ms, nur Fläche (<code>--fill</code>)</td><td>Kein Anheben, kein Vergrößern von Listenzeilen: auf zwanzig Zeilen wäre das ein wanderndes Beben</td></tr><tr><td><strong>Zeigen (Karte)</strong></td><td>180 ms, <code>scale(1.012)</code> + <code>--sh-float</code></td><td>Eine Karte ist ein Gegenstand und steht einzeln</td></tr><tr><td><strong>Drücken</strong></td><td>120 ms, <code>scale(.98)</code></td><td>Die einzige Stelle, an der etwas schrumpft — und der Finger ist der Grund</td></tr><tr><td><strong>Laden</strong></td><td>Skelett in der Form des Kommenden, Deckkraft 0,55 ↔ 1 in 1200 ms</td><td>Ein Spinner sagt „warte", ein Skelett sagt „so viel wird es". <strong>Kein wandernder Glanz</strong>: der behauptet einen Fortschritt, den niemand kennt</td></tr><tr><td><strong>Staffeln</strong></td><td>36 ms Schritt, höchstens 12 Einträge, je 220 ms, 6 pt nach oben</td><td>Bei zwanzig Zeilen wäre die letzte eine halbe Sekunde zu spät, und eine Liste, die tröpfelt, kann man nicht überfliegen</td></tr><tr><td><strong>Streak</strong></td><td>Scheibe <code>scale</code> 0 → 1 in 300 ms, <code>springBouncy</code>; das Fadenstück vom Vortag wird gleichzeitig aktiv</td><td>Der Punkt allein wäre eine Zahl; der Faden macht daraus eine Folge</td></tr><tr><td><strong>Wellenform</strong></td><td>26 Balken, <code>scaleY</code> 0,35 ↔ 1 in 900 ms, je Balken 70 ms versetzt</td><td>Die einzige Dauerbewegung im System. Sie sagt „das Mikrofon hört gerade", und das muss ununterbrochen wahr bleiben</td></tr><tr><td><strong>Zähler</strong></td><td>alte Ziffer −100 %, neue von +100 %, 180 ms</td><td>Rollt <strong>nur</strong>, wo eine Handlung ihn geändert hat</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<h2 id="5-reduce-motion-ein-pfad-je-bewegung"><span class="h-t">5 · Reduce Motion — ein Pfad je Bewegung</span><a class="anchor" href="#5-reduce-motion-ein-pfad-je-bewegung" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Nicht „wird berücksichtigt", sondern gebaut. Auf beiden Musterseiten umschaltbar, und die Seite zeigt <strong>beides</strong>: was das Betriebssystem meldet und was gerade tatsächlich gilt.</p>
+<h3 id="5-1-wie-der-zustand-entsteht"><span class="h-t">5.1 Wie der Zustand entsteht</span><a class="anchor" href="#5-1-wie-der-zustand-entsteht" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Zwei Quellen, eine Auflösung:</p>
+<pre><code>data-motion="system"  →  folgt (prefers-reduced-motion: reduce)
+data-motion="full"    →  erzwingt volle Bewegung
+data-motion="reduce"  →  erzwingt reduzierte Bewegung</code></pre>
+<p><code>bewegung.js</code> schreibt das Ergebnis als <code>data-bw-reduce="0|1"</code> an das <code>&lt;html&gt;</code>; jede Regel in <code>bewegung.css</code> hängt daran, und die WAAPI-Bewegungen fragen <code>MOTION.reduziert()</code> ab. Ein Wechsel der Systemvorliebe zur Laufzeit wird über <code>matchMedia().addEventListener('change')</code> mitgenommen.</p>
+<p><strong>Ein Sonderfall, der genannt sein will.</strong> <code>system.css</code> §8 setzt unter der Systemvorliebe <code>* { animation-duration: 1ms !important }</code>. Als Grundsicherung richtig — es überschreibt aber auch die hier gebauten Reduce-Pfade, und aus einer gestalteten Kreuzblende von 120 ms würde ein Schnitt von 1 ms. <code>bewegung.css</code> §6 stellt die Dauer für die eigenen Bausteine wieder her (<code>[class*="bw-"], [data-bw]</code>, höhere Spezifität als <code>*</code>, später geladen). Daraus folgt die Hausregel dieser Datei: <strong>jede animierende Klasse setzt <code>--bw-dur</code> und benutzt es.</strong> Wer das vergisst, landet bei 1 ms.</p>
+<h3 id="5-2-die-tabelle"><span class="h-t">5.2 Die Tabelle</span><a class="anchor" href="#5-2-die-tabelle" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Bewegung</span></th><th scope="col"><span class="th-t">Voll</span></th><th scope="col"><span class="th-t">Reduce</span></th></tr></thead><tbody><tr><td><strong>Öffnen</strong></td><td>Ort, Größe, Radius, 320 ms</td><td>160 ms Kreuzblende. Vorher 80 ms ein 2-pt-Ink-Ring auf der Ursprungskarte — die Herkunft wird <strong>gesagt</strong>, nicht gelaufen</td></tr><tr><td><strong>Wechseln</strong></td><td>8 pt Versatz, 60 ms Überlappung</td><td>120 ms reine Kreuzblende, 0 pt Versatz, keine Überlappung. Die Richtung sagt die Navigationsleiste, die sie ohnehin immer gesagt hat</td></tr><tr><td><strong>Übergeben</strong></td><td>780 ms, Flug auf dem Faden</td><td><strong>360 ms.</strong> Der Faden erscheint auf voller Länge (Deckkraft, 120 ms), 120 ms später zählt das Ziel hoch und bekommt seinen Ring. Die Reihenfolge Ursprung → Ziel bleibt erhalten, nur der Weg fällt weg</td></tr><tr><td><strong>Bestätigen</strong></td><td>Haken zeichnet sich, 180 ms</td><td>Der Haken ist da statt gezeichnet (120 ms Deckkraft). <strong>Die 1000 ms Verweildauer bleiben unverändert</strong> — sie sind Bedienlogik, nicht Bewegung; ohne sie verlöre man das Rückgängig</td></tr><tr><td><strong>Lücke schließen</strong></td><td>Höhe/Abstände, 260 ms</td><td>Ohne Weg: die Zeile wird entfernt, die Liste steht neu</td></tr><tr><td><strong>Karte drehen</strong></td><td><code>rotateY</code> 180°, Perspektive</td><td>Keine Drehung. Die Rückseite blendet an derselben Stelle über die Vorderseite (160 ms) — dass es dieselbe Karte ist, sagt der Ort, denn sie bewegt sich nicht</td></tr><tr><td><strong>Karte wischen</strong></td><td>1 : 1 am Finger</td><td><strong>Gar nicht.</strong> Die Zeiger-Ereignisse werden nicht eingehängt; bewertet wird über die vier Knöpfe, die ohnehin da sind</td></tr><tr><td><strong>Nächste Karte</strong></td><td>10 pt von unten, <code>scale</code> 0,97 → 1</td><td>160 ms Kreuzblende</td></tr><tr><td><strong>Herkunft zeigen</strong></td><td>Faden zeichnet sich, Karte weicht, Quelle kommt herein</td><td>Nichts weicht, nichts kommt herein. Der Faden erscheint auf voller Länge (120 ms), die Quelle blendet an ihrem Platz auf (160 ms), die Karte wird nur ruhiger (0,5). Dieselbe Beziehung, ohne Weg</td></tr><tr><td><strong>Zeigen / Drücken</strong></td><td>Fläche + <code>scale(.98)</code></td><td>Fläche und Schatten bleiben — sie sagen „hier bin ich" ohne Weg. Der Maßstab entfällt vollständig</td></tr><tr><td><strong>Skelett</strong></td><td>Deckkraft 0,55 ↔ 1, 1200 ms</td><td>Kein Puls. Steht still bei 0,72; daneben steht das Wort „Wird geladen"</td></tr><tr><td><strong>Staffeln</strong></td><td>36 ms Schritt, 6 pt Weg</td><td>Alle gemeinsam, 120 ms, 0 pt. Gestaffeltes Erscheinen ist gerade die Bewegung, die bei vestibulärer Empfindlichkeit am unangenehmsten ist: viele kleine Wege gleichzeitig im Blickfeld</td></tr><tr><td><strong>Streak</strong></td><td>Scheibe wächst, <code>springBouncy</code></td><td>Die Scheibe ist da (120 ms Deckkraft)</td></tr><tr><td><strong>Wellenform</strong></td><td>26 Balken schwingen</td><td>Die Balken stehen auf ihrem Grundprofil still. Dass aufgenommen wird, sagt die laufende Zeit daneben (00:07, 00:08 …) — eine Ziffer, die sich ändert, ist keine Bewegung im Blickfeld, aber derselbe Beweis</td></tr><tr><td><strong>Zähler</strong></td><td>Ziffern rollen</td><td>Kreuzblende an derselben Stelle, 120 ms</td></tr><tr><td><strong>Onboarding</strong></td><td>elf Takte, 28 s</td><td><strong>Dieselben elf Takte, dieselben 28 s.</strong> Nur die Mittel wechseln. Reduce Motion nimmt Wege weg, keine Zeit</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<h2 id="6-der-verlangsamer"><span class="h-t">6 · Der Verlangsamer</span><a class="anchor" href="#6-der-verlangsamer" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p><code>--bw-tempo</code> (1 oder 4) multipliziert jede Dauer in <code>bewegung.css</code>. Damit die Sätze einer Bewegung nicht auseinanderfallen, laufen <strong>alle</strong> Wartezeiten im JavaScript durch <code>MOTION.ms(x)</code>, das denselben Faktor anwendet — und der Faden bekommt beim Anlegen <code>--t-hand</code> in derselben Rechnung gesetzt, weil <code>system.css</code> §9 seine Zeichendauer aus dieser Variable nimmt.</p>
+<p>Der Verlangsamer ist ein Prüfwerkzeug, kein Bedienelement: Bei 0,25× muss eine Bewegung immer noch verständlich sein. Fällt sie da auseinander, ist sie falsch gebaut, nicht zu schnell.</p>
+<h2 id="7-was-absichtlich-nicht-bewegt-wird"><span class="h-t">7 · Was absichtlich nicht bewegt wird</span><a class="anchor" href="#7-was-absichtlich-nicht-bewegt-wird" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<ul><li><strong>Der heutige Tag pulsiert nicht.</strong> Velums März-Spec §8 sieht für den Kalenderpunkt „scale 1.0 → 1.05, 2 s, <code>.easeInOut</code>, repeat" vor. Eine Dauerbewegung, die keinen Zustandswechsel meldet, ist Zierrat — sie zieht in jeder Sekunde Aufmerksamkeit ab, in der man liest. Dass heute heute ist, sagt der Ink-Ring (<code>.dot--ring</code>), ohne sich zu rühren. <strong>Das ist die eine Vorgabe aus Velums eigener Spec, die diese Runde ablehnt.</strong></li><li><strong>Die Liste weicht beim Öffnen nicht zurück.</strong> Sie tritt nur in der Deckkraft zurück. Der Weg der Karte erklärt die Herkunft schon; ein zweiter gleichzeitiger Weg würde mit dem ersten um dieselbe Aufmerksamkeit ringen.</li><li><strong>Der Tab-Wechsel bewegt den Inhalt nicht</strong> — nur die Kreuzblende aus der Rolle „Wechseln". Tabs sind Orte, keine Wege; wer zwischen zwei Orten hin und her schaltet, will nicht jedes Mal reisen.</li><li><strong>Kennzahlen zählen beim Laden nicht hoch.</strong> „6 Aufgaben · 23 Karten · 12 Tage in Folge" stehen sofort da. Der Zähler rollt nur, wo eine Handlung ihn geändert hat — sonst behauptet die Bewegung eine Ursache, die es nicht gab.</li><li><strong>Trennlinien und Ränder animieren nie.</strong> Sie sind keine Fäden, und was kein Faden ist, wächst auch nicht. Ein Rahmen, der sich einzeichnet, sähe aus wie eine Beziehung und wäre keine.</li><li><strong>Die Fortschrittsanzeige des Onboardings ist ein Balken, kein Faden.</strong> Zwischen „Sekunde 4" und „Sekunde 9" besteht keine Beziehung im Datenmodell. Ein Faden wäre dort eine Zierlinie — und die sind verboten.</li><li><strong>Kein Weichzeichner als Übergang, keine Parallaxe.</strong> Beide bewegen etwas, das gar nicht gemeint ist.</li></ul>
+<h2 id="8-die-ersten-30-sekunden"><span class="h-t">8 · Die ersten 30 Sekunden</span><a class="anchor" href="#8-die-ersten-30-sekunden" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p><code>mockups/motion/onboarding.html</code> — elf Takte in 28 Sekunden, mit Start, Pause und Zurück auf Anfang.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">ab</span></th><th scope="col"><span class="th-t">Takt</span></th><th scope="col"><span class="th-t">Bewegung</span></th></tr></thead><tbody><tr><td>0,0 s</td><td>Das Zeichen erscheint</td><td>Öffnen, 320 ms</td></tr><tr><td>1,8 s</td><td>Die Wortmarke setzt sich daneben</td><td>Öffnen, 320 ms</td></tr><tr><td>4,2 s</td><td>Fünf Module, ein Bestand</td><td>Wechseln, 180 ms</td></tr><tr><td>6,2 s</td><td>Die fünf Punkte erscheinen</td><td>Staffelung 36 ms</td></tr><tr><td>9,0 s</td><td>Der erste Faden — Notizen zu Lernkarten</td><td><code>--t-hand</code> 420 ms</td></tr><tr><td>12,6 s</td><td>Die Vorlesungsnotiz</td><td>Wechseln, 180 ms</td></tr><tr><td>14,4 s</td><td>Die Übergabe — aus dem Satz wird eine Karte</td><td>Übergeben, 780 ms</td></tr><tr><td>17,4 s</td><td>Der Rückweg — die Karte weiß, woher sie kommt</td><td>Faden, 420 ms</td></tr><tr><td>21,2 s</td><td>Der erste Schirm: Heute</td><td>Wechseln, 180 ms</td></tr><tr><td>22,6 s</td><td>Die vier Zeilen erscheinen gestaffelt</td><td>Staffelung 36 ms</td></tr><tr><td>25,6 s</td><td>Loslegen</td><td>Öffnen, 320 ms</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Kein Takt trägt eine Bewegung, die es nur hier gibt.</strong> Takt 7 ist die Rolle Übergeben, Takt 8 der Moment Herkunft zeigen, Takt 10 die gestaffelte Liste. Wer den Ablauf gesehen hat, kennt die App — und wer die App bedient, erkennt den Ablauf wieder.</p>
+<p>Der Ablauf beginnt mit dem <strong>echten App-Icon</strong>. Die drei PNG unter <code>assets/brand/</code> liegen nicht vor, deshalb zeigt der Baustein einen sichtbar leeren Rahmen mit dem Dateinamen. Das ist richtig so und wird nicht repariert; nachgezeichnet wird nichts. Sobald die Dateien da sind, erscheint das Zeichen hier, ohne dass eine Zeile geändert wird.</p>
+<p>Der Ablauf läuft über <strong>eine Uhr, nicht über einen Stapel Timeouts</strong> — nur so lässt er sich anhalten, ohne dass ein Takt hinterherläuft. Pause hält zwischen den Takten an; eine gerade laufende Bewegung läuft zu Ende, die längste dauert 780 ms.</p>
+<h2 id="9-was-geprueft-wurde"><span class="h-t">9 · Was geprüft wurde</span><a class="anchor" href="#9-was-geprueft-wurde" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Beide Seiten in Chromium, 1440 pt und 390 pt, hell und dunkel, mit und ohne Reduce Motion (System und erzwungen), bei 1× und 0,25×. Von jeder Bewegung mindestens drei Zeitpunkte aufgenommen und angesehen.</p>
+<p>Dabei korrigiert:</p>
+<ol><li><strong>Die erledigte Zeile ließ ein 52-pt-Loch stehen.</strong> <code>system.css</code> gibt <code>.row</code> eine <code>min-height: 52px</code>; eine Höhe von 0 kommt dagegen nicht an. <code>.bw-luecke</code> setzt jetzt <code>min-height: 0</code>.</li><li><strong>Die Flugkarte landete auf dem Zähler.</strong> Der Fadenpfad endet am Rand der Zielkachel; die Karte deckte in ihren letzten 60 ms genau die Zahl ab, die danach hochzählen sollte. Die letzten 28 % der Bahn ziehen jetzt quadratisch gewichtet zur Mitte der Kachel.</li><li><strong>Der Absatz blieb blass.</strong> Nach der Übergabe stand die Auswahl dauerhaft auf Deckkraft 0,32 — was „nicht mehr hier" hieß statt „hat etwas abgegeben". Er kehrt jetzt in Satz 3 auf 1 zurück.</li><li><strong>Die stehende Wellenform sah aus wie eine gestrichelte Linie.</strong> Der Ruhezustand lag bei <code>scaleY(.35)</code>, dem kleinsten Ausschlag — und genau diesen Zustand zeigt Reduce Motion dauerhaft. Ruhe ist jetzt das Grundprofil.</li><li><strong>Die austretende Lernkarte überquerte die Intervall-Reihe</strong>, also gerade das, was man ansehen soll. Die Deckkraft fällt jetzt in 55 % der Dauer.</li><li><strong>Eine versteckte Karte stand sichtbar da.</strong> <code>[hidden]</code> verliert gegen ein <code>display: flex</code> am Element; beide Musterseiten setzen es jetzt mit <code>!important</code>.</li><li><strong>Das Onboarding schob die Seite auf 390 pt waagerecht</strong> (425 statt 390), weil der Schirm 393 pt breit ist. Der Halter darf jetzt schmaler werden als sein Inhalt.</li><li><strong>Pause sah aus wie aus und war es nicht.</strong> Die Knöpfe des Ablaufs setzen jetzt <code>disabled</code>, nicht nur eine Klasse.</li><li><strong>Die wischbare Karte verschluckte jeden Tap auf ihren eigenen Herkunfts-Chip.</strong> <code>setPointerCapture</code> beim Aufsetzen leitet auch das <code>click</code>-Ereignis auf die Karte um. Der Zeiger wird jetzt erst ab 6 pt Weg gefangen, und ein Aufsetzen auf einem Bedienelement startet gar kein Ziehen.</li><li><strong>Nach dem Wischen sprang die Intervall-Vorschau ein Feld zu weit</strong> (auf 21 d statt 8 d): die Vorschau hatte den Index schon verschoben, die Bewertung verschob ein zweites Mal. <code>bewerten()</code> nimmt jetzt eine <code>basis</code> entgegen.</li><li><strong>Beim Ziehen markierte die Karte ihren eigenen Text.</strong> <code>.bw-wisch</code> hat jetzt <code>user-select: none</code> — eine Karte, die man wischt, ist ein Gegenstand, kein Absatz.</li><li><strong>Der Ink-Ring des Reduce-Pfads von „Öffnen" war unsichtbar.</strong> Er lag als <code>box-shadow</code> auf der Ursprungskarte, und die Notizbuchkarte setzt ihren eigenen Schatten in einer später geladenen Regel. Der Ring liegt jetzt als Pseudoelement über der Karte — das kann niemand versehentlich überschreiben, weil es ein anderer Gegenstand ist.</li></ol>
+<p>Nicht korrigiert, weil richtig: das App-Icon lädt nicht und die Konsole meldet <code>ERR_FILE_NOT_FOUND</code>. Genau das soll sie, solange die drei PNG fehlen.</p>
+    </article>
+  </main>
+</div>
+<p class="colophon">Aus 03_bewegung.md erzeugt. <a href="../mockups/index.html">Zurück zur Übersicht</a></p>
+<script>
+(function(){
+  var root = document.documentElement;
+
+  /* Hell/Dunkel — setzt data-theme auf <html>. Ohne Auswahl gilt das
+     System (dritter Zustand). */
+  var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  var bar = document.querySelector('.themes');
+  function paint(){
+    var t = root.getAttribute('data-theme') || (mq && mq.matches ? 'dark' : 'light');
+    var bs = bar.querySelectorAll('button');
+    for (var i=0;i<bs.length;i++){
+      var on = bs[i].getAttribute('data-val') === t;
+      bs[i].classList.toggle('is-on', on);
+      bs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+  bar.addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if (!b) return;
+    root.setAttribute('data-theme', b.getAttribute('data-val'));
+    try { localStorage.setItem('docs-theme', b.getAttribute('data-val')); } catch(err){}
+    paint();
+  });
+  try {
+    var saved = localStorage.getItem('docs-theme');
+    if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+  } catch(err){}
+  if (mq && mq.addEventListener) mq.addEventListener('change', paint);
+  paint();
+
+  /* Inhaltsverzeichnis: sichtbarer Abschnitt wird hervorgehoben. */
+  var heads = [].slice.call(document.querySelectorAll('.doc h2[id], .doc h3[id]'));
+  var links = [].slice.call(document.querySelectorAll('[data-t]'));
+  if (!heads.length || !links.length) return;
+
+  var current = '';
+  function setActive(id){
+    if (id === current) return;
+    current = id;
+    var groups = [].slice.call(document.querySelectorAll('.toc-group'));
+    for (var g=0; g<groups.length; g++) groups[g].classList.remove('is-open');
+    for (var i=0;i<links.length;i++){
+      var on = links[i].getAttribute('data-t') === id;
+      links[i].classList.toggle('is-current', on);
+      if (on){
+        var grp = links[i].closest('.toc-group');
+        if (grp) grp.classList.add('is-open');
+        var box = links[i].closest('.toc');
+        if (box && box.scrollHeight > box.clientHeight){
+          var lt = links[i].offsetTop, lb = lt + links[i].offsetHeight;
+          if (lt < box.scrollTop + 8) box.scrollTop = lt - 8;
+          else if (lb > box.scrollTop + box.clientHeight - 8) box.scrollTop = lb - box.clientHeight + 8;
+        }
+      }
+    }
+    var wrap = links.filter(function(l){ return l.getAttribute('data-t') === id; })[0];
+    if (wrap){
+      var p = wrap.closest('.toc-group');
+      if (p) p.classList.add('is-open');
+    }
+  }
+
+  var LINE = 140;
+  function update(){
+    var pick = null;
+    for (var i=0;i<heads.length;i++){
+      if (heads[i].getBoundingClientRect().top <= LINE) pick = heads[i]; else break;
+    }
+    if (!pick){
+      pick = heads[0];
+      if (window.scrollY <= 4) { setActive(heads[0].id); return; }
+    }
+    /* am Dokumentende: letzte Ueberschrift gewinnt */
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) pick = heads[heads.length-1];
+    setActive(pick.id);
+  }
+
+  var ticking = false;
+  function schedule(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ ticking = false; update(); });
+  }
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(schedule, { rootMargin: '-' + LINE + 'px 0px -55% 0px', threshold: [0, 1] });
+    for (var i=0;i<heads.length;i++) io.observe(heads[i]);
+  }
+  window.addEventListener('scroll', schedule, { passive:true });
+  window.addEventListener('resize', schedule);
+  update();
+
+  /* Tabellen: passt eine in der Breite, wird die Scrollbox aufgehoben.
+     Dann klebt ihre Kopfzeile beim Weiterscrollen am oberen Fensterrand.
+     Muss sie seitwaerts scrollen, bleibt sie eine Box. */
+  var boxes = [].slice.call(document.querySelectorAll('.tablebox'));
+
+  /* Vordere Spalten festhalten, solange seitwaerts gescrollt wird.
+     Gemessen wird vor dem Kleben — sticky aendert die Breiten nicht.
+     Die 45-%-Grenze gilt ab der ERSTEN Spalte. Frueher war sie an
+     i > 0 gebunden; dadurch stand die erste Spalte immer fest, auch
+     wenn sie allein 79 % der sichtbaren Breite frass und zum Lesen
+     nur ein Streifen uebrig blieb. Passt die erste Spalte nicht in
+     die Grenze, klebt gar nichts — dann ist Scrollen ohne Anker
+     immer noch besser als eine Tabelle, die man nicht lesen kann. */
+  function klebSpalten(b, mehr){
+    var t = b.querySelector('table');
+    if (!t || !t.tHead) return;
+    var zeilen = [].slice.call(t.rows);
+    for (var r = 0; r < zeilen.length; r++){
+      var z = zeilen[r].cells;
+      for (var c = 0; c < z.length; c++){
+        z[c].classList.remove('kleb','kleb-letzte');
+        z[c].style.left = '';
+      }
+    }
+    b.style.setProperty('--klebw','0px');
+    if (!mehr) return;
+    var kopf = t.tHead.rows[0].cells;
+    var grenze = b.clientWidth * 0.45, summe = 0, links = [], n = 0;
+    for (var i = 0; i < kopf.length - 1 && i < 2; i++){
+      var w = kopf[i].getBoundingClientRect().width;
+      if (summe + w > grenze) break;
+      links.push(summe); summe += w; n = i + 1;
+    }
+    /* Bliebe nur eine schmale Zaehlspalte stehen, sagt sie nichts —
+       dann lieber gar nichts festhalten und die Breite dem Inhalt
+       geben. Genau das passiert auf dem Telefon. */
+    if (n === 1 && summe < 64) n = 0;
+    /* Breite des festgehaltenen Blocks: daran haengen die Namen der
+       Spalten, die gerade darunter durchlaufen (siehe --klebw im CSS). */
+    b.style.setProperty('--klebw', (n ? summe : 0) + 'px');
+    for (var r2 = 0; r2 < zeilen.length; r2++){
+      var z2 = zeilen[r2].cells;
+      for (var c2 = 0; c2 < n && c2 < z2.length; c2++){
+        z2[c2].classList.add('kleb');
+        if (c2 === n - 1) z2[c2].classList.add('kleb-letzte');
+        z2[c2].style.left = links[c2] + 'px';
+      }
+    }
+  }
+
+  function markBox(b, voll){
+    var wrap = b.closest('.tablewrap');
+    var mehr = b.scrollWidth > b.clientWidth + 2;
+    if (voll){
+      b.classList.toggle('is-frei', !mehr);
+      /* Rolle, Tabstopp und Ansage gelten nur, solange wirklich etwas zu
+         scrollen ist. Sonst schickte die Tabelle Tastatur und Vorlese-
+         software durch einen leeren Halt und kuendigte einen Weg an, den
+         es nicht gibt. */
+      if (mehr){
+        b.setAttribute('role','region');
+        b.setAttribute('tabindex','0');
+        b.setAttribute('aria-label','Tabelle, seitlich scrollbar');
+      } else {
+        b.removeAttribute('role');
+        b.removeAttribute('tabindex');
+        b.removeAttribute('aria-label');
+      }
+      klebSpalten(b, mehr);
+    }
+    wrap.classList.toggle('is-mehr', mehr && b.scrollLeft + b.clientWidth < b.scrollWidth - 2);
+    wrap.classList.toggle('is-ab', mehr && b.scrollLeft > 2);
+  }
+  function fitTables(){ for (var i=0;i<boxes.length;i++) markBox(boxes[i], true); }
+  if (boxes.length){
+    for (var bi=0; bi<boxes.length; bi++){
+      (function(b){
+        b.addEventListener('scroll', function(){ markBox(b, false); }, { passive:true });
+      })(boxes[bi]);
+    }
+    fitTables();
+    var rt;
+    window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(fitTables, 150); });
+  }
+
+  /* Auf schmalen Fenstern schliesst ein Klick das Verzeichnis wieder. */
+  var det = document.querySelector('.toc-narrow');
+  if (det) det.addEventListener('click', function(e){
+    if (e.target.closest('a')) det.removeAttribute('open');
+  });
+})();
+</script>
+</body>
+</html>

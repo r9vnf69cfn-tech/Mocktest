@@ -69,7 +69,56 @@ mkdir(OUT);
 const nNext = copyDir(`${REPO}/mockups/app-next`, `${OUT}/app-next`);
 const nBest = copyDir(`${REPO}/mockups/best-of`, `${OUT}/best-of`);
 const nShared = copyDir(`${REPO}/mockups/shared`, `${OUT}/shared`);
-const nBilder = copyDir(`${REPO}/mockups/_renders`, `${OUT}/_renders`);
+/* Die Bilder kommen auf halbe Kantenlänge. Sie sind mit deviceScaleFactor 2
+   gerendert, die Startseite zeigt sie 380 pt breit, und in voller Größe wiegt
+   der Ordner 127 MB — ein Paket, das niemand herunterlädt, ist keins. Auf 1×
+   sind sie auf jedem Bildschirm scharf; die vollen Fassungen liegen im Repo
+   unter mockups/_renders/. Ohne Python fällt der Bau auf Kopieren zurück und
+   sagt es. */
+let nBilder = 0;
+{
+  mkdir(`${OUT}/_renders`);
+  const skript = `
+import sys, os
+from PIL import Image
+quelle, ziel = sys.argv[1], sys.argv[2]
+LANG = 1600          # laengste Kante; die Kontaktboegen sind bis 5000 px breit
+n = 0
+for wurzel, _, dateien in os.walk(quelle):
+    rel = os.path.relpath(wurzel, quelle)
+    aus = ziel if rel == '.' else os.path.join(ziel, rel)
+    os.makedirs(aus, exist_ok=True)
+    for name in sorted(dateien):
+        if not name.lower().endswith('.png'):
+            continue
+        bild = Image.open(os.path.join(wurzel, name))
+        b, h = bild.size
+        f = 0.5
+        if max(b, h) * f > LANG:
+            f = LANG / max(b, h)
+        bild.resize((max(1, int(b * f)), max(1, int(h * f))), Image.LANCZOS).save(
+            os.path.join(aus, name), optimize=True)
+        n += 1
+print(n)
+`;
+  const { spawnSync } = require('child_process');
+  const r = spawnSync('python3', ['-c', skript, `${REPO}/mockups/_renders`, `${OUT}/_renders`],
+    { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  if (r.status === 0 && /^\d+/.test((r.stdout || '').trim())) {
+    nBilder = parseInt(r.stdout.trim(), 10);
+    log.push(`_renders: ${nBilder} Bilder auf halbe Kantenlänge gebracht`);
+  } else {
+    warn.push('_renders: Verkleinern fehlgeschlagen, es wird kopiert — das Paket wird groß. ' +
+      String(r.stderr || r.error || '').slice(0, 200));
+    nBilder = copyDir(`${REPO}/mockups/_renders`, `${OUT}/_renders`);
+  }
+}
+/* Seit dieser Runde mit im Paket: die Bewegungsseiten, die Plattformseiten,
+   die Bildprobe — die Startseite verweist auf alle drei, und ohne sie stünden
+   dort sechzehn tote Verweise. */
+const nMotion = copyDir(`${REPO}/mockups/motion`, `${OUT}/motion`);
+const nPlatform = copyDir(`${REPO}/mockups/platform`, `${OUT}/platform`);
+const nAssets = copyDir(`${REPO}/mockups/assets`, `${OUT}/assets`);
 
 /* ── 3. Canvas ───────────────────────────────────────────────────────── */
 copyFile(`${REPO}/index.html`, `${OUT}/canvas/index.html`);
@@ -112,8 +161,32 @@ const nJs = copyDir(`${REPO}/js`, `${OUT}/canvas/js`);
   log.push('canvas/index.html: Bibliotheks-Knopf führt zur Startseite');
 }
 
+/* ── 3b. Der begehbare Prototyp ──────────────────────────────────────────
+   Er ist seit Runde 3 das Hauptstück des Pakets: siebzehn Schirme, zwei
+   Geräte, das Canvas im Rahmen. Er liegt eine Ebene tief (prototyp/) und
+   findet system.css über ../shared/ — dieselbe Tiefe wie im Repo, also ist
+   an den Verweisen nach shared/ nichts zu ändern. Nur der Weg zum Canvas
+   geht im Repo zwei Ebenen hoch und im Paket in den Ordner canvas/. */
+const nProto = copyDir(`${REPO}/mockups/prototyp`, `${OUT}/prototyp`);
+for (const datei of ['index.html', 'prototyp.js']) {
+  const p = `${OUT}/prototyp/${datei}`;
+  if (!fs.existsSync(p)) { warn.push(`fehlt: prototyp/${datei}`); continue; }
+  let html = fs.readFileSync(p, 'utf8');
+  html = ersetze(html, '../../index.html', '../canvas/index.html', 1, `prototyp/${datei}`);
+  fs.writeFileSync(p, html);
+}
+
+/* ── 3c. Wovon die Dokumente sprechen ────────────────────────────────────
+   Die Texte verweisen auf den reservierten Platz des Zeichens und auf zwei
+   Messwerkzeuge. Ohne sie im Paket zeigten sechs Verweise ins Leere — und
+   gerade diese sechs sind die, bei denen jemand nachsehen will. */
+const nBrand = copyDir(`${REPO}/assets/brand`, `${OUT}/assets/brand`);
+const nTools = copyDir(`${REPO}/tools`, `${OUT}/tools`,
+  (name) => /^(affordanz|rendern)\.js$/.test(name));
+
 /* ── 4. Dokumente ────────────────────────────────────────────────────── */
-const DOKUMENTE = ['konkurrenz-anatomie.html', 'das-ist-die-app.html', 'liesmich.html'];
+const DOKUMENTE = ['konkurrenz-anatomie.html', 'das-ist-die-app.html', 'bewegung.html',
+                   'velum-dna.html', 'hig-check.html', 'liesmich.html'];
 for (const d of DOKUMENTE) {
   if (!copyFile(`${REPO}/docs/${d}`, `${OUT}/docs/${d}`)) continue;
   const p = `${OUT}/docs/${d}`;
@@ -162,6 +235,8 @@ const groesse = (() => {
 console.log(log.join('\n'));
 console.log('\n── Bilanz ──');
 console.log(`app-next   ${nNext} Dateien`);
+console.log(`prototyp   ${nProto} Dateien`);
+console.log(`motion     ${nMotion} · platform ${nPlatform} · assets ${nAssets + nBrand} · tools ${nTools}`);
 console.log(`best-of    ${nBest} Dateien`);
 console.log(`shared     ${nShared} Dateien`);
 console.log(`_renders   ${nBilder} Dateien`);

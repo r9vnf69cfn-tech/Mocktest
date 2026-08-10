@@ -1,0 +1,974 @@
+<!doctype html>
+<!--
+  Eigenstaendige Dokumentseite. Kein externes CSS, kein externes JS,
+  keine Web-Fonts, keine Netzwerkanfrage — laeuft ueber file://.
+
+  Erzeugt aus Markdown von scratchpad/md2html.js. Aenderungen gehoeren
+  in die Markdown-Quelle, nicht in diese Datei.
+
+  KONTRAST — gerechnet nach WCAG 2.1 (relative Luminanz, sRGB),
+  Alpha-Farben vorher auf ihren Untergrund gerechnet.
+
+  Hell:
+     Fliesstext  ink-1 auf --paper             17,77:1
+     Tabellenzelle ink-1 auf --paper           17,77:1
+     Tabellenzelle ink-1 auf Zebra (--fill)    16,08:1
+     Tabellenkopf ink-1 auf --paper-2          17,03:1
+     Code ink-1 auf --fill                     16,08:1
+     Sekundaertext ink-2 auf --paper           5,32:1
+     Inhaltsverzeichnis ink-2 auf --ground     5,10:1
+     Tertiaertext ink-3 auf --ground           4,77:1
+     Tertiaertext ink-3 auf --paper            4,97:1
+     Aktiver Schalter accent-on auf --accent   17,77:1
+     Schalter ink-2 auf --fill ueber --ground  4,90:1
+     Verweisstrich ink-3 auf --paper           4,97:1
+     Verweisstrich ink-3 auf Code-Feld         4,79:1
+
+  Dunkel:
+     Fliesstext  ink-1 auf --paper             15,86:1
+     Tabellenzelle ink-1 auf --paper           15,86:1
+     Tabellenzelle ink-1 auf Zebra (--fill)    13,26:1
+     Tabellenkopf ink-1 auf --paper-2          14,86:1
+     Code ink-1 auf --fill                     13,26:1
+     Sekundaertext ink-2 auf --paper           7,10:1
+     Inhaltsverzeichnis ink-2 auf --ground     7,40:1
+     Tertiaertext ink-3 auf --ground           5,23:1
+     Tertiaertext ink-3 auf --paper            5,11:1
+     Aktiver Schalter accent-on auf --accent   17,27:1
+     Schalter ink-2 auf --fill ueber --ground  6,82:1
+     Verweisstrich ink-3 auf --paper           5,11:1
+     Verweisstrich ink-3 auf Code-Feld         4,70:1
+
+  Fliesstext und Tabellenzellen liegen in beiden Modi weit ueber 4,5:1.
+  Die schwaechsten Werte sind Sekundaer- und Tertiaertext; auch die
+  halten 4,5:1 und tragen nie allein eine Aussage (Zwei-Merkmal-Regel).
+-->
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>05 · Der Affordanz-Test und der Systemtreue-Nachweis — Dokumentation</title>
+<style>
+/* ── Tokens. Jede Farbe ist auf blankem :root definiert; die beiden
+      dunklen Bloecke schreiben nur um. ───────────────────────────── */
+:root{
+  color-scheme: light;
+  --ground:#F2F2F4;
+  --paper:#FFFFFF;
+  --paper-2:#FAFAFB;
+  --ink-1:#16181C;
+  --ink-2:rgba(22,24,28,.64);
+  --ink-3:rgba(22,24,28,.62);
+  --ink-4:rgba(22,24,28,.30);
+  --line:rgba(22,24,28,.10);
+  --line-2:rgba(22,24,28,.18);
+  --fill:rgba(22,24,28,.05);
+  --fill-2:rgba(22,24,28,.09);
+  --accent:#16181C;
+  --accent-on:#FFFFFF;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,"Segoe UI",Roboto,sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace;
+  /* Nachgemessen, nicht geschaetzt: 52ch ergibt Zeilen von hoechstens
+     ~69 Zeichen. Die Einheit ch skaliert mit der Systemschrift, die
+     Zeichenzahl bleibt damit auch bei anderer Schrift stabil. */
+  --measure:52ch;
+  /* Blattbreite. Sie haengt an der Lesebreite: Blatt = Satzspiegel +
+     44 px Blattrand links/rechts + 24 px Seitenrand links/rechts +
+     82 px Zugabe, die Tabellen und Code nutzen. Sonst stuende zwischen
+     dem Zeilenende und der Blattkante leeres Papier.
+     Kommt das Verzeichnis dazu, waechst das Blatt um genau dessen
+     Spalte (--toc + --gap = 288 px) — die Textspalte bleibt dabei auf
+     den Pixel gleich breit (gemessen: 732 px mit und ohne Verzeichnis).
+     Vorher sprang sie an der Grenze von 732 auf 704 px zurueck. */
+  --toc:240px;
+  --gap:48px;
+  --sheet:calc(var(--measure) + 218px);
+  --bar:56px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --ground:#0E0F11;
+    --paper:#17191C;
+    --paper-2:#1D1F23;
+    --ink-1:#F2F3F5;
+    --ink-2:rgba(242,243,245,.64);
+    --ink-3:rgba(242,243,245,.52);
+    --ink-4:rgba(242,243,245,.30);
+    --line:rgba(242,243,245,.12);
+    --line-2:rgba(242,243,245,.20);
+    --fill:rgba(242,243,245,.07);
+    --fill-2:rgba(242,243,245,.12);
+    --accent:#F2F3F5;
+    --accent-on:#0E0F11;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --ground:#0E0F11;
+  --paper:#17191C;
+  --paper-2:#1D1F23;
+  --ink-1:#F2F3F5;
+  --ink-2:rgba(242,243,245,.64);
+  --ink-3:rgba(242,243,245,.52);
+  --ink-4:rgba(242,243,245,.30);
+  --line:rgba(242,243,245,.12);
+  --line-2:rgba(242,243,245,.20);
+  --fill:rgba(242,243,245,.07);
+  --fill-2:rgba(242,243,245,.12);
+  --accent:#F2F3F5;
+  --accent-on:#0E0F11;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink-1);
+  /* Dieselbe Skala, die das Dokument selbst abdruckt: 28/34 · 20/26 ·
+     17/23 · 15/20 · 13/16, zwei Gewichte. Auch die Zeilenhoehen. */
+  font:400 17px/23px var(--sans);
+  font-synthesis-weight:none;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* Kein scroll-behavior:smooth: das 01-Dokument ist ueber 80 000 px hoch,
+   ein Sprung ans Ende wuerde sekundenlang durch leere Flaechen animieren. */
+::selection{ background:var(--fill-2); }
+/* Ein Verweis darf sich nicht allein durch die Farbe zeigen — er hat
+   ja dieselbe. Also traegt er die Unterstreichung, und die muss man
+   sehen: --line-2 (.18) ergab auf Papier 1,5:1, eine Haarlinie, die
+   neben einem bloss genannten Pfad nicht auffiel. --ink-3 misst
+   4,76:1 hell und 4,56:1 dunkel. */
+a{ color:var(--ink-1); text-underline-offset:3px; text-decoration-color:var(--ink-3); }
+a:hover{ text-decoration-color:currentColor; }
+/* Steht der Verweistext in einem Code-Feld — bei Pfaden die Regel —,
+   deckt dessen Flaeche die Unterstreichung des <a> zu: das Feld ist
+   22 px hoch, die Zeile des <a> nur 20. Dann unterstreicht das Feld
+   selbst; sonst waere ein anklickbarer Pfad von einem nur genannten
+   nicht zu unterscheiden. */
+a code{ text-decoration:underline; text-decoration-color:var(--ink-3); text-underline-offset:2px; }
+a:hover code{ text-decoration-color:currentColor; }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+
+/* ── Kopfleiste: Zurueck + Umschalter ───────────────────────────── */
+.topbar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  height:var(--bar);
+  padding:0 24px;
+  background:var(--ground);
+  border-bottom:1px solid var(--line);
+}
+.back{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:15px; line-height:20px; color:var(--ink-2); text-decoration:none;
+  padding:6px 10px; margin-left:-10px; border-radius:8px;
+}
+.back:hover{ color:var(--ink-1); background:var(--fill); }
+.back svg{ flex:none; }
+.themes{ display:flex; gap:2px; padding:2px; background:var(--fill); border-radius:999px; }
+.themes button{
+  appearance:none; border:0; cursor:pointer;
+  font:600 13px/16px var(--sans);
+  color:var(--ink-2); background:transparent;
+  padding:7px 14px; border-radius:999px;
+}
+.themes button:hover{ color:var(--ink-1); }
+.themes button.is-on{ background:var(--accent); color:var(--accent-on); }
+
+/* ── Titelblock ─────────────────────────────────────────────────── */
+.masthead{ max-width:var(--sheet); margin:0 auto; padding:56px 24px 32px; }
+.eyebrow{
+  margin:0 0 12px; font:600 13px/16px var(--sans);
+  letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3);
+}
+.masthead h1{ margin:0; font:600 28px/34px var(--sans); letter-spacing:-.015em; max-width:22ch; }
+.masthead .sub{ margin:12px 0 0; font:400 17px/23px var(--sans); color:var(--ink-2); max-width:var(--measure); }
+
+/* ── Seitenraster ───────────────────────────────────────────────── */
+.page{ max-width:var(--sheet); margin:0 auto; padding:0 24px 120px; }
+/* Die Grenze ist das Blatt selbst: 1068 px = Blatt ohne Verzeichnis
+   (780) + Verzeichnisspalte (240) + Rinne (48). Sobald das Fenster das
+   breitere Blatt traegt, erscheint das Verzeichnis — kein Streifen
+   dazwischen, in dem das Fenster schon breit genug waere und trotzdem
+   nichts passiert. Frueher lag die Grenze bei 1100 px, das Blatt aber
+   bei 1040 px: die 60 px dazwischen blieben ungenutzt. */
+@media (min-width:1068px){
+  :root{ --sheet:calc(var(--measure) + 218px + var(--toc) + var(--gap)); }
+  .page{ display:grid; grid-template-columns:var(--toc) minmax(0,1fr); gap:var(--gap); align-items:start; }
+}
+
+/* ── Inhaltsverzeichnis, breit ──────────────────────────────────── */
+.toc{ display:none; }
+@media (min-width:1068px){
+  .toc{
+    display:block; position:sticky; top:calc(var(--bar) + 24px);
+    max-height:calc(100vh - var(--bar) - 48px); overflow-y:auto;
+    padding-bottom:24px;
+  }
+}
+.toc-title{ margin:0 0 12px; font:600 13px/16px var(--sans); letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); }
+.toc ol,.toc ul{ list-style:none; margin:0; padding:0; }
+.toc-l2,.toc-l3{
+  display:block; text-decoration:none;
+  border-left:2px solid transparent;
+  color:var(--ink-2);
+}
+.toc-l2{ font:400 15px/20px var(--sans); padding:7px 10px 7px 12px; }
+.toc-l3{ font:400 13px/16px var(--sans); padding:5px 10px 5px 24px; color:var(--ink-3); }
+.toc-l2:hover,.toc-l3:hover{ color:var(--ink-1); background:var(--fill); }
+.toc-sub{ display:none; margin-bottom:4px; }
+.toc-group.is-open > .toc-sub{ display:block; }
+.toc-group.is-open > .toc-l2{ color:var(--ink-1); }
+.toc a.is-current{ color:var(--ink-1); font-weight:600; border-left-color:var(--accent); background:var(--fill); }
+
+/* ── Inhaltsverzeichnis, schmal ─────────────────────────────────── */
+.toc-narrow{
+  margin:0 0 32px; background:var(--paper); border:1px solid var(--line); border-radius:14px;
+}
+@media (min-width:1068px){ .toc-narrow{ display:none; } }
+.toc-narrow > summary{
+  cursor:pointer; list-style:none;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:16px 20px; font:600 15px/20px var(--sans); color:var(--ink-1);
+  border-radius:14px;
+}
+.toc-narrow > summary::-webkit-details-marker{ display:none; }
+.toc-narrow > summary .chev{ transition:transform .18s ease; color:var(--ink-3); flex:none; }
+.toc-narrow[open] > summary .chev{ transform:rotate(180deg); }
+.toc-narrow[open] > summary{ border-bottom:1px solid var(--line); border-radius:14px 14px 0 0; }
+.toc-narrow ol,.toc-narrow ul{ list-style:none; margin:0; padding:0; }
+.toc-narrow .toc-body{ padding:8px 12px 14px; max-height:min(60vh,520px); overflow-y:auto; }
+.toc-narrow .toc-sub{ display:block; }
+.toc-narrow .toc-l2{ font:600 15px/20px var(--sans); color:var(--ink-1); padding:8px 10px; }
+.toc-narrow .toc-l3{ padding:6px 10px 6px 24px; }
+
+/* ── Dokumentflaeche ────────────────────────────────────────────── */
+.doc{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:8px 44px 48px;
+  min-width:0;
+  overflow-wrap:break-word;
+}
+@media (max-width:640px){ .doc{ padding:4px 20px 36px; border-radius:14px; } }
+/* Fliesstext bleibt auf Lesebreite; Tabellen, Code und die
+   Abschnittslinie der H2 duerfen die volle Blattbreite nutzen.
+   Die Trennlinie vor einer H3 bleibt bewusst auf Satzbreite: kuerzere
+   Linie + kleinere Ueberschrift = zwei Merkmale, an denen man den
+   kleineren Einschnitt vom groesseren unterscheidet. */
+.doc > *{ max-width:var(--measure); }
+.doc > .tablewrap,.doc > pre,.doc > h2{ max-width:none; }
+.doc > h2 .h-t{ display:inline-block; max-width:var(--measure); }
+
+.doc p{ margin:0 0 20px; }
+.doc .lead{ font:400 20px/26px var(--sans); color:var(--ink-1); margin:32px 0 28px; }
+.doc{ counter-reset:sec; }
+.doc h2{
+  counter-increment:sec; counter-reset:sub;
+  margin:60px 0 20px; padding-top:28px;
+  border-top:1px solid var(--line);
+  font:600 20px/26px var(--sans); letter-spacing:-.01em;
+}
+.doc h3{
+  counter-increment:sub;
+  margin:44px 0 14px;
+  font:600 17px/23px var(--sans);
+}
+/* Abschnittsnummer als eigene Zeile: gibt Ueberschriften eine zweite,
+   von der Schriftgroesse unabhaengige Kennzeichnung — sonst waere eine
+   H3 von einem fett angefuehrten Absatz kaum zu unterscheiden. */
+.doc h2::before,.doc h3::before{
+  display:block; margin-bottom:9px;
+  font:400 13px/16px var(--mono); letter-spacing:.08em; color:var(--ink-3);
+}
+.doc h2::before{ content:counter(sec,decimal-leading-zero); }
+.doc h3::before{ content:counter(sec,decimal-leading-zero) "." counter(sub); }
+.doc h4{ margin:32px 0 12px; font:600 15px/20px var(--sans); color:var(--ink-2); }
+.doc h2:first-child,.doc h3:first-child{ margin-top:32px; }
+/* Die Linie der H2 trennt zwei Abschnitte voneinander. Steht die erste
+   H2 am Blattanfang — auf das-ist-die-app.html steht kein Vorspann
+   davor —, trennte sie den Blattrand von der Ueberschrift: ein Strich
+   ueber nichts. Am Blattanfang faellt sie deshalb weg; die Nummer ueber
+   der Ueberschrift kennzeichnet den Abschnitt dort allein. */
+.doc > h2:first-child{ border-top:0; padding-top:0; }
+.doc h2,.doc h3,.doc h4{ scroll-margin-top:calc(var(--bar) + 20px); }
+
+.anchor{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; margin-left:6px; vertical-align:-5px;
+  color:var(--ink-3); opacity:0; text-decoration:none; border-radius:6px;
+  transition:opacity .12s ease;
+}
+h2:hover .anchor,h3:hover .anchor,h4:hover .anchor,.anchor:focus-visible{ opacity:1; }
+.anchor:hover{ color:var(--ink-1); background:var(--fill); }
+/* Ohne Zeigegeraet gibt es kein :hover. Dort stuende sonst ein
+   unsichtbares, 24 px grosses Ziel neben jeder Ueberschrift, das beim
+   Antippen der Ueberschrift zuschnappt. Also sichtbar zeigen. */
+@media (hover:none){
+  .anchor{ opacity:1; }
+  .anchor:hover{ color:var(--ink-3); background:none; }
+}
+
+.doc ul,.doc ol{ margin:0 0 20px; padding-left:24px; }
+.doc li{ margin:0 0 10px; padding-left:4px; }
+.doc li::marker{ color:var(--ink-3); }
+.doc ol{ counter-reset:none; }
+.doc strong{ font-weight:600; }
+.doc em{ font-style:italic; }
+
+.doc hr{
+  border:0; height:1px; background:var(--line);
+  margin:44px 0;
+}
+.doc hr + h3{ margin-top:0; padding-top:0; }
+
+/* Der Balken ist Auszeichnung, kein Zustand: er darf den Ink-Akzent
+   nicht tragen, der aktivem Zustand, primaerer Aktion und Auswahl
+   vorbehalten ist. Der Kasten wird ohnehin durch Flaeche und Radius
+   erkannt — der Balken ist das dritte, schwaechste Merkmal. */
+blockquote{
+  margin:28px 0; padding:20px 24px;
+  background:var(--fill); border-left:2px solid var(--ink-4);
+  border-radius:0 12px 12px 0;
+}
+blockquote > *:last-child{ margin-bottom:0; }
+blockquote p{ margin:0 0 14px; }
+
+code{
+  font:400 15px/20px var(--mono);
+  background:var(--fill); color:var(--ink-1);
+  padding:2px 5px; border-radius:5px;
+  overflow-wrap:anywhere;
+}
+pre{
+  margin:24px 0; padding:20px 22px;
+  background:var(--paper-2); border:1px solid var(--line); border-radius:12px;
+  overflow-x:auto;
+}
+pre code{ background:none; padding:0; font-size:13px; line-height:16px; white-space:pre; }
+h2 code,h3 code,th code{ font-size:.9em; }
+
+/* ── Tabellen ───────────────────────────────────────────────────── */
+/* Eigene Scrollbox: die Seite selbst scrollt nie seitwaerts.
+   Passt eine Tabelle in der Breite, hebt das Skript die Box mit
+   .is-frei auf — dann klebt die Kopfzeile am Fensterrand statt in einem
+   Kasten, der gar nicht senkrecht scrollt. Muss die Tabelle seitwaerts
+   scrollen, hat das Vorrang. Abgeschnitten wird nie. */
+.tablewrap{ margin:24px 0 28px; }
+.tableframe{ position:relative; }
+/* Der Verlauf am rechten Rand plus die Zeile darunter sagen, dass rechts
+   noch etwas steht — der Rollbalken allein ist auf macOS unsichtbar.
+   Beides verschwindet, sobald man am Ende angekommen ist. */
+.tableframe::after{
+  content:""; position:absolute; top:1px; right:1px; bottom:1px; width:44px;
+  border-radius:0 11px 11px 0; pointer-events:none;
+  background:linear-gradient(to left,var(--paper) 30%,rgba(127,127,127,0));
+  opacity:0; transition:opacity .15s ease;
+}
+.tablewrap.is-mehr .tableframe::after{ opacity:1; }
+.tablehint{
+  display:none;
+  margin:8px 0 0; text-align:right;
+  font:400 13px/16px var(--sans); color:var(--ink-3);
+}
+.tablewrap.is-mehr .tablehint{ display:block; }
+.tablehint::after{ content:" →"; }
+.tablebox{
+  max-width:100%;
+  overflow-x:auto;
+  border:1px solid var(--line); border-radius:12px;
+  background:var(--paper);
+  -webkit-overflow-scrolling:touch;
+  /* Der Balken bleibt sichtbar: er ist der einzige Hinweis darauf, dass
+     rechts noch eine Spalte steht. */
+  scrollbar-width:thin; scrollbar-color:var(--line-2) transparent;
+}
+.tablebox::-webkit-scrollbar{ height:11px; }
+.tablebox::-webkit-scrollbar-track{ background:transparent; }
+.tablebox::-webkit-scrollbar-thumb{
+  background:var(--line-2); border-radius:999px;
+  border:3px solid transparent; background-clip:padding-box;
+}
+/* Tabellen duerfen breiter sein als der Fliesstext und greifen dafuer
+   in den Blattrand. */
+@media (min-width:1068px){
+  .doc > .tablewrap{ margin-left:-28px; margin-right:-28px; width:calc(100% + 56px); }
+}
+.tablebox table{
+  border-collapse:collapse;
+  width:100%;
+  font-variant-numeric:tabular-nums;
+}
+.tablebox th,.tablebox td{
+  text-align:left; vertical-align:top;
+  padding:12px 16px;
+  font-size:15px; line-height:20px;
+  border-bottom:1px solid var(--line);
+}
+.tablebox.is-frei{ overflow:visible; }
+.tablebox.is-frei th{ top:var(--bar); }
+.tablebox.is-frei thead th:first-child{ border-top-left-radius:11px; }
+.tablebox.is-frei thead th:last-child{ border-top-right-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:first-child{ border-bottom-left-radius:11px; }
+.tablebox.is-frei tbody tr:last-child td:last-child{ border-bottom-right-radius:11px; }
+/* top:0 solange die Box selbst der Scrollbereich ist — sonst schoebe
+   ein Versatz die Kopfzeile ins Leere. Erst wenn die Box aufgehoben ist
+   (.is-frei), ist das Fenster der Bezug und die Kopfzeile parkt unter
+   der Kopfleiste. */
+.tablebox th{
+  position:sticky; top:0; z-index:1;
+  font-weight:600; color:var(--ink-1);
+  background:var(--paper-2);
+  border-bottom:1px solid var(--line-2);
+  white-space:nowrap;
+}
+.tablebox tbody tr:nth-child(even) td{ background:var(--fill); }
+.tablebox tbody tr:last-child td{ border-bottom:0; }
+.tablebox td{ color:var(--ink-1); }
+.ta-right{ text-align:right; }
+.ta-center{ text-align:center; }
+
+/* Muss die Tabelle seitwaerts scrollen, bleiben die vordersten Spalten
+   stehen — sonst sieht man beim Scrollen nach rechts die Optionen, aber
+   nicht mehr das Werkzeug, zu dem sie gehoeren. Wie viele Spalten das
+   sind, entscheidet das Skript: nur so viele, wie zusammen unter 45 %
+   der sichtbaren Breite bleiben, hoechstens zwei. Die Flaeche muss
+   decken, sonst schiebt sich Text darunter durch. */
+.tablebox td.kleb,.tablebox th.kleb{
+  position:sticky; z-index:1;
+  background-color:var(--paper);
+}
+.tablebox tbody tr:nth-child(even) td.kleb{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--fill),var(--fill));
+}
+.tablebox th.kleb{ top:0; z-index:2; background-color:var(--paper-2); }
+/* Die Kante zeigt sich erst, wenn wirklich etwas dahinter liegt. */
+.tablewrap.is-ab .tablebox .kleb-letzte{ box-shadow:1px 0 0 var(--line-2); }
+
+/* Spaltennamen sind kurz, ihre Zellen sind so breit wie der laengste
+   Inhalt darunter. Beim Scrollen nach rechts verschwand der Name daher
+   als Erstes unter den festgehaltenen Spalten, waehrend vom Inhalt noch
+   ein Rest herausragte — ein Wortfetzen ohne Ueberschrift. Der Name
+   klebt jetzt am rechten Rand des festgehaltenen Blocks (--klebw, vom
+   Skript gesetzt) und wandert nur so weit mit, wie seine Zelle reicht.
+   Ist die Spalte ganz durchgelaufen, geht der Name mit ihr. */
+.tablebox th > .th-t{
+  display:inline-block; max-width:100%;
+  position:sticky; left:var(--klebw,0px);
+}
+/* Die festgehaltenen Spalten stehen ohnehin still. */
+.tablebox th.kleb > .th-t{ position:static; }
+
+/* ── Fuss ───────────────────────────────────────────────────────── */
+/* Am Ende eines langen Dokuments ist die Kopfleiste zehntausende Pixel
+   entfernt. Der Fuss verspricht deshalb nicht den Weg zurueck, er ist
+   er: dieselbe Adresse wie oben links, als eigene Verknuepfung. */
+.colophon{
+  max-width:var(--sheet); margin:0 auto; padding:0 24px 64px;
+  font:400 13px/16px var(--sans); color:var(--ink-3);
+}
+.colophon a{ color:var(--ink-1); }
+@media (min-width:1068px){ .colophon{ padding-left:calc(var(--toc) + var(--gap) + 24px); } }
+
+/* ── Druck ──────────────────────────────────────────────────────── */
+@media print{
+  :root{
+    --ground:#FFFFFF; --paper:#FFFFFF; --paper-2:#FFFFFF;
+    --ink-1:#000000; --ink-2:#333333; --ink-3:#444444;
+    --line:#BBBBBB; --line-2:#888888; --fill:#F2F2F2; --accent:#000000;
+  }
+  body{ background:#FFFFFF; color:#000000; font-size:11pt; line-height:15pt; }
+  .topbar,.toc,.toc-narrow,.themes,.back,.anchor{ display:none !important; }
+  .masthead{ padding:0 0 18pt; }
+  .page{ display:block; max-width:none; padding:0; }
+  .doc{ border:0; border-radius:0; padding:0; background:#FFFFFF; }
+  /* Die Lesebreite gilt auch auf Papier; Tabellen, Code und die
+     Abschnittslinien nutzen wie am Bildschirm die volle Satzbreite. */
+  /* Dieselbe Skala, in Punkt statt Pixel — sonst waeren Titel und
+     Vorspann auf Papier doppelt so gross wie der Fliesstext. */
+  .masthead h1{ font:600 20pt/24pt var(--sans); }
+  .masthead .sub{ font-size:10pt; line-height:14pt; }
+  .eyebrow{ font-size:8pt; line-height:11pt; }
+  .doc .lead{ font:400 13pt/17pt var(--sans); margin:14pt 0 12pt; }
+  .doc h2{ font:600 14pt/18pt var(--sans); }
+  .doc h3{ font:600 12pt/16pt var(--sans); margin-top:18pt; }
+  .doc h2::before,.doc h3::before{ font-size:8.5pt; line-height:11pt; margin-bottom:4pt; }
+  .tablebox th,.tablebox td{ font-size:9.5pt; line-height:13pt; padding:6pt 8pt; }
+  code{ font-size:9.5pt; }
+  pre code{ font-size:8.5pt; line-height:12pt; }
+  blockquote{ padding:8pt 12pt; margin:12pt 0; }
+  .doc p,.doc ul,.doc ol{ margin-bottom:10pt; }
+  .doc h2{ break-after:avoid; page-break-after:avoid; margin-top:24pt; }
+  .doc h3,.doc h4{ break-after:avoid; page-break-after:avoid; }
+  .tablewrap{ margin-left:0 !important; margin-right:0 !important; width:auto !important; }
+  .tableframe::after,.tablehint{ display:none !important; }
+  .tablebox{ overflow:visible; max-height:none; break-inside:avoid; page-break-inside:avoid; border:1px solid #BBBBBB; }
+  .tablebox table{ min-width:0 !important; }
+  .tablebox th{ position:static; background:#F2F2F2; }
+  /* Auf Papier scrollt nichts, also klebt auch nichts. */
+  .tablebox td.kleb,.tablebox th.kleb{ position:static; box-shadow:none; background:none; }
+  .tablebox th.kleb{ background:#F2F2F2; }
+  .tablebox th > .th-t{ position:static; }
+  tr,thead,blockquote,pre,li{ break-inside:avoid; page-break-inside:avoid; }
+  a{ color:#000000; text-decoration:none; }
+  .colophon{ padding:0; }
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="back" href="../mockups/index.html"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M9.5 3.5 5 8l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Übersicht</a>
+  <div class="themes" role="group" aria-label="Erscheinungsbild">
+    <button type="button" data-val="light">Hell</button>
+    <button type="button" data-val="dark">Dunkel</button>
+  </div>
+</div>
+<header class="masthead">
+  <p class="eyebrow">Abnahme</p>
+  <h1>05 · Der Affordanz-Test und der Systemtreue-Nachweis</h1>
+  <p class="sub">Jeder Schirm gegen die Human Interface Guidelines gehalten: Trefferflächen, Kontraste, Dynamic Type, Bewegung.</p>
+</header>
+<div class="page">
+  <nav class="toc" aria-label="Inhalt">
+    <p class="toc-title">Inhalt</p>
+    <ol><li class="toc-group"><a class="toc-l2" data-t="1-was-geprueft-wurde-und-was-nicht" href="#1-was-geprueft-wurde-und-was-nicht">1 · Was geprüft wurde, und was nicht</a><ul class="toc-sub"><li><a class="toc-l3" data-t="wie-ein-bedienelement-gefunden-wird" href="#wie-ein-bedienelement-gefunden-wird">Wie ein Bedienelement gefunden wird</a></li><li><a class="toc-l3" data-t="was-gemessen-heisst" href="#was-gemessen-heisst">Was „gemessen" heißt</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="2-die-vier-regeln-in-rechenform" href="#2-die-vier-regeln-in-rechenform">2 · Die vier Regeln, in Rechenform</a></li><li class="toc-group"><a class="toc-l2" data-t="3-das-ergebnis-in-zahlen" href="#3-das-ergebnis-in-zahlen">3 · Das Ergebnis in Zahlen</a><ul class="toc-sub"><li><a class="toc-l3" data-t="hellmodus" href="#hellmodus">Hellmodus</a></li><li><a class="toc-l3" data-t="3-1-was-sich-im-zweiten-lauf-gegen-den-ersten-verschoben-hatte" href="#3-1-was-sich-im-zweiten-lauf-gegen-den-ersten-verschoben-hatte">3.1 · Was sich im zweiten Lauf gegen den ersten verschoben hatte</a></li><li><a class="toc-l3" data-t="3-2-die-abnahme-was-n10-bis-n12-an-der-affordanz-veraendert-haben" href="#3-2-die-abnahme-was-n10-bis-n12-an-der-affordanz-veraendert-haben">3.2 · Die Abnahme — was N10 bis N12 an der Affordanz verändert haben</a></li><li><a class="toc-l3" data-t="3-3-die-verjuengung-im-bild-gemessen-bei-2-3-und-8" href="#3-3-die-verjuengung-im-bild-gemessen-bei-2-3-und-8">3.3 · Die Verjüngung im Bild — gemessen bei 2×, 3× und 8×</a></li><li><a class="toc-l3" data-t="dunkelmodus-dieselben-1-029-elemente" href="#dunkelmodus-dieselben-1-029-elemente">Dunkelmodus — dieselben 1 029 Elemente</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="4-die-befunde-nach-schwere" href="#4-die-befunde-nach-schwere">4 · Die Befunde nach Schwere</a><ul class="toc-sub"><li><a class="toc-l3" data-t="schwer-46-elemente-die-im-unmarkierten-bild-nicht-als-bedienelement-lesbar-sind" href="#schwer-46-elemente-die-im-unmarkierten-bild-nicht-als-bedienelement-lesbar-sind">Schwer — 46 Elemente, die im unmarkierten Bild nicht als Bedienelement lesbar sind</a></li><li><a class="toc-l3" data-t="mittel-186-elemente-hell-zwei-ursachen" href="#mittel-186-elemente-hell-zwei-ursachen">Mittel — 186 Elemente (hell), zwei Ursachen</a></li><li><a class="toc-l3" data-t="leicht-390-elemente-ausnahmslos-r4-zwischen-32-und-44-pt" href="#leicht-390-elemente-ausnahmslos-r4-zwischen-32-und-44-pt">Leicht — 390 Elemente, ausnahmslos R4 zwischen 32 und 44 pt</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="5-die-fuenf-schlimmsten" href="#5-die-fuenf-schlimmsten">5 · Die fünf schlimmsten</a><ul class="toc-sub"><li><a class="toc-l3" data-t="1-die-graph-knoten-sind-jetzt-bedienelemente-und-immer-noch-nicht-lesbar" href="#1-die-graph-knoten-sind-jetzt-bedienelemente-und-immer-noch-nicht-lesbar">1 · Die Graph-Knoten sind jetzt Bedienelemente — und immer noch nicht lesbar</a></li><li><a class="toc-l3" data-t="2-der-chip-im-knopf-ein-befund-eine-regel-journal-home" href="#2-der-chip-im-knopf-ein-befund-eine-regel-journal-home">2 · Der Chip im Knopf — ein Befund, eine Regel, journal-home</a></li><li><a class="toc-l3" data-t="3-die-datumsleiste-in-best-of-tasks-sechs-von-sieben-tagen-ohne-flaeche" href="#3-die-datumsleiste-in-best-of-tasks-sechs-von-sieben-tagen-ohne-flaeche">3 · Die Datumsleiste in best-of/tasks — sechs von sieben Tagen ohne Fläche</a></li><li><a class="toc-l3" data-t="4-der-erledigt-kreis-66-mal-22-pt-und-die-loesung-liegt-weiter-daneben" href="#4-der-erledigt-kreis-66-mal-22-pt-und-die-loesung-liegt-weiter-daneben">4 · Der Erledigt-Kreis: 66-mal 22 pt, und die Lösung liegt weiter daneben</a></li><li><a class="toc-l3" data-t="5-der-wiki-link-traegt-weiter-die-etikettenlinie" href="#5-der-wiki-link-traegt-weiter-die-etikettenlinie">5 · Der Wiki-Link trägt weiter die Etikettenlinie</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="6-was-der-test-nicht-sieht" href="#6-was-der-test-nicht-sieht">6 · Was der Test nicht sieht</a></li><li class="toc-group"><a class="toc-l2" data-t="7-die-drei-sekunden-frage-je-screen" href="#7-die-drei-sekunden-frage-je-screen">7 · Die Drei-Sekunden-Frage, je Screen</a><ul class="toc-sub"><li><a class="toc-l3" data-t="die-ehrliche-zusammenfassung" href="#die-ehrliche-zusammenfassung">Die ehrliche Zusammenfassung</a></li><li><a class="toc-l3" data-t="7-1-die-dreizehn-screens-im-bild" href="#7-1-die-dreizehn-screens-im-bild">7.1 · Die dreizehn Screens im Bild</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="8-systemtreue" href="#8-systemtreue">8 · Systemtreue</a><ul class="toc-sub"><li><a class="toc-l3" data-t="8-1-schriften-belegt" href="#8-1-schriften-belegt">8.1 Schriften — belegt</a></li><li><a class="toc-l3" data-t="8-2-navigation" href="#8-2-navigation">8.2 Navigation</a></li><li><a class="toc-l3" data-t="8-3-materialien-und-tiefe" href="#8-3-materialien-und-tiefe">8.3 Materialien und Tiefe</a></li><li><a class="toc-l3" data-t="8-4-symbole" href="#8-4-symbole">8.4 Symbole</a></li><li><a class="toc-l3" data-t="8-5-kontrast-gerechnet" href="#8-5-kontrast-gerechnet">8.5 Kontrast — gerechnet</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="9-was-zu-tun-ist" href="#9-was-zu-tun-ist">9 · Was zu tun ist</a></li><li class="toc-group"><a class="toc-l2" data-t="10-reproduzieren" href="#10-reproduzieren">10 · Reproduzieren</a><ul class="toc-sub"><li><a class="toc-l3" data-t="alle-76-bilder" href="#alle-76-bilder">Alle 76 Bilder</a></li></ul></li></ol>
+  </nav>
+  <main class="doc-wrap">
+    <details class="toc-narrow">
+      <summary>Inhalt<svg class="chev" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+      <div class="toc-body"><ol><li class="toc-group"><a class="toc-l2" data-t="1-was-geprueft-wurde-und-was-nicht" href="#1-was-geprueft-wurde-und-was-nicht">1 · Was geprüft wurde, und was nicht</a><ul class="toc-sub"><li><a class="toc-l3" data-t="wie-ein-bedienelement-gefunden-wird" href="#wie-ein-bedienelement-gefunden-wird">Wie ein Bedienelement gefunden wird</a></li><li><a class="toc-l3" data-t="was-gemessen-heisst" href="#was-gemessen-heisst">Was „gemessen" heißt</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="2-die-vier-regeln-in-rechenform" href="#2-die-vier-regeln-in-rechenform">2 · Die vier Regeln, in Rechenform</a></li><li class="toc-group"><a class="toc-l2" data-t="3-das-ergebnis-in-zahlen" href="#3-das-ergebnis-in-zahlen">3 · Das Ergebnis in Zahlen</a><ul class="toc-sub"><li><a class="toc-l3" data-t="hellmodus" href="#hellmodus">Hellmodus</a></li><li><a class="toc-l3" data-t="3-1-was-sich-im-zweiten-lauf-gegen-den-ersten-verschoben-hatte" href="#3-1-was-sich-im-zweiten-lauf-gegen-den-ersten-verschoben-hatte">3.1 · Was sich im zweiten Lauf gegen den ersten verschoben hatte</a></li><li><a class="toc-l3" data-t="3-2-die-abnahme-was-n10-bis-n12-an-der-affordanz-veraendert-haben" href="#3-2-die-abnahme-was-n10-bis-n12-an-der-affordanz-veraendert-haben">3.2 · Die Abnahme — was N10 bis N12 an der Affordanz verändert haben</a></li><li><a class="toc-l3" data-t="3-3-die-verjuengung-im-bild-gemessen-bei-2-3-und-8" href="#3-3-die-verjuengung-im-bild-gemessen-bei-2-3-und-8">3.3 · Die Verjüngung im Bild — gemessen bei 2×, 3× und 8×</a></li><li><a class="toc-l3" data-t="dunkelmodus-dieselben-1-029-elemente" href="#dunkelmodus-dieselben-1-029-elemente">Dunkelmodus — dieselben 1 029 Elemente</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="4-die-befunde-nach-schwere" href="#4-die-befunde-nach-schwere">4 · Die Befunde nach Schwere</a><ul class="toc-sub"><li><a class="toc-l3" data-t="schwer-46-elemente-die-im-unmarkierten-bild-nicht-als-bedienelement-lesbar-sind" href="#schwer-46-elemente-die-im-unmarkierten-bild-nicht-als-bedienelement-lesbar-sind">Schwer — 46 Elemente, die im unmarkierten Bild nicht als Bedienelement lesbar sind</a></li><li><a class="toc-l3" data-t="mittel-186-elemente-hell-zwei-ursachen" href="#mittel-186-elemente-hell-zwei-ursachen">Mittel — 186 Elemente (hell), zwei Ursachen</a></li><li><a class="toc-l3" data-t="leicht-390-elemente-ausnahmslos-r4-zwischen-32-und-44-pt" href="#leicht-390-elemente-ausnahmslos-r4-zwischen-32-und-44-pt">Leicht — 390 Elemente, ausnahmslos R4 zwischen 32 und 44 pt</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="5-die-fuenf-schlimmsten" href="#5-die-fuenf-schlimmsten">5 · Die fünf schlimmsten</a><ul class="toc-sub"><li><a class="toc-l3" data-t="1-die-graph-knoten-sind-jetzt-bedienelemente-und-immer-noch-nicht-lesbar" href="#1-die-graph-knoten-sind-jetzt-bedienelemente-und-immer-noch-nicht-lesbar">1 · Die Graph-Knoten sind jetzt Bedienelemente — und immer noch nicht lesbar</a></li><li><a class="toc-l3" data-t="2-der-chip-im-knopf-ein-befund-eine-regel-journal-home" href="#2-der-chip-im-knopf-ein-befund-eine-regel-journal-home">2 · Der Chip im Knopf — ein Befund, eine Regel, journal-home</a></li><li><a class="toc-l3" data-t="3-die-datumsleiste-in-best-of-tasks-sechs-von-sieben-tagen-ohne-flaeche" href="#3-die-datumsleiste-in-best-of-tasks-sechs-von-sieben-tagen-ohne-flaeche">3 · Die Datumsleiste in best-of/tasks — sechs von sieben Tagen ohne Fläche</a></li><li><a class="toc-l3" data-t="4-der-erledigt-kreis-66-mal-22-pt-und-die-loesung-liegt-weiter-daneben" href="#4-der-erledigt-kreis-66-mal-22-pt-und-die-loesung-liegt-weiter-daneben">4 · Der Erledigt-Kreis: 66-mal 22 pt, und die Lösung liegt weiter daneben</a></li><li><a class="toc-l3" data-t="5-der-wiki-link-traegt-weiter-die-etikettenlinie" href="#5-der-wiki-link-traegt-weiter-die-etikettenlinie">5 · Der Wiki-Link trägt weiter die Etikettenlinie</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="6-was-der-test-nicht-sieht" href="#6-was-der-test-nicht-sieht">6 · Was der Test nicht sieht</a></li><li class="toc-group"><a class="toc-l2" data-t="7-die-drei-sekunden-frage-je-screen" href="#7-die-drei-sekunden-frage-je-screen">7 · Die Drei-Sekunden-Frage, je Screen</a><ul class="toc-sub"><li><a class="toc-l3" data-t="die-ehrliche-zusammenfassung" href="#die-ehrliche-zusammenfassung">Die ehrliche Zusammenfassung</a></li><li><a class="toc-l3" data-t="7-1-die-dreizehn-screens-im-bild" href="#7-1-die-dreizehn-screens-im-bild">7.1 · Die dreizehn Screens im Bild</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="8-systemtreue" href="#8-systemtreue">8 · Systemtreue</a><ul class="toc-sub"><li><a class="toc-l3" data-t="8-1-schriften-belegt" href="#8-1-schriften-belegt">8.1 Schriften — belegt</a></li><li><a class="toc-l3" data-t="8-2-navigation" href="#8-2-navigation">8.2 Navigation</a></li><li><a class="toc-l3" data-t="8-3-materialien-und-tiefe" href="#8-3-materialien-und-tiefe">8.3 Materialien und Tiefe</a></li><li><a class="toc-l3" data-t="8-4-symbole" href="#8-4-symbole">8.4 Symbole</a></li><li><a class="toc-l3" data-t="8-5-kontrast-gerechnet" href="#8-5-kontrast-gerechnet">8.5 Kontrast — gerechnet</a></li></ul></li><li class="toc-group"><a class="toc-l2" data-t="9-was-zu-tun-ist" href="#9-was-zu-tun-ist">9 · Was zu tun ist</a></li><li class="toc-group"><a class="toc-l2" data-t="10-reproduzieren" href="#10-reproduzieren">10 · Reproduzieren</a><ul class="toc-sub"><li><a class="toc-l3" data-t="alle-76-bilder" href="#alle-76-bilder">Alle 76 Bilder</a></li></ul></li></ol></div>
+    </details>
+    <article class="doc">
+<p class="lead">Velums Akzent ist Ink — fast schwarz im Hellmodus, fast weiß im Dunkelmodus. Damit nimmt der Entwurf iOS sein stärkstes Signal weg: <strong>farbig heißt tappbar.</strong> Genau daran kann er scheitern, und niemand merkt es, solange man nur behauptet, es sei gelöst.</p>
+<p>Dieses Dokument behauptet nichts. Es misst.</p>
+<p>Jeder Screen wurde im Browser geöffnet, jedes Bedienelement programmatisch gefunden, seine sichtbaren Merkmale in Zahlen gefasst und sein Rahmen über den Screenshot gezeichnet. Neben jedem markierten Bild steht dasselbe Bild unmarkiert. <strong>Was nur im markierten Bild einen Rahmen hat, hat keine Affordanz.</strong></p>
+<p>Werkzeug: <a href="../tools/affordanz.js"><code>tools/affordanz.js</code></a> · Bilder: <a href="../mockups/_renders/affordanz/"><code>mockups/_renders/affordanz/</code></a> — 76 Stück, 19 Screens × 2 Geräte × 2 Erscheinungsbilder.</p>
+<p><strong>Zweiter Lauf.</strong> <code>system.css</code> und alle 13 <code>app-next</code>-Screens sind seit der ersten Messung überarbeitet worden; die 115 Vorschaubilder und die 76 markierten Bilder sind neu erzeugt (<a href="../tools/rendern.js"><code>tools/rendern.js</code></a>, <a href="../tools/affordanz.js"><code>tools/affordanz.js</code></a>). Jede Tabelle trägt die alten Zahlen daneben. Wo eine Zahl schlechter geworden ist, steht die Ursache dabei — und in einem Fall ist die schlechtere Zahl der Beleg für die größte Verbesserung dieses Laufs (§3.1).</p>
+<p><strong>Dritter Lauf — die Abnahme (Aufräumrunde).</strong> Nach den Nachträgen N10–N12 (Ink nur noch für „aktiv", Verjüngung des Fadens, Endpunkt-Konvention) sind alle 115 Vorschaubilder und alle 76 markierten Bilder erneut erzeugt und beide Affordanz-Läufe wiederholt worden. <strong>Die Affordanz hat sich dabei um vier Elemente bewegt und sonst um nichts</strong> — die Zahlen stehen in §3.2. Was sich verschoben hat, steht nicht in diesem Test, sondern am Faden selbst: §3.3 misst die Verjüngung im Bild und zeigt, dass sie das Maß, das <code>system.css</code> §9.2a nennt, nur bei achtfacher Vergrößerung hält.</p>
+<h2 id="1-was-geprueft-wurde-und-was-nicht"><span class="h-t">1 · Was geprüft wurde, und was nicht</span><a class="anchor" href="#1-was-geprueft-wurde-und-was-nicht" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:328px"><thead><tr><th scope="col"><span class="th-t"></span></th><th scope="col"><span class="th-t"></span></th></tr></thead><tbody><tr><td><strong>Geprüft</strong></td><td>13 Screens <code>app-next</code> + 6 Screens <code>best-of</code>, je iPad 1194×834 pt und iPhone 393×852 pt, je hell und dunkel</td></tr><tr><td><strong>Gefundene Bedienelemente</strong></td><td><strong>1 033</strong> (719 in <code>app-next</code>, 314 in <code>best-of</code>) — vorher 976</td></tr><tr><td><strong>Nicht geprüft</strong></td><td>die zehn Ansichten in <code>mockups/platform/</code></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Die Zahl ist gewachsen, und das ist der wichtigste Einzelbefund dieses Laufs.</strong> 57 Bedienelemente mehr als beim letzten Mal, 36 davon allein auf <code>graph</code>: die 27 Knoten waren vorher <code>&lt;circle&gt;</code>+<code>&lt;text&gt;</code> und für den Test wie für VoiceOver <strong>nicht vorhanden</strong> (alte §5.5). Sie sind jetzt <code>&lt;button&gt;</code> mit <code>aria-label</code> — und tauchen damit zum ersten Mal in jeder Zahl dieses Dokuments auf, samt ihrer Befunde. Wer nur die Summen vergleicht, liest eine Verschlechterung, wo ein blinder Fleck geschlossen wurde. §3.1 rechnet das auseinander.</p>
+<p>Die Plattform-Ansichten zeigen <strong>Systemoberflächen</strong> — Widgets, Sperrbildschirm, Spotlight, Siri, Teilen-Blatt. Deren Affordanz ist Apples, nicht Velums; ein Tastaturfeld oder eine Mitteilung nach Velums Regeln zu prüfen hieße, die falsche Handschrift zu bewerten. Die Entscheidung steht hier, damit sie angreifbar ist und nicht wie ein Versehen aussieht.</p>
+<h3 id="wie-ein-bedienelement-gefunden-wird"><span class="h-t">Wie ein Bedienelement gefunden wird</span><a class="anchor" href="#wie-ein-bedienelement-gefunden-wird" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Drei Mengen, absichtlich getrennt gehalten:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t"></span></th><th scope="col"><span class="th-t">Was</span></th><th scope="col"><span class="th-t">Anzahl (hell)</span></th><th scope="col"><span class="th-t">vorher</span></th></tr></thead><tbody><tr><td><strong>A</strong></td><td>echte Bedien-Semantik: <code>button</code> · <code>a[href]</code> · <code>[role]</code> · <code>[tabindex]</code> · <code>input</code> · <code>summary</code> · <code>[data-bw]</code></td><td>854</td><td>790</td></tr><tr><td><strong>B</strong></td><td>Bedien-<strong>Klasse</strong> ohne Semantik: <code>.row</code> · <code>.check</code> · <code>.origin</code> · <code>.iconbtn</code> · <code>.navitem</code> als <code>&lt;div&gt;</code>/<code>&lt;span&gt;</code></td><td><strong>179</strong></td><td>186</td></tr><tr><td><strong>C</strong></td><td>Bedien-<strong>Optik</strong> ohne Semantik: <code>.chip</code>/<code>.btn</code> als <code>&lt;span&gt;</code>, aber mit eigener Fläche oder sichtbarem Rand</td><td><strong>123</strong></td><td>122</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>A und B sind die 1 033 geprüften Bedienelemente. C wird getrennt gezählt und getrennt gezeichnet, weil dort zwei verschiedene Befunde möglich sind: entweder fehlt die Semantik, oder die Optik ist zu viel. Welcher von beiden zutrifft, kann kein Skript entscheiden — siehe §6.</p>
+<h3 id="was-gemessen-heisst"><span class="h-t">Was „gemessen" heißt</span><a class="anchor" href="#was-gemessen-heisst" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Keine Klassennamen glauben, berechnete Werte lesen:</p>
+<ul><li><strong>Fläche</strong> — eigene <code>background-color</code>, alpha-kompositiert gegen den tatsächlichen Untergrund (Vorfahren hoch bis deckend), davon das Kontrastverhältnis. <strong>≥ 1,10:1</strong> zählt. Ein Schlagschatten zählt ebenso, und ein Hintergrundbild zählt ebenso — die Notizbuch-Deckel tragen ihr Papier als Bild, ihre <code>background-color</code> misst 1,09:1 und sagt damit das Gegenteil dessen, was im Bild steht. Wer nur Farben misst, übersieht Fotos.</li><li><strong>Rand</strong> — <code>border-width &gt; 0</code> oder <code>inset box-shadow</code>, Schwelle <strong>1,6:1</strong>. Dabei wird unterschieden: <code>inset 0 0 0 1,5px</code> ist ein Ring rundum, <code>inset 0 −1,5px 0</code> ist eine <strong>Unterstreichung</strong>. Im Quelltext sehen beide gleich aus, im Bild sind es zwei verschiedene Dinge. Nur der Ring beantwortet R2, nur die Unterstreichung R3.</li><li><strong>Ink</strong> — Fläche nahe <code>--accent</code> <strong>und</strong> Textfarbe nahe <code>--accent-on</code>, beides im RGB-Abstand.</li><li><strong>Ziel</strong> — die getroffene Fläche in CSS-px (= pt bei Maßstab 1).</li><li><strong>Treffprobe</strong> — an fünf Punkten im Element fragt <code>elementFromPoint</code>, was dort oben liegt. Was man nicht treffen kann, ist kein Ziel: die Rückseite einer gedrehten Lernkarte steht im Layout, aber nicht im Bild. Von 1 154 Kandidaten fielen so <strong>22</strong> heraus, die sonst als „unsichtbare Bedienelemente" gemeldet worden wären.</li></ul>
+<h2 id="2-die-vier-regeln-in-rechenform"><span class="h-t">2 · Die vier Regeln, in Rechenform</span><a class="anchor" href="#2-die-vier-regeln-in-rechenform" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Aus <code>dna-kern.md</code> §6. Rechts steht, wie die Regel maschinell entschieden wird — und wo ich urteilen musste statt zu messen.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t"></span></th><th scope="col"><span class="th-t">Regel</span></th><th scope="col"><span class="th-t">Fällt durch, wenn</span></th></tr></thead><tbody><tr><td><strong>R1</strong></td><td>Primäre Aktion: gefüllte Ink-Fläche, heller Text</td><td>ein als primär gekennzeichnetes Element (<code>.btn--primary</code>, <code>.chip--solid</code>, <code>.rate__btn--primary</code>, <code>.fab</code>) <strong>nicht</strong> Ink-gefüllt misst</td></tr><tr><td><strong>R2</strong></td><td>Sekundäre Aktion: Umrandung, Fläche oder Position — nie nur Farbe</td><td>weder Fläche noch Rand noch <strong>Lage</strong> in einer Leiste. Ein Symbol zählt hier ausdrücklich <strong>nicht</strong> — gefragt ist, ob das Element als Bedienfläche lesbar ist</td></tr><tr><td><strong>R3</strong></td><td>Interaktiver Text braucht ein zweites Merkmal</td><td>weder Fläche noch Rand noch Symbol noch Unterstreichung noch Lage. Fällt R3, ist das Element im unmarkierten Bild <strong>überhaupt nicht</strong> als Bedienelement zu erkennen</td></tr><tr><td><strong>R4</strong></td><td>Ziel ≥ 44 pt</td><td>die kleinere Kante &lt; 44 pt</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>„Lage" ist der Punkt, an dem ich geurteilt habe.</strong> Sie gilt in drei Fällen:</p>
+<ol><li>in einer benannten Leiste — <code>.navbar</code>, <code>.tabbar</code>, <code>.sidebar</code>, <code>.toolbar</code>, <code>.segmented</code>, <code>.rate</code>, <code>.handoff</code>;</li><li><strong>Listenlage</strong>: eine <code>.row</code>, die eine Geschwisterzeile hat <strong>oder</strong> einen Erledigt-Kreis trägt;</li><li><strong>Leistenlage ohne Klassennamen</strong>: ≥ 3 gleichartige Geschwister in einem Behälter, der selbst eine eigene Fläche oder eine Trennkante hat — so ist die Blockleiste des Editors gebaut, inline gesetzt, ohne Klasse.</li></ol>
+<p>Ohne Fall 2 fällt jede Aufgabenzeile durch — und mit ihr Reminders und Things, die es genauso machen. Der Preis dieser Milde: <strong>eine einzelne Zeile ohne Kreis in einem Behälter ohne Kante bleibt ein Befund.</strong> Genau so sind die vier Zeilen auf <code>best-of/today</code> durchgefallen (§4).</p>
+<p>Zwei Nebenbefunde laufen mit, ohne zu den vier Regeln zu zählen: <strong>Linie unter 3:1</strong> (ein Element, dessen einziges Merkmal ein Strich ist, muss diesen Strich auf 3:1 halten) und <strong>Fläche grenzwertig</strong> (1,04–1,10:1 — eine Fläche ist da, sie liegt nur unter meiner Schwelle; der Unterschied zwischen 1,09 und 1,12 ist keiner, den ein Auge sieht, und darf keine Schwere umschlagen lassen).</p>
+<h2 id="3-das-ergebnis-in-zahlen"><span class="h-t">3 · Das Ergebnis in Zahlen</span><a class="anchor" href="#3-das-ergebnis-in-zahlen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<h3 id="hellmodus"><span class="h-t">Hellmodus</span><a class="anchor" href="#hellmodus" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:1120px"><thead><tr><th scope="col"><span class="th-t">Screen</span></th><th scope="col"><span class="th-t">Gerät</span></th><th class="ta-right" scope="col"><span class="th-t">geprüft</span></th><th class="ta-right" scope="col"><span class="th-t">primär</span></th><th class="ta-right" scope="col"><span class="th-t">sekundär</span></th><th class="ta-right" scope="col"><span class="th-t">tertiär</span></th><th class="ta-right" scope="col"><span class="th-t">schwer</span></th><th class="ta-right" scope="col"><span class="th-t">mittel</span></th><th class="ta-right" scope="col"><span class="th-t">leicht</span></th><th class="ta-right" scope="col"><span class="th-t">R1</span></th><th class="ta-right" scope="col"><span class="th-t">R2</span></th><th class="ta-right" scope="col"><span class="th-t">R3</span></th><th class="ta-right" scope="col"><span class="th-t">R4</span></th></tr></thead><tbody><tr><td>app-next/today</td><td>iPad</td><td class="ta-right">35</td><td class="ta-right">2</td><td class="ta-right">12</td><td class="ta-right">21</td><td class="ta-right">0</td><td class="ta-right">8</td><td class="ta-right">15</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">0</td><td class="ta-right">19</td></tr><tr><td>app-next/today</td><td>iPhone</td><td class="ta-right">20</td><td class="ta-right">1</td><td class="ta-right">7</td><td class="ta-right">12</td><td class="ta-right">0</td><td class="ta-right">6</td><td class="ta-right">1</td><td class="ta-right">0</td><td class="ta-right">3</td><td class="ta-right">0</td><td class="ta-right">4</td></tr><tr><td>app-next/library</td><td>iPad</td><td class="ta-right">42</td><td class="ta-right">1</td><td class="ta-right">22</td><td class="ta-right">19</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">16</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">16</td></tr><tr><td>app-next/library</td><td>iPhone</td><td class="ta-right">18</td><td class="ta-right">1</td><td class="ta-right">9</td><td class="ta-right">8</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">2</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">0</td><td class="ta-right">3</td></tr><tr><td>app-next/notes-list</td><td>iPad</td><td class="ta-right">55</td><td class="ta-right">2</td><td class="ta-right">11</td><td class="ta-right">42</td><td class="ta-right">0</td><td class="ta-right">23</td><td class="ta-right">24</td><td class="ta-right">0</td><td class="ta-right">18</td><td class="ta-right">0</td><td class="ta-right">41</td></tr><tr><td>app-next/notes-list</td><td>iPhone</td><td class="ta-right">23</td><td class="ta-right">2</td><td class="ta-right">6</td><td class="ta-right">15</td><td class="ta-right">0</td><td class="ta-right">8</td><td class="ta-right">3</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">0</td><td class="ta-right">7</td></tr><tr><td>app-next/note-editor</td><td>iPad</td><td class="ta-right">49</td><td class="ta-right">1</td><td class="ta-right">11</td><td class="ta-right">37</td><td class="ta-right">0</td><td class="ta-right">9</td><td class="ta-right">6</td><td class="ta-right">0</td><td class="ta-right">7</td><td class="ta-right">0</td><td class="ta-right">9</td></tr><tr><td>app-next/note-editor</td><td>iPhone</td><td class="ta-right">23</td><td class="ta-right">1</td><td class="ta-right">3</td><td class="ta-right">19</td><td class="ta-right">0</td><td class="ta-right">6</td><td class="ta-right">2</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">0</td><td class="ta-right">5</td></tr><tr><td>app-next/journal-home</td><td>iPad</td><td class="ta-right">25</td><td class="ta-right">1</td><td class="ta-right">3</td><td class="ta-right">21</td><td class="ta-right"><strong>1</strong></td><td class="ta-right">1</td><td class="ta-right">17</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">1</td><td class="ta-right">17</td></tr><tr><td>app-next/journal-home</td><td>iPhone</td><td class="ta-right">14</td><td class="ta-right">1</td><td class="ta-right">3</td><td class="ta-right">10</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">4</td></tr><tr><td>app-next/journal-entry</td><td>iPad</td><td class="ta-right">27</td><td class="ta-right">0</td><td class="ta-right">8</td><td class="ta-right">19</td><td class="ta-right">0</td><td class="ta-right">3</td><td class="ta-right">13</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">0</td><td class="ta-right">14</td></tr><tr><td>app-next/journal-entry</td><td>iPhone</td><td class="ta-right">13</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">9</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">1</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">0</td><td class="ta-right">1</td></tr><tr><td>app-next/tasks</td><td>iPad</td><td class="ta-right">41</td><td class="ta-right">3</td><td class="ta-right">7</td><td class="ta-right">31</td><td class="ta-right">0</td><td class="ta-right">9</td><td class="ta-right">25</td><td class="ta-right">0</td><td class="ta-right">8</td><td class="ta-right">0</td><td class="ta-right">28</td></tr><tr><td>app-next/tasks</td><td>iPhone</td><td class="ta-right">26</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">22</td><td class="ta-right">0</td><td class="ta-right">8</td><td class="ta-right">6</td><td class="ta-right">0</td><td class="ta-right">7</td><td class="ta-right">0</td><td class="ta-right">7</td></tr><tr><td>app-next/task-detail</td><td>iPad</td><td class="ta-right">50</td><td class="ta-right">1</td><td class="ta-right">16</td><td class="ta-right">33</td><td class="ta-right">0</td><td class="ta-right">17</td><td class="ta-right">22</td><td class="ta-right">0</td><td class="ta-right">9</td><td class="ta-right">0</td><td class="ta-right">37</td></tr><tr><td>app-next/task-detail</td><td>iPhone</td><td class="ta-right">20</td><td class="ta-right">0</td><td class="ta-right">12</td><td class="ta-right">8</td><td class="ta-right">0</td><td class="ta-right">6</td><td class="ta-right">4</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">10</td></tr><tr><td>app-next/flashcards-home</td><td>iPad</td><td class="ta-right">26</td><td class="ta-right">2</td><td class="ta-right">9</td><td class="ta-right">15</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">19</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">19</td></tr><tr><td>app-next/flashcards-home</td><td>iPhone</td><td class="ta-right">13</td><td class="ta-right">2</td><td class="ta-right">5</td><td class="ta-right">6</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">3</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">3</td></tr><tr><td>app-next/review-session</td><td>iPad</td><td class="ta-right">20</td><td class="ta-right">1</td><td class="ta-right">13</td><td class="ta-right">6</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">6</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">8</td></tr><tr><td>app-next/review-session</td><td>iPhone</td><td class="ta-right">18</td><td class="ta-right">1</td><td class="ta-right">9</td><td class="ta-right">8</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">4</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">0</td><td class="ta-right">4</td></tr><tr><td>app-next/graph</td><td>iPad</td><td class="ta-right">55</td><td class="ta-right">1</td><td class="ta-right">12</td><td class="ta-right">42</td><td class="ta-right"><strong>23</strong></td><td class="ta-right">11</td><td class="ta-right">16</td><td class="ta-right">0</td><td class="ta-right">24</td><td class="ta-right">23</td><td class="ta-right">35</td></tr><tr><td>app-next/graph</td><td>iPhone</td><td class="ta-right">28</td><td class="ta-right">1</td><td class="ta-right">8</td><td class="ta-right">19</td><td class="ta-right"><strong>10</strong></td><td class="ta-right">8</td><td class="ta-right">2</td><td class="ta-right">0</td><td class="ta-right">11</td><td class="ta-right">10</td><td class="ta-right">16</td></tr><tr><td>app-next/settings</td><td>iPad</td><td class="ta-right">32</td><td class="ta-right">0</td><td class="ta-right">6</td><td class="ta-right">26</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">24</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">24</td></tr><tr><td>app-next/settings</td><td>iPhone</td><td class="ta-right">13</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">9</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">1</td></tr><tr><td>app-next/leere-zustaende</td><td>iPad</td><td class="ta-right">20</td><td class="ta-right">2</td><td class="ta-right">6</td><td class="ta-right">12</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">17</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">0</td><td class="ta-right">17</td></tr><tr><td>app-next/leere-zustaende</td><td>iPhone</td><td class="ta-right">9</td><td class="ta-right">1</td><td class="ta-right">3</td><td class="ta-right">5</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">2</td></tr><tr><td>best-of/library</td><td>iPad</td><td class="ta-right">37</td><td class="ta-right">2</td><td class="ta-right">18</td><td class="ta-right">17</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">21</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">0</td><td class="ta-right">25</td></tr><tr><td>best-of/library</td><td>iPhone</td><td class="ta-right">21</td><td class="ta-right">0</td><td class="ta-right">3</td><td class="ta-right">18</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">8</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">0</td><td class="ta-right">10</td></tr><tr><td>best-of/today</td><td>iPad</td><td class="ta-right">28</td><td class="ta-right">1</td><td class="ta-right">11</td><td class="ta-right">16</td><td class="ta-right"><strong>2</strong></td><td class="ta-right">5</td><td class="ta-right">10</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">2</td><td class="ta-right">15</td></tr><tr><td>best-of/today</td><td>iPhone</td><td class="ta-right">20</td><td class="ta-right">1</td><td class="ta-right">8</td><td class="ta-right">11</td><td class="ta-right"><strong>2</strong></td><td class="ta-right">5</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">2</td><td class="ta-right">5</td></tr><tr><td>best-of/notes</td><td>iPad</td><td class="ta-right">38</td><td class="ta-right">0</td><td class="ta-right">8</td><td class="ta-right">30</td><td class="ta-right"><strong>2</strong></td><td class="ta-right">5</td><td class="ta-right">25</td><td class="ta-right">0</td><td class="ta-right">2</td><td class="ta-right">2</td><td class="ta-right">31</td></tr><tr><td>best-of/notes</td><td>iPhone</td><td class="ta-right">9</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">8</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">3</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">4</td></tr><tr><td>best-of/journal</td><td>iPad</td><td class="ta-right">23</td><td class="ta-right">1</td><td class="ta-right">6</td><td class="ta-right">16</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">15</td><td class="ta-right">0</td><td class="ta-right">3</td><td class="ta-right">0</td><td class="ta-right">19</td></tr><tr><td>best-of/journal</td><td>iPhone</td><td class="ta-right">11</td><td class="ta-right">1</td><td class="ta-right">1</td><td class="ta-right">9</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">3</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">3</td></tr><tr><td>best-of/tasks</td><td>iPad</td><td class="ta-right">54</td><td class="ta-right">1</td><td class="ta-right">23</td><td class="ta-right">30</td><td class="ta-right"><strong>6</strong></td><td class="ta-right">16</td><td class="ta-right">25</td><td class="ta-right">0</td><td class="ta-right">8</td><td class="ta-right">6</td><td class="ta-right">47</td></tr><tr><td>best-of/tasks</td><td>iPhone</td><td class="ta-right">25</td><td class="ta-right">1</td><td class="ta-right">12</td><td class="ta-right">12</td><td class="ta-right">0</td><td class="ta-right">6</td><td class="ta-right">9</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">15</td></tr><tr><td>best-of/flashcards</td><td>iPad</td><td class="ta-right">32</td><td class="ta-right">1</td><td class="ta-right">11</td><td class="ta-right">20</td><td class="ta-right">0</td><td class="ta-right">4</td><td class="ta-right">15</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">0</td><td class="ta-right">18</td></tr><tr><td>best-of/flashcards</td><td>iPhone</td><td class="ta-right">16</td><td class="ta-right">1</td><td class="ta-right">5</td><td class="ta-right">10</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">1</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">1</td></tr><tr><td><strong>Summe</strong></td><td></td><td class="ta-right"><strong>1 029</strong></td><td class="ta-right"><strong>38</strong></td><td class="ta-right"><strong>320</strong></td><td class="ta-right"><strong>671</strong></td><td class="ta-right"><strong>46</strong></td><td class="ta-right"><strong>183</strong></td><td class="ta-right"><strong>390</strong></td><td class="ta-right"><strong>0</strong></td><td class="ta-right"><strong>130</strong></td><td class="ta-right"><strong>46</strong></td><td class="ta-right"><strong>544</strong></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Dazu, nicht in den 1 029 enthalten: <strong>175</strong> Elemente ohne Bedien-Semantik im Markup und <strong>122</strong> Elemente mit Bedien-Optik ohne Semantik.</p>
+<p><em>Die Tabelle steht auf dem Stand der Abnahme (dritter Lauf). Gegen den zweiten Lauf hat sich genau eine Zeile bewegt — <code>task-detail</code>; alle 36 übrigen sind elementweise identisch. Der zweite Lauf las dort 51/1/17/33/0/18/22/0/9/0/38 (iPad) und 23/0/14/9/0/8/4/0/0/0/12 (iPhone), die Summe 1 033/38/323/672 · 46/186/390 · 0/130/46/547 bei 179 ohne Semantik und 123 Fehlaffordanzen.</em></p>
+<h3 id="3-1-was-sich-im-zweiten-lauf-gegen-den-ersten-verschoben-hatte"><span class="h-t">3.1 · Was sich im zweiten Lauf gegen den ersten verschoben hatte</span><a class="anchor" href="#3-1-was-sich-im-zweiten-lauf-gegen-den-ersten-verschoben-hatte" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t"></span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th><th class="ta-right" scope="col"><span class="th-t">jetzt</span></th><th scope="col"><span class="th-t"></span></th></tr></thead><tbody><tr><td>geprüft</td><td class="ta-right">976</td><td class="ta-right"><strong>1 033</strong></td><td>+57 — 36 davon die Graph-Knoten, die es vorher im Markup nicht gab</td></tr><tr><td>primär</td><td class="ta-right">38</td><td class="ta-right">38</td><td>unverändert, R1 weiter bei 0</td></tr><tr><td>sekundär</td><td class="ta-right">289</td><td class="ta-right"><strong>323</strong></td><td>+34 — Flächen und Ringe, die vorher fehlten</td></tr><tr><td>tertiär</td><td class="ta-right">649</td><td class="ta-right">672</td><td>+23, trotz +57 geprüfter Elemente</td></tr><tr><td><strong>schwer</strong></td><td class="ta-right">33</td><td class="ta-right"><strong>46</strong></td><td><strong>+13 — siehe unten, die Zahl täuscht</strong></td></tr><tr><td>mittel</td><td class="ta-right">161</td><td class="ta-right"><strong>186</strong></td><td>+25</td></tr><tr><td>leicht</td><td class="ta-right">409</td><td class="ta-right"><strong>390</strong></td><td>−19</td></tr><tr><td>R2</td><td class="ta-right">97</td><td class="ta-right">130</td><td>+33</td></tr><tr><td>R3</td><td class="ta-right">33</td><td class="ta-right">46</td><td>+13</td></tr><tr><td>R4</td><td class="ta-right">575</td><td class="ta-right"><strong>547</strong></td><td>−28</td></tr><tr><td>ohne Semantik (B)</td><td class="ta-right">186</td><td class="ta-right"><strong>179</strong></td><td>−7</td></tr><tr><td>Fehlaffordanz (C)</td><td class="ta-right">122</td><td class="ta-right">123</td><td>+1</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Die 46 schweren Befunde sind nicht dieselbe Art Befund wie die 33 vorher.</strong> Aufgeschlüsselt:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t"></span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th><th class="ta-right" scope="col"><span class="th-t">jetzt</span></th></tr></thead><tbody><tr><td><code>graph</code> — Knoten (im letzten Lauf <strong>nicht gezählt</strong>, weil ohne Semantik)</td><td class="ta-right">—</td><td class="ta-right"><strong>33</strong></td></tr><tr><td><code>journal-home</code> — „11. Nov. nachtragen" (neu)</td><td class="ta-right">0</td><td class="ta-right"><strong>1</strong></td></tr><tr><td>alle übrigen <code>app-next</code>-Befunde (<code>.btn--quiet</code>, Inhaltsverzeichnis, Herkunfts-Kette, <code>/bio</code>+<code>/mathe</code>, <code>task-detail</code>)</td><td class="ta-right">13</td><td class="ta-right"><strong>0</strong></td></tr><tr><td><code>best-of</code> (unangetastet, profitiert nur von <code>system.css</code>)</td><td class="ta-right">20</td><td class="ta-right"><strong>12</strong></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Ohne <code>graph</code> fällt <code>app-next</code> von 13 schweren Befunden auf 1.</strong> Die 33 Graph-Knoten sind kein Rückschritt: sie sind der Preis dafür, dass Punkt 4 der alten Aufgabenliste erledigt wurde. Vorher waren sie für VoiceOver, Tastatur <strong>und</strong> diesen Test unsichtbar; jetzt sind sie erreichbar — und der Test sagt, was das markierte Bild bestätigt: erreichbar heißt noch nicht erkennbar (§5.1).</p>
+<p><code>best-of</code> hat niemand angefasst; die acht weggefallenen schweren Befunde dort gehen allein auf die eine geänderte CSS-Regel <code>.btn--quiet</code> zurück. Das ist der sauberste Beleg dieses Laufs dafür, dass der Befund an der Klasse hing und nicht an den Screens.</p>
+<p><strong>Zwei Zahlen sind schlechter geworden und haben nichts mit <code>graph</code> zu tun:</strong></p>
+<ul><li><strong>mittel 161 → 186.</strong> Ursache ist nicht neue Nachlässigkeit, sondern die gestiegene Elementzahl plus die Umstufung: was vorher <strong>schwer</strong> war, ist durch einen Ring oder eine Fläche auf <strong>mittel</strong> gerutscht, nicht auf null. <code>.btn--quiet</code> trägt jetzt <code>--line-tap</code>, fällt aber weiter durch R4 (34 pt). Von den 186 sind <strong>102 reine R4-Meldungen</strong>, 84 tragen R2.</li><li><strong><code>notes-list</code> iPad 16 → 23 mittel und <code>task-detail</code> iPad 18 mittel.</strong> Beide haben Bedienelemente <strong>dazubekommen</strong> (50 → 55 bzw. gleich viele, aber umgebaut). Die neuen sind nicht schlechter als die alten, es sind mehr.</li></ul>
+<h3 id="3-2-die-abnahme-was-n10-bis-n12-an-der-affordanz-veraendert-haben"><span class="h-t">3.2 · Die Abnahme — was N10 bis N12 an der Affordanz verändert haben</span><a class="anchor" href="#3-2-die-abnahme-was-n10-bis-n12-an-der-affordanz-veraendert-haben" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Nichts, bis auf vier Elemente. Das ist keine Nachlässigkeit der Messung, sondern die Auskunft: die drei Nachträge betreffen den <strong>Faden</strong>, und der Faden ist kein Bedienelement.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t"></span></th><th class="ta-right" scope="col"><span class="th-t">zweiter Lauf</span></th><th class="ta-right" scope="col"><span class="th-t">Abnahme</span></th><th scope="col"><span class="th-t"></span></th></tr></thead><tbody><tr><td>geprüft</td><td class="ta-right">1 033</td><td class="ta-right"><strong>1 029</strong></td><td>−4, alle vier in <code>task-detail</code></td></tr><tr><td>primär</td><td class="ta-right">38</td><td class="ta-right">38</td><td></td></tr><tr><td>sekundär</td><td class="ta-right">323</td><td class="ta-right"><strong>320</strong></td><td>−3, dieselben vier Elemente</td></tr><tr><td>tertiär</td><td class="ta-right">672</td><td class="ta-right"><strong>671</strong></td><td>−1</td></tr><tr><td><strong>schwer</strong></td><td class="ta-right"><strong>46</strong></td><td class="ta-right"><strong>46</strong></td><td><strong>elementweise dieselben 46</strong></td></tr><tr><td>mittel</td><td class="ta-right">186</td><td class="ta-right"><strong>183</strong></td><td>−3</td></tr><tr><td>leicht</td><td class="ta-right">390</td><td class="ta-right">390</td><td></td></tr><tr><td>R1</td><td class="ta-right">0</td><td class="ta-right">0</td><td></td></tr><tr><td>R2</td><td class="ta-right">130</td><td class="ta-right">130</td><td></td></tr><tr><td>R3</td><td class="ta-right">46</td><td class="ta-right">46</td><td></td></tr><tr><td>R4</td><td class="ta-right">547</td><td class="ta-right"><strong>544</strong></td><td>−3</td></tr><tr><td>ohne Semantik (B)</td><td class="ta-right">179</td><td class="ta-right"><strong>175</strong></td><td>−4</td></tr><tr><td>Fehlaffordanz (C)</td><td class="ta-right">123</td><td class="ta-right"><strong>122</strong></td><td>−1</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Alle 36 übrigen Zeilen der Tabelle in §3 sind Zahl für Zahl identisch.</strong> Die 33 Graph-Knoten stehen unverändert, <code>journal-home</code> trägt weiter seinen einen schweren Befund, die vier alten Punkte der Aufgabenliste sind unverändert offen (Erledigt-Kreis 66 × 22 pt, <code>.navitem</code> unter 44 pt, Wiki-Link auf Etikettenlinie, Karte gegen Grund im Dunkelmodus mit 1,089:1).</p>
+<h3 id="3-3-die-verjuengung-im-bild-gemessen-bei-2-3-und-8"><span class="h-t">3.3 · Die Verjüngung im Bild — gemessen bei 2×, 3× und 8×</span><a class="anchor" href="#3-3-die-verjuengung-im-bild-gemessen-bei-2-3-und-8" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><code>system.css</code> §9.2a schreibt: 1,0 → 0,60 · 1,5 → 0,90 · 2,5 → 1,50 pt, gemessen bei 8×. Das stimmt. Der Maßstab der Geräte ist aber 2× (iPad) und 3× (iPhone), und dort stimmt es nicht. Gemessen wurde die Deckung des Querschnitts über die ganze Länge, Ausreißer (Punkte, Kreuzungen) verworfen, eine Gerade angepasst und auf Ursprung und Ergebnis hochgerechnet:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:820px"><thead><tr><th scope="col"><span class="th-t">Faden</span></th><th scope="col"><span class="th-t">Sollmaß</span></th><th class="ta-right" scope="col"><span class="th-t">2×</span></th><th class="ta-right" scope="col"><span class="th-t">3×</span></th><th class="ta-right" scope="col"><span class="th-t">8×</span></th></tr></thead><tbody><tr><td>schwach <code>--weak</code></td><td>1,00 → 0,60 (0,60)</td><td class="ta-right">1,00 → 0,54 (0,54)</td><td class="ta-right">0,82 → 0,67 (0,81)</td><td class="ta-right">0,98 → 0,63 (0,64)</td></tr><tr><td>normal</td><td>1,50 → 0,90 (0,60)</td><td class="ta-right"><strong>1,23 → 1,00 (0,81)</strong></td><td class="ta-right">1,37 → 0,89 (0,65)</td><td class="ta-right">1,45 → 0,94 (0,65)</td></tr><tr><td>Herkunft <code>--origin</code></td><td>2,50 → 1,50 (0,60)</td><td class="ta-right"><strong>2,22 → 1,54 (0,69)</strong></td><td class="ta-right">2,33 → 1,56 (0,67)</td><td class="ta-right">2,43 → 1,56 (0,64)</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Dazu kommt eine zweite, größere Abweichung: <strong>der Zuschnitt (<code>clip-path</code>) und der Strich werden in verschiedenen Koordinatenräumen gerastert.</strong> Liegt der Kasten eines Fadens auf einem halben Bildpunkt, schneidet die Maske in den Strich. Gemessen an einer Probe, die denselben Faden in Schritten von ⅛ px verschiebt:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:984px"><thead><tr><th scope="col"><span class="th-t">Versatz des Kastens</span></th><th class="ta-right" scope="col"><span class="th-t">0</span></th><th class="ta-right" scope="col"><span class="th-t">⅛</span></th><th class="ta-right" scope="col"><span class="th-t">¼</span></th><th class="ta-right" scope="col"><span class="th-t">⅜</span></th><th class="ta-right" scope="col"><span class="th-t">½</span></th></tr></thead><tbody><tr><td>normaler Faden am Ursprung (8×)</td><td class="ta-right">1,49</td><td class="ta-right">1,37</td><td class="ta-right">1,24</td><td class="ta-right">1,12</td><td class="ta-right"><strong>0,99</strong></td></tr><tr><td>normaler Faden am Ergebnis (8×)</td><td class="ta-right">0,88</td><td class="ta-right">0,88</td><td class="ta-right">0,88</td><td class="ta-right">0,81</td><td class="ta-right"><strong>0,69</strong></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Ein normaler Faden auf halbem Bildpunkt misst 0,99 pt — genau das Maß, das laut §2.2 „schwache Beziehung" bedeutet.</strong> Damit hängt die Stärke, die die einzige inhaltliche Aussage des Fadens trägt, an der Zufälligkeit einer Layout-Position.</p>
+<p>Wie oft das vorkommt, im Bestand gezählt (260 Fäden mit Formklasse, iPad):</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t"></span></th><th class="ta-right" scope="col"><span class="th-t">Fäden</span></th><th class="ta-right" scope="col"><span class="th-t">auf gebrochener Zeile</span></th><th class="ta-right" scope="col"><span class="th-t">davon stark (&gt; 0,30 px)</span></th></tr></thead><tbody><tr><td><strong>Summe</strong></td><td class="ta-right"><strong>260</strong></td><td class="ta-right"><strong>49</strong></td><td class="ta-right"><strong>29</strong></td></tr><tr><td><code>library</code></td><td class="ta-right">16</td><td class="ta-right"><strong>16</strong></td><td class="ta-right">7</td></tr><tr><td><code>note-editor</code></td><td class="ta-right">17</td><td class="ta-right">12</td><td class="ta-right">9</td></tr><tr><td><code>settings</code></td><td class="ta-right">7</td><td class="ta-right">6</td><td class="ta-right">2</td></tr><tr><td><code>task-detail</code></td><td class="ta-right">15</td><td class="ta-right">4</td><td class="ta-right">2</td></tr><tr><td><code>journal-home</code></td><td class="ta-right">19</td><td class="ta-right">3</td><td class="ta-right">1</td></tr><tr><td><code>motion/index</code></td><td class="ta-right">6</td><td class="ta-right">3</td><td class="ta-right">3</td></tr><tr><td><code>leere-zustaende</code></td><td class="ta-right">8</td><td class="ta-right">2</td><td class="ta-right">2</td></tr><tr><td><code>tasks</code> · <code>live-activity</code> · <code>kontextmenue</code></td><td class="ta-right">je 23/5/13</td><td class="ta-right">je 1</td><td class="ta-right">je 1</td></tr><tr><td><code>today</code> · <code>journal-entry</code> · <code>flashcards-home</code> · <code>review-session</code> · <code>graph</code> · acht Plattform-Schirme</td><td class="ta-right">0</td><td class="ta-right">0</td><td class="ta-right">0</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Auf <code>leere-zustaende</code> stehen dadurch zwei Fäden derselben Klasse mit sichtbar verschiedener Stärke nebeneinander: 1,50 pt und 1,00 pt.</p>
+<h3 id="dunkelmodus-dieselben-1-029-elemente"><span class="h-t">Dunkelmodus — dieselben 1 029 Elemente</span><a class="anchor" href="#dunkelmodus-dieselben-1-029-elemente" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:1120px"><thead><tr><th scope="col"><span class="th-t"></span></th><th class="ta-right" scope="col"><span class="th-t">schwer</span></th><th class="ta-right" scope="col"><span class="th-t">mittel</span></th><th class="ta-right" scope="col"><span class="th-t">leicht</span></th><th class="ta-right" scope="col"><span class="th-t">R1</span></th><th class="ta-right" scope="col"><span class="th-t">R2</span></th><th class="ta-right" scope="col"><span class="th-t">R3</span></th><th class="ta-right" scope="col"><span class="th-t">R4</span></th><th class="ta-right" scope="col"><span class="th-t">Linie &lt; 3:1</span></th><th class="ta-right" scope="col"><span class="th-t">Fläche grenzwertig</span></th></tr></thead><tbody><tr><td>hell</td><td class="ta-right">46</td><td class="ta-right">183</td><td class="ta-right">390</td><td class="ta-right">0</td><td class="ta-right">130</td><td class="ta-right">46</td><td class="ta-right">544</td><td class="ta-right">7</td><td class="ta-right">2</td></tr><tr><td>dunkel</td><td class="ta-right">46</td><td class="ta-right">197</td><td class="ta-right">390</td><td class="ta-right">0</td><td class="ta-right">144</td><td class="ta-right">51</td><td class="ta-right">544</td><td class="ta-right"><strong>46</strong></td><td class="ta-right"><strong>46</strong></td></tr><tr><td><em>hell, zweiter Lauf</em></td><td class="ta-right"><em>46</em></td><td class="ta-right"><em>186</em></td><td class="ta-right"><em>390</em></td><td class="ta-right"><em>0</em></td><td class="ta-right"><em>130</em></td><td class="ta-right"><em>46</em></td><td class="ta-right"><em>547</em></td><td class="ta-right"><em>7</em></td><td class="ta-right"><em>2</em></td></tr><tr><td><em>dunkel, zweiter Lauf</em></td><td class="ta-right"><em>46</em></td><td class="ta-right"><em>200</em></td><td class="ta-right"><em>390</em></td><td class="ta-right"><em>0</em></td><td class="ta-right"><em>144</em></td><td class="ta-right"><em>51</em></td><td class="ta-right"><em>547</em></td><td class="ta-right"><em>46</em></td><td class="ta-right"><em>47</em></td></tr><tr><td><em>hell, erster Lauf</em></td><td class="ta-right"><em>33</em></td><td class="ta-right"><em>161</em></td><td class="ta-right"><em>409</em></td><td class="ta-right"><em>0</em></td><td class="ta-right"><em>97</em></td><td class="ta-right"><em>33</em></td><td class="ta-right"><em>575</em></td><td class="ta-right"><em>7</em></td><td class="ta-right"><em>2</em></td></tr><tr><td><em>dunkel, erster Lauf</em></td><td class="ta-right"><em>33</em></td><td class="ta-right"><em>177</em></td><td class="ta-right"><em>408</em></td><td class="ta-right"><em>0</em></td><td class="ta-right"><em>113</em></td><td class="ta-right"><em>38</em></td><td class="ta-right"><em>575</em></td><td class="ta-right"><em>46</em></td><td class="ta-right"><em>47</em></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Die schweren Befunde sind in beiden Erscheinungsbildern dieselben 46</strong> — elementweise verglichen, nicht nur der Summe nach. Der Unterschied liegt in der Mitte, und er hat genau eine Ursache: im Dunkelmodus liegen die leisen Linien und die leisen Flächen näher an der Schwelle. Gemessen:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Token</span></th><th class="ta-right" scope="col"><span class="th-t">hell auf <code>--paper</code></span></th><th class="ta-right" scope="col"><span class="th-t">dunkel auf <code>--paper</code></span></th></tr></thead><tbody><tr><td><code>--line</code> (Trennlinie)</td><td class="ta-right">1,23:1</td><td class="ta-right">1,39:1</td></tr><tr><td><code>--line-2</code> (leiser Rand)</td><td class="ta-right">1,46:1</td><td class="ta-right">1,82:1</td></tr><tr><td><code>--line-tap</code> (Rand eines Bedienelements)</td><td class="ta-right"><strong>3,29:1</strong></td><td class="ta-right"><strong>3,34:1</strong></td></tr><tr><td><code>--fill</code> (Chip-Fläche)</td><td class="ta-right">1,11:1</td><td class="ta-right">1,20:1</td></tr><tr><td><code>--accent-soft</code> (Auswahl-Fläche)</td><td class="ta-right">1,15:1</td><td class="ta-right">1,31:1</td></tr><tr><td><code>--accent-ring</code></td><td class="ta-right">1,95:1</td><td class="ta-right">3,13:1</td></tr><tr><td><code>--paper</code> gegen <code>--ground</code> (jede Karte)</td><td class="ta-right"><strong>1,118:1</strong></td><td class="ta-right"><strong>1,089:1</strong></td></tr><tr><td><code>--accent-on</code> auf <code>--accent</code> (CTA-Text)</td><td class="ta-right">17,77:1</td><td class="ta-right">17,27:1</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Alle acht Werte sind unverändert</strong> — kein Token wurde in dieser Runde angefasst, und das ist überprüft, nicht angenommen.</p>
+<p><code>--line-tap</code> hält 3:1 in beiden Modi. Das ist der Kern der Sache und es ist belegt, nicht behauptet: <strong>jeder Ghost-Chip, der ein <code>&lt;button&gt;</code> ist, misst 3,20–3,34:1; jeder, der ein <code>&lt;span&gt;</code> ist, misst 1,46:1 (hell) bzw. 1,75–1,84:1 (dunkel).</strong> Die Regel aus <code>system.css</code> §6 — „ein Chip, den man drücken kann, sieht anders aus als einer, den man nur liest" — hält weiter für jeden Chip, der selbst das Bedienelement ist.</p>
+<p><strong>Sie hat jetzt eine Lücke, und sie kostet den einzigen neuen schweren Befund in <code>app-next</code>:</strong> wenn der Chip <strong>im</strong> Bedienelement sitzt statt es zu sein, greift die Regel nicht. <code>journal-home</code> Zeile 316 ist der Fall — ein <code>&lt;button&gt;</code> von 468×44 pt, darin ein <code>&lt;span class="chip chip--ghost"&gt;</code>. Der Knopf ist das Ziel, der Chip ist das Zeichen, und weil der Chip ein <code>&lt;span&gt;</code> ist, trägt er den <strong>Etiketten</strong>-Ring mit 1,46:1 statt der 3,29:1, die ihm als einzigem sichtbaren Merkmal eines Bedienelements zustünden. Die Regel muss lauten: <em>ein Chip, der ein Bedienelement <strong>anzeigt</strong>, sieht aus wie eines</em> — nicht <em>ein Chip, der eines <strong>ist</strong></em>. Siehe §5.2.</p>
+<p><strong>Ein echter Befund steckt trotzdem in dieser Tabelle:</strong> <code>--paper</code> gegen <code>--ground</code> trennt jede Karte, jede Kachel, jedes Blatt. iOS trennt an derselben Stelle mit 1,116:1 (hell, <code>systemGroupedBackground</code> gegen weiß) und <strong>1,234:1</strong> (dunkel, Schwarz gegen <code>#1C1C1E</code>). Velum trifft den Hellwert auf drei Nachkommastellen — und bleibt im Dunkeln mit 1,089:1 <strong>darunter</strong>. Im Dunkelmodus stehen Velums Karten flacher auf ihrem Grund als Apples.</p>
+<h2 id="4-die-befunde-nach-schwere"><span class="h-t">4 · Die Befunde nach Schwere</span><a class="anchor" href="#4-die-befunde-nach-schwere" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Nicht 622 Befunde, sondern <strong>wenige Bausteine, die vielfach vorkommen.</strong> So sind sie hier gruppiert; die Einzelmeldungen stehen dahinter.</p>
+<h3 id="schwer-46-elemente-die-im-unmarkierten-bild-nicht-als-bedienelement-lesbar-sind"><span class="h-t">Schwer — 46 Elemente, die im unmarkierten Bild nicht als Bedienelement lesbar sind</span><a class="anchor" href="#schwer-46-elemente-die-im-unmarkierten-bild-nicht-als-bedienelement-lesbar-sind" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:820px"><thead><tr><th scope="col"><span class="th-t">#</span></th><th scope="col"><span class="th-t">Ursache</span></th><th class="ta-right" scope="col"><span class="th-t">Anzahl</span></th><th scope="col"><span class="th-t">Wo</span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th></tr></thead><tbody><tr><td><strong>N1</strong></td><td><strong>Graph-Knoten</strong> — <code>&lt;button class="gn"&gt;</code> ohne Fläche, ohne Rand, ohne Chevron; das sichtbare Zeichen ist ein 6-pt-<code>&lt;circle&gt;</code> im SVG, den kein Merkmalstest sieht</td><td class="ta-right"><strong>33</strong></td><td><code>graph</code> iPad (23), iPhone (10)</td><td class="ta-right"><em>nicht gezählt</em></td></tr><tr><td><strong>N2</strong></td><td><strong>Chip im Knopf statt Chip als Knopf</strong> — 468×44-pt-<code>&lt;button&gt;</code>, dessen einziges Zeichen ein <code>&lt;span class="chip--ghost"&gt;</code> mit 1,46:1 ist</td><td class="ta-right"><strong>1</strong></td><td><code>journal-home</code> iPad</td><td class="ta-right">0</td></tr><tr><td>S3</td><td>Datumsleiste ohne Fläche: sechs von sieben Tagen tragen nur Text</td><td class="ta-right"><strong>6</strong></td><td><code>best-of/tasks</code> iPad</td><td class="ta-right">6 → <strong>8 waren es, zwei sind über <code>--line-tap</code> weggefallen</strong></td></tr><tr><td>S5</td><td>Terminzeilen ohne Kreis und ohne Kante</td><td class="ta-right"><strong>4</strong></td><td><code>best-of/today</code> iPad + iPhone</td><td class="ta-right">4</td></tr><tr><td>S7</td><td>Gliederungszeilen in der Notizen-Seitenspalte</td><td class="ta-right"><strong>2</strong></td><td><code>best-of/notes</code> iPad</td><td class="ta-right">2</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Erledigt und aus der Tabelle verschwunden:</strong></p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">#</span></th><th scope="col"><span class="th-t">war</span></th><th class="ta-right" scope="col"><span class="th-t">Anzahl</span></th><th scope="col"><span class="th-t">wodurch</span></th></tr></thead><tbody><tr><td>S1</td><td><code>.btn--quiet</code> ohne jedes Merkmal</td><td class="ta-right"><strong>13 → 0</strong></td><td><code>system.css</code> §6 gibt der Klasse <code>inset 0 0 0 1px var(--line-tap)</code> — 3,29:1. Eine Regel, 24 Vorkommen, 13 schwere Befunde weg, davon 8 in <code>best-of</code>, das niemand angefasst hat</td></tr><tr><td>S2</td><td>Inhaltsverzeichnis im Notiz-Editor</td><td class="ta-right"><strong>4 → 0</strong></td><td>alle fünf Einträge tragen jetzt eine Zeilenfläche, der aktive zusätzlich Balken und Fettung</td></tr><tr><td>S4</td><td>Herkunfts-Kette auf <code>journal-entry</code></td><td class="ta-right"><strong>2 → 0</strong></td><td>„ENTSTANDEN AUS" und „DARAUS WURDE" haben den Chevron, den <code>today</code> schon hatte; die Mittelstation trägt bewusst keinen — sie ist kein Ziel</td></tr><tr><td>S6</td><td><code>/bio</code> und <code>/mathe</code> ohne Symbol</td><td class="ta-right"><strong>2 → 0</strong></td><td>beide tragen jetzt dasselbe Tag-Symbol wie ihre Geschwister</td></tr><tr><td>—</td><td><code>best-of/journal</code>, <code>best-of/flashcards</code></td><td class="ta-right"><strong>4 → 0</strong></td><td>ausschließlich über <code>.btn--quiet</code></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>34 der 46 stehen in <code>app-next</code>, 12 in <code>best-of</code> — und 33 der 34 sind die Graph-Knoten.</strong> Rechnet man <code>graph</code> heraus, hält <code>app-next</code> bei 719 geprüften Bedienelementen <strong>einen</strong> schweren Befund. <code>best-of</code> hält bei 314 Elementen zwölf, ohne dass jemand die Dateien angefasst hätte.</p>
+<h3 id="mittel-186-elemente-hell-zwei-ursachen"><span class="h-t">Mittel — 186 Elemente (hell), zwei Ursachen</span><a class="anchor" href="#mittel-186-elemente-hell-zwei-ursachen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Ursache</span></th><th class="ta-right" scope="col"><span class="th-t">Anzahl</span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th></tr></thead><tbody><tr><td><strong>reine R4-Meldung</strong> — davon 66 der Erledigt-Kreis <code>.check</code> (22 pt, in <code>task-detail</code> 18 pt) und 24 Chips mit eigener Semantik (24–28 pt)</td><td class="ta-right">102</td><td class="ta-right">97</td></tr><tr><td><strong>R2</strong> — weder Fläche noch Rand noch Leistenlage, aber ein Symbol oder ein Chevron trägt es: <code>.chain__link</code>, tappbare Karten, <code>.iconbtn</code> außerhalb einer Leiste, die Graph-Knoten</td><td class="ta-right">84</td><td class="ta-right">64</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Die häufigsten Bausteine im Mittelfeld: <code>.check</code> 66 · <code>&lt;button&gt;</code> ohne Klasse 45</p>
+<ul><li><code>.chip</code> 24 · <code>.navitem</code> 11 · <code>.row</code> 8 · <code>.btn</code> 7 · <code>.iconbtn</code> 7 · <code>.klammer__quelle</code> 4.</li></ul>
+<h3 id="leicht-390-elemente-ausnahmslos-r4-zwischen-32-und-44-pt"><span class="h-t">Leicht — 390 Elemente, ausnahmslos R4 zwischen 32 und 44 pt</span><a class="anchor" href="#leicht-390-elemente-ausnahmslos-r4-zwischen-32-und-44-pt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Kleinste Kante</span></th><th class="ta-right" scope="col"><span class="th-t">Anzahl</span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th></tr></thead><tbody><tr><td>40–43 pt</td><td class="ta-right">234</td><td class="ta-right">216</td></tr><tr><td>36–39 pt</td><td class="ta-right">26</td><td class="ta-right">49</td></tr><tr><td>32–35 pt</td><td class="ta-right">130</td><td class="ta-right">144</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Die 547 R4-Meldungen sind zehn Bausteine</strong> (vorher 575 aus sieben), verteilt über alle Schweregrade:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Baustein</span></th><th class="ta-right" scope="col"><span class="th-t">Maß</span></th><th class="ta-right" scope="col"><span class="th-t">Meldungen</span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th></tr></thead><tbody><tr><td><code>.navitem</code> (Sidebar-Zeile)</td><td class="ta-right">40 pt</td><td class="ta-right">228</td><td class="ta-right">228</td></tr><tr><td><code>.btn</code> / <code>.btn--sm</code></td><td class="ta-right">34 pt</td><td class="ta-right">83</td><td class="ta-right">84</td></tr><tr><td><code>.check</code></td><td class="ta-right">22 pt / 18 pt</td><td class="ta-right">66</td><td class="ta-right">67</td></tr><tr><td><code>&lt;button&gt;</code> ohne Klasse, inline gemessen</td><td class="ta-right">25–40 pt</td><td class="ta-right">56</td><td class="ta-right">64</td></tr><tr><td><code>.chip</code></td><td class="ta-right">26–32 pt</td><td class="ta-right">24</td><td class="ta-right">—</td></tr><tr><td><code>.iconbtn</code> mit Inline-Maß</td><td class="ta-right">38 / 34 / 26 pt</td><td class="ta-right">20</td><td class="ta-right">39</td></tr><tr><td><code>.segmented button.is-on</code></td><td class="ta-right">32 pt</td><td class="ta-right">17</td><td class="ta-right">—</td></tr><tr><td><code>.handoff__btn</code></td><td class="ta-right">34 pt</td><td class="ta-right">17</td><td class="ta-right">—</td></tr><tr><td><strong><code>.gn</code> (Graph-Knoten)</strong></td><td class="ta-right">84×32 pt</td><td class="ta-right"><strong>14</strong></td><td class="ta-right"><em>nicht gezählt</em></td></tr><tr><td><code>.row</code> in schmalen Fassungen</td><td class="ta-right">32–43 pt</td><td class="ta-right">14</td><td class="ta-right">25</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><code>.navitem</code> allein stellt weiter 228 Meldungen: eine Sidebar-Zeile ist 40 pt hoch, nicht 44. <strong>Punkt 8 der alten Aufgabenliste ist nicht angefasst worden, Punkt 2 ebenfalls nicht</strong> — <code>.check</code> misst unverändert 22 pt an 66 Stellen, obwohl <code>tasks.html</code> den 44-pt-Griff seit dem letzten Lauf vorführt. Die Zahl ist groß und der Befund ist klein — genau deshalb steht die Verteilung hier und nicht nur die Summe.</p>
+<h2 id="5-die-fuenf-schlimmsten"><span class="h-t">5 · Die fünf schlimmsten</span><a class="anchor" href="#5-die-fuenf-schlimmsten" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<h3 id="1-die-graph-knoten-sind-jetzt-bedienelemente-und-immer-noch-nicht-lesbar"><span class="h-t">1 · Die Graph-Knoten sind jetzt Bedienelemente — und immer noch nicht lesbar</span><a class="anchor" href="#1-die-graph-knoten-sind-jetzt-bedienelemente-und-immer-noch-nicht-lesbar" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Der größte Einzelposten des letzten Laufs ist zur Hälfte erledigt. <code>graph.html</code> meldete 29 geprüfte Bedienelemente, <strong>keines davon ein Knoten</strong>; die Objekte waren <code>&lt;circle&gt;</code> plus <code>&lt;text&gt;</code> ohne <code>role</code>, ohne <code>tabindex</code>. Sie sind jetzt <code>&lt;button class="gn"&gt;</code> mit <code>aria-label</code>. <strong>Für VoiceOver, Full Keyboard Access und Switch Control ist der Screen damit von leer auf vollständig gesprungen</strong> — das ist die wichtigste einzelne Verbesserung dieser Runde und sie steht in keiner Summe, weil ein Test, der Affordanz misst, Erreichbarkeit nicht belohnt.</p>
+<p>Gemessen wird jetzt, was vorher unsichtbar war, und das Ergebnis ist hart: <strong>33 der 46 schweren Befunde sind Graph-Knoten</strong>, 23 auf dem iPad, 10 auf dem iPhone. Jeder misst <code>flKontrast 1,00</code> und <code>randKontrast 1,00</code> — der Knopf ist vollständig durchsichtig.</p>
+<p>Der Verdacht liegt nahe, dass hier das Werkzeug irrt: das sichtbare Zeichen des Knotens ist ein 6-pt-Modulpunkt, gezeichnet als <code>&lt;circle&gt;</code> <strong>im</strong> Knopf, und <code>background-color</code> findet den nicht. <strong>Das markierte Bild widerlegt den Verdacht.</strong> Links, ohne Markierung, lesen sich „Analysis II", „Semesterplan", „Zellkultur-Skizze" als <em>Beschriftungen in einem Diagramm</em>. Der Modulpunkt sitzt darüber und liest sich als <strong>Datenpunkt</strong>, nicht als Bedienzeichen — er sagt „das hier ist eine Notiz", nicht „das hier kannst du drücken". Auf jedem anderen Screen steht derselbe 6-pt-Punkt neben Text, den man <strong>nicht</strong> drücken kann.</p>
+<p>Dazu ein Befund, den erst der Rahmen zeigt: <strong>das Ziel ist die Beschriftung, nicht der Punkt.</strong> Die grünen Kästen liegen auf den Wörtern (84×32 pt), der Punkt liegt außerhalb. Wer auf das zielt, was wie der Knoten aussieht, trifft nichts.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-graph-ipad.png">graph iPad</a></p>
+<h3 id="2-der-chip-im-knopf-ein-befund-eine-regel-journal-home"><span class="h-t">2 · Der Chip im Knopf — ein Befund, eine Regel, <code>journal-home</code></span><a class="anchor" href="#2-der-chip-im-knopf-ein-befund-eine-regel-journal-home" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Der einzige neue schwere Befund in <code>app-next</code>, und er ist klein genug, dass man ihn ernst nehmen muss. <code>journal-home.html</code> Zeile 316:</p>
+<pre><code>&lt;button …&gt;   &lt;!-- 468 × 44 pt, ohne Klasse, ohne Fläche --&gt;
+  &lt;span class="chip chip--ghost"&gt;&lt;span class="ico" data-ico="plus"&gt;&lt;/span&gt;11. Nov. nachtragen&lt;/span&gt;
+  &lt;span …&gt;noch kein Eintrag&lt;/span&gt;
+&lt;/button&gt;</code></pre>
+<p>Der Knopf ist richtig gebaut: 44 pt hoch, volle Zeilenbreite, ein echtes <code>&lt;button&gt;</code>. Im Bild ist er auch zu sehen — der Chip trägt einen Ring und ein Plus-Zeichen. <strong>Der Ring ist nur der falsche.</strong> Weil der Chip ein <code>&lt;span&gt;</code> ist, greift die Etiketten-Fassung von <code>.chip--ghost</code> mit <code>--line-2</code> bei <strong>1,46:1</strong> statt <code>--line-tap</code> bei 3,29:1; und weil das Plus als Textzeichen gesetzt ist, zählt der Symboltest es nicht.</p>
+<p>Der zweite Teil des Befunds ist der ehrlichere: <strong>das Ziel ist 468 pt breit, das Zeichen 155 pt.</strong> Zwei Drittel der Trefferfläche sehen nach nichts aus. Das ist kein Fehler des Werkzeugs — es ist genau die Sorte Halbheit, die ein Fremder in drei Sekunden merkt, und sie kostet <code>journal-home</code> sein <strong>Ja</strong> (§7).</p>
+<h3 id="3-die-datumsleiste-in-best-of-tasks-sechs-von-sieben-tagen-ohne-flaeche"><span class="h-t">3 · Die Datumsleiste in <code>best-of/tasks</code> — sechs von sieben Tagen ohne Fläche</span><a class="anchor" href="#3-die-datumsleiste-in-best-of-tasks-sechs-von-sieben-tagen-ohne-flaeche" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Der größte verbliebene Posten außerhalb von <code>graph</code>, und er steht in Runde-1- Code, den in dieser Runde niemand anfassen sollte. Sechs <code>&lt;button&gt;</code> — „Mo 10", „Di 11", „Mi 12", „Fr 14" und zwei weitere — tragen nur Text; der siebte, der heutige, trägt <code>--accent-soft</code>. <strong>Der aktive Tag beweist, dass die anderen tappbar sind, und ist der einzige Beweis.</strong></p>
+<p>Zwei der ursprünglich acht sind ohne Zutun weggefallen, weil sie <code>.btn--quiet</code> waren. Die übrigen sechs brauchen dieselbe Behandlung wie das Inhaltsverzeichnis in <code>note-editor</code>, die es dort inzwischen gibt: eine Zeilenfläche für alle, ein zweites Merkmal für den aktiven.</p>
+<h3 id="4-der-erledigt-kreis-66-mal-22-pt-und-die-loesung-liegt-weiter-daneben"><span class="h-t">4 · Der Erledigt-Kreis: 66-mal 22 pt, und die Lösung liegt weiter daneben</span><a class="anchor" href="#4-der-erledigt-kreis-66-mal-22-pt-und-die-loesung-liegt-weiter-daneben" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Unverändert seit dem letzten Lauf, deshalb steht er wieder hier. <code>.check</code> misst 22×22 pt — <strong>66-mal im Bestand, in acht Screens</strong>, und es ist das Bedienelement, mit dem in einer Aufgaben-App am häufigsten getippt wird. Alle 66 fallen durch R4, alle 66 sind als <strong>mittel</strong> eingestuft.</p>
+<p><code>tasks.html</code> macht es an fünf Stellen richtig:</p>
+<pre><code>&lt;button style="width:44px; height:44px; margin:-11px" data-bw="erledigen" …&gt;
+  &lt;span class="bw-check"&gt;&lt;/span&gt;
+&lt;/button&gt;</code></pre>
+<p>44 pt Ziel, 22 pt Zeichen, negativer Außenabstand, damit das Layout gleich bleibt. <strong>Genau dieser Griff fehlt an den anderen 66 Stellen.</strong> Es ist kein Entwurfsproblem, es ist ein nicht zu Ende geführter Umbau — die Lösung steht seit zwei Runden in derselben Datei.</p>
+<p>Dasselbe gilt für <code>.navitem</code>: 40 statt 44 pt, <strong>228 Meldungen</strong>, eine Zeile CSS. Zusammen sind das 294 der 547 R4-Meldungen aus zwei Zahlen.</p>
+<h3 id="5-der-wiki-link-traegt-weiter-die-etikettenlinie"><span class="h-t">5 · Der Wiki-Link trägt weiter die Etikettenlinie</span><a class="anchor" href="#5-der-wiki-link-traegt-weiter-die-etikettenlinie" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><code>note-editor.html</code>, jetzt an <strong>drei</strong> Stellen (Zeilen 225, 644, 860 — vorher zwei):</p>
+<pre><code>&lt;a href="#" style="… box-shadow: inset 0 -1.5px 0 var(--line-2)"&gt;[[Osmose]]&lt;/a&gt;</code></pre>
+<p>Die Unterstreichung ist da, R3 ist erfüllt, der Befund ist formal nur <em>leicht</em> — und er ist trotzdem der schärfste Einzelbefund des Dokuments geblieben, <strong>weil er gegen die eigene Regel verstößt.</strong> <code>--line-2</code> hält 1,46:1; <code>--line-tap</code> ist eigens für „umrandet ein Bedienelement ohne eigene Fläche" geschaffen und hält 3,29:1. Im Ausschnitt sieht man es sofort: die Linie unter <code>[[Osmose]]</code> ist heller als der Text, den sie unterstreicht.</p>
+<p>Ein Zeichen ist da; es ist nur nicht zu sehen. Punkt 5 der alten Aufgabenliste, zwei Zeichen Arbeit, <strong>nicht gemacht</strong> — und in der Zwischenzeit ist eine dritte Fundstelle dazugekommen.</p>
+<h2 id="6-was-der-test-nicht-sieht"><span class="h-t">6 · Was der Test nicht sieht</span><a class="anchor" href="#6-was-der-test-nicht-sieht" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Vier Grenzen. Sie stehen hier, weil ein Nachweis, der seine eigenen Lücken verschweigt, kein Nachweis ist.</p>
+<ol><li><strong>Er findet nur, was als Bedienelement erklärt ist.</strong> Der größte Fall ist erledigt: die 27 Graph-Knoten sind seit dieser Runde <code>&lt;button&gt;</code> und damit gezählt — das allein erklärt +36 geprüfte Elemente und die gestiegene Schwer-Zahl (§3.1). <strong>Was diese Zahl bewegt, sagt mehr über den Umbau des Markups als über die Gestaltung.</strong> Weiter nicht gefunden: die Stimmungs-Balken und der Energie-Regler auf <code>journal-entry</code>, die Teilschritt-Zeilen unter einer Aufgabe auf <code>tasks</code>, die „verlinkt / erwähnt"-Zeilen in der Editor-Seiten- spalte. <strong>Ein Element, das weder Semantik noch Bedien-Klasse trägt, taucht in keiner Zahl dieses Dokuments auf.</strong></li></ol>
+<p><strong>Eine zweite Blindstelle hat dieser Lauf gefunden und sie ist nicht behoben:</strong> der Test misst <code>background-color</code> und <code>border</code> des Elements <strong>selbst</strong>. Ein Zeichen, das als <code>&lt;circle&gt;</code> im SVG <strong>darin</strong> liegt (die Graph-Knoten) oder als <code>&lt;span&gt;</code> mit eigenem Ring <strong>darin</strong> sitzt (<code>journal-home</code>, §5.2), zählt nicht als Merkmal des Knopfes. Beide Fälle sind nachgesehen worden und beide sind <strong>echte</strong> Befunde geblieben (§5.1, §5.2) — aber das war Augenschein, nicht Messung, und beim nächsten Bauteil dieser Art kann es anders ausgehen. Wer die Zahl 46 benutzt, muss das mitsagen.</p>
+<ol start="2"><li><strong>179 + 123 = 302 Elemente tragen Bedien-Optik oder Bedien-Klasse ohne Bedien-Semantik.</strong> Für den Affordanz-Test sind sie mitgezählt, weil er nach dem Bild fragt. Für VoiceOver, Full Keyboard Access und Switch Control sind sie nicht vorhanden. Welche davon Bedienelemente werden sollen und welche Etiketten bleiben, ist eine Entscheidung, kein Messwert. Beispiele aus einer einzigen Zeile auf <code>tasks.html</code>: die erkannten Marken „Morgen 14:00", „#labor", „Hohe Priorität", „Bereich Biologie" stehen unter der Beschriftung <em>„Antippen zum Ändern"</em> — sie <strong>sollen</strong> tappbar sein und sind <code>&lt;span&gt;</code>. Dagegen ist „4 Blöcke ausgeblendet" im Editor ein Etikett und trägt trotzdem eine Chip-Fläche von 1,11:1.</li><li><strong>Er misst den Ruhezustand.</strong> <code>:hover</code>, <code>:active</code>, <code>:focus-visible</code> und die Bewegung aus <code>bewegung.css</code> sind nicht geprüft. Auf iOS gibt es kein Hover; die Affordanz muss ohnehin vorher da sein — deshalb ist diese Grenze verschmerzbar, aber sie ist eine.</li><li><strong>„Lage" ist ein Urteil</strong> (§2). Ohne sie fielen 31 weitere Zeilen durch, mit ihr fallen 4 durch. Beide Zahlen stehen in diesem Dokument.</li></ol>
+<p>Und eine Grenze, die ich beim Rechnen selbst gefunden habe: die erste Fassung des Werkzeugs meldete 16 Notizbuch-Deckel als „ohne Fläche", weil ihr Papier ein Bild ist und ihre <code>background-color</code> 1,09:1 misst. Sie meldete außerdem 40 Bedienelemente, die es nicht gibt — die Rückseiten gedrehter Karten. Beides ist behoben (Bild zählt als Fläche, Treffprobe per <code>elementFromPoint</code>); beides steht hier, weil eine Messung, deren Fehler man nicht kennt, keine Messung ist.</p>
+<h2 id="7-die-drei-sekunden-frage-je-screen"><span class="h-t">7 · Die Drei-Sekunden-Frage, je Screen</span><a class="anchor" href="#7-die-drei-sekunden-frage-je-screen" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<blockquote><p><strong>Kann ein Fremder ohne Vorwissen in drei Sekunden sagen, was anklickbar ist?</strong></p></blockquote>
+<p>Beantwortet, indem ich das unmarkierte Bild angesehen und danach das markierte danebengelegt habe. <strong>Ja</strong> heißt: alles Gerahmte war vorher erkennbar. <strong>Fast</strong> heißt: bis auf benannte Stellen. <strong>Nein</strong> heißt: eine Aktion, die der Screen braucht, war nicht zu finden.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Screen</span></th><th scope="col"><span class="th-t">Antwort</span></th><th scope="col"><span class="th-t">vorher</span></th><th scope="col"><span class="th-t">Was fehlt</span></th></tr></thead><tbody><tr><td><strong>flashcards-home</strong></td><td><strong>Ja</strong></td><td>Ja</td><td>Nichts. Weiter der sauberste Screen: 0 schwer, 0 mittel auf beiden Geräten. Jeder Knopf hat Fläche, Ring oder Ink.</td></tr><tr><td><strong>settings</strong></td><td><strong>Ja</strong></td><td>Ja</td><td>0 schwer, 0 mittel. Eine Liste aus Zeilen mit Chevron und Schaltern — die Bauform trägt alles.</td></tr><tr><td><strong>library</strong></td><td><strong>Ja</strong></td><td>Ja</td><td>Ein Deckel ist ein Deckel. Neu dazu: das Kontextmenü ist gezeichnet (§8.2).</td></tr><tr><td><strong>leere-zustaende</strong></td><td><strong>Ja</strong></td><td>Ja</td><td>0 schwer. Ein leerer Screen mit genau einem Ink-Knopf.</td></tr><tr><td><strong>today</strong></td><td><strong>Ja</strong></td><td><em>Fast</em></td><td><strong>Aufgestiegen.</strong> Die drei Kettenglieder tragen jetzt <code>--fill</code> als eigene Fläche <strong>und</strong> den Chevron — vorher nur den Chevron. Der Signaturmoment findet sich zuerst statt zuletzt.</td></tr><tr><td><strong>notes-list</strong></td><td><strong>Ja</strong></td><td><em>Fast</em></td><td><strong>Aufgestiegen.</strong> <code>/bio</code> und <code>/mathe</code> tragen dasselbe Tag-Symbol wie ihre Geschwister.</td></tr><tr><td><strong>journal-entry</strong></td><td><strong>Ja</strong></td><td><em>Fast</em></td><td><strong>Aufgestiegen.</strong> Die „VERBUNDEN"-Kette hat Chevrons an beiden Zielgliedern; die Mittelstation hat bewusst keinen, weil sie kein Ziel ist.</td></tr><tr><td><strong>task-detail</strong></td><td><strong>Ja</strong></td><td><em>Fast</em></td><td><strong>Aufgestiegen.</strong> „Ganzen Verlauf zeigen" ist unterstrichen.</td></tr><tr><td><strong>review-session</strong></td><td><strong>Ja</strong></td><td><em>Nein</em></td><td><strong>Zwei Stufen aufgestiegen, der größte Sprung dieser Runde.</strong> „Zurücklegen · Aussetzen · Bearbeiten" und „Leeren" tragen den <code>--line-tap</code>-Ring. Die Karte liest sich jetzt in drei Lautstärken: „Gut" Ink-gefüllt, die drei Bewertungen mit Ring, die drei Verwaltungsknöpfe mit demselben Ring in kleiner.</td></tr><tr><td><strong>journal-home</strong></td><td><strong>Fast</strong></td><td><em>Ja</em></td><td><strong>Abgestiegen.</strong> „11. Nov. nachtragen" ist ein 468-pt-Knopf, dessen einziges Zeichen ein 155-pt-Chip mit dem <strong>Etiketten</strong>-Ring (1,46:1) ist. Alles andere auf dem Screen liest sich. §5.2.</td></tr><tr><td><strong>note-editor</strong></td><td><strong>Fast</strong></td><td><em>Fast</em></td><td>Die Gliederung rechts ist gelöst — alle fünf Zeilen haben Fläche. Offen bleibt der Wiki-Link <code>[[Osmose]]</code>: unterstrichen, aber mit 1,46:1 heller als der Text darüber. §5.5.</td></tr><tr><td><strong>tasks</strong></td><td><strong>Fast</strong></td><td><em>Fast</em></td><td>Zeilen, Kreise, Klammer und Auswahl-Leiste lesen sich. Unverändert unklar: die vier erkannten Marken im Eingabefeld — sie sagen „Antippen zum Ändern" und sind <code>&lt;span&gt;</code> mit Etikettenoptik. 10 der 123 Fehlaffordanzen stehen auf diesem Screen.</td></tr><tr><td><strong>graph</strong></td><td><strong>Nein</strong></td><td><em>Nein</em></td><td>Panel, Filter und Zoom sind klar. Die 27 Knoten sind jetzt <strong>erreichbar</strong> (VoiceOver, Tastatur) und immer noch nicht <strong>lesbar</strong>: transparente Knöpfe, deren Zeichen ein 6-pt-Datenpunkt außerhalb der Trefferfläche ist. §5.1.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Bilanz <code>app-next</code>: 9 × Ja, 3 × Fast, 1 × Nein</strong> — vorher 5 × Ja, 6 × Fast, 2 × Nein.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t"></span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th><th class="ta-right" scope="col"><span class="th-t">jetzt</span></th></tr></thead><tbody><tr><td><strong>Ja</strong></td><td class="ta-right">5</td><td class="ta-right"><strong>9</strong></td></tr><tr><td><strong>Fast</strong></td><td class="ta-right">6</td><td class="ta-right"><strong>3</strong></td></tr><tr><td><strong>Nein</strong></td><td class="ta-right">2</td><td class="ta-right"><strong>1</strong></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Bei der Abnahme neu beantwortet — dieselbe Bilanz: 9 × Ja, 3 × Fast, 1 × Nein.</strong> Kein Screen ist auf- oder abgestiegen, und das ist erwartbar: die Affordanz-Zahlen sind elementweise dieselben (§3.2). Die Nachprüfung nach Runde 4 hatte <strong>10 × Ja, 3 × Fast, 0 × Nein</strong> notiert. Diese Zahl ist durch die Messung nicht gedeckt: <code>graph</code> trägt in beiden Läufen dieselben 23 (iPad) + 10 (iPhone) schweren Befunde, und im unmarkierten Bild ist keiner der 27 Knoten als Bedienelement zu erkennen. <strong><code>graph</code> bleibt Nein.</strong> Wer die 0 will, muss den Knoten eine Fläche geben, nicht das Urteil ändern.</p>
+<p>Die zweite Frage — <strong>erkennt man den Screen ohne Logo als Velum?</strong> — steht bei der Abnahme auf <strong>13 × Ja</strong> (zuletzt 12 Ja, 1 Nein). Jeder der dreizehn Screens trägt auf <strong>beiden</strong> Geräten mindestens einen Faden mit echter Kante; der schwächste Fall ist <code>notes-list</code> auf dem iPhone mit zwei Fäden, der stärkste <code>flashcards-home</code> mit 18 (iPad) und 15 (iPhone). Gezählt wurden nur Fäden, die im Geräteausschnitt wirklich liegen.</p>
+<p>Fünf Screens sind aufgestiegen (<code>today</code>, <code>notes-list</code>, <code>journal-entry</code>, <code>task-detail</code>, <code>review-session</code>), <strong>einer ist abgestiegen</strong> (<code>journal-home</code>), einer steht still (<code>graph</code>).</p>
+<p>Für <code>best-of</code> (Runde 1, unangetastet, nur von <code>system.css</code> erreicht): <code>library</code>, <code>flashcards</code> und <code>journal</code> <strong>Ja</strong> — die letzten beiden aufgestiegen, ohne dass jemand die Dateien geöffnet hat; <code>notes</code> <strong>Fast</strong>; <code>today</code> und <code>tasks</code> <strong>Nein</strong> — bei <code>tasks</code> ist weiter die Wochenleiste betroffen, jetzt sechs von sieben Tagen statt acht Meldungen.</p>
+<h3 id="die-ehrliche-zusammenfassung"><span class="h-t">Die ehrliche Zusammenfassung</span><a class="anchor" href="#die-ehrliche-zusammenfassung" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Der Entwurf <strong>kann</strong> Affordanz ohne Farbe, und er tut es inzwischen fast überall. Neun der dreizehn Screens bestehen die Drei-Sekunden-Frage ohne Einschränkung; <strong>719 Bedienelemente in <code>app-next</code>, davon ein einziger schwerer Befund außerhalb von <code>graph</code>.</strong></p>
+<p>Der Beleg dafür, dass es an einem Baustein hing und nicht am Entwurf, steht in <code>best-of</code>: dort hat niemand eine Datei angefasst, und trotzdem sind acht schwere Befunde verschwunden — weil <code>.btn--quiet</code> eine Zeile CSS bekommen hat. <strong>Eine Klasse, 24 Vorkommen, 13 schwere Befunde weg.</strong> Punkt 1 der alten Aufgabenliste war richtig gestellt.</p>
+<p>Was <strong>nicht</strong> behauptet wird:</p>
+<ul><li><strong>Die Summe ist gestiegen: 33 → 46 schwer.</strong> Sie ist gestiegen, weil 36 Bedienelemente dazugekommen sind, die es vorher im Markup nicht gab. Wer die beiden Zahlen ohne §3.1 nebeneinanderstellt, liest das Gegenteil dessen, was passiert ist — und das ist die Schuld dieses Dokuments, nicht die des Lesers.</li><li><strong><code>graph</code> ist nicht gelöst, sondern zur Hälfte gelöst.</strong> Erreichbarkeit ja, Lesbarkeit nein. 33 von 46 schweren Befunden stehen auf einem Screen.</li><li><strong>Vier Punkte der alten Aufgabenliste sind unangetastet:</strong> der 44-pt-Griff am Erledigt-Kreis (66 Vorkommen), <code>.navitem</code> auf 44 pt (228 Meldungen), der Wiki-Link auf <code>--line-tap</code> (jetzt drei Fundstellen statt zwei), und die Karte gegen den Grund im Dunkelmodus (weiter 1,089 gegen Apples 1,234).</li><li><strong>Die 302 Elemente ohne Semantik sind nicht durchgesehen worden.</strong> 179 tragen eine Bedien-Klasse ohne Semantik, 123 eine Bedien-Optik ohne Semantik. Die Zahl hat sich um sechs bewegt; die Entscheidung „Knopf oder Etikett" steht weiter aus.</li></ul>
+<h3 id="7-1-die-dreizehn-screens-im-bild"><span class="h-t">7.1 · Die dreizehn Screens im Bild</span><a class="anchor" href="#7-1-die-dreizehn-screens-im-bild" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Links unmarkiert, rechts markiert — dieselbe Aufnahme, derselbe Ausschnitt. Rot = primär · Blau = sekundär · Grün = tertiär · Violett gestrichelt = Bedien-Optik ohne Semantik. Halo = schwerer Befund. Der Dunkelmodus und die sechs <code>best-of</code>-Screens stehen in der Tabelle in §10.</p>
+<h4 id="today-ja-vorher-fast"><span class="h-t">today — <strong>Ja</strong> <em>(vorher Fast)</em></span><a class="anchor" href="#today-ja-vorher-fast" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>Die Kettenglieder tragen jetzt eigene Fläche <strong>und</strong> Chevron.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-today-ipad.png">today iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-today-iphone.png">today iPhone</a></p>
+<h4 id="library-ja"><span class="h-t">library — <strong>Ja</strong></span><a class="anchor" href="#library-ja" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>Ein Deckel ist ein Deckel. 0 schwer, 0 mittel auf dem iPad (hell).</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-library-ipad.png">library iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-library-iphone.png">library iPhone</a></p>
+<h4 id="notes-list-ja-vorher-fast"><span class="h-t">notes-list — <strong>Ja</strong> <em>(vorher Fast)</em></span><a class="anchor" href="#notes-list-ja-vorher-fast" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p><code>/bio</code> und <code>/mathe</code> tragen jetzt dasselbe Tag-Symbol wie ihre Geschwister.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-notes-list-ipad.png">notes-list iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-notes-list-iphone.png">notes-list iPhone</a></p>
+<h4 id="note-editor-fast"><span class="h-t">note-editor — <strong>Fast</strong></span><a class="anchor" href="#note-editor-fast" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>Die Gliederung ist gelöst — alle fünf Zeilen mit Fläche. Offen: der Wiki-Link bei 1,46:1.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-note-editor-ipad.png">note-editor iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-note-editor-iphone.png">note-editor iPhone</a></p>
+<h4 id="journal-home-fast-vorher-ja"><span class="h-t">journal-home — <strong>Fast</strong> <em>(vorher Ja)</em></span><a class="anchor" href="#journal-home-fast-vorher-ja" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>Der 468-pt-Knopf „11. Nov. nachtragen" zeigt sein Zeichen auf 155 pt — und im Etiketten-Ring.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-journal-home-ipad.png">journal-home iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-journal-home-iphone.png">journal-home iPhone</a></p>
+<h4 id="journal-entry-ja-vorher-fast"><span class="h-t">journal-entry — <strong>Ja</strong> <em>(vorher Fast)</em></span><a class="anchor" href="#journal-entry-ja-vorher-fast" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>Die „VERBUNDEN"-Kette trägt Chevrons an beiden Zielgliedern.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-journal-entry-ipad.png">journal-entry iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-journal-entry-iphone.png">journal-entry iPhone</a></p>
+<h4 id="tasks-fast"><span class="h-t">tasks — <strong>Fast</strong></span><a class="anchor" href="#tasks-fast" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>Zeilen, Kreise, Klammer und Auswahl-Leiste lesen sich; die erkannten Marken im Eingabefeld nicht.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-tasks-ipad.png">tasks iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-tasks-iphone.png">tasks iPhone</a></p>
+<h4 id="task-detail-ja-vorher-fast"><span class="h-t">task-detail — <strong>Ja</strong> <em>(vorher Fast)</em></span><a class="anchor" href="#task-detail-ja-vorher-fast" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>„Ganzen Verlauf zeigen" ist unterstrichen und damit als Knopf lesbar.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-task-detail-ipad.png">task-detail iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-task-detail-iphone.png">task-detail iPhone</a></p>
+<h4 id="flashcards-home-ja"><span class="h-t">flashcards-home — <strong>Ja</strong></span><a class="anchor" href="#flashcards-home-ja" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>Der sauberste Screen: jeder Knopf hat Fläche, Ring oder Ink. 0 schwer, 0 mittel.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-flashcards-home-ipad.png">flashcards-home iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-flashcards-home-iphone.png">flashcards-home iPhone</a></p>
+<h4 id="review-session-ja-vorher-nein"><span class="h-t">review-session — <strong>Ja</strong> <em>(vorher Nein)</em></span><a class="anchor" href="#review-session-ja-vorher-nein" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>„Zurücklegen · Aussetzen · Bearbeiten" und „Leeren" tragen den <code>--line-tap</code>-Ring. Drei Lautstärken auf einer Karte.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-review-session-ipad.png">review-session iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-review-session-iphone.png">review-session iPhone</a></p>
+<h4 id="graph-nein"><span class="h-t">graph — <strong>Nein</strong></span><a class="anchor" href="#graph-nein" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>Die 27 Knoten sind jetzt Bedienelemente — jeder Rahmen im rechten Bild trägt einen Halo. Erreichbar, nicht lesbar.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-graph-ipad.png">graph iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-graph-iphone.png">graph iPhone</a></p>
+<h4 id="settings-ja"><span class="h-t">settings — <strong>Ja</strong></span><a class="anchor" href="#settings-ja" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>0 schwer, 0 mittel. Zeilen mit Chevron und Schaltern, die Bauform trägt alles.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-settings-ipad.png">settings iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-settings-iphone.png">settings iPhone</a></p>
+<h4 id="leere-zustaende-ja"><span class="h-t">leere-zustaende — <strong>Ja</strong></span><a class="anchor" href="#leere-zustaende-ja" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h4>
+<p>0 schwer. Ein leerer Screen mit genau einem Ink-Knopf.</p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-leere-zustaende-ipad.png">leere-zustaende iPad</a></p>
+<p>!<a href="../mockups/_renders/affordanz/app-next-leere-zustaende-iphone.png">leere-zustaende iPhone</a></p>
+<h2 id="8-systemtreue"><span class="h-t">8 · Systemtreue</span><a class="anchor" href="#8-systemtreue" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Nachgewiesen, nicht abgehakt. Wo etwas nicht stimmt, steht es hier.</p>
+<h3 id="8-1-schriften-belegt"><span class="h-t">8.1 Schriften — belegt</span><a class="anchor" href="#8-1-schriften-belegt" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Gemessen wurde nicht der Quelltext, sondern die <strong>gerenderte</strong> Schrift jedes Textelements in allen 13 Screens, iPad und iPhone — <strong>1 958 Elemente</strong>, vorher 1 627. Der Zuwachs ist derselbe wie in §1: die Screens tragen mehr Inhalt, <code>graph</code> allein 33 beschriftete Knoten mehr.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">erste Familie der Kaskade</span></th><th class="ta-right" scope="col"><span class="th-t">Elemente</span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th></tr></thead><tbody><tr><td><code>-apple-system</code> (SF Pro Text)</td><td class="ta-right">1 841</td><td class="ta-right">1 545</td></tr><tr><td><code>New York</code></td><td class="ta-right">73</td><td class="ta-right">70</td></tr><tr><td><code>SF Mono</code></td><td class="ta-right">44</td><td class="ta-right">12</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Eine dritte Familie kommt nicht vor.</strong> <code>grep</code> über <code>mockups/</code> und <code>docs/*.html</code> findet <strong>null</strong> <code>@font-face</code>, null <code>.woff</code>/<code>.otf</code>/<code>.ttf</code>, null <code>@import</code>, null <code>fonts.googleapis</code>. Keine gekaufte, keine geladene, keine exotische Schrift — drei Systemschriften, alle auf jedem iPhone und iPad vorhanden.</p>
+<p><strong>Größen — die Fünferskala hält ausnahmslos:</strong></p>
+<pre><code>28 · 20 · 17 · 15 · 13          und 11 in der Tab-Bar-Beschriftung</code></pre>
+<p>Keine weitere Größe im ganzen Bestand. Die 11 pt sind die in <code>system.css</code> §4 dokumentierte Ausnahme; sie gehören iOS und nicht Velum.</p>
+<p><strong>Zeilenhöhen — hier gibt es Abweichungen, und sie sind mehr geworden: 121 von 1 958 (6,2 %), vorher 82 von 1 627 (5,0 %).</strong></p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Abweichung</span></th><th class="ta-right" scope="col"><span class="th-t">Anzahl</span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th><th scope="col"><span class="th-t">Bewertung</span></th></tr></thead><tbody><tr><td><code>.btn</code>-Varianten mit <code>line-height: 1</code> (17/17, 15/15)</td><td class="ta-right">63</td><td class="ta-right">61</td><td><strong>richtig.</strong> Ein Knopf ist eine einzeilige Zeilenbox; <code>line-height: 1</code> zentriert sie. 23 pt Zeilenhöhe in einem 34-pt-Knopf wäre der Fehler.</td></tr><tr><td><code>.count__n num</code> bei 20/24 statt 20/26</td><td class="ta-right"><strong>45</strong></td><td class="ta-right">14</td><td><strong>Befund, und er ist gewachsen.</strong> Eine Kennzahl ist Text wie jeder andere; für 24 statt 26 gibt es keinen Grund. Die Zahl hat sich mehr als verdreifacht, während der Bestand um 20 % gewachsen ist — das Muster ist beim Bauen kopiert worden.</td></tr><tr><td><code>.t-label c-3</code> bei 13/12 · 13/14 · 13/15 · 13/17, inline gesetzt</td><td class="ta-right"><strong>10</strong></td><td class="ta-right">6</td><td><strong>Befund.</strong> Vier verschiedene inline gesetzte Zeilenhöhen auf einer einzigen Textgröße, alle ohne Notwendigkeit.</td></tr><tr><td><code>num</code> einzeln mit <code>line-height: 1</code></td><td class="ta-right">2</td><td class="ta-right">1</td><td>Befund, minimal.</td></tr><tr><td><strong><code>.serif--cover-title</code> bei 13/18</strong></td><td class="ta-right"><strong>1</strong></td><td class="ta-right">—</td><td><strong>Neu.</strong> Die einzige Serif-Rolle mit einer eigenen Zeilenhöhe. Eine Fundstelle, aber sie steht in der Rolle, die 22-mal vorkommt.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Serif — die sieben Rollen, gezählt im Bild:</strong></p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Rolle</span></th><th class="ta-right" scope="col"><span class="th-t">Vorkommen</span></th><th class="ta-right" scope="col"><span class="th-t">vorher</span></th></tr></thead><tbody><tr><td><code>serif--cover-title</code></td><td class="ta-right">22</td><td class="ta-right">21</td></tr><tr><td><code>serif--screen-title</code></td><td class="ta-right">21</td><td class="ta-right">20</td></tr><tr><td><code>serif--empty-title</code></td><td class="ta-right">10</td><td class="ta-right">10</td></tr><tr><td><code>serif--quote</code></td><td class="ta-right">7</td><td class="ta-right">6</td></tr><tr><td><code>serif--voice</code> (Journal-Fließtext)</td><td class="ta-right">6</td><td class="ta-right">6</td></tr><tr><td><code>serif--journal-date</code></td><td class="ta-right">5</td><td class="ta-right">5</td></tr><tr><td><code>serif--wordmark</code></td><td class="ta-right">2</td><td class="ta-right">2</td></tr><tr><td><strong>blankes <code>.serif</code></strong></td><td class="ta-right"><strong>0</strong></td><td class="ta-right"><strong>0</strong></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Der Nachtrag N1 der DNA ist damit nachprüfbar umgesetzt: New York steht an genau sieben benannten Orten und nirgends sonst. 73 Elemente von 1 958 — <strong>3,7 %</strong> der Textelemente tragen die Serif, vorher 4,3 %. Sie ist Stimme, nicht Textur, und sie ist relativ leiser geworden, weil die Screens gewachsen sind.</p>
+<h3 id="8-2-navigation"><span class="h-t">8.2 Navigation</span><a class="anchor" href="#8-2-navigation" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">Muster</span></th><th scope="col"><span class="th-t">Stand</span></th><th scope="col"><span class="th-t">Beleg</span></th></tr></thead><tbody><tr><td><strong>Sidebar auf iPad</strong></td><td>✅ 12 von 13 Screens</td><td>Ausnahme <code>review-session</code>: eine Lernsitzung ist ein Vollbild-Modus, iOS entfernt dort die Navigation. Richtig so, und es ist der einzige Screen mit einem <code>×</code> links oben.</td></tr><tr><td><strong>Tab-Bar auf iPhone</strong></td><td>✅ 13 von 13</td><td>fünf Einträge, 48 pt hoch, Beschriftung 11 pt, aktiver Zustand über Gewicht <strong>und</strong> Farbe</td></tr><tr><td><strong>Kontextmenü</strong></td><td>✅ <strong>neu</strong> — <code>library.html</code> + <code>platform/kontextmenue.html</code></td><td><code>library.html</code> zeichnet es jetzt aus: „Umbenennen · Duplizieren · Verschieben · Zu Favoriten — Löschen", mit Trennlinie vor der zerstörenden Aktion und <code>--danger</code> nur dort. Der alte Befund „wer nur die Screens sieht, sieht das Muster nicht" ist erledigt. Es bleibt bei <strong>einem</strong> von 13 Screens.</td></tr><tr><td><strong>Blatt (Sheet)</strong></td><td>❌ <strong>fehlt</strong></td><td><code>grep</code> findet in <code>app-next/</code> kein Blatt mit Griffleiste. Die Klasse <code>.sheetnote</code> ist der Erklärkasten unter dem Gerät, kein UI-Blatt. Ein Entwurf mit „Neu"-Knopf auf jedem Screen braucht ein Blatt, und keines ist gezeichnet.</td></tr><tr><td><strong>Wischgeste</strong></td><td>⚠️ nur <code>review-session</code></td><td>Dort echt: Zeiger wird erst ab 6 pt gefangen, vier Knöpfe sind der gleichwertige Weg. Auf Listenzeilen (<code>tasks</code>, <code>notes-list</code>, <code>journal-home</code>) ist keine Wischaktion gezeichnet — das klassischste iOS-Listenmuster überhaupt.</td></tr><tr><td><strong>Popover</strong></td><td>⚠️ formfrei</td><td>Die Übergabe-Leiste <code>.handoff</code> und das Graph-Panel sind popover-artig, aber ohne Zeiger und ohne Systemform.</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Zwei bewusste Abweichungen vom Standard — die Begründung muss dastehen:</strong></p>
+<p><strong>Die Ketten-Karte</strong> ist kein iOS-Muster. Sie ist ein waagerechter Faden mit drei Stationen, an jeder anspringbar. Vorhersehbar bleibt sie, weil sie sich wie eine Liste verhält: die Stationen stehen in Leserichtung, jede trägt Vorspann, Titel und Metazeile in derselben Anordnung wie eine Listenzeile, und jede hat einen Chevron nach rechts. Der Fadenverlauf sagt „von hier nach dort" und ist die einzige Zutat, die iOS nicht kennt. <strong>Der Test bestätigte die Form und rügte ihre Lautstärke; die Rüge ist erledigt:</strong> jedes Glied trägt jetzt <code>--fill</code> als eigene Fläche und den Chevron, auf <code>today</code> wie auf <code>journal-entry</code>. Beide Screens sind dadurch von <em>Fast</em> auf <em>Ja</em> gestiegen (§7). Die Abweichung ist begründet <strong>und</strong> ausgeführt.</p>
+<p><strong>Die Übergabe-Leiste</strong> ersetzt das System-Menü über einer Textauswahl. Sie ist vorhersehbar, weil sie an derselben Stelle erscheint wie das Systemmenü, dieselbe Form hat (schwebendes Blatt mit Schlagschatten über der Auswahl) und links das sagt, was das Systemmenü nie sagt: woher die Auswahl kommt. Gemessen: die primäre Aktion „Lückentext-Karte" ist Ink-gefüllt bei 17,8:1, die beiden sekundären tragen Text plus Modulpunkt und werden von der Leiste getragen — das ist iOS' eigene Grammatik für ein Menü, und der Test lässt sie deshalb über R2 „Lage" passieren. <strong>Das ist die weichste Stelle des Nachweises:</strong> wer die Lage nicht gelten lässt, hat hier zwei weitere Befunde.</p>
+<h3 id="8-3-materialien-und-tiefe"><span class="h-t">8.3 Materialien und Tiefe</span><a class="anchor" href="#8-3-materialien-und-tiefe" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Materialien: Systemform, geschätzte Zahlen.</strong> <code>backdrop-filter: blur(24px) saturate(180%)</code> auf <code>--chrome</code> (<code>rgba(246,246,247,0.86)</code> hell / <code>rgba(23,25,28,0.84)</code> dunkel) — das ist die übliche Web-Entsprechung von <code>UIBlurEffect .regular</code>. Die Werte 24 px und 180 % sind <strong>gewählt, nicht aus dem System gelesen</strong>; iOS gibt sie nicht heraus. Vier Leisten benutzen dieselben Werte, eine (<code>.handoff</code>) 28 px. Die Form stimmt, die Zahl ist eine Schätzung, und sie steht hier als solche.</p>
+<p><strong>Tiefe: drei Token, sauber, aber selbst erfunden.</strong></p>
+<pre><code>--sh-card:  0 1px 2px rgba(22,24,28,.05), 0 6px 18px rgba(22,24,28,.06);
+--sh-float: 0 2px 6px rgba(22,24,28,.08), 0 14px 36px rgba(22,24,28,.14);
+--sh-cover: 0 1px 2px rgba(22,24,28,.08), 0 10px 24px rgba(22,24,28,.13);</code></pre>
+<p>Je ein Kontakt- und ein Streuschatten, im Dunkelmodus eigene Werte (stärker, wie es sein muss). <strong>Befund, nachgezählt: acht Schlagschatten stehen außerhalb der drei Token.</strong> <code>0 1px 3px rgba(22,24,28,.16)</code> (4×) und <code>0 1px 2px rgba(22,24,28,.16)</code> (4×) — darunter <code>.segmented button.is-on</code> und die Kachelkante. Sie sind gegen den letzten Lauf <strong>auf ein einheitliches Alpha vereinheitlicht</strong> worden (vorher drei verschiedene Werte), stehen aber weiter inline statt in einem Token.</p>
+<p>Nicht mitgezählt sind die 60 <code>inset</code>-Schatten: das sind Ringe und Unterstreichungen, keine Tiefe, und sie hängen fast alle korrekt an einem Token (<code>--line</code>, <code>--line-2</code>, <code>--line-tap</code>, <code>--accent-ring</code>, <code>--dot-hollow</code>). Zwei Ausnahmen bleiben inline: <code>inset 0 0 0 1px rgba(242,243,245,.10)</code> (8×) und <code>inset 0 0 0 1px rgba(22,24,28,.16)</code> (6×) — dieselbe Kante, in zwei handgeschriebenen Fassungen für hell und dunkel, wo ein einziges Token beide tragen würde.</p>
+<p>iOS gibt keine Schattenwerte heraus. Erfinden ist hier unvermeidlich — die Frage ist nur, ob es an einer Stelle geschieht oder an fünfzehn. Es geschieht an drei Token plus zwei inline gesetzten Kanten.</p>
+<h3 id="8-4-symbole"><span class="h-t">8.4 Symbole</span><a class="anchor" href="#8-4-symbole" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><strong>Alle 55 Symbole sind gezeichnet, keines ist ein SF Symbol.</strong> Nachgezählt in <code>mock.js</code>: die <code>ICONS</code>-Tabelle hat unverändert 55 Einträge.</p>
+<p><code>mock.js</code> baut jedes aus einem 24×24-Pfad mit <code>stroke-width: 1.7</code>, <code>stroke-linecap: round</code>, <code>fill: none</code>. <strong>Im Bild nachgemessen</strong> (jeder <code>svg</code>-Strich in allen 13 Screens, beide Geräte): 1,7 pt mit runder Kappe kommt auf <strong>allen 13</strong> Screens vor und ist die einzige Symbol-Strichstärke. <strong>Eine einzige Abweichung im Strichgewicht: <code>check</code> steht auf 2.0</strong> — auf <code>note-editor</code>, <code>tasks</code>, <code>review-session</code> und <code>settings</code> gemessen. Begründbar, weil ein Haken bei 1,7 auf 22 pt zerfällt, aber es ist eine Abweichung und sie steht nirgends erklärt.</p>
+<p>Der Grund für die eigenen Zeichnungen ist keine Gestaltungsentscheidung: SF Symbols sind lizenzrechtlich an Apple-Plattformen gebunden und dürfen in einem HTML-Entwurf nicht ausgeliefert werden. Ehrlich ist deshalb der Satz: <strong>dies ist ein Platzhaltersatz in einheitlichem Strichgewicht, kein eigenes Symbolsystem.</strong> Der Großteil der 55 hat eine direkte SF-Symbols-Entsprechung (<code>magnifyingglass</code>, <code>chevron.right</code>, <code>star</code>, <code>paperplane</code>, <code>trash</code>, <code>flag</code>, <code>clock</code>, <code>calendar</code>, <code>mic</code>, <code>photo</code>, <code>bolt</code>, <code>link</code>, <code>tag</code>, <code>folder</code> …). Die Modulzeichen (Canvas, Journal, Lernkarten, Graph) sind Velums eigene und müssen es sein — kein Systemsymbol bedeutet „Notizbuch mit Herkunft".</p>
+<p>Was <strong>fehlt</strong>: eine Zuordnungstabelle „Velum-Name → SF-Symbol-Name", damit beim Bau nicht neu geraten wird. Das ist eine Zeile Arbeit je Symbol und sie ist nicht gemacht.</p>
+<h3 id="8-5-kontrast-gerechnet"><span class="h-t">8.5 Kontrast — gerechnet</span><a class="anchor" href="#8-5-kontrast-gerechnet" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p>Alle Werte in §3. Zusammengefasst:</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:656px"><thead><tr><th scope="col"><span class="th-t">Prüfung</span></th><th scope="col"><span class="th-t">Anforderung</span></th><th scope="col"><span class="th-t">Stand</span></th><th scope="col"><span class="th-t">vorher</span></th></tr></thead><tbody><tr><td>CTA-Text auf Ink</td><td>≥ 4,5:1</td><td>17,77:1 hell · 17,27:1 dunkel ✅</td><td>gleich</td></tr><tr><td>Rand eines Bedienelements (<code>--line-tap</code>)</td><td>≥ 3:1</td><td>3,29:1 · 3,34:1 ✅</td><td>gleich</td></tr><tr><td>Ghost-Chip als Knopf</td><td>≥ 3:1</td><td>3,20–3,34:1 ✅</td><td>gleich</td></tr><tr><td><strong><code>.btn--quiet</code></strong> — neu mit Ring</td><td>≥ 3:1</td><td><strong>3,29:1 ✅ (war: kein Rand)</strong></td><td>❌</td></tr><tr><td><strong>Ghost-Chip <em>im</em> Knopf</strong> (<code>journal-home</code>)</td><td>≥ 3:1</td><td><strong>1,46:1 ❌ (neu)</strong></td><td>—</td></tr><tr><td>Karte gegen Grund</td><td>Apple: 1,12 / 1,23</td><td>1,118 ✅ · <strong>1,089 ⚠️</strong></td><td>gleich, nicht angefasst</td></tr><tr><td>Unterstreichung des Wiki-Links</td><td>≥ 3:1</td><td><strong>1,46:1 ❌</strong>, jetzt an 3 statt 2 Stellen</td><td>gleich, nicht angefasst</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p>Der letzte Punkt ist der schärfste Einzelbefund des ganzen Dokuments geblieben, weil er gegen die eigene Regel verstößt — und er ist in dieser Runde <strong>nicht angefasst</strong> worden, während eine dritte Fundstelle dazugekommen ist. <code>note-editor.html</code> Zeile 225, 644 und 860:</p>
+<pre><code>&lt;a href="#" style="… box-shadow: inset 0 -1.5px 0 var(--line-2)"&gt;[[Osmose]]&lt;/a&gt;</code></pre>
+<p>Der Wiki-Link im Fließtext trägt eine Unterstreichung — R3 ist erfüllt. Aber sie steht auf <code>--line-2</code> und hält damit <strong>1,46:1</strong>, während das System eigens <code>--line-tap</code> mit <strong>3,29:1</strong> dafür geschaffen hat („umrandet ein Bedienelement ohne eigene Fläche", <code>system.css</code> §1). Ein Zeichen ist da; es ist nur nicht zu sehen. <strong>Drei</strong> Vorkommen, Wechsel des Tokens genügt.</p>
+<p>Derselbe Fehlgriff, dasselbe Token, an einer zweiten Stelle: der Ghost-Chip in <code>journal-home</code> (§5.2). <code>--line-2</code> ist inzwischen zweimal dort im Einsatz, wo <code>--line-tap</code> hingehört. Es ist keine Nachlässigkeit an einer Stelle mehr, sondern ein Muster.</p>
+<h2 id="9-was-zu-tun-ist"><span class="h-t">9 · Was zu tun ist</span><a class="anchor" href="#9-was-zu-tun-ist" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<p>Der Stand der alten Liste zuerst, damit sichtbar bleibt, was diese Runde geleistet hat und was liegen geblieben ist.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t">alt</span></th><th scope="col"><span class="th-t">Aufgabe</span></th><th scope="col"><span class="th-t">Stand</span></th></tr></thead><tbody><tr><td>1</td><td><code>.btn--quiet</code> bekommt ein Merkmal</td><td>✅ <strong>erledigt</strong> — <code>inset 0 0 0 1px var(--line-tap)</code>, 3,29:1. 24 Vorkommen, 13 schwere Befunde weg, 8 davon in <code>best-of</code> ohne eine Zeile Screen-Arbeit</td></tr><tr><td>2</td><td>Erledigt-Kreis bekommt überall den 44-pt-Griff</td><td>❌ <strong>nicht angefasst</strong> — weiter 66 × 22 pt</td></tr><tr><td>3</td><td><code>.chain__link</code> bekommt Chevron und Fläche</td><td>✅ <strong>erledigt</strong> — beide Screens, beide Geräte</td></tr><tr><td>4</td><td>Graph-Knoten werden Bedienelemente</td><td>🟡 <strong>halb</strong> — Semantik ja, Affordanz nein (§5.1)</td></tr><tr><td>5</td><td>Wiki-Link wechselt auf <code>--line-tap</code></td><td>❌ <strong>nicht angefasst</strong> — und eine dritte Fundstelle dazu</td></tr><tr><td>6</td><td>Gliederung im Editor bekommt Flächen</td><td>✅ <strong>erledigt</strong> — alle fünf Zeilen</td></tr><tr><td>7</td><td>Die Elemente ohne Semantik durchsehen</td><td>❌ <strong>nicht angefasst</strong> — 302 statt 308</td></tr><tr><td>8</td><td><code>.navitem</code> von 40 auf 44 pt</td><td>❌ <strong>nicht angefasst</strong> — weiter 228 Meldungen</td></tr><tr><td>9</td><td>Ein Blatt zeichnen</td><td>❌ <strong>nicht angefasst</strong> — <code>grep</code> findet in <code>app-next/</code> weiter kein Blatt mit Griffleiste</td></tr><tr><td>10</td><td>Karte gegen Grund im Dunkelmodus anheben</td><td>❌ <strong>nicht angefasst</strong> — weiter 1,089</td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+<p><strong>Sechs von zehn stehen noch, und vier davon sind je eine Zeile Arbeit.</strong> Neu sortiert nach Wirkung:</p>
+<ol><li><strong>Die Graph-Knoten bekommen ein Bedienzeichen.</strong> 33 der 46 schweren Befunde, ein Screen. Der Punkt bleibt das Zeichen für „hier ist ein Objekt"; das Zeichen für „das kannst du drücken" fehlt und muss die <strong>Beschriftung</strong> tragen, weil sie das Ziel ist: eine Zeilenfläche unter dem Wort, ein Ring, oder die Beschriftung in eine Chip-Fläche gesetzt. Nebenher fällt R4 weg, wenn die Fläche auf 44 pt Höhe kommt.</li><li><strong><code>--line-2</code> → <code>--line-tap</code> an zwei Stellen.</strong> Der Wiki-Link (3 Vorkommen) und der Ghost-Chip in <code>journal-home</code> (§5.2). Zwei Tokenwechsel, ein schwerer Befund weg, der schärfste Kontrastbefund des Dokuments weg.</li><li><strong>Der Erledigt-Kreis bekommt den 44-pt-Griff</strong>, den <code>tasks.html</code> seit zwei Runden vorführt. 66 Vorkommen, 66 mittlere Befunde.</li><li><strong><code>.navitem</code> von 40 auf 44 pt.</strong> Eine Zeile CSS, 228 der 547 R4-Meldungen. Zusammen mit Punkt 3 fallen 294 weg — mehr als die Hälfte.</li><li><strong>Die Datumsleiste in <code>best-of/tasks</code></strong> bekommt, was das Inhaltsverzeichnis in <code>note-editor</code> schon hat: eine Zeilenfläche für alle sieben Tage. 6 schwere Befunde.</li><li><strong>Die Terminzeilen in <code>best-of/today</code></strong> bekommen Kreis oder Kante. 4 schwere Befunde. Danach hat <code>best-of</code> nur noch die zwei Gliederungszeilen.</li><li><strong>Die 302 Elemente ohne Semantik werden durchgesehen</strong> und in zwei Stapel sortiert: Knopf oder Etikett. Der zweite Stapel legt seine Chip-Fläche ab. Auf <code>tasks</code> allein sind es 10, und sie stehen unter der Beschriftung <em>„Antippen zum Ändern"</em>.</li><li><strong>Ein Blatt zeichnen.</strong> Der „Neu"-Knopf führt auf jedem Screen ins Leere.</li><li><strong>Karte gegen Grund im Dunkelmodus</strong> von 1,089 auf ≈ 1,23 anheben.</li><li><strong><code>.count__n</code> auf 20/26 und die vier <code>.t-label</code>-Zeilenhöhen einsammeln.</strong> 56 Abweichungen, und sie sind in dieser Runde mehr geworden, nicht weniger (§8.1).</li></ol>
+<h2 id="10-reproduzieren"><span class="h-t">10 · Reproduzieren</span><a class="anchor" href="#10-reproduzieren" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h2>
+<pre><code>node tools/affordanz.js                    # alle Screens, hell
+node tools/affordanz.js --dunkel           # dieselben, dunkel
+node tools/affordanz.js review-session     # ein Screen
+node tools/affordanz.js --json befunde.json</code></pre>
+<p>Das Werkzeug braucht <code>playwright-core</code> und einen Chromium-Pfad (<code>VELUM_PLAYWRIGHT</code>, <code>VELUM_CHROME</code>), kein npm install, keine externe URL. Es schreibt nach <code>mockups/_renders/affordanz/</code> und gibt die Tabelle aus §3 auf der Konsole aus. Die Zahlen dieses Dokuments stammen aus dem **Abnahme-Lauf vom</p>
+<ol start="9"><li>August 2026, nach den DNA-Nachträgen N10–N12**; jeder spätere Lauf gegen dieselben Dateien liefert sie wieder. Die kursiven Vergleichswerte stammen aus den beiden Läufen davor.</li></ol>
+<p>Die Zahlen in §3.3 kommen nicht aus diesem Werkzeug, sondern aus einer eigenen Messung: Ausschnitt jedes Fadens bei <code>deviceScaleFactor</code> 2, 3 und 8, Deckung des Querschnitts über die ganze Länge, robuste Geradenanpassung, hochgerechnet auf Ursprung und Ergebnis. Gemessen wird das <strong>Bild</strong>, nicht <code>stroke-width</code>.</p>
+<h3 id="alle-76-bilder"><span class="h-t">Alle 76 Bilder</span><a class="anchor" href="#alle-76-bilder" aria-label="Verknuepfung zu diesem Abschnitt"><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M6.6 9.4a2.4 2.4 0 0 0 3.4 0l2.3-2.3a2.4 2.4 0 0 0-3.4-3.4l-1 1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9.4 6.6a2.4 2.4 0 0 0-3.4 0L3.7 8.9a2.4 2.4 0 0 0 3.4 3.4l1-1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></a></h3>
+<p><code>&lt;gruppe&gt;-&lt;datei&gt;-&lt;gerät&gt;[-dunkel].png</code> in <a href="../mockups/_renders/affordanz/"><code>mockups/_renders/affordanz/</code></a> — je Bild links unmarkiert, rechts markiert, darunter Legende und Zählung.</p>
+<div class="tablewrap"><div class="tableframe"><div class="tablebox" tabindex="0" role="region" aria-label="Tabelle, seitlich scrollbar"><table style="min-width:492px"><thead><tr><th scope="col"><span class="th-t"></span></th><th scope="col"><span class="th-t">iPad</span></th><th scope="col"><span class="th-t">iPhone</span></th></tr></thead><tbody><tr><td>today</td><td><a href="../mockups/_renders/affordanz/app-next-today-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-today-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-today-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-today-iphone-dunkel.png">dunkel</a></td></tr><tr><td>library</td><td><a href="../mockups/_renders/affordanz/app-next-library-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-library-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-library-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-library-iphone-dunkel.png">dunkel</a></td></tr><tr><td>notes-list</td><td><a href="../mockups/_renders/affordanz/app-next-notes-list-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-notes-list-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-notes-list-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-notes-list-iphone-dunkel.png">dunkel</a></td></tr><tr><td>note-editor</td><td><a href="../mockups/_renders/affordanz/app-next-note-editor-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-note-editor-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-note-editor-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-note-editor-iphone-dunkel.png">dunkel</a></td></tr><tr><td>journal-home</td><td><a href="../mockups/_renders/affordanz/app-next-journal-home-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-journal-home-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-journal-home-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-journal-home-iphone-dunkel.png">dunkel</a></td></tr><tr><td>journal-entry</td><td><a href="../mockups/_renders/affordanz/app-next-journal-entry-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-journal-entry-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-journal-entry-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-journal-entry-iphone-dunkel.png">dunkel</a></td></tr><tr><td>tasks</td><td><a href="../mockups/_renders/affordanz/app-next-tasks-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-tasks-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-tasks-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-tasks-iphone-dunkel.png">dunkel</a></td></tr><tr><td>task-detail</td><td><a href="../mockups/_renders/affordanz/app-next-task-detail-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-task-detail-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-task-detail-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-task-detail-iphone-dunkel.png">dunkel</a></td></tr><tr><td>flashcards-home</td><td><a href="../mockups/_renders/affordanz/app-next-flashcards-home-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-flashcards-home-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-flashcards-home-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-flashcards-home-iphone-dunkel.png">dunkel</a></td></tr><tr><td>review-session</td><td><a href="../mockups/_renders/affordanz/app-next-review-session-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-review-session-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-review-session-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-review-session-iphone-dunkel.png">dunkel</a></td></tr><tr><td>graph</td><td><a href="../mockups/_renders/affordanz/app-next-graph-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-graph-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-graph-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-graph-iphone-dunkel.png">dunkel</a></td></tr><tr><td>settings</td><td><a href="../mockups/_renders/affordanz/app-next-settings-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-settings-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-settings-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-settings-iphone-dunkel.png">dunkel</a></td></tr><tr><td>leere-zustaende</td><td><a href="../mockups/_renders/affordanz/app-next-leere-zustaende-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-leere-zustaende-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/app-next-leere-zustaende-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/app-next-leere-zustaende-iphone-dunkel.png">dunkel</a></td></tr><tr><td>best-of/library</td><td><a href="../mockups/_renders/affordanz/best-of-library-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-library-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/best-of-library-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-library-iphone-dunkel.png">dunkel</a></td></tr><tr><td>best-of/today</td><td><a href="../mockups/_renders/affordanz/best-of-today-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-today-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/best-of-today-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-today-iphone-dunkel.png">dunkel</a></td></tr><tr><td>best-of/notes</td><td><a href="../mockups/_renders/affordanz/best-of-notes-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-notes-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/best-of-notes-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-notes-iphone-dunkel.png">dunkel</a></td></tr><tr><td>best-of/journal</td><td><a href="../mockups/_renders/affordanz/best-of-journal-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-journal-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/best-of-journal-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-journal-iphone-dunkel.png">dunkel</a></td></tr><tr><td>best-of/tasks</td><td><a href="../mockups/_renders/affordanz/best-of-tasks-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-tasks-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/best-of-tasks-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-tasks-iphone-dunkel.png">dunkel</a></td></tr><tr><td>best-of/flashcards</td><td><a href="../mockups/_renders/affordanz/best-of-flashcards-ipad.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-flashcards-ipad-dunkel.png">dunkel</a></td><td><a href="../mockups/_renders/affordanz/best-of-flashcards-iphone.png">hell</a> · <a href="../mockups/_renders/affordanz/best-of-flashcards-iphone-dunkel.png">dunkel</a></td></tr></tbody></table></div></div><p class="tablehint" aria-hidden="true">Seitlich scrollbar</p></div>
+    </article>
+  </main>
+</div>
+<p class="colophon">Aus 05_hig-check.md erzeugt. <a href="../mockups/index.html">Zurück zur Übersicht</a></p>
+<script>
+(function(){
+  var root = document.documentElement;
+
+  /* Hell/Dunkel — setzt data-theme auf <html>. Ohne Auswahl gilt das
+     System (dritter Zustand). */
+  var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  var bar = document.querySelector('.themes');
+  function paint(){
+    var t = root.getAttribute('data-theme') || (mq && mq.matches ? 'dark' : 'light');
+    var bs = bar.querySelectorAll('button');
+    for (var i=0;i<bs.length;i++){
+      var on = bs[i].getAttribute('data-val') === t;
+      bs[i].classList.toggle('is-on', on);
+      bs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+  bar.addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if (!b) return;
+    root.setAttribute('data-theme', b.getAttribute('data-val'));
+    try { localStorage.setItem('docs-theme', b.getAttribute('data-val')); } catch(err){}
+    paint();
+  });
+  try {
+    var saved = localStorage.getItem('docs-theme');
+    if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+  } catch(err){}
+  if (mq && mq.addEventListener) mq.addEventListener('change', paint);
+  paint();
+
+  /* Inhaltsverzeichnis: sichtbarer Abschnitt wird hervorgehoben. */
+  var heads = [].slice.call(document.querySelectorAll('.doc h2[id], .doc h3[id]'));
+  var links = [].slice.call(document.querySelectorAll('[data-t]'));
+  if (!heads.length || !links.length) return;
+
+  var current = '';
+  function setActive(id){
+    if (id === current) return;
+    current = id;
+    var groups = [].slice.call(document.querySelectorAll('.toc-group'));
+    for (var g=0; g<groups.length; g++) groups[g].classList.remove('is-open');
+    for (var i=0;i<links.length;i++){
+      var on = links[i].getAttribute('data-t') === id;
+      links[i].classList.toggle('is-current', on);
+      if (on){
+        var grp = links[i].closest('.toc-group');
+        if (grp) grp.classList.add('is-open');
+        var box = links[i].closest('.toc');
+        if (box && box.scrollHeight > box.clientHeight){
+          var lt = links[i].offsetTop, lb = lt + links[i].offsetHeight;
+          if (lt < box.scrollTop + 8) box.scrollTop = lt - 8;
+          else if (lb > box.scrollTop + box.clientHeight - 8) box.scrollTop = lb - box.clientHeight + 8;
+        }
+      }
+    }
+    var wrap = links.filter(function(l){ return l.getAttribute('data-t') === id; })[0];
+    if (wrap){
+      var p = wrap.closest('.toc-group');
+      if (p) p.classList.add('is-open');
+    }
+  }
+
+  var LINE = 140;
+  function update(){
+    var pick = null;
+    for (var i=0;i<heads.length;i++){
+      if (heads[i].getBoundingClientRect().top <= LINE) pick = heads[i]; else break;
+    }
+    if (!pick){
+      pick = heads[0];
+      if (window.scrollY <= 4) { setActive(heads[0].id); return; }
+    }
+    /* am Dokumentende: letzte Ueberschrift gewinnt */
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) pick = heads[heads.length-1];
+    setActive(pick.id);
+  }
+
+  var ticking = false;
+  function schedule(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ ticking = false; update(); });
+  }
+
+  if ('IntersectionObserver' in window){
+    var io = new IntersectionObserver(schedule, { rootMargin: '-' + LINE + 'px 0px -55% 0px', threshold: [0, 1] });
+    for (var i=0;i<heads.length;i++) io.observe(heads[i]);
+  }
+  window.addEventListener('scroll', schedule, { passive:true });
+  window.addEventListener('resize', schedule);
+  update();
+
+  /* Tabellen: passt eine in der Breite, wird die Scrollbox aufgehoben.
+     Dann klebt ihre Kopfzeile beim Weiterscrollen am oberen Fensterrand.
+     Muss sie seitwaerts scrollen, bleibt sie eine Box. */
+  var boxes = [].slice.call(document.querySelectorAll('.tablebox'));
+
+  /* Vordere Spalten festhalten, solange seitwaerts gescrollt wird.
+     Gemessen wird vor dem Kleben — sticky aendert die Breiten nicht.
+     Die 45-%-Grenze gilt ab der ERSTEN Spalte. Frueher war sie an
+     i > 0 gebunden; dadurch stand die erste Spalte immer fest, auch
+     wenn sie allein 79 % der sichtbaren Breite frass und zum Lesen
+     nur ein Streifen uebrig blieb. Passt die erste Spalte nicht in
+     die Grenze, klebt gar nichts — dann ist Scrollen ohne Anker
+     immer noch besser als eine Tabelle, die man nicht lesen kann. */
+  function klebSpalten(b, mehr){
+    var t = b.querySelector('table');
+    if (!t || !t.tHead) return;
+    var zeilen = [].slice.call(t.rows);
+    for (var r = 0; r < zeilen.length; r++){
+      var z = zeilen[r].cells;
+      for (var c = 0; c < z.length; c++){
+        z[c].classList.remove('kleb','kleb-letzte');
+        z[c].style.left = '';
+      }
+    }
+    b.style.setProperty('--klebw','0px');
+    if (!mehr) return;
+    var kopf = t.tHead.rows[0].cells;
+    var grenze = b.clientWidth * 0.45, summe = 0, links = [], n = 0;
+    for (var i = 0; i < kopf.length - 1 && i < 2; i++){
+      var w = kopf[i].getBoundingClientRect().width;
+      if (summe + w > grenze) break;
+      links.push(summe); summe += w; n = i + 1;
+    }
+    /* Bliebe nur eine schmale Zaehlspalte stehen, sagt sie nichts —
+       dann lieber gar nichts festhalten und die Breite dem Inhalt
+       geben. Genau das passiert auf dem Telefon. */
+    if (n === 1 && summe < 64) n = 0;
+    /* Breite des festgehaltenen Blocks: daran haengen die Namen der
+       Spalten, die gerade darunter durchlaufen (siehe --klebw im CSS). */
+    b.style.setProperty('--klebw', (n ? summe : 0) + 'px');
+    for (var r2 = 0; r2 < zeilen.length; r2++){
+      var z2 = zeilen[r2].cells;
+      for (var c2 = 0; c2 < n && c2 < z2.length; c2++){
+        z2[c2].classList.add('kleb');
+        if (c2 === n - 1) z2[c2].classList.add('kleb-letzte');
+        z2[c2].style.left = links[c2] + 'px';
+      }
+    }
+  }
+
+  function markBox(b, voll){
+    var wrap = b.closest('.tablewrap');
+    var mehr = b.scrollWidth > b.clientWidth + 2;
+    if (voll){
+      b.classList.toggle('is-frei', !mehr);
+      /* Rolle, Tabstopp und Ansage gelten nur, solange wirklich etwas zu
+         scrollen ist. Sonst schickte die Tabelle Tastatur und Vorlese-
+         software durch einen leeren Halt und kuendigte einen Weg an, den
+         es nicht gibt. */
+      if (mehr){
+        b.setAttribute('role','region');
+        b.setAttribute('tabindex','0');
+        b.setAttribute('aria-label','Tabelle, seitlich scrollbar');
+      } else {
+        b.removeAttribute('role');
+        b.removeAttribute('tabindex');
+        b.removeAttribute('aria-label');
+      }
+      klebSpalten(b, mehr);
+    }
+    wrap.classList.toggle('is-mehr', mehr && b.scrollLeft + b.clientWidth < b.scrollWidth - 2);
+    wrap.classList.toggle('is-ab', mehr && b.scrollLeft > 2);
+  }
+  function fitTables(){ for (var i=0;i<boxes.length;i++) markBox(boxes[i], true); }
+  if (boxes.length){
+    for (var bi=0; bi<boxes.length; bi++){
+      (function(b){
+        b.addEventListener('scroll', function(){ markBox(b, false); }, { passive:true });
+      })(boxes[bi]);
+    }
+    fitTables();
+    var rt;
+    window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(fitTables, 150); });
+  }
+
+  /* Auf schmalen Fenstern schliesst ein Klick das Verzeichnis wieder. */
+  var det = document.querySelector('.toc-narrow');
+  if (det) det.addEventListener('click', function(e){
+    if (e.target.closest('a')) det.removeAttribute('open');
+  });
+})();
+</script>
+</body>
+</html>

@@ -229,6 +229,13 @@
     </div>
   </div>
 
+  <!-- ══ Der Prototyp ══ -->
+  <section class="sec">
+    <div class="sec__head"><h2>Der begehbare Prototyp</h2><span>siebzehn Schirme · iPhone und iPad · das Canvas im Rahmen</span></div>
+    <p>Alle Schirme in einem Dokument, verbunden statt nebeneinander: Notizbücher gehen auf, Zeilen führen ins Detail, das <b>Neu</b>-Menü legt wirklich etwas an, und das Canvas läuft als eigener Schirm im Rahmen — man kann darin zeichnen. Umschalter zeigen eine andere Ordnung derselben Sachen, Filter filtern, Menüs öffnen sich. Was keinen Weg hat, zeigt auch keinen Klickfinger; jeder Knopf, der einen zeigt, tut etwas Sichtbares. Mit <code>w</code> lässt sich einblenden, wohin jedes Element führt.</p>
+    <div class="grid" id="gridProto"></div>
+  </section>
+
   <!-- ══ Die sechs Bereiche ══ -->
   <section class="sec">
     <div class="sec__head"><h2>Die sechs Bereiche</h2><span>ein Einstieg und fünf Module</span></div>
@@ -434,6 +441,12 @@
     'Canvas — Whiteboard',
     'Unendliche Fläche, elf Werkzeuge, Formerkennung, Lasso',
     ['Lauffähig']));
+
+  document.getElementById('gridProto').appendChild(card(
+    'prototyp/index.html', '_renders/prototyp-hell.png',
+    'Velum — der begehbare Prototyp',
+    '17 Schirme, zwei Geräte, 479 Wege · das Canvas läuft im Rahmen',
+    ['Begehbar', 'iPhone + iPad']));
 
   const gn = document.getElementById('gridNext');
   NEXT.forEach(([f, t, s]) =>
