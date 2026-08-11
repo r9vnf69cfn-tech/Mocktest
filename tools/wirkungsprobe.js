@@ -20,7 +20,33 @@
 
    Ergebnis der Runde vom 10. August: 203 veraendert, 16 gewechselt, 15 STARR
    — und alle 15 sind „du bist schon hier" (der Seitenleisteneintrag des
-   laufenden Schirms). */
+   laufenden Schirms).
+
+   ══ WAS DIESES WERKZEUG NICHT KANN ══════════════════════════════════════
+
+   Es misst, DASS sich etwas veraendert hat. Nicht, ob sich das Richtige
+   veraendert hat. Die Abnahme vom 11. August hat sechs Flaechen gefunden,
+   die hier als „veraendert" durchgingen und in Wahrheit nichts taten:
+
+     Suche, alle fuenf Filterchips   jeder liefert dieselben drei Karten
+     Suche, Chip „Notizen"           der Wortstamm 'notize' trifft nichts
+     Notizen iPhone, Chipreihe       kein Chip wird ueberhaupt belebt
+     Graph, Modulreihe               sucht Karten, die es dort nicht gibt
+     Graph, Tag-Chips                heben 0 von 23 Knoten hervor
+     Lernkarten, Sortierung          die Waehler treffen 0 Elemente
+
+   In jedem dieser Faelle wanderte die Fuellung des angetippten Chips — und
+   das allein aendert die Signatur schon. Ein Filter, der seine eigene
+   Auswahl umlegt und sonst nichts, sieht von hier aus aus wie einer, der
+   funktioniert.
+
+   Das Ergebnis dieses Werkzeugs ist darum eine UNTERE SCHRANKE: was hier
+   STARR heisst, ist sicher tot; was hier „veraendert" heisst, ist nur
+   nicht-tot. Wer wissen will, ob ein Knopf haelt, was er verspricht, muss
+   das Versprechen kennen — und dazu braucht es je Bedienelement eine
+   Erwartung („nach dem Tap auf ‚Notizen' stehen nur noch Notizen da"), nicht
+   einen Vergleich zweier Signaturen. Bis die im Werkzeug steht, ersetzt
+   diese Probe keine Abnahme. */
 const { chromium } = require('playwright-core');
 const fs = require('fs');
 const S = process.env.PV_AUS || '/tmp';
