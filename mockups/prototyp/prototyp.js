@@ -1911,9 +1911,26 @@
      display in einer Klasse, und eine Klasse schlägt das Merkmal. Wer das
      nicht weiß, sieht einen Knopf, der „nichts tut", obwohl er alles
      Richtige getan hat. */
+  /* Verbergen und wieder zeigen — und zwar SO wieder zeigen, wie es war.
+     Die alte Fassung schrieb beim Zeigen style.display = '' und loeschte
+     damit, was im Markup stand. Der Aufgaben-Schirm traegt dort inline ein
+     display:grid mit zwei Spalten (Liste und die rechte Schiene mit
+     „DIESE WOCHE", „EINGANG", „WOHER HEUTE KOMMT"). Wer einmal auf Planer
+     und zurueck auf Liste ging, hatte die Schiene fuer immer verloren: das
+     Raster war weg, die Schiene rutschte unter die Falz.
+
+     Darum wird der urspruengliche Inline-Wert gemerkt, bevor er ueberschrieben
+     wird — auch der leere, denn '' ist eine Aussage („richte dich nach dem
+     Stylesheet") und nicht dasselbe wie 'grid'. */
   function verbergen(el, aus) {
     if (!el) return;
-    if (aus === false) { el.hidden = false; el.style.display = ''; return; }
+    if (aus === false) {
+      el.hidden = false;
+      el.style.display = typeof el.__pvAnzeige === 'string' ? el.__pvAnzeige : '';
+      el.__pvAnzeige = undefined;
+      return;
+    }
+    if (typeof el.__pvAnzeige !== 'string') el.__pvAnzeige = el.style.display || '';
     el.hidden = true;
     el.style.display = 'none';
   }
@@ -5338,7 +5355,10 @@
   /* Der Schriftgrößen-Regler in den Einstellungen. Er ist gezeichnet, als
      würde er gerade gezogen — und ließ sich nicht ziehen. Jetzt springt der
      Knauf dorthin, wo man tippt, und die Blase sagt, wie es heißt. */
-  var SCHRIFTSTUFEN = ['Klein', 'Kleiner', 'Standard', 'Groß', 'Sehr groß'];
+  /* Nach rechts wird die Schrift größer. „Kleiner" stand an zweiter Stelle
+     und damit RECHTS von „Klein" — die Leiter las sich klein, kleiner,
+     Standard. */
+  var SCHRIFTSTUFEN = ['Sehr klein', 'Klein', 'Standard', 'Groß', 'Sehr groß'];
 
   function reglerBeleben(rahmen) {
     Array.prototype.forEach.call(rahmen.querySelectorAll('.card'), function (karte) {

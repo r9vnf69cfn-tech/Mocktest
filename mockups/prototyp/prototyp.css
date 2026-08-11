@@ -983,6 +983,13 @@ body.pv {
   justify-content: flex-start;
 }
 .pv-brett__stapel > .row .row__title { white-space: normal; }
+/* Eine Zeile, die im Bestand gerade zur Seite gewischt wird, trägt dafür ein
+   inline transform: translateX(88px) und einen Schatten. In der Liste liegt
+   sie in einem klippenden Wirt, im Brett nicht — dort schob sie das Gerät um
+   58 pt auf und ließ die Seite waagerecht rollen. Auf einem Zettel ist die
+   Wischgeste ohnehin nicht die Vorführung, die der Blick zeigen will. */
+.pv-brett__stapel > .row { transform: none !important; }
+
 /* Was zur Zeitachse der Liste gehört, gehört nicht auf einen Zettel: die
    Rinnenpunkte und Fadenstummel hätten hier keine Kante, an der sie hingen
    (DNA N6 — kein Faden ohne echte Kante). */
@@ -1015,12 +1022,12 @@ body.pv {
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: var(--c-2);
+  color: var(--ink-2);
   box-shadow: inset 0 0 0 1px var(--line);
 }
 .pv-kal__tag.is-voll {
   background: var(--ink);
-  color: var(--on-ink, #fff);
+  color: var(--accent-on);
   box-shadow: none;
 }
 /* Zwei Merkmale, nie nur Farbe: „heute" ist ein Ring UND ein Fettschnitt. */
@@ -1050,7 +1057,7 @@ body.pv {
   border-radius: 10px;
   box-shadow: inset 0 0 0 1px var(--line);
 }
-.pv-medien__wort { color: var(--c-3); }
+.pv-medien__wort { color: var(--ink-3); }
 
 /* ── Die Journal-Karte ────────────────────────────────────────────────── */
 .pv-karte { display: flex; flex-direction: column; gap: 12px; }
@@ -1084,7 +1091,7 @@ body.pv {
   background: var(--paper);
   box-shadow: var(--sh-card, 0 1px 3px rgba(0,0,0,.14)), inset 0 0 0 1px var(--line);
 }
-.pv-karte__wort { white-space: nowrap; color: var(--c-1); }
+.pv-karte__wort { white-space: nowrap; color: var(--ink-1); }
 .pv-karte__liste { display: flex; flex-direction: column; gap: 2px; }
 .pv-karte__zeile { width: 100%; text-align: left; }
 
@@ -1188,7 +1195,9 @@ body.pv {
 .pv-schreibt { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 4px; }
 .is-zu > *:not(:first-child) { display: none; }
 .pv-menue__trenner { height: 1px; margin: 6px 12px; background: var(--line); }
-.pv-menue__zeile.is-gefahr .pv-menue__wort { color: var(--rot, #D02B20); }
+/* --rot gibt es nicht; die Marke der Semantikfarbe heißt --danger und geht
+   im dunklen Modus mit (#D02B20 → #FF6B5E). */
+.pv-menue__zeile.is-gefahr .pv-menue__wort { color: var(--danger); }
 
 /* Fäden aus: das Bild ohne Herkunft. Nicht gelöscht — ausgeblendet, damit
    der Umschalter zurück kann. */

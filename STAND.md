@@ -70,6 +70,72 @@ mit den beiden Tinte-Korrekturen verschwunden.
 
 ---
 
+## Die Abnahme der zweiten Runde (11. August)
+
+Acht Prüfer haben die Bedienung aus §14 in Dunkel, auf dem iPhone und bei
+großer Schrift nachgemessen — alles Kombinationen, die beim Bauen nie
+angesehen worden waren. Der Bericht liegt in
+`scratchpad/abnahme-14.md` (flüchtig, aber die Befunde stehen hier).
+
+**Repariert und nachgemessen:**
+
+| Befund | Beleg | Behoben durch |
+|---|---|---|
+| Rückweg auf „Liste" zerstörte das zweispaltige Aufgaben-Layout für immer | `verbergen()` schrieb `style.display=''` und löschte das inline `display:grid` | `verbergen()` merkt sich den Inline-Wert (prototyp.js §8) |
+| iPhone rollte im Brett 58 pt waagerecht | eine Zeile trug `translateX(88px)` aus einer Wisch-Vorführung | `.pv-brett__stapel > .row { transform: none }` |
+| Ziffer im gefüllten Kalendertag war im Dunkeln weiß auf weiß | `--on-ink` gibt es nicht, Rückfall auf `#fff` | `var(--accent-on)` |
+| drei tote Marken in prototyp.css | `--c-1/2/3` sind KLASSEN, keine Marken — die Deklaration fiel ungültig auf die Erbfarbe zurück | `var(--ink-1/2/3)` |
+| `--rot` gibt es nicht | die Semantikfarbe heißt `--danger` und geht im Dunkeln mit | `var(--danger)` |
+| Schriftgrößen-Leiter las sich klein → kleiner → Standard | „Kleiner" stand rechts von „Klein" | `Sehr klein · Klein · Standard · Groß · Sehr groß` |
+
+**Noch offen aus der Abnahme, nach Dringlichkeit:**
+
+1. **[schwer] Die Einstellungen haben auf dem iPhone gar keine neue
+   Bedienung.** Gezählt in allen vier iPhone-Läufen: `aside` 0, `.navitem` 0,
+   `.pv-einst` 0. Die elf Zeilen mit Chevron versprechen Navigation und sind
+   tot. `seitenleisteBeleben` sucht `aside .navitem` — auf dem iPhone gibt es
+   beides nicht.
+2. **[schwer] Bei „Aa groß" laufen im Brett die Titel über die Kartenkante**,
+   über die Spaltenkante und in die Nachbarspalte. Gemessen iPad hell groß,
+   Planer: Textkante 818,9 gegen Kartenkante 783. Ein langes Wort kann in
+   125 pt nicht umbrechen und wird nicht geklippt.
+3. **[schwer] Bei „Aa groß" bricht die Bereichsliste der Einstellungen
+   zusammen** — `.navitem` hat feste `height: 40px`.
+4. **[schwer] Der AUS-Schalter ist im Dunkeln unsichtbar**: Knauf
+   `rgb(23,25,28)` auf Kartengrund `rgb(23,25,28)` = 1,00:1. Der einzige
+   Trenner ist ein fest verdrahteter schwarzer Schlagschatten.
+5. **[schwer] Die Journal-Karte erfindet Orte.** Ausgezählt: kein einziger
+   der gesuchten Ortsnamen kommt in irgendeinem Eintrag vor; die Ansicht
+   zeigt trotzdem zwei und behauptet unter jedem „im Journal genannt". Der
+   Prüfer rät, das Kartenfeld wegzulassen und nur die Liste zu behalten —
+   ich halte das für richtig. Nichts erfinden ist die Regel, gegen die hier
+   verstoßen wird.
+6. **[mittel] Die Chips im Brett kürzen sich nicht**, sie werden mitten im
+   Buchstaben abgeschnitten: `text-overflow: ellipsis` wirkt nicht auf einem
+   Flex-Kasten.
+7. **[mittel] Die Auswahl verliert im Brett zwei ihrer drei Merkmale** —
+   Regel 2 (Fläche UND Ring UND Gewicht) bleibt nur das Gewicht.
+8. **[mittel] Das Board widerspricht sich**: die einzige abgehakte Aufgabe
+   steht unter „OFFEN", während „ERLEDIGT" „nichts" meldet. Ursache:
+   `zeileErledigt` prüft `.is-done`, die Zeile trägt `.is-checking`.
+9. **[mittel] Auf dem iPhone sortiert dasselbe Brett anders als auf dem
+   iPad** — „Heute" leer, fünf von sechs unter „Ohne Termin".
+10. **[mittel] Die Ortsmarken der Karte sind 24 pt hoch** statt 44, und bei
+    „Aa groß" überlappen sie sich auf dem iPhone um 12 pt.
+11. **[mittel] Die Zeile mit Schalter ist nicht antippbar** — nur der
+    Schalter selbst, 46 × 28 pt.
+12. **[mittel] „Abo" öffnet den Ausweichzustand** („AboUni"), weil der
+    Schlüssel nicht trifft; die drei vorhandenen Abo-Zeilen werden nie
+    benutzt.
+13. **[mittel] Chevron-Zeilen in den Tafeln versprechen Navigation und tun
+    nichts.**
+14. **[klein]** Legende des Kalenders widerspricht der Zeichnung (jeder
+    leere Tag IST ein Ring) · „ein Ring je Eintrag" auf der Karte gibt es
+    nicht · der 13. sagt dem Bildschirmleser nicht, dass er heute ist · die
+    Ansage sagt fest „drei Einstellungen" · jede Tafel verdeckt das
+    Sync-Fehlerband · „Board" hat drei Spalten in einem Vier-Spalten-Raster ·
+    das Aufgaben-Detail hat vier Umschaltzellen statt fünf.
+
 ## Was offen ist
 
 **1 · Die drei Marken-PNG fehlen.**
