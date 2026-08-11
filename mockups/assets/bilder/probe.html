@@ -55,7 +55,11 @@ body { background: var(--ground); }
 .abschnitt > h3 { font: 600 20px/26px var(--sans); letter-spacing: -.015em; margin: 0 0 8px; }
 .abschnitt > p  { font: 400 15px/22px var(--sans); color: var(--ink-2); margin: 0 0 20px; max-width: 68ch; }
 
+/* Hell und dunkel nebeneinander — solange zwei Spalten Platz haben. Unter
+   760 px stehen sie untereinander; zwei 180-pt-Felder nebeneinander zeigen
+   nichts mehr von dem, was sie zeigen sollen. */
 .paar { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 760px) { .paar { grid-template-columns: 1fr; } }
 .feld { border-radius: 18px; padding: 24px; }
 .feld--hell   { background: #F2F2F4; }
 .feld--dunkel { background: #0E0F11; }
@@ -65,7 +69,14 @@ body { background: var(--ground); }
 }
 
 /* ── Regal: die zwölf Cover ───────────────────────────────────────────── */
-.regal { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px 18px; }
+/* Sechs Deckel in einer Reihe, aber keiner schmaler als 110 px. Vorher
+   standen hier sechs feste Spalten: bei 390 px Fensterbreite blieben 40 px
+   je Deckel, und der Titel „Zellbiologie" wurde mitten im Wort abgeschnitten
+   — auf genau der Seite, die beweisen soll, dass zwölf gedeckte Papiere
+   auseinanderzuhalten sind. 118 pt ist die kleinste Zahl, bei der auf einem
+   390-pt-Schirm noch ZWEI Deckel nebeneinander stehen: eine Probe, die
+   Papiere vergleichen soll und sie untereinander stellt, prüft nichts. */
+.regal { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 20px 18px; }
 .buch { position: relative; }
 .buch__deckel {
   position: relative; aspect-ratio: 168 / 224;
@@ -94,8 +105,23 @@ body { background: var(--ground); }
   position: absolute; left: 22px; right: 14px; top: 18px;
   font-family: var(--serif); font-size: 17px; line-height: 21px; font-weight: 600;
   color: #16181C; letter-spacing: 0;
+  /* „Semesterplanung" ist länger als ein 110-pt-Deckel. Ein Titel, der
+     mitten im Wort an der Deckelkante endet, sieht aus wie ein Fehler; ein
+     Titel, der über zwei Zeilen läuft, sieht aus wie ein Notizbuch.
+     Getrennt wird mit Bindestrich (hyphens braucht das lang-Attribut, das
+     im <html> steht) — NICHT mit overflow-wrap: das brach „Laborjournal"
+     zu „Laborjourn / al", und ein Wortbruch ohne Strich ist schlimmer als
+     ein Wort, das ein paar Punkte übersteht. */
+  hyphens: auto;
 }
 
+/* Der Chip sitzt 22 pt vom Rand, weil dort die Spirale endet. Auf einem
+   schmalen Deckel bleibt für „Lernkarten" dann nicht genug übrig — er stand
+   14 pt über der Kante. Statt den Text zu kürzen (auf einer Seite, die
+   Lesbarkeit prüfen soll) rückt der Chip näher an die Spirale und macht sich
+   schmaler: dieselbe Schrift, weniger Luft. Erst wenn auch das nicht reicht,
+   greift die Ellipse. */
+.buch { container-type: inline-size; container-name: buch; }
 .buch__marke {
   position: absolute; left: 22px; bottom: 12px;
   display: inline-flex; align-items: center; gap: 6px; height: 23px; padding: 0 9px;
@@ -103,6 +129,12 @@ body { background: var(--ground); }
   box-shadow: inset 0 0 0 1px rgba(22,24,28,.14), 0 1px 2px rgba(22,24,28,.10);
   font: 600 13px/16px var(--sans); color: #2A2D31;
   backdrop-filter: blur(6px);
+}
+/* Steht NACH der Grundregel — bei gleicher Spezifität gewinnt die spätere,
+   und eine Container-Abfrage, die vorher steht, tut gar nichts. */
+@container buch (max-width: 150px) {
+  .buch__marke { left: 14px; padding: 0 7px; gap: 5px; max-width: calc(100% - 24px); }
+  .buch__marke > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 }
 .buch__fuss { margin-top: 10px; }
 .buch__fuss .n { font: 400 15px/20px var(--sans); color: var(--ink-1); }
@@ -159,7 +191,7 @@ body.ohne-schutz .karte__schutz { opacity: 0; }
 .karte__fuss { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
 /* ── Medien-Ansicht ───────────────────────────────────────────────────── */
-.medien { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; min-width: 0; }
+.medien { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; min-width: 0; }
 .kachel { position: relative; aspect-ratio: 1; border-radius: 12px; overflow: hidden;
   background: var(--fill); }
 .kachel img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -196,7 +228,13 @@ body.ohne-schutz .karte__schutz { opacity: 0; }
 }
 
 /* ── Messtabelle ──────────────────────────────────────────────────────── */
-.messung { width: 100%; border-collapse: collapse; margin-top: 10px; }
+/* Die Messtabellen tragen unumbrechbare Zahlenspalten und sind darum unter
+   etwa 560 px breiter als das Fenster. Sie rollen dann in sich selbst — die
+   Seite darf nicht quer rollen, eine Tabelle darf es. */
+.messung { width: 100%; border-collapse: collapse; margin-top: 10px; display: table; }
+@media (max-width: 620px) {
+  .messung { display: block; overflow-x: auto; white-space: nowrap; }
+}
 .messung th {
   font: 600 13px/16px var(--sans); letter-spacing: .04em; text-transform: uppercase;
   color: var(--ink-3); text-align: left; padding: 0 12px 8px 0;
@@ -567,17 +605,17 @@ body.ohne-schutz .karte__schutz { opacity: 0; }
 /* Regal und Medienraster werden aus einer Liste gebaut, damit die zwölf
    Cover nicht zwölfmal von Hand im Markup stehen. */
 const COVER = [
-  ["faser-alabaster",   "Zellbiologie",     "Notizen",   "notes",   "48 Seiten · heute"],
-  ["faser-hanf",        "Laborjournal",     "Journal",   "journal", "18 Seiten · Dienstag"],
+  ["faser-alabaster",   "Zell&shy;biologie","Notizen",   "notes",   "48 Seiten · heute"],
+  ["faser-hanf",        "Labor&shy;journal","Journal",   "journal", "18 Seiten · Dienstag"],
   ["leinen-nebel",      "Genetik II",       "Notizen",   "notes",   "31 Seiten · Montag"],
-  ["leinen-sand",       "Semesterplanung",  "Aufgaben",  "tasks",   "12 Seiten · gestern"],
+  ["leinen-sand",       "Semester&shy;planung","Aufgaben",  "tasks",   "12 Seiten · gestern"],
   ["kraft-natur",       "Praktikum",        "Journal",   "journal", "26 Seiten · Freitag"],
   ["kraft-graubraun",   "Statistik",        "Canvas",    "canvas",  "54 Seiten · 4. Nov."],
-  ["marmor-schiefer",   "Wendt · Vorlesung","Notizen",   "notes",   "63 Seiten · heute"],
+  ["marmor-schiefer",   "Wendt · Vor&shy;lesung","Notizen",   "notes",   "63 Seiten · heute"],
   ["marmor-tinte",      "Zitate",           "Notizen",   "notes",   "9 Seiten · 28. Okt."],
-  ["buetten-elfenbein", "Prüfungsfragen",   "Lernkarten","cards",   "120 Karten · heute"],
+  ["buetten-elfenbein", "Prüfungs&shy;fragen","Lernkarten","cards",   "120 Karten · heute"],
   ["buetten-taupe",     "Exkursion Harz",   "Journal",   "journal", "14 Seiten · 19. Okt."],
-  ["millimeter-blass",  "Messreihen",       "Canvas",    "canvas",  "22 Seiten · Mittwoch"],
+  ["millimeter-blass",  "Mess&shy;reihen","Canvas",    "canvas",  "22 Seiten · Mittwoch"],
   ["millimeter-stein",  "Diagramme",        "Canvas",    "canvas",  "17 Seiten · 2. Nov."],
 ];
 
