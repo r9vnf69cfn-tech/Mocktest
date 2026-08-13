@@ -1,0 +1,21 @@
+velum-session-capture.mp4 — was wann passiert (Sekunden im Video)
+Measured frame-by-frame against verified screen renders (tools/story/marken.py).
+
+ 0.0– 7.3   Boot, stage setup (unusable)
+ 7.4–12.6   TODAY settled · slow scroll down and back (usable hero window: 7.9–12.6)
+12.6–14.8   brief Tasks flash (navigation artifact — skip)
+14.9–17.0   TODAY again, then tap on the chain card "Cell Biology · 14 paragraphs"
+17.1–26.3   NOTES editor · scroll to the margin (cards, tasks, backlinks) ~21.8, scroll back
+26.6–29.9   FLASHCARDS deck list (4 decks, yield panel right)
+30.1–36.8   REVIEW session · "Show answer" pressed ~33.5, answer + grading visible after
+37.2–52.4   CANVAS lecture sheet ("The Cell — membrane & transport", real handwriting)
+            · settled 37.2–40.4 · zoom IN ~40.5–41.5 · close-up hold ~41.5–43.5
+            · zoom OUT ~43.5–44.5 · settled wide to 52.4
+52.5–55.4   LIBRARY grid (18 notebooks, smart folders)
+55.4–59.3   LIBRARY list (after "List" tap)
+59.4–62.1   TASKS list (capture line on top: "Lab report tomorrow 2pm #lab !!!")
+62.1–65.3   TASKS planner (4 columns) — switch happens AT 62.1
+65.3–68.0   TASKS board (Open · In Progress · Done) — switch AT 65.3
+68.0–71.9   JOURNAL timeline (streak panel right)
+71.9–74.5   JOURNAL scrolled (photos row, "One year ago")
+74.7–77.9   TODAY again (closing loop)

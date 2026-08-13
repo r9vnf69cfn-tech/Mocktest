@@ -1,0 +1,43 @@
+Direct and produce a launch teaser for "Velum", a premium iPad study app
+(Canvas · Notes · Journal · Tasks · Flashcards). Instagram Story/Reel,
+9:16, 1080x1920, 30 fps, 42-45 seconds, no dialogue, sparse minor-key
+piano. Target quality: a $20k agency device film. Benchmark: Apple's iPad
+films and the GoodNotes 6 launch - we launch against GoodNotes and must
+look more expensive.
+
+READ BRIEF.md IN THIS PACKAGE FIRST. Full storyboard, copy deck, palette
+and guardrails are in there. The short version:
+
+USE THE PROVIDED MATERIAL AS THE PRODUCT TRUTH.
+- film/velum-session-capture.mp4 is a 78 s REAL screen capture of the app
+  in use (timecodes.txt tells you what happens when). All UI in the film
+  must come from this capture or from screens/*.jpg. Never invent, redraw
+  or "improve" UI. No lorem ipsum. No imaginary screens.
+- brand/ contains the wordmark and app icon as final art. Never redraw or
+  restyle the logo.
+- titles/v-*.png are the caption cards, already typeset and positioned.
+  Use them (or match them exactly).
+
+THE FILM: Apple device-film grammar. An iPad with real weight and mass
+entering a dark winter-lit studio; three-quarter hero angles with true
+perspective; UI cards lifting off the glass in parallax layers (each layer
+is a real crop from the provided screens); punch-ins where the app's
+typography is readable; hard cuts on state changes; one cool grade and
+fine 35mm grain over everything. Bookend with the ink-drop plate (opening,
+wordmark over the bloom) and the dust-light plate (claim, mid-beat,
+finale) - both already generated in this workspace, task IDs in BRIEF.md
+section 5. Crop the stray tripod out of the dust plate.
+
+PALETTE: ink #1C1C1F, paper #F5F3EE, single copper accent #D89B63. serif
+type only (New York style). Calm, precise, wintery, editorial.
+
+FORBIDDEN: invented UI, redrawn logo, glossy 3D swooshes, particle
+explosions, lens flares, emoji, stock people, any saturated color beyond
+the copper, build-up/drop music. Hands with Apple Pencil only if
+photoreal and flawless - when in doubt, none.
+
+reference/previz-cut.mp4 is our previz: keep its structure and copy,
+raise the craft far beyond it.
+
+Deliver: 42-45 s master (H.264 + ProRes), a 15 s cutdown, 3 key stills.
+Keep top 220 px and bottom 320 px free of critical type (IG chrome).
