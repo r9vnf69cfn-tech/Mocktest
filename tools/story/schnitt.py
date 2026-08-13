@@ -464,10 +464,11 @@ def vorbereiten():
         p = QUELLE + n + '.png'
         if os.path.exists(p):
             SCHIRME[n] = lade(p)
-    for n in ('t-faden', 't-faden-en', 't-winter', 't-marke', 't-marke-nackt'):
-        p = QUELLE + n + '.png'
-        if os.path.exists(p):
-            TAFELN[n] = lade(p, (W, H))
+    # Alles, was als Tafel im Quellenordner liegt — t-* für die Story, r-*
+    # für das Reel. Eine feste Liste hatte die Reel-Zeilen still verschluckt.
+    for f in sorted(os.listdir(QUELLE)):
+        if f.endswith('.png') and (f.startswith('t-') or f.startswith('r-')):
+            TAFELN[f[:-4]] = lade(QUELLE + f, (W, H))
     VIGNETTE = vignette()
 
 
