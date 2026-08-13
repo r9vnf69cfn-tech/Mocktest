@@ -922,13 +922,24 @@ body.pv {
 /* ── Das Brett: Planer · Matrix · Board · Kalender ────────────────────── */
 .pv-brett {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* So viele Spalten, wie das Brett hat — nicht immer vier. Das Board hat
+     drei; mit festen vier Spuren stand ein Viertel des Schirms leer, und
+     eine leere Spalte am Rand liest sich als abgeschnittene Ansicht. */
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 14px;
   align-items: start;
 }
-.pv-brett--vier { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Die Matrix will ausdrücklich zwei mal zwei, nicht vier nebeneinander. */
+.pv-brett--vier {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 .screen--iphone .pv-brett,
-.screen--iphone .pv-brett--vier { grid-template-columns: minmax(0, 1fr); }
+.screen--iphone .pv-brett--vier {
+  grid-auto-flow: row;
+  grid-template-columns: minmax(0, 1fr);
+}
 
 .pv-brett__spalte {
   display: flex;
@@ -983,6 +994,32 @@ body.pv {
   justify-content: flex-start;
 }
 .pv-brett__stapel > .row .row__title { white-space: normal; }
+/* Eine Marke, die in der schmalen Spalte nicht ganz passt, bricht um statt
+   an der Kartenkante zu enden. Ein hart abgeschnittenes „when the deck • come"
+   liest sich als Fehler; zwei Zeilen liest sich als Zettel.
+   Die Zeile darunter darf dafür nicht mehr abschneiden — sonst verschwindet
+   genau die zweite Zeile, die hier entstehen soll. */
+.pv-brett__stapel > .row .row__meta {
+  overflow: visible;
+  flex-wrap: wrap;
+  row-gap: 5px;
+}
+.pv-brett__stapel > .row .chip {
+  max-width: 100%;
+  min-width: 0;
+  height: auto;
+  /* Die Marke selbst bricht um, ihre Teile nicht: „when the deck" und
+     „comes due" gehen in zwei Zeilen, aber kein Wort wird zerrissen. */
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  row-gap: 1px;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.28;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.pv-brett__stapel > .row .chip > * { white-space: nowrap; flex: 0 0 auto; }
 /* Eine Zeile, die im Bestand gerade zur Seite gewischt wird, trägt dafür ein
    inline transform: translateX(88px) und einen Schatten. In der Liste liegt
    sie in einem klippenden Wirt, im Brett nicht — dort schob sie das Gerät um

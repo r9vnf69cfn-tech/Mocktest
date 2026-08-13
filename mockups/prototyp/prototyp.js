@@ -3453,8 +3453,29 @@
       if (!knoepfe.length) return;
       if (knoepfe[0].classList.contains('pv-lebt')) return;   /* Bibliothek */
 
+      /* Art und Name werden EINMAL bestimmt und am Element festgemacht —
+         nicht bei jedem Druck neu aus der Beschriftung gelesen.
+
+         Der Grund ist ein Fehler, der lange unbemerkt blieb: ansichtWechseln
+         erkannte den Umschalter am Wortbestand seiner Knöpfe (/planer/ und
+         /matrix/). Damit hing die ganze Mechanik an der SCHRIFT auf den
+         Knöpfen. Sobald jemand sie ändert — eine Sprachfassung für einen
+         Film, eine schärfere Formulierung, „Aa groß" — fielen §14c bis §14o
+         still: die Auswahl wanderte weiter, aber die Ansicht wechselte nicht
+         mehr. Ein Umschalter, der sich richtig markiert und nichts umschaltet,
+         ist genau die Sorte Fehler, die niemand meldet und jeder sieht.
+
+         Jetzt gilt: was ein Bedienelement IST, steht in ihm. Was daraufsteht,
+         ist Anzeige. */
+      var art = umschalterArt(segment);
+      segment.__pvArt = art;
+      /* Dasselbe für die Zeilen: wohin eine Aufgabe gehört, wird jetzt
+         bestimmt, solange „Geplant morgen" noch dasteht — nicht später aus
+         dem, was gerade auf ihr steht. */
+      if (art === 'aufgaben') aufgabenStempeln(rahmen);
       knoepfe.forEach(function (k) {
         var name = wort(k);
+        k.__pvName = name;
         beleben(k, {
           ziel: 'nichts',
           wirkt: 'zeigt „' + textVon(k) + '"',
@@ -3465,7 +3486,7 @@
               b.classList.toggle('is-on', b === k);
               b.setAttribute('aria-pressed', b === k ? 'true' : 'false');
             });
-            ansichtWechseln(rahmen, segment, name, textVon(k));
+            ansichtWechseln(rahmen, segment, k.__pvName || name, textVon(k));
             markenAuffrischen();
           },
         });
@@ -3475,19 +3496,28 @@
 
   /* Welcher Umschalter ist das? Entschieden wird am Wortbestand, nicht an
      der Stelle: derselbe Aufgaben-Umschalter steht in zwei Schirmen und auf
-     zwei Geräten, und in keinem an derselben Stelle. */
-  function ansichtWechseln(rahmen, segment, name, klartext) {
+     zwei Geräten, und in keinem an derselben Stelle. Gefragt wird EINMAL,
+     beim Beleben — danach trägt der Umschalter die Antwort an sich. */
+  function umschalterArt(segment) {
     var alle = Array.prototype.map.call(segment.querySelectorAll('button'), wort).join(' ');
-    var schirm = rahmen.getAttribute('data-pv-screen');
+    if (/planer/.test(alle) && /matrix/.test(alle)) return 'aufgaben';
+    if (/timeline/.test(alle) && /medien/.test(alle)) return 'journal';
+    if (/angeheftet/.test(alle) && /mit karten/.test(alle)) return 'notizen';
+    if (/fällig zuerst/.test(alle) || /a–z/.test(alle)) return 'decks';
+    if (/übersicht/.test(alle) && /verlauf/.test(alle)) return 'editor';
+    if (/zeit/.test(alle) && /herkunft/.test(alle)) return 'semester';
+    return '';
+  }
 
-    if (/planer/.test(alle) && /matrix/.test(alle)) { aufgabenAnsicht(rahmen, name, klartext, segment); return; }
-    if (/timeline/.test(alle) && /medien/.test(alle)) { journalAnsicht(rahmen, name, klartext, segment); return; }
-    if (/angeheftet/.test(alle) && /mit karten/.test(alle)) { notizenFilter(rahmen, name, klartext); return; }
-    if (/fällig zuerst/.test(alle) || /a–z/.test(alle)) { deckSortieren(rahmen, name, klartext); return; }
-    if (/übersicht/.test(alle) && /verlauf/.test(alle)) { editorTafel(rahmen, segment, name, klartext); return; }
-    if (/zeit/.test(alle) && /herkunft/.test(alle)) { semesterOrdnen(rahmen, name, klartext, segment); return; }
+  function ansichtWechseln(rahmen, segment, name, klartext) {
+    var art = segment.__pvArt !== undefined ? segment.__pvArt : umschalterArt(segment);
+    if (art === 'aufgaben') { aufgabenAnsicht(rahmen, name, klartext, segment); return; }
+    if (art === 'journal')  { journalAnsicht(rahmen, name, klartext, segment); return; }
+    if (art === 'notizen')  { notizenFilter(rahmen, name, klartext); return; }
+    if (art === 'decks')    { deckSortieren(rahmen, name, klartext); return; }
+    if (art === 'editor')   { editorTafel(rahmen, segment, name, klartext); return; }
+    if (art === 'semester') { semesterOrdnen(rahmen, name, klartext, segment); return; }
     sagen(klartext + ' — die Auswahl steht.');
-    void schirm;
   }
 
   /* ── 14c · Die fünf Blicke auf dieselben sechs Aufgaben ──────────────────
@@ -3511,11 +3541,34 @@
     });
   }
 
+  /* Erledigt ist, was ein gesetztes Häkchen trägt. .is-checking gehört dazu:
+     im Entwurf steht sie für „gerade abgehakt" und wird als gefüllter Haken
+     GEZEICHNET. Ohne sie landete eine sichtbar abgehakte Aufgabe im Board
+     unter „Offen", während „Erledigt" daneben „nichts" meldete — ein
+     Widerspruch, den jeder im Bild sieht. */
   function zeileErledigt(z) {
-    return !!z.querySelector('.check.is-done, .bw-check.is-done, .is-erledigt');
+    return !!z.querySelector('.check.is-done, .check.is-checking, ' +
+                             '.bw-check.is-done, .bw-check.is-checking, .is-erledigt');
+  }
+
+  /* Wann und wie dringend — einmal gelesen, dann an der Zeile festgemacht.
+     Vorher wurde bei jedem Umschalten neu im Text gesucht; damit hing auch
+     die Einsortierung an der Beschriftung. */
+  function aufgabenStempeln(rahmen) {
+    Array.prototype.forEach.call(rahmen.querySelectorAll('.row'), function (z) {
+      if (z.__pvWann) return;
+      var t = textVon(z);
+      z.__pvWann = /heute|\b\d{1,2}:\d{2}\b/.test(t) ? 'heute'
+                 : /morgen/.test(t) ? 'morgen'
+                 : /woche|Fr,|Mo,|Di,|Mi,|Do,/.test(t) ? 'woche'
+                 : 'ohne';
+      z.__pvDringend = /!!!|!!|dringend|noch 0 Tage|fällig/i.test(t);
+      z.__pvSchritte = /\d von \d|Schritt/.test(t);
+    });
   }
 
   function zeileWann(z) {
+    if (z.__pvWann) return z.__pvWann;
     var t = textVon(z);
     if (/heute|\b\d{1,2}:\d{2}\b/.test(t)) return 'heute';
     if (/morgen/.test(t)) return 'morgen';
@@ -3524,7 +3577,13 @@
   }
 
   function zeileDringend(z) {
+    if (z.__pvWann) return !!z.__pvDringend;
     return /!!!|!!|dringend|noch 0 Tage|fällig/i.test(textVon(z));
+  }
+
+  function zeileSchritte(z) {
+    if (z.__pvWann) return !!z.__pvSchritte;
+    return /\d von \d|Schritt/.test(textVon(z));
   }
 
   function aufgabenAnsicht(rahmen, name, klartext, segment) {
@@ -3547,11 +3606,15 @@
 
     var spalten = [];
     if (name === 'planer') {
+      /* Ohne Rücksicht auf den Haken: eine erledigte Aufgabe gehört auf den
+         Tag, für den sie geplant war. Schloss man sie hier aus, fiel sie in
+         den Rest-Eimer der letzten Spalte und stand unter „Ohne Termin" —
+         mit sichtbarem Haken und sichtbarem Termin daneben. */
       spalten = [
-        { kopf: 'Heute',       satz: 'was heute drankommt',        nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'heute'; } },
-        { kopf: 'Morgen',      satz: 'schon terminiert',           nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'morgen'; } },
-        { kopf: 'Diese Woche', satz: 'mit Frist, ohne Tag',        nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'woche'; } },
-        { kopf: 'Ohne Termin', satz: 'wartet auf eine Entscheidung', nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'ohne'; } },
+        { kopf: 'Heute',       satz: 'was heute drankommt',        nimm: function (z) { return zeileWann(z) === 'heute'; } },
+        { kopf: 'Morgen',      satz: 'schon terminiert',           nimm: function (z) { return zeileWann(z) === 'morgen'; } },
+        { kopf: 'Diese Woche', satz: 'mit Frist, ohne Tag',        nimm: function (z) { return zeileWann(z) === 'woche'; } },
+        { kopf: 'Ohne Termin', satz: 'wartet auf eine Entscheidung', nimm: function (z) { return zeileWann(z) === 'ohne'; } },
       ];
     } else if (name === 'matrix') {
       spalten = [
@@ -3562,16 +3625,16 @@
       ];
     } else if (name === 'board') {
       spalten = [
-        { kopf: 'Offen',    satz: 'noch nicht angefangen', nimm: function (z) { return !zeileErledigt(z) && !/\d von \d|Schritt/.test(textVon(z)); } },
-        { kopf: 'In Arbeit', satz: 'begonnen',             nimm: function (z) { return !zeileErledigt(z) && /\d von \d|Schritt/.test(textVon(z)); } },
+        { kopf: 'Offen',    satz: 'noch nicht angefangen', nimm: function (z) { return !zeileErledigt(z) && !zeileSchritte(z); } },
+        { kopf: 'In Arbeit', satz: 'begonnen',             nimm: function (z) { return !zeileErledigt(z) && zeileSchritte(z); } },
         { kopf: 'Erledigt', satz: 'heute abgehakt',        nimm: zeileErledigt },
       ];
     } else if (name === 'kalender') {
       spalten = [
-        { kopf: 'Do · 13.', satz: 'heute',   nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'heute'; } },
-        { kopf: 'Fr · 14.', satz: 'morgen',  nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'morgen'; } },
-        { kopf: 'Sa · 15.', satz: 'Frist',   nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'woche'; } },
-        { kopf: 'Ohne Tag', satz: 'unten am Rand', nimm: function (z) { return !zeileErledigt(z) && zeileWann(z) === 'ohne'; } },
+        { kopf: 'Do · 13.', satz: 'heute',   nimm: function (z) { return zeileWann(z) === 'heute'; } },
+        { kopf: 'Fr · 14.', satz: 'morgen',  nimm: function (z) { return zeileWann(z) === 'morgen'; } },
+        { kopf: 'Sa · 15.', satz: 'Frist',   nimm: function (z) { return zeileWann(z) === 'woche'; } },
+        { kopf: 'Ohne Tag', satz: 'unten am Rand', nimm: function (z) { return zeileWann(z) === 'ohne'; } },
       ];
     } else {
       sagen(klartext + ' — die Auswahl steht.');
