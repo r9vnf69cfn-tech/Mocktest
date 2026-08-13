@@ -198,14 +198,23 @@ nicht als Nachweis.
 
 ## Was offen ist
 
-**1 · Die drei Marken-PNG fehlen.**
-`assets/brand/velum-appicon-{light,dark,tinted}.png`. Wo das Zeichen stuende,
-steht ein leerer Rahmen mit dem Dateinamen — nachgezeichnet wird nichts. Das
-ist die einzige Stelle, an der der Entwurf sichtbar unfertig ist, und sie ist
-es mit Absicht: das Zeichen gehoert nicht mir. Sobald die drei Dateien
-daliegen, erscheinen sie ueberall gleichzeitig (`.appicon` laedt genau diese
-Pfade). Bis dahin meldet `tools/paket-pruefen.js` elf Seitenfehler; alle elf
-sind diese drei Dateien.
+**1 · Das Zeichen ist da (13. August).**
+Die drei Masterdateien liegen unter `assets/brand/velum-appicon-{light,dark,
+tinted}.png`, dazu acht Logo-Dateien unter `assets/brand/logo/`. Der
+reservierte Platz ist an allen Stellen von selbst verschwunden — 16
+handgeschriebene Platzhalter auf den Plattformseiten sind auf
+`data-appicon` umgestellt, mit fester Fassung, wo der Gerätegrund sie
+vorgibt (Sperrbildschirm immer dunkel). `tools/paket-pruefen.js` meldet
+seither **null Seitenfehler**.
+
+Das Kupfer ist gemessen und gesetzt (system.css §11.2): Punkt `#B5763F`
+hell / `#D89B63` dunkel, Eyebrow `#8A5426` / `#D89B63`. Die Sperre bleibt —
+`--brand-copper` existiert nur auf `.brandmark`.
+
+**Offen geblieben:** die Wortmarke des Pakets ist Instrument Serif, das
+System setzt New York. Auf Ansage bleibt die Typografie des Mockups
+unverändert; die acht Logo-Dateien liegen bereit, falls Splash, Über oder
+Store sie einmal als Bild brauchen.
 
 **2 · Typo-Disziplin.**
 `tools/paket-pruefen.js` meldet auf fast jedem Schirm **7 Schriftgroessen**,

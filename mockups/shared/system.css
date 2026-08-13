@@ -1725,11 +1725,16 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
  *   assets/brand/velum-appicon-light.png
  *   assets/brand/velum-appicon-dark.png
  *   assets/brand/velum-appicon-tinted.png
- * Die Dateien liegen NICHT vor. Nachzeichnen ist verboten. Fällt das Bild
- * aus, erscheint ein sichtbar leerer Rahmen mit dem Dateinamen daneben —
- * kein gezeichnetes V, kein Ersatzzeichen, keine Andeutung. Sobald die drei
- * PNG abgelegt werden, erscheinen sie überall gleichzeitig, ohne dass eine
- * Zeile geändert wird.
+ * Seit dem 13. August liegen die Dateien vor — das Zeichen ist da, und der
+ * reservierte Platz ist an allen Stellen von selbst verschwunden, ohne dass
+ * eine Zeile geändert werden musste. Der Rahmen bleibt trotzdem gebaut: er
+ * ist die Wache. Wer eine der drei Dateien löscht oder umbenennt, bekommt
+ * wieder den sichtbar leeren Rahmen mit dem Dateinamen daneben — kein
+ * gezeichnetes V, kein Ersatzzeichen, keine Andeutung.
+ *
+ * Die Masterdateien sind 1024 × 1024, full-bleed, OHNE Eckenrundung. Der
+ * Radius kommt aus dieser Datei (22,37 %, Apples Squircle-Maß), damit er auf
+ * jeder Größe stimmt: bei 60 pt sind das 13,42 pt, bei 22 pt 4,92 pt.
  *
  *   <span class="appicon" data-appicon></span>              64 pt, folgt dem Modus
  *   <span class="appicon appicon--sm" data-appicon></span>  28 pt

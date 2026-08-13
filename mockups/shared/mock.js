@@ -312,11 +312,15 @@
   /* ══════════════════════════════════════════════════════════════════════
    * B · DIE MARKE — App-Icon-Platz
    *
-   * Zu system.css §11. Die drei PNG liegen NICHT vor. Nachzeichnen ist
-   * verboten. Fehlt die Datei, erscheint ein sichtbar leerer Rahmen mit dem
-   * Dateinamen — kein gezeichnetes V, kein Ersatzzeichen, keine Andeutung.
-   * Sobald die Dateien da sind, erscheinen sie überall gleichzeitig, ohne
-   * dass hier eine Zeile geändert werden muss.
+   * Zu system.css §11. Die drei PNG liegen seit dem 13. August vor; sie sind
+   * überall gleichzeitig erschienen, ohne dass hier eine Zeile geändert
+   * werden musste. Der Fehlerfall bleibt gebaut und bleibt streng: fehlt
+   * eine Datei, erscheint ein sichtbar leerer Rahmen mit dem Dateinamen —
+   * kein gezeichnetes V, kein Ersatzzeichen, keine Andeutung.
+   *
+   * Der Pfad wird von der Adresse DIESER Datei aus aufgelöst, nicht von der
+   * Seite: die Seiten liegen verschieden tief, mock.js nicht. Wer das Paket
+   * baut, muss die eine Ebene anpassen (tools/paket-bauen.js §3a2).
    * ==================================================================== */
 
   const BRAND_DIR = 'assets/brand/';

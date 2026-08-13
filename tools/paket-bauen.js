@@ -173,6 +173,23 @@ const nJs = copyDir(`${REPO}/js`, `${OUT}/canvas/js`);
   log.push('canvas/index.html: Bibliotheks-Knopf führt zur Startseite');
 }
 
+/* ── 3a2. Der Pfad zum Zeichen ───────────────────────────────────────────
+   mock.js löst das App-Icon von SEINER EIGENEN Adresse aus auf, weil die
+   Seiten verschieden tief liegen: mockups/shared/mock.js + ../../ trifft im
+   Repo die Wurzel, in der auch assets/brand/ liegt. Im Paket liegt mock.js
+   eine Ebene höher (newmockup/shared/), also ist es eine Ebene zu viel — die
+   Seiten suchten das Zeichen außerhalb des Ordners und zeigten wieder den
+   leeren Rahmen. Eine Ersetzung, gezählt wie alle anderen. */
+{
+  const p = `${OUT}/shared/mock.js`;
+  if (!fs.existsSync(p)) warn.push('fehlt: shared/mock.js');
+  else {
+    let js = fs.readFileSync(p, 'utf8');
+    js = ersetze(js, "new URL('../../' + rel, SELF_URL)", "new URL('../' + rel, SELF_URL)", 1, 'shared/mock.js');
+    fs.writeFileSync(p, js);
+  }
+}
+
 /* ── 3b. Der begehbare Prototyp ──────────────────────────────────────────
    Er ist seit Runde 3 das Hauptstück des Pakets: siebzehn Schirme, zwei
    Geräte, das Canvas im Rahmen. Er liegt eine Ebene tief (prototyp/) und

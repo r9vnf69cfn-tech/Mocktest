@@ -229,15 +229,13 @@ WO DER FADEN STEHT (und wo bewusst keiner steht)
     als Trennlinie. Wo zwei Dinge nur nebeneinanderstehen, steht nichts.
 
 DAS ZEICHEN
-Die drei PNG unter assets/brand/ liegen nicht vor; Nachzeichnen ist verboten.
-Der vollständige Baustein .appicon[data-appicon] trägt seine Warnung samt Pfad
-und ist damit breiter als jede Symbolzelle — in einer 60-pt-Dockzelle sprengt
-er die Zeile. Deshalb steht er einmal in voller Größe auf der Übersichtsseite
-(platform/index.html) und im Steckbrief unter der Bühne; im Gerät steht
-derselbe leere Rahmen ohne Text (.appicon__frame, dieselbe Klasse, dieselbe
-gestrichelte Kontur). Es wird nichts nachgezeichnet und nichts repariert: die
-Warnung verschwindet nicht, sie steht einmal statt siebenmal. Der fehlende
-Pfad lautet assets/brand/velum-appicon-light.png bzw. -dark.png.
+Seit dem 13. August liegen die drei PNG unter assets/brand/ vor. Wo bis dahin
+ein leerer Rahmen stand, steht jetzt das Zeichen selbst — .appicon[data-appicon]
+lädt es, mock.js wählt die Fassung. Die Fassung ist hier fest angegeben
+(data-appicon="light" bzw. "dark") und folgt NICHT dem Seitenmodus: ein Zeichen
+auf einem dunklen Gerätegrund bleibt die dunkle Fassung, auch wenn die Seite
+hell steht. Der Eckradius kommt aus dem Stylesheet (22,37 % — Apples Squircle);
+bei 60 pt sind das die 13,42 pt, die vorher von Hand dastanden.
 
 AFFORDANZ
 Widgets sind selbst das Ziel — ein Tap öffnet die App an der angetippten
@@ -365,7 +363,7 @@ die Sperrbildschirm-Uhr.
         <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m15.6 8.4-1.7 5.5-5.5 1.7 1.7-5.5Z"/></svg></div>
         <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.6 6.6 10.6 4.8h2.8l1 1.8h2.6a2.2 2.2 0 0 1 2.2 2.2v7.4a2.2 2.2 0 0 1-2.2 2.2H6.8a2.2 2.2 0 0 1-2.2-2.2V8.8a2.2 2.2 0 0 1 2.2-2.2Z"/><circle cx="12" cy="12.6" r="3.4"/></svg></div>
         <!-- Velum: reservierter Zeichenplatz, 60 pt. Kein gezeichnetes V. -->
-        <span class="appicon markplatz" style="--appicon-size:60px" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:13.42px"></span></span>
+        <span class="appicon markplatz" style="--appicon-size:60px" data-appicon="light"></span>
       </div>
 
       <div class="oshome"></div>
@@ -394,7 +392,7 @@ die Sperrbildschirm-Uhr.
           <span>Donnerstag, 13. November</span>
           <span class="sp"></span>
           <span class="markplatz" style="--thread:var(--line-2)">
-            <span class="appicon" style="--appicon-size:20px" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:4.5px"></span></span>
+            <span class="appicon" style="--appicon-size:20px" data-appicon="light"></span>
           </span>
         </div>
 
@@ -487,7 +485,7 @@ die Sperrbildschirm-Uhr.
         <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.4 3.6 5.2 5.8c-1 1-1.2 2.6-.5 3.9 2 3.7 5 6.7 8.7 8.7 1.3.7 2.9.5 3.9-.5l2.2-2.2-4-2.6-2 1.4a16 16 0 0 1-5.1-5.1l1.4-2Z"/></svg></div>
         <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.4"/><path d="m15.6 8.4-1.7 5.5-5.5 1.7 1.7-5.5Z"/></svg></div>
         <div class="appsq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.6 6.6 10.6 4.8h2.8l1 1.8h2.6a2.2 2.2 0 0 1 2.2 2.2v7.4a2.2 2.2 0 0 1-2.2 2.2H6.8a2.2 2.2 0 0 1-2.2-2.2V8.8a2.2 2.2 0 0 1 2.2-2.2Z"/><circle cx="12" cy="12.6" r="3.4"/></svg></div>
-        <span class="appicon markplatz" style="--appicon-size:60px" title="assets/brand/velum-appicon-light.png"><span class="appicon__frame" style="border-radius:13.42px"></span></span>
+        <span class="appicon markplatz" style="--appicon-size:60px" data-appicon="light"></span>
       </div>
 
       <div class="oshome"></div>
