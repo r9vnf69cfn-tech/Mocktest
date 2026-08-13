@@ -1791,31 +1791,62 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
  *     <span class="serif--wordmark">Velum</span>
  *   </span>
  *
- * --brand-copper (#B5621A) ist HIER definiert und nirgends sonst. Das ist
+ * --brand-copper ist HIER definiert und nirgends sonst. Das ist
  * keine Bitte, sondern die Sperre: außerhalb von .brandmark existiert die
  * Variable nicht, ein var(--brand-copper) fällt dort auf seinen Rückfallwert
  * zurück. Kein Knopf, kein Chip, keine Fläche, kein Zustand kann sie
  * versehentlich erben.
  *
- * VORLÄUFIG. #B5621A ist Velums eigener Journal-Akzent aus der März-Spec,
- * also kein erfundener Wert — aber er wird ersetzt, sobald die drei PNG
- * vorliegen und der Ton aus dem echten Zeichen gemessen werden kann.
+ * GEMESSEN, seit dem Markenpaket vom 13. August. Der vorläufige Wert
+ * #B5621A (Velums Journal-Akzent aus der März-Spec) ist ersetzt durch den
+ * Ton, der IM ZEICHEN steht — und das Paket führt zwei davon, je Modus einen:
  *
- * Der Ton trägt heute genau eine Sache: den Rahmen des reservierten Platzes.
- * Als Textfarbe wäre er unzulässig — gerechnet 4,44:1 auf Papier hell und
- * 3,96:1 dunkel, beides unter den 4,5:1 für Text. Als Rahmen (Bedienoberfläche,
- * 3:1) hält er in beiden Modi. Die Wortmarke steht deshalb in Ink, nicht in
- * Kupfer. Mit dem ersten echten PNG verschwindet der Rahmen und mit ihm der
- * einzige heutige Gebrauch der Farbe: das Kupfer lebt dann dort, wo es
- * hingehört — im Zeichen. */
+ *              Punkt          Eyebrow        Warum zwei
+ *   hell       #B5763F        #8A5426        der Punkt ist eine Grafik (3:1),
+ *   dunkel     #D89B63        #D89B63        der Eyebrow ist Text (4,5:1)
+ *
+ * Nachgerechnet auf den Markenflächen des Pakets (Papier #EEF1F6, Tinte
+ * #191C23), WCAG 2.1:
+ *
+ *   Punkt hell     3,30:1   Grafik, Grenze 3:1     hält
+ *   Punkt dunkel   7,14:1   Grafik                 hält
+ *   Eyebrow hell   5,49:1   Text, Grenze 4,5:1     hält
+ *   Eyebrow dunkel 7,14:1   Text                   hält
+ *
+ * Auf Velums eigenen Flächen (--paper) misst der Punkt 3,51:1 hell und
+ * 7,37:1 dunkel — auch dort über der Grafikgrenze. Dass das Paket für den
+ * Eyebrow einen DUNKLEREN Kupferton nimmt als für den Punkt, ist kein
+ * Zufall und keine zweite Marke: es ist genau der Unterschied zwischen
+ * 3:1 für eine Form und 4,5:1 für ein Wort.
+ *
+ * Als Textfarbe im UI bleibt Kupfer trotzdem gesperrt — nicht wegen des
+ * Kontrasts, sondern wegen der Regel: die Tinte hat drei Rollen, und Kupfer
+ * ist keine davon. Es lebt im Zeichen und im Lockup, sonst nirgends. Die
+ * Sperre ist unverändert die Deklaration auf .brandmark selbst: außerhalb
+ * existiert die Variable nicht. */
 
 .brandmark {
-  --brand-copper: #B5621A;
+  --brand-copper: #B5763F;          /* Punkt hell  · 3,30:1 auf Markenpapier */
+  --brand-copper-text: #8A5426;     /* Eyebrow hell · 5,49:1, Textgrenze */
   display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap;
   color: var(--ink-1);
 }
 /* --appicon-size steht auf .appicon selbst und wird deshalb nicht geerbt —
    die kleine Fassung muss die Regel dort überschreiben, nicht am Elter. */
+/* Im Dunkeln führt das Paket einen Ton für beide Rollen: #D89B63 hält als
+   Grafik (7,14:1) und als Text (7,14:1) gleichermaßen. */
+:root[data-theme="dark"] .brandmark,
+:root:not([data-theme="light"]) .brandmark {
+  --brand-copper: #D89B63;
+  --brand-copper-text: #D89B63;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .brandmark {
+    --brand-copper: #D89B63;
+    --brand-copper-text: #D89B63;
+  }
+}
+
 .brandmark--sm { gap: 10px; }
 .brandmark--sm .appicon { --appicon-size: 28px; }
 .brandmark--sm .serif--wordmark { font-size: 20px; line-height: 26px; }
