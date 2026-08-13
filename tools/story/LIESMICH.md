@@ -5,10 +5,11 @@ Zwei Fassungen, zwei Aufgaben: die **Story** zeigt das Produkt, das
 
 ---
 
-# Das Reel — 38 s · englisch
+# Das Reel — 42 s · englisch
 
 Eine Arbeitssitzung am iPad, mit allem, was die App kann: Today · Notes ·
-Flashcards · Review · Canvas · Library · Tasks · Journal.
+Flashcards · Review · Canvas · Library · Tasks · Journal — eingerahmt von
+zwei echten Runway-Ebenen (Tinte in Wasser · Staub im Winterlicht).
 
 ```
 node tools/story/buehne-pruefen.js   # PRÜFT die Bühne, bevor gedreht wird
@@ -113,31 +114,44 @@ Schirmbildern verglichen und dem ähnlichsten zugeordnet. Heraus kommt eine
 Liste zusammenhängender Läufe — Schirm, Anfang, Ende, und darin das
 ruhigste Fenster.
 
-## Der Schnitt
+## Die Regie — nach dem Blick auf die Konkurrenz
+
+Vor diesem Schnitt stand eine Sichtung: wie bauen Apple, GoodNotes und
+Notion ihre Gerätefilme? Ihre Grammatik hat sechs Sätze, und der Film
+spricht alle sechs — GEWICHT (Einflug mit Fluchtpunkt und Nachfedern),
+TIEFE (Dreiviertel-Profil mit echter Perspektive; einmal blättert die
+Oberfläche selbst in Ebenen auf), NÄHE (Punch-ins), EIN RAUM (das Studio
+läuft über die Schnitte durch), ERST BEHAUPTEN (die Zeile nie auf dem
+Schirm), EINE FARBE (eine Korrektur, ein Korn). Und die Apple-Regel über
+allen: Klarheit vor Spektakel — jeder Trick zeigt etwas, das die App
+wirklich tut.
 
 | s | Bild | Zeile |
 |---|---|---|
-| 0,0–2,6 | Dunkler Raum, Wortmarke | One place for everything you learn. |
-| 2,6–6,4 | **Today** — Überblick, Scrollen | TODAY · Six tasks, twenty-three cards, one unfinished draft. |
-| 6,4–10,6 | **Notes** — Editor, Rand, Backlinks | NOTES · Write it once. The margin keeps track of the rest. |
-| 10,6–13,0 | **Flashcards** — vier Decks | FLASHCARDS · Every card remembers the sentence it came from. |
-| 13,0–16,8 | **Review** — Frage, dann Antwort | REVIEW · And it shows you the sentence before it shows the answer. |
-| 16,8–18,4 | Atempause | It all connects. *That is the whole idea.* |
-| 18,4–23,2 | **Canvas** — das Blatt, herangefahren | CANVAS · An endless sheet — pen, marker, tape, shapes, text. |
-| 23,2–27,0 | **Library** — Raster wird Liste | LIBRARY · Eighteen notebooks. One shelf, two ways to read it. |
-| 27,0–31,6 | **Tasks** — Liste, Planer, Board | TASKS · Five views of the same six things. |
-| 31,6–35,2 | **Journal** — Zeitleiste | JOURNAL · And at the end of the day, why any of it mattered. |
-| 35,2–38,4 | Wortmarke, Module, THIS WINTER | — |
+| 0,0–3,2 | **Die Tinte** — echte Runway-Aufnahme: ein Tropfen blüht in Wasser auf, die Wortmarke erscheint in Tintenfarbe | — |
+| 3,2–5,2 | **Der Staub** — zweite echte Ebene, die Behauptung | One place for everything you learn. |
+| 5,2–7,4 | **Einflug** — das iPad steigt gedreht ins Bild, federt in den Stand (easeOutBack, Geister als Bewegungsunschärfe) | — |
+| 7,4–11,0 | **Today, aufgeblättert** — drei Karten heben sich in Ebenen vom Schirm; der Schirm dahinter tritt zurück | TODAY · Six tasks, twenty-three cards, one unfinished draft. |
+| 11,0–14,8 | **Notes** — Punch-in | NOTES · Write it once. The margin keeps track of the rest. |
+| 14,8–17,4 | **Flashcards** — Dreiviertel-Profil rechts, dreht sich auf | FLASHCARDS · Every card remembers the sentence it came from. |
+| 17,4–21,2 | **Review** — Punch-in, Frage → Antwort | REVIEW · And it shows you the sentence before it shows the answer. |
+| 21,2–22,8 | Atempause auf dem Staub | It all connects. *That is the whole idea.* |
+| 22,8–27,6 | **Canvas** — frontal, die echte Heranfahrt an die Handschrift | CANVAS · An endless sheet — pen, marker, tape, shapes, text. |
+| 27,6–31,0 | **Library** — Dreiviertel-Profil links, Raster → Liste | LIBRARY · Eighteen notebooks. One shelf, two ways to read it. |
+| 31,0–35,6 | **Tasks** — frontal; bei jedem Ansichtswechsel ein Brennweiten-Schlag | TASKS · Five views of the same six things. |
+| 35,6–39,0 | **Journal** — Punch-in | JOURNAL · And at the end of the day, why any of it mattered. |
+| 39,0–42,4 | **Der Staub** — Wortmarke, Module, THIS WINTER | — |
 
-Fünf Handgriffe trennen den teuren Film vom billigen; sie stehen im Kopf von
-`reel.py`: **ein Raum** (Licht mit Richtung statt Farbfläche), **eine
-Kamera** (1,000 → 1,035 über jede Einstellung, mit Drift), **ein Schnitt**
-(hart auf den Zustandswechsel, Hintergrund läuft durch), **erst behaupten**
-(Zeile unter dem Gerät, auf einem Schleier, eine Viertelsekunde nach dem
-Schnitt), **eine Farbe** (eine Korrektur und ein Korn über alles).
+Die Werkzeuge dazu in `reel.py`: `persp()` (echte Fluchtpunkt-Projektion
+über ein 8-Parameter-System, mit angedeuteter Gehäusetiefe — eine Scherung
+sähe billig aus), `_federt()` (easeOutBack: das Überschwingen ist das
+Gewicht), `X_heute()` (die Karten sind echte Ausschnitte des Schirms, mit
+Rundung, Schatten und Parallaxe), `geraet()` (Blende in echter iPad-Breite,
+Frontkamera als kleinstes Echtheitszeichen).
 
-Dazu der Rhythmus: `nah` in `EINSTELLUNGEN` wechselt die Einstellungsgröße.
-Eine Reihe gleich großer Gerätebilder ermüdet nach dem dritten.
+Die Staub-Ebene brauchte einen Eingriff: Runway hat trotz „no objects" ein
+Kamerastativ eingerechnet. Der Ausschnitt (obere 66 %, Seitenverhältnis
+exakt gehalten) nimmt es aus dem Bild; der Lichtschacht bleibt.
 
 ## Zwei Stolpersteine, die dokumentiert bleiben sollen
 
@@ -212,9 +226,9 @@ und `api.runwayml.com`). Diese Aufgaben liegen bei Runway bereit:
 
 | Aufgabe | Inhalt |
 |---|---|
-| `03a4f394-dd38-4aba-a192-74eedd594e65` | Ein Tropfen schwarze Tinte fällt in klares Wasser, Makro, weiß, 5 s. Tinte auf Papier ist Velums eigenes Material — die richtige Ebene für den Auftakt. |
-| `2b030bda-e83e-4b43-b95c-f77a61c66a42` | Staub in einem harten Schacht Winterlicht, tiefschwarzer Raum, 5 s. Für den Schluss. |
-| `cd935e08-1711-4a7e-9d4e-cfa0c4b9520a` | 10 s Klavier: langsam, sparsam, Moll, ohne Aufbau. |
+| `03a4f394-…` Tinte | GELIEFERT und im Film — der Auftakt. |
+| `2b030bda-…` Staub | GELIEFERT und im Film — Behauptung, Atempause, Finale. |
+| `cd935e08-1711-4a7e-9d4e-cfa0c4b9520a` | 10 s Klavier: langsam, sparsam, Moll, ohne Aufbau. Fehlt noch. |
 
 Wer sie herunterlädt, legt die Einzelbilder ab und ruft neu auf:
 
@@ -227,6 +241,6 @@ Und für den Ton, `story/musik.mp4`:
 
 ```
 ffmpeg -i velum-reel.mp4 -i musik.mp4 -filter_complex \
-  "[1:a]atrim=0:38.4,afade=t=in:st=0:d=1.5,afade=t=out:st=36.4:d=2,volume=0.5[a]" \
+  "[1:a]atrim=0:42.4,afade=t=in:st=0:d=1.5,afade=t=out:st=40.0:d=2.4,volume=0.5[a]" \
   -map 0:v -map "[a]" -c:v copy -c:a aac -shortest velum-reel-ton.mp4
 ```

@@ -63,8 +63,21 @@ const rand = (auge, s) => [SEITE(`<div class="auge">${auge}</div><div class="ran
 
 /* Die Zeilen. Jede benennt, was der nächste Schirm zeigt — keine Zeile
    verspricht etwas, das die Aufnahme nicht einlöst. */
+/* Die Tinten-Tafel ist die eine Ausnahme im Film: dunkle Marke auf hellem
+   Grund, denn sie steht auf der weißen Tinten-Aufnahme. Kein Schlagschatten —
+   auf Weiß verrät ein weißer Schein die Montage sofort. */
+const MARKE_TINTE = '/home/user/Mocktest/assets/brand/logo/wordmark-ink-beschnitten.png';
+const SEITE_TINTE = `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;background:transparent}
+  body{display:flex;align-items:flex-end;justify-content:center;box-sizing:border-box;
+       padding-bottom:430px}
+  img{width:560px;display:block}
+</style></head><body><img src="${MARKE_TINTE}"></body></html>`;
+
 const TAFELN = [
   /* Auftakt und Schluss */
+  ['v-wort-tinte', [SEITE_TINTE, false]],
   ['v-auftakt', gross('One place for<br>everything you learn.')],
   ['v-marke', [SEITE(
     `<img class="marke" src="${MARKE}">` +
