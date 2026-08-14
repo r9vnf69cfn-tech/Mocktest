@@ -89,7 +89,11 @@ EDL = [
     # hinterher, von der Zeile hinunter zum wachsenden Zell-Diagramm.
     ('voll',   3.2, dict(szene='malen', ab=166, m=((.32, .36), (.53, .60)),
                          h=.80, chip='c-canvas')),
-    ('voll',   1.6, dict(szene='malen', ab=358, m=(.50, .45), h=.96)),
+    # Zweiter Malen-Schnitt: NICHT die Rad-Zoom-Passage (die schiebt das
+    # Blatt nach unten aus dem Bild — 1,2 s leeres Punktraster). Stattdessen
+    # die rechte Spalte bei 8,0–9,2 s: die rote Fußnote schreibt sich zu
+    # Ende, dann springt die gelbe Q/A-Karte aufs Blatt (8,4→8,5 s).
+    ('voll',   1.6, dict(szene='malen', ab=238, m=(.73, .60), h=.72)),
 
     # Liste: der Grid→List-Klick fällt ~4,5 s — Fenster 3,93–5,03 s.
     ('voll',   1.4, dict(szene='liste', ab=118, m=(.50, .45), h=.96, chip='c-library')),
