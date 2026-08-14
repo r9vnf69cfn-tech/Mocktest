@@ -1,0 +1,360 @@
+#!/usr/bin/env python3
+"""takt.py — der Taktschnitt. ~30 s, 27 Schnitte, alles auf dem Raster.
+
+Die Diagnose nach zwei Fassungen und einem GoodNotes-Vergleich: was dem
+Film fehlte, war nie das Material — es war das TEMPO. GoodNotes schneidet
+20–30 mal in 40 Sekunden, jede Einstellung zeigt genau EINEN Handgriff,
+und alles sitzt auf dem Takt. Dieser Schnitt übernimmt die Disziplin:
+
+  · Ein Beat-Raster (0,78 s). Jeder Schnitt fällt auf einen Schlag.
+  · Jede Einstellung zeigt EINE Sache: den Haken, die Drehung, den
+    Wechsel. Panoramen gibt es drei — Auftakt, Atempause, Schluss.
+  · Punch-Ins sind ECHT SCHARF: die stehenden Ausschnitte kommen aus
+    3-fach aufgelösten Neuaufnahmen des Prototyps (stills.js), nicht aus
+    dem hochskalierten Mitschnitt. Bewegte Fenster (Kartendrehung,
+    Canvas-Zoom, Ansichtswechsel) kommen nativ aus dem Mitschnitt.
+  · Jeder Schnitt bekommt einen Impuls: 4 % Brennweite, in fünf Bildern
+    abgebaut. Das ist der „Hit", der den Takt fühlbar macht.
+  · Module heißen im Bild nur noch ein Wort (Chips, federn beim Schnitt
+    ein). Sätze gehören den drei großen Karten.
+  · Der Ton ist echt: das Tintenblubbern der Tinte-Ebene unter dem
+    Auftakt, der Raumton der Staub-Ebene unter dem Rest (beide Ebenen
+    sind Runway-Aufnahmen mit nativem Ton). Musik kommt als zweite
+    Fassung, sobald das Klavier als Datei vorliegt.
+
+Arbeitsteilung mit Runway (die drei Kino-Shots rendern parallel):
+das Modell liefert Licht, Raum und Gerätegewicht mit LEEREM Schirm;
+die echte Oberfläche wird hier aufs Glas gerechnet, sobald die Shots
+im Container liegen. Bis dahin stehen die eigenen Gerätebilder drin —
+vor der Staub-Ebene statt vor dem grauen Rechenraum.
+"""
+import os, sys, math, glob, subprocess
+from PIL import Image, ImageDraw, ImageFilter, ImageChops
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, '/home/user/story')
+import schnitt as S
+import reel as R
+
+W, H, FPS = S.W, S.H, S.FPS
+HEIM   = '/home/user/story'
+BILDER = HEIM + '/taktbilder/'
+STILLS = HEIM + '/stills/'
+NAH    = HEIM + '/nah/'
+
+BEAT = 0.78          # Sekunden je Schlag — ruhig genug zum Lesen, schnell genug für Zug
+
+# ══════════════════════════════════════════════════════════════════════════
+# DER SCHNITTPLAN
+#
+# (Art, Beats, Parameter). Arten:
+#   tinte    · die Tinten-Ebene, Wortmarke stempelt auf den Schlag
+#   karte    · eine große Schriftkarte auf dem Staub
+#   flug     · der Einflug (aus reel.py), vor der Staub-Ebene
+#   ger      · Gerät vor der Staub-Ebene, Standbild aus stills/
+#   voll     · Punch-In, formatfüllend — 'still' (scharf) oder 'nah' (bewegt)
+#   schluss  · Staub, Wortmarke, THIS WINTER
+# ══════════════════════════════════════════════════════════════════════════
+
+EDL = [
+    ('tinte',  2.8, {}),
+    ('karte',  1.8, dict(tafel='v-auftakt')),
+    ('flug',   2.0, {}),
+
+    ('ger',    1.2, dict(still='heute', chip='c-today')),
+    ('voll',   1.2, dict(still='heute', m=(.74, .52), h=.40)),
+    ('voll',   1.4, dict(still='heute', m=(.575, .26), h=.34)),
+
+    ('voll',   1.2, dict(still='notiz-rand', m=(.815, .42), h=.48, chip='c-notes')),
+    ('voll',   1.4, dict(still='notiz', m=(.45, .30), h=.40)),
+
+    ('ger',    1.2, dict(still='lernkarten', chip='c-cards')),
+    ('voll',   1.3, dict(still='frage', m=(.33, .26), h=.36, chip='c-review')),
+    ('voll',   2.3, dict(nah='flip', m=(.50, .42), h=.92)),
+
+    ('karte',  1.8, dict(tafel='v-mitte')),
+
+    ('ger',    1.2, dict(still='canvas', chip='c-canvas')),
+    ('voll',   2.3, dict(nah='zoom', m=(.50, .45), h=.96)),
+    ('voll',   1.4, dict(still='canvas', m=(.28, .40), h=.36)),
+
+    ('ger',    1.2, dict(still='bibliothek', chip='c-library')),
+    ('voll',   1.7, dict(nah='liste', m=(.55, .42), h=.86)),
+
+    ('voll',   1.2, dict(still='aufgaben', m=(.47, .145), h=.26, chip='c-tasks')),
+    ('voll',   1.5, dict(nah='planer', m=(.50, .45), h=.96)),
+    ('voll',   1.5, dict(nah='brett', m=(.50, .45), h=.96)),
+
+    ('voll',   1.2, dict(still='journal', m=(.44, .38), h=.52, chip='c-journal')),
+    ('voll',   1.3, dict(still='journal-tief', m=(.62, .50), h=.46)),
+
+    ('schluss', 3.6, {}),
+]
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# QUELLEN
+# ══════════════════════════════════════════════════════════════════════════
+
+_STILLS, _NAH = {}, {}
+
+def still(name):
+    if name not in _STILLS:
+        _STILLS[name] = Image.open(STILLS + name + '.png').convert('RGB')
+    return _STILLS[name]
+
+
+def nahbild(name, i):
+    if name not in _NAH:
+        _NAH[name] = sorted(glob.glob(NAH + name + '-*.jpg'))
+    d = _NAH[name]
+    return Image.open(d[min(i, len(d) - 1)]).convert('RGB')
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# WERKZEUG
+# ══════════════════════════════════════════════════════════════════════════
+
+def schlag(t_frames, staerke=.045, dauer=6):
+    """Der Impuls am Schnitt: ein Brennweitenstoß, in wenigen Bildern
+       abgebaut. Klein genug, dass man ihn fühlt statt sieht."""
+    if t_frames >= dauer:
+        return 1.0
+    u = t_frames / dauer
+    return 1.0 + staerke * (1 - u) ** 2
+
+
+def punch(quelle, m, h, zoom):
+    """Ein Ausschnitt der Oberfläche, formatfüllend in 9:16.
+       h ist die Ausschnitthöhe als Anteil der Quellhöhe; die Breite folgt
+       aus dem Zielformat. Skaliert wird bevorzugt HERUNTER (Quelle 3×)."""
+    qw, qh = quelle.size
+    ch = h * qh / zoom
+    cw = ch * (W / H)
+    cx = min(max(m[0] * qw, cw / 2), qw - cw / 2)
+    cy = min(max(m[1] * qh, ch / 2), qh - ch / 2)
+    box = (int(cx - cw / 2), int(cy - ch / 2), int(cx + cw / 2), int(cy + ch / 2))
+    return quelle.crop(box).resize((W, H), Image.LANCZOS).convert('RGBA')
+
+
+_CHIPMASS = {}
+
+def chip_zeigen(b, name, i):
+    """Der Chip federt ein: Überschwingen in den ersten fünf Bildern, dann
+       Stand. Skaliert wird um die eigene Mitte, nicht um die Bildmitte."""
+    if name not in S.TAFELN:
+        return b
+    t = S.TAFELN[name]
+    if name not in _CHIPMASS:
+        _CHIPMASS[name] = t.getchannel('A').getbbox()
+    bb = _CHIPMASS[name]
+    if bb is None:
+        return b
+    if i >= 5:
+        return Image.alpha_composite(b, t)
+    u = i / 5
+    skala = 1.28 - .28 * S.raus(u)
+    alpha = S.raus(u * 1.6) if u < .625 else 1.0
+    ausschnitt = t.crop(bb)
+    aw, ah = int(ausschnitt.width * skala), int(ausschnitt.height * skala)
+    gross = ausschnitt.resize((aw, ah), Image.BICUBIC)
+    ga = gross.getchannel('A').point(lambda v: int(v * alpha))
+    gross.putalpha(ga)
+    mx, my = (bb[0] + bb[2]) // 2, (bb[1] + bb[3]) // 2
+    b.alpha_composite(gross, (mx - aw // 2, my - ah // 2))
+    return b
+
+
+def karte_zeigen(b, name, i, n):
+    """Große Schriftkarte: kommt mit Feder und leichtem Hub, geht hart —
+       der nächste Schnitt übernimmt."""
+    t = i / max(1, n - 1)
+    if name not in S.TAFELN:
+        return b
+    auf = S.raus(min(1, t / .22))
+    tafel = S.TAFELN[name]
+    tafel = ImageChops.offset(tafel, 0, int((1 - auf) * 22))
+    ta = tafel.getchannel('A').point(lambda v: int(v * auf))
+    tafel = tafel.copy(); tafel.putalpha(ta)
+    return Image.alpha_composite(b, tafel)
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# DIE EINSTELLUNGEN
+# ══════════════════════════════════════════════════════════════════════════
+
+def E_tinte(i, n, nr, gesamt, par):
+    t = i / (n - 1)
+    b = R.ebene('tinte', i)
+    m = S.TAFELN.get('v-wort-tinte')
+    if m is not None and t > .32:
+        u = min(1.0, (t - .32) / .16)
+        skala = 1.10 - .10 * S.raus(u)
+        alpha = S.raus(u)
+        bb = m.getchannel('A').getbbox()
+        aus = m.crop(bb)
+        aw, ah = int(aus.width * skala), int(aus.height * skala)
+        g = aus.resize((aw, ah), Image.BICUBIC)
+        ga = g.getchannel('A').point(lambda v: int(v * alpha))
+        g.putalpha(ga)
+        mx, my = (bb[0] + bb[2]) // 2, (bb[1] + bb[3]) // 2
+        b.alpha_composite(g, (mx - aw // 2, my - ah // 2))
+    if t > .88:
+        b = Image.alpha_composite(b, Image.new('RGBA', (W, H),
+                                               (0, 0, 0, int(255 * ((t - .88) / .12) ** 1.2))))
+    return b
+
+
+def E_karte(i, n, nr, gesamt, par):
+    b = R.staubgrund(nr % 260, .85)
+    return karte_zeigen(b, par['tafel'], i, n)
+
+
+def E_flug(i, n, nr, gesamt, par):
+    """Der Einflug aus reel.py, aber vor der Staub-Ebene: der gerechnete
+       Rechenraum war das Billigste am alten Schnitt."""
+    t = i / (n - 1)
+    b = R.staubgrund(nr % 260, .75)
+    f = R._federt(min(1.0, t / .80))
+    schirm = still('heute').resize((2388, 1668), Image.LANCZOS).convert('RGBA')
+    breite = int(W * (0.62 + 0.31 * f))
+    gier, kipp = 24 * (1 - f), 8 * (1 - f)
+    flach = R.geraet(schirm, breite)
+    g = R.persp(flach, gier, kipp) if abs(gier) > 0.4 else flach
+    x = (W - g.width) // 2
+    y_von, y_bis = int(H * 1.02), int(H * .44) - g.height // 2
+    y = int(y_von + (y_bis - y_von) * f)
+    b.alpha_composite(S.schatten(g, 52, int(130 + 75 * max(0, min(1, f)))), (x, y + 24))
+    b.alpha_composite(g, (x, y))
+    return b
+
+
+def E_ger(i, n, nr, gesamt, par):
+    t = i / (n - 1)
+    b = R.staubgrund(nr % 260, .75)
+    schirm = still(par['still']).convert('RGBA')
+    zoom = 0.945 * schlag(i) * (1 + .028 * S.sanft(t))
+    g = R.geraet(schirm, int(W * zoom), 0.22 * math.sin((t - .5)))
+    x = (W - g.width) // 2
+    y = int(H * .44) - g.height // 2 + int(4 * math.sin(t * math.pi))
+    b.alpha_composite(R.spiegelung(g), (x, y + g.height + 6))
+    b.alpha_composite(S.schatten(g, 52, 200), (x, y + 24))
+    b.alpha_composite(g, (x, y))
+    if 'chip' in par:
+        b = chip_zeigen(b, par['chip'], i)
+    return b
+
+
+def E_voll(i, n, nr, gesamt, par):
+    t = i / (n - 1)
+    drift = 1 + .05 * S.sanft(t)          # die Fahrt innerhalb des Ausschnitts
+    zoom = drift * schlag(i)
+    if 'nah' in par:
+        q = nahbild(par['nah'], i)
+    else:
+        q = still(par['still'])
+    b = punch(q, par['m'], par['h'], zoom)
+    # eine Spur Vignette, damit auch das flache Bild eine Mitte hat
+    b = ImageChops.multiply(b, S.VIGNETTE)
+    if 'chip' in par:
+        b = chip_zeigen(b, par['chip'], i)
+    return b
+
+
+def E_schluss(i, n, nr, gesamt, par):
+    t = i / (n - 1)
+    b = R.staubgrund(nr % 260, 1.0)
+    auf = S.raus(min(1, t / .24))
+    tafel = S.TAFELN.get('v-marke')
+    if tafel is not None:
+        tf = ImageChops.offset(tafel, 0, int((1 - auf) * 16))
+        ta = tf.getchannel('A').point(lambda v: int(v * auf))
+        tf = tf.copy(); tf.putalpha(ta)
+        b = Image.alpha_composite(b, tf)
+    if t > .86:
+        b = Image.alpha_composite(b, Image.new('RGBA', (W, H),
+                                               (0, 0, 0, int(255 * (t - .86) / .14))))
+    return b
+
+
+ARTEN = dict(tinte=E_tinte, karte=E_karte, flug=E_flug, ger=E_ger,
+             voll=E_voll, schluss=E_schluss)
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# BAUEN
+# ══════════════════════════════════════════════════════════════════════════
+
+def chips_laden():
+    n = 0
+    for f in sorted(glob.glob(S.QUELLE + 'c-*.png')):
+        S.TAFELN[os.path.basename(f)[:-4]] = S.lade(f, (W, H))
+        n += 1
+    return n
+
+
+def bauen(nur=None):
+    S.vorbereiten()
+    R.tafeln_laden()
+    print('  Chips:', chips_laden())
+    os.makedirs(BILDER, exist_ok=True)
+    if not nur:
+        for f in os.listdir(BILDER):
+            os.remove(BILDER + f)
+    gesamt = sum(int(round(beats * BEAT * FPS)) for _, beats, _ in EDL)
+    nr = 0
+    for k, (art, beats, par) in enumerate(EDL):
+        n = int(round(beats * BEAT * FPS))
+        if nur is not None and k not in nur:
+            nr += n
+            continue
+        fn = ARTEN[art]
+        for i in range(n):
+            b = fn(i, n, nr, gesamt, par)
+            S.veredeln(b, nr).convert('RGB').save('%s%05d.jpg' % (BILDER, nr), quality=95)
+            nr += 1
+        print('  %2d %-8s %4.1f Beats  %3d Bilder  %s' %
+              (k, art, beats, n, par.get('chip', par.get('still', par.get('nah', '')))),
+              flush=True)
+    return gesamt
+
+
+def ton(gesamtlaenge):
+    """Das Klangbett aus den echten Ebenen: Tinte unter dem Auftakt, der
+       Raumton der Staub-Ebene unter dem Rest. Kein erfundener Ton."""
+    ff = S.ffmpeg()
+    U = '/root/.claude/uploads/8aa0ee34-461f-58fa-8bbf-4e14fb86dc91/'
+    tinte = U + '21b7f190-A_single_drop_of_black_ink_falling_into_clear_water_in_a_gla.mp4'
+    staub = U + '019ae699-Dust_motes_drifting_slowly_through_a_single_hard_shaft_of_lo.mp4'
+    dauer = gesamtlaenge / FPS
+    tinte_s = EDL[0][1] * BEAT
+    # endliche Schleife: die unendliche (-1) bringt ffmpeg in Kombination
+    # mit atrim/amix zum Abbruch (Status 234).
+    subprocess.run([ff, '-y', '-loglevel', 'error',
+        '-i', tinte, '-stream_loop', '8', '-i', staub,
+        '-filter_complex',
+        ('[0:a]atrim=0:{ts:.3f},afade=t=out:st={tf:.3f}:d=0.5,volume=1.0[a0];'
+         '[1:a]atrim=0:{d:.3f},afade=t=in:st={tf2:.3f}:d=1.2,afade=t=out:st={af:.3f}:d=1.6,volume=0.55[a1];'
+         '[a0][a1]amix=inputs=2:duration=longest:normalize=0[a]').format(
+            ts=tinte_s + .4, tf=tinte_s - .1, tf2=max(0, tinte_s - .8),
+            d=dauer, af=dauer - 1.8),
+        '-map', '[a]', '-c:a', 'aac', '-b:a', '192k', HEIM + '/takt-ton.m4a'], check=True)
+    return HEIM + '/takt-ton.m4a'
+
+
+def kodieren(gesamt, ziel=HEIM + '/velum-takt.mp4'):
+    tondatei = ton(gesamt)
+    subprocess.run([S.ffmpeg(), '-y', '-loglevel', 'error', '-framerate', str(FPS),
+                    '-i', BILDER + '%05d.jpg', '-i', tondatei,
+                    '-c:v', 'libx264', '-profile:v', 'high', '-crf', '19',
+                    '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k',
+                    '-shortest', '-movflags', '+faststart', ziel], check=True)
+    return ziel
+
+
+if __name__ == '__main__':
+    nur = [int(x) for x in sys.argv[1:]] if len(sys.argv) > 1 else None
+    n = bauen(nur)
+    print('Bilder gesamt:', n, '=', round(n / FPS, 1), 's ·', len(EDL), 'Einstellungen')
+    if not nur:
+        print('Datei:', kodieren(n))

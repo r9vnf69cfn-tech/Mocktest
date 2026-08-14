@@ -100,6 +100,27 @@ const TAFELN = [
   ['v-mitte', gross('It all connects.<br><em>That is the whole idea.</em>')],
 ];
 
+/* Die Chips des Taktschnitts: ein Wort je Modul, als Pille unten im Bild.
+   Der schnelle Schnitt hat keine Zeit für Sätze — die Sätze gehören den
+   drei großen Karten (Auftakt, Mitte, Schluss). Ein Chip springt beim
+   Schnitt ins Bild (die Feder rechnet takt.py) und sagt nur, WO wir sind. */
+const CHIP_SEITE = (wort) => `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<link rel="stylesheet" href="/home/user/Mocktest/mockups/shared/system.css">
+<style>
+  html,body{margin:0;width:1080px;height:1920px;background:transparent}
+  body{display:flex;align-items:flex-end;justify-content:center;box-sizing:border-box;
+       padding-bottom:352px}
+  .chip{font-family:var(--sans);font-weight:600;color:#D89B63;font-size:27px;
+        letter-spacing:.34em;text-transform:uppercase;text-indent:.34em;
+        background:rgba(16,17,20,.80);border:1px solid rgba(216,155,99,.38);
+        border-radius:999px;padding:16px 34px 15px;
+        box-shadow:0 6px 30px rgba(0,0,0,.45)}
+</style></head><body><div class="chip">${wort}</div></body></html>`;
+
+for (const wort of ['today', 'notes', 'cards', 'review', 'canvas', 'library', 'tasks', 'journal']) {
+  TAFELN.push(['c-' + wort, [CHIP_SEITE(wort), false]]);
+}
+
 (async () => {
   const b = await chromium.launch({
     executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
