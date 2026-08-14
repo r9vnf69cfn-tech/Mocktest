@@ -257,7 +257,43 @@
       if (app.renderer.draw) app.renderer.draw();
       if (app.renderer.requestDraw) app.renderer.requestDraw();
     }
+    global.CANVASBUEHNE.__dinge = d;
     return brett.items.length;
+  }
+
+  /* ── 4 · Die Vorführung: das Blatt entsteht vor der Kamera ────────────
+     Die Striche sind einzelne Objekte in Schreibreihenfolge — Überschrift,
+     Zelle, Beschriftungen, Merksatz, Rechnung. vorfuehren(ms) setzt sie
+     nacheinander aufs Blatt, wie ein Zeitraffer über einer schreibenden
+     Hand. Die Kamera steht dabei FEST auf dem fertigen Ausschnitt: erst
+     alles einpassen, dann leeren, dann wachsen lassen — eine mitfahrende
+     Kamera würde das Entstehen verwackeln. */
+  function vorfuehren(ms) {
+    var app = global.gnApp;
+    if (!app || !app.ws || !app.ws.active) return 'keine App';
+    if (!global.CANVASBUEHNE.__dinge) zeichnen();
+    var d = global.CANVASBUEHNE.__dinge;
+    var brett = app.ws.active;
+    if (app.renderer && app.renderer.fitContent) {
+      app.renderer.fitContent(58);
+    }
+    brett.stage([]);
+    var schritte = Math.max(1, Math.round((ms || 3600) / 33));
+    var je = d.length / schritte;
+    var stand = 0, tick = 0;
+    var uhrwerk = setInterval(function () {
+      tick += 1;
+      var bis = Math.min(d.length, Math.round(tick * je));
+      if (bis > stand) {
+        stand = bis;
+        brett.stage(d.slice(0, bis));
+      }
+      if (bis >= d.length) {
+        clearInterval(uhrwerk);
+        brett.commit(d, 'Vorlesungsblatt');
+      }
+    }, 33);
+    return d.length;
   }
 
   function anziehen() {
@@ -272,5 +308,6 @@
     return n;
   }
 
-  global.CANVASBUEHNE = { anziehen: anziehen, sprache: sprache, uhr: uhr, zeichnen: zeichnen };
+  global.CANVASBUEHNE = { anziehen: anziehen, sprache: sprache, uhr: uhr,
+                          zeichnen: zeichnen, vorfuehren: vorfuehren };
 })(window);

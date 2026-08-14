@@ -632,6 +632,19 @@
     ['31 Seiten', '31 pages'],
     ['Whiteboard', 'Cell Biology — Lecture 9'],
 
+    /* ── Was die Erfassungszeile beim Tippen baut (§12e) ──────────── */
+    ['Morgen · 14:00', 'Tomorrow · 14:00'],
+    ['Heute · 14:00', 'Today · 14:00'],
+    ['Morgen', 'Tomorrow'],
+    ['Markiert', 'Flagged'],
+    ['Mittlere Priorität', 'Medium priority'],
+    ['Nur ein Titel', 'Just a title'],
+    ['Landet in der Gruppe Biologie', 'Files under Biology'],
+    ['Landet unter „Morgen"', 'Files under Tomorrow'],
+    ['Landet unter „Morgen“', 'Files under Tomorrow'],
+    ['Landet im Eingang — ohne Gruppe, ohne Termin', 'Goes to the inbox — no group, no date'],
+    ['Aufgabe in einem Satz erfassen', 'Capture a task in one sentence'],
+
     /* ── Was die Umschalter zur Laufzeit bauen (§14c) ─────────────── */
     ['HEUTE', 'TODAY'],
     ['MORGEN', 'TOMORROW'],

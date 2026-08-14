@@ -203,12 +203,43 @@
     bericht.absender = document.querySelectorAll('.pv-absender').length;
     bericht.politur = politur(koerper);
     bericht.sprache = global.ENGLISCH ? global.ENGLISCH.umstellen(koerper) : null;
+    beobachten();
     document.title = 'Velum';
     return bericht;
   }
 
   /* Nach jeder Bedienung: der Prototyp baut Zeilen und Tafeln zur Laufzeit
      nach — die müssen dieselbe Sprache sprechen wie der Rest. */
+  /* Der Wächter: was der Prototyp zur LAUFZEIT baut (die ERKANNT-Chips
+     beim Tippen, frische Aufgabenzeilen), wird im selben Moment übersetzt.
+     nachziehen() nach jedem Griff reichte für Standbilder — beim Tippen
+     entsteht mit jedem Zeichen ein neuer Chip, und ein deutscher Chip für
+     drei Bilder wäre im Film ein Flackern. Endlosschleifen drohen nicht:
+     der ersetzte Text steht englisch da, das zweite Nachschlagen findet
+     nichts mehr. */
+  function beobachten() {
+    if (global.__pvWachter || !global.ENGLISCH) return;
+    var W = global.ENGLISCH.woerter;
+    var leaf = function (kn) {
+      if (kn.nodeType === 3) {
+        var s = global.ENGLISCH.normal(kn.textContent);
+        if (Object.prototype.hasOwnProperty.call(W, s) && kn.textContent !== W[s]) {
+          kn.textContent = W[s];
+        }
+      } else if (kn.nodeType === 1) {
+        global.ENGLISCH.umstellen(kn);
+      }
+    };
+    global.__pvWachter = new MutationObserver(function (ms) {
+      ms.forEach(function (m) {
+        if (m.type === 'characterData') leaf(m.target);
+        if (m.addedNodes) Array.prototype.forEach.call(m.addedNodes, leaf);
+      });
+    });
+    global.__pvWachter.observe(document.body,
+      { subtree: true, childList: true, characterData: true });
+  }
+
   function nachziehen() {
     stempeln();
     var b = global.ENGLISCH ? global.ENGLISCH.umstellen(document.body) : null;
@@ -222,5 +253,6 @@
     politur: politur,
     canvasLeeren: canvasLeeren,
     stempeln: stempeln,
+    beobachten: beobachten,
   };
 })(window);

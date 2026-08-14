@@ -59,39 +59,48 @@ BEAT = 0.78          # Sekunden je Schlag — ruhig genug zum Lesen, schnell gen
 # ══════════════════════════════════════════════════════════════════════════
 
 EDL = [
+    # Auftakt: die Tinte, die Behauptung, Runways Ankunft
     ('tinte',  2.8, {}),
     ('karte',  1.8, dict(tafel='v-auftakt')),
-    ('kino',   2.0, dict(clip='a', ab=38)),                    # Ankunft: die Rückseite steigt ins Licht
+    ('kino',   2.0, dict(clip='a', ab=38)),
+    ('kino',   1.6, dict(clip='kran', ab=100, ui='heute', chip='c-today')),
 
-    ('kino',   1.2, dict(clip='kran', ab=100, ui='heute', chip='c-today')),
-    ('voll',   1.2, dict(still='heute', m=(.74, .52), h=.40)),
-    ('voll',   1.4, dict(still='heute', m=(.575, .26), h=.34)),
+    # Die Kette: der Tap, die Notiz geht auf — echte Bedienung.
+    # ab=130: knapp 1 s Panel, Tap ~5,3 s, die Notiz steht am Schluss offen.
+    ('voll',   2.0, dict(szene='kette', ab=130, m=(.50, .45), h=.96)),
+    ('voll',   1.5, dict(szene='rand', ab=100, m=(.80, .45), h=.60, chip='c-notes')),
 
-    ('voll',   1.2, dict(still='notiz-rand', m=(.815, .42), h=.48, chip='c-notes')),
-    ('voll',   1.4, dict(still='notiz', m=(.45, .30), h=.40)),
+    # DER Moment: die Zeile wird live getippt, die Chips springen mit
+    ('voll',   3.4, dict(szene='tippen', ab=120, m=(.47, .175), h=.32, chip='c-tasks')),
+    # Haken: Klick ~4,3 s, die Zeile verschwindet 5,4–5,8 s nach Done today —
+    # 2,0 Beats (4,13–5,70 s) halten beides im Fenster.
+    ('voll',   2.0, dict(szene='haken', ab=124, m=(.42, .40), h=.52)),
+    # Planer: die Spalten stehen ab Bild 132; Crop auf TODAY+TOMORROW links —
+    # mittig gecroppt zeigt der Hochkant-Ausschnitt nur die leersten Spalten.
+    ('voll',   1.2, dict(szene='planer', ab=112, m=(.36, .42), h=.96)),
+    ('voll',   1.4, dict(szene='brett', ab=125, m=(.50, .45), h=.96)),
 
-    ('ger',    1.2, dict(still='lernkarten', chip='c-cards')),
-    ('voll',   1.3, dict(still='frage', m=(.33, .26), h=.36, chip='c-review')),
-    ('voll',   2.3, dict(nah='flip', m=(.50, .42), h=.92)),
+    ('karte',  1.6, dict(tafel='v-mitte')),
 
-    ('karte',  1.8, dict(tafel='v-mitte')),
+    # DER zweite Moment: das Blatt zeichnet sich selbst.
+    # ab=166: nach dem Szenenwechsel-Blitz (5,1–5,4 s) und nach dem deutschen
+    # Neues-Blatt-Tab — reines englisches Wachsen ab „The C…". Die Titelzeile
+    # ist 1155 px breit, das Fenster 900: also FÄHRT die Kamera der Hand
+    # hinterher, von der Zeile hinunter zum wachsenden Zell-Diagramm.
+    ('voll',   3.2, dict(szene='malen', ab=166, m=((.32, .36), (.53, .60)),
+                         h=.80, chip='c-canvas')),
+    ('voll',   1.6, dict(szene='malen', ab=358, m=(.50, .45), h=.96)),
 
-    ('kino',   1.2, dict(clip='b', ab=104, ui='canvas-hoch', chip='c-canvas')),
-    ('voll',   2.3, dict(nah='zoom', m=(.50, .45), h=.96)),
-    ('voll',   1.4, dict(still='canvas', m=(.28, .40), h=.36)),
+    # Liste: der Grid→List-Klick fällt ~4,5 s — Fenster 3,93–5,03 s.
+    ('voll',   1.4, dict(szene='liste', ab=118, m=(.50, .45), h=.96, chip='c-library')),
+    ('kino',   1.5, dict(clip='b', ab=104, ui='canvas-hoch')),
+    ('voll',   2.2, dict(szene='flip', ab=112, m=(.50, .45), h=.96, chip='c-review')),
+    ('voll',   1.6, dict(szene='tagebuch', ab=118, m=(.50, .42), h=.80, chip='c-journal')),
+    ('kino',   1.4, dict(clip='kran', ab=66, ui='journal')),
 
-    ('kino',   1.2, dict(clip='kran', ab=66, ui='bibliothek', chip='c-library')),
-    ('voll',   1.7, dict(nah='liste', m=(.55, .42), h=.86)),
-
-    ('voll',   1.2, dict(still='aufgaben', m=(.47, .145), h=.26, chip='c-tasks')),
-    ('voll',   1.5, dict(nah='planer', m=(.50, .45), h=.96)),
-    ('voll',   1.5, dict(nah='brett', m=(.50, .45), h=.96)),
-
-    ('voll',   1.2, dict(still='journal', m=(.44, .38), h=.52, chip='c-journal')),
-    ('voll',   1.3, dict(still='journal-tief', m=(.62, .50), h=.46)),
-
-    ('schluss', 3.6, {}),
+    ('schluss', 3.4, {}),
 ]
+
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -135,6 +144,17 @@ def nahbild(name, i):
     if name not in _NAH:
         _NAH[name] = sorted(glob.glob(NAH + name + '-*.jpg'))
     d = _NAH[name]
+    return Image.open(d[min(i, len(d) - 1)]).convert('RGB')
+
+
+_CHOREO = {}
+
+def choreobild(szene, i):
+    """Ein Bild aus einer Aufführung (choreo.js): jede Szene ist eine
+       eigene Aufnahme, die bei null beginnt — der Schnitt greift bildgenau."""
+    if szene not in _CHOREO:
+        _CHOREO[szene] = sorted(glob.glob('/home/user/story/choreo/' + szene + '/b-*.jpg'))
+    d = _CHOREO[szene]
     return Image.open(d[min(i, len(d) - 1)]).convert('RGB')
 
 
@@ -276,11 +296,21 @@ def E_voll(i, n, nr, gesamt, par):
     t = i / (n - 1)
     drift = 1 + .05 * S.sanft(t)          # die Fahrt innerhalb des Ausschnitts
     zoom = drift * schlag(i)
-    if 'nah' in par:
+    if 'szene' in par:
+        q = choreobild(par['szene'], par.get('ab', 0) + i)
+    elif 'nah' in par:
         q = nahbild(par['nah'], i)
     else:
         q = still(par['still'])
-    b = punch(q, par['m'], par['h'], zoom)
+    # m darf ein Paar (Start, Ende) sein: dann fährt das Fenster — z. B.
+    # der schreibenden Hand hinterher, wenn die Zeile breiter ist als der
+    # 9:16-Ausschnitt je sein kann.
+    m = par['m']
+    if isinstance(m[0], tuple):
+        u = S.sanft(t)
+        m = (m[0][0] + (m[1][0] - m[0][0]) * u,
+             m[0][1] + (m[1][1] - m[0][1]) * u)
+    b = punch(q, m, par['h'], zoom)
     # eine Spur Vignette, damit auch das flache Bild eine Mitte hat
     b = ImageChops.multiply(b, S.VIGNETTE)
     if 'chip' in par:

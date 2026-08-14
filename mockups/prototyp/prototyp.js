@@ -2651,10 +2651,20 @@
     if (tag) { chips.push({ wort: tag[0] }); rest = rest.replace(tag[0], ' '); }
 
     var zeit = text.match(/\b(\d{1,2})(?::(\d{2}))?\s*Uhr\b/i) || text.match(/\b(\d{1,2}):(\d{2})\b/);
+    /* Auch englische Uhrzeiten: „2pm", „11:30am". Die Erfassungszeile ist
+       die Vorführung des Parsers — wer sie auf Englisch anspricht, soll
+       dieselben Chips sehen. Intern bleibt alles beim 24-Stunden-Wort. */
+    if (!zeit) {
+      var zeitEn = text.match(/\b(\d{1,2})(?::(\d{2}))?\s*(am|pm)\b/i);
+      if (zeitEn) {
+        var stunde = (+zeitEn[1] % 12) + (/pm/i.test(zeitEn[3]) ? 12 : 0);
+        zeit = [zeitEn[0], String(stunde), zeitEn[2] || null];
+      }
+    }
     var wann = null;
     if (/\bübermorgen\b/i.test(text)) wann = 'Übermorgen';
-    else if (/\bmorgen\b/i.test(text)) wann = 'Morgen';
-    else if (/\bheute\b/i.test(text)) wann = 'Heute';
+    else if (/\bmorgen\b|\btomorrow\b/i.test(text)) wann = 'Morgen';
+    else if (/\bheute\b|\btoday\b|\btonight\b/i.test(text)) wann = 'Heute';
     else if (/\bnächste[nr]? Woche\b/i.test(text)) wann = 'Nächste Woche';
     else {
       for (var i = 0; i < WOCHENTAGE.length; i++) {
