@@ -35,6 +35,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, '/home/user/story')
 import schnitt as S
 import reel as R
+import glas as G
 
 W, H, FPS = S.W, S.H, S.FPS
 HEIM   = '/home/user/story'
@@ -53,15 +54,16 @@ BEAT = 0.78          # Sekunden je Schlag — ruhig genug zum Lesen, schnell gen
 #   flug     · der Einflug (aus reel.py), vor der Staub-Ebene
 #   ger      · Gerät vor der Staub-Ebene, Standbild aus stills/
 #   voll     · Punch-In, formatfüllend — 'still' (scharf) oder 'nah' (bewegt)
+#   kino     · Runway-Material; 'ui' rechnet die echte Oberfläche aufs Glas
 #   schluss  · Staub, Wortmarke, THIS WINTER
 # ══════════════════════════════════════════════════════════════════════════
 
 EDL = [
     ('tinte',  2.8, {}),
     ('karte',  1.8, dict(tafel='v-auftakt')),
-    ('flug',   2.0, {}),
+    ('kino',   2.0, dict(clip='a', ab=38)),                    # Ankunft: die Rückseite steigt ins Licht
 
-    ('ger',    1.2, dict(still='heute', chip='c-today')),
+    ('kino',   1.2, dict(clip='kran', ab=100, ui='heute', chip='c-today')),
     ('voll',   1.2, dict(still='heute', m=(.74, .52), h=.40)),
     ('voll',   1.4, dict(still='heute', m=(.575, .26), h=.34)),
 
@@ -74,11 +76,11 @@ EDL = [
 
     ('karte',  1.8, dict(tafel='v-mitte')),
 
-    ('ger',    1.2, dict(still='canvas', chip='c-canvas')),
+    ('kino',   1.2, dict(clip='b', ab=104, ui='canvas-hoch', chip='c-canvas')),
     ('voll',   2.3, dict(nah='zoom', m=(.50, .45), h=.96)),
     ('voll',   1.4, dict(still='canvas', m=(.28, .40), h=.36)),
 
-    ('ger',    1.2, dict(still='bibliothek', chip='c-library')),
+    ('kino',   1.2, dict(clip='kran', ab=66, ui='bibliothek', chip='c-library')),
     ('voll',   1.7, dict(nah='liste', m=(.55, .42), h=.86)),
 
     ('voll',   1.2, dict(still='aufgaben', m=(.47, .145), h=.26, chip='c-tasks')),
@@ -97,10 +99,35 @@ EDL = [
 # ══════════════════════════════════════════════════════════════════════════
 
 _STILLS, _NAH = {}, {}
+_KINO, _SPUR = {}, {}
+
+def kinobild(clip, i):
+    if clip not in _KINO:
+        _KINO[clip] = sorted(glob.glob('/home/user/story/kino/' + clip + '/*.jpg'))
+    d = _KINO[clip]
+    return Image.open(d[min(i, len(d) - 1)]).convert('RGB')
+
+
+def kinospur(clip):
+    if clip not in _SPUR:
+        _, gl = G.spur(clip)
+        _SPUR[clip] = gl
+    return _SPUR[clip]
 
 def still(name):
     if name not in _STILLS:
-        _STILLS[name] = Image.open(STILLS + name + '.png').convert('RGB')
+        if name == 'canvas-hoch':
+            # Das Portrait-Glas des Orbit-Shots: Seedance hat das Gerät
+            # hochkant gedreht. Das einzige Modul, das hochkant EHRLICH
+            # funktioniert, ist das Canvas — eine unendliche Fläche hat
+            # kein Querformat. Also ein stehender Ausschnitt des
+            # Vorlesungsblatts: Zelle, Beschriftung, Randfragen.
+            q = Image.open(STILLS + 'canvas.png').convert('RGB')
+            qw, qh = q.size
+            _STILLS[name] = q.crop((int(.05 * qw), int(.10 * qh),
+                                    int(.50 * qw), int(.99 * qh)))
+        else:
+            _STILLS[name] = Image.open(STILLS + name + '.png').convert('RGB')
     return _STILLS[name]
 
 
@@ -261,6 +288,24 @@ def E_voll(i, n, nr, gesamt, par):
     return b
 
 
+def E_kino(i, n, nr, gesamt, par):
+    """Runways Kino-Material, bildgenau weitergedreht. Mit 'ui' wird die
+       echte Oberfläche aufs Glas gerechnet: Maske als Alpha, der Glanz
+       des gerenderten Glases bleibt auf der echten Schrift liegen."""
+    fr = par['ab'] + i
+    b = kinobild(par['clip'], fr).resize((W, H), Image.LANCZOS)
+    if par.get('ui'):
+        eckliste = kinospur(par['clip'])[min(fr, len(kinospur(par['clip'])) - 1)]
+        ui = still(par['ui'])
+        # Punch-Skala: die UI-Quelle ist 3×; fürs Warpen reicht die Hälfte
+        if ui.width > 2000:
+            ui = ui.resize((ui.width // 2, ui.height // 2), Image.LANCZOS)
+        b = G.einrechnen(b, eckliste, ui).convert('RGB')
+    if 'chip' in par:
+        b = chip_zeigen(b.convert('RGBA'), par['chip'], i)
+    return b.convert('RGBA')
+
+
 def E_schluss(i, n, nr, gesamt, par):
     t = i / (n - 1)
     b = R.staubgrund(nr % 260, 1.0)
@@ -278,7 +323,7 @@ def E_schluss(i, n, nr, gesamt, par):
 
 
 ARTEN = dict(tinte=E_tinte, karte=E_karte, flug=E_flug, ger=E_ger,
-             voll=E_voll, schluss=E_schluss)
+             voll=E_voll, kino=E_kino, schluss=E_schluss)
 
 
 # ══════════════════════════════════════════════════════════════════════════
