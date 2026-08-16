@@ -181,6 +181,17 @@ function canvasSchirm(art) {
     '<div class="screen screen--' + art + ' pv-canvas">',
     '  <iframe class="pv-canvas__flaeche" data-pv-canvas="../../index.html"',
     '          title="Canvas — das eigenständige Mockup, lauffähig im Rahmen"></iframe>',
+    // Der Daraus-Chip — die eine Stelle, an der das Canvas AUSGANG ist:
+    // was aus diesem Blatt entstand. Die Biopsie hat gemessen, dass das
+    // Canvas als einziger Schirm keinen ausgehenden Weg trägt (B5), und
+    // die Ursache ist strukturell: Wege-Wähler greifen nicht ins iframe.
+    // Der Anker liegt deshalb auf dem Rahmen, nicht im Blatt — wie die
+    // Zurück-Kapsel, aber in der Sprache des ENTWURFS (Papier, Punkt,
+    // Hairline), denn er behauptet eine Herkunftskante, kein Prototyp-Werkzeug.
+    '  <button type="button" class="pv-canvas__daraus" data-pv-canvas-daraus',
+    '          aria-label="Daraus entstanden: 3 Karten im Deck Zellbiologie — öffnet die Lernkarten">',
+    '    <span class="dot dot--cards"></span>3 Karten daraus',
+    '  </button>',
     '  <button type="button" class="pv-canvas__zurueck" data-pv-canvas-zurueck>',
     '    <span class="pv-canvas__pfeil" aria-hidden="true"></span>Zurück zu Velum',
     '  </button>',

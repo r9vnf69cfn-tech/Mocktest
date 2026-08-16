@@ -161,6 +161,16 @@ window.VELUM_WEGE = { version: 3, wege: [
   { s:'notiz', g:'iphone', wo:'#iphone-target', ziel:'lernkarten', t:'Chip „12 Karten" öffnet die Lernkarten' },
   { s:'notiz', g:'iphone', wo:'#iphone-target + .chip', ziel:'aufgabe', t:'Chip „1 Aufgabe" öffnet das Aufgaben-Detail' },
 
+  /* ── Canvas ── 1
+     Der eine Ausgang des Canvas — Nachtrag zur Biopsie (Befund B5: das
+     Canvas war der einzige Schirm ohne ausgehenden Weg). Die Ursache war
+     strukturell, kein Versäumnis der Karte: das Blatt ist ein iframe, und
+     Wähler greifen nicht in fremde Dokumente. Der Daraus-Chip liegt deshalb
+     auf dem Rahmen (prototyp-bauen.js, canvasSchirm) und trägt die
+     Rückrichtung der Kante, die die App längst schreibt: Handschrift wurde
+     Karte. Die App baut dazu M8; hier zieht die Vorlage nach. */
+  { s:'canvas', wo:'[data-pv-canvas-daraus]', ziel:'lernkarten', t:'Daraus entstanden: 3 Karten im Deck „Zellbiologie" — öffnet die Lernkarten' },
+
   /* ── Journal-Start ── 10 */
   { s:'journal', wo:'div:nth-child(1) > article.card:nth-child(2)', ziel:'journal-eintrag', t:'Eintrag „Vor dem Praktikum" öffnet den Journal-Eintrag' },
   { s:'journal', wo:'div:nth-child(2) > article.card:nth-child(2)', ziel:'journal-eintrag', t:'Eintrag „Ohne Titel · Entwurf" öffnet den Journal-Eintrag' },

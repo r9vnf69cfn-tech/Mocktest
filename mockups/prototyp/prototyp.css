@@ -461,6 +461,30 @@ body.pv {
 }
 .pv-canvas__zurueck:focus-visible { outline: 2px solid var(--paper); outline-offset: -6px; }
 
+/* Der Daraus-Chip: das eine ausgehende Element des Canvas-Rahmens (B5).
+   Er trägt die Sprache des Entwurfs — Papier, Hairline, Modulpunkt der
+   Lernkarten — im Gegensatz zur Zurück-Kapsel, die Prototyp-Werkzeug ist. */
+.pv-canvas__daraus {
+  position: absolute;
+  z-index: 3;
+  left: 18px;
+  bottom: 18px;
+  height: 44px;
+  padding: 0 18px 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-pill);
+  background: var(--paper);
+  color: var(--ink-1);
+  font: 600 14px/20px var(--sans);
+  box-shadow: var(--sh-float);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.pv-canvas__daraus:focus-visible { outline: 2px solid var(--ink-1); outline-offset: 2px; }
+
 /* Auf dem iPhone ist die Mitte unten belegt: dort sitzt die Zoom-Kapsel des
    Canvas. Links daneben ist frei, weil die Übersichtskarte auf schmalen
    Fenstern ohnehin entfällt. */
@@ -471,6 +495,15 @@ body.pv {
   font: 600 13px/16px var(--sans);
   height: 44px;
   padding: 0 16px;
+}
+
+/* Der Daraus-Chip stapelt auf dem iPhone über der Zurück-Kapsel — dieselbe
+   freie linke Spalte, 54 pt Abstand (44 Kapsel + 10 Fuge). */
+.pv-glas[data-pv-geraet="iphone"] .pv-canvas__daraus {
+  left: 14px;
+  bottom: 130px;
+  font: 600 13px/16px var(--sans);
+  padding: 0 16px 0 12px;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
